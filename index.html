@@ -1935,7 +1935,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 51";
+const BUILD = "build 52";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2104,12 +2104,18 @@ function PatronFloor() {
     if (phase !== "play") return;
     const refresh = async () => setFloor(await loadFloor());
     const un = subscribeFloor(refresh);
+    const cats = setInterval(() => { loadCatalog().then(setCat).catch(() => {}); }, 180000);
+    const catOnFocus = () => { if (!document.hidden) loadCatalog().then(setCat).catch(() => {}); };
+    document.addEventListener("visibilitychange", catOnFocus);
     const t = setInterval(async () => {
       try { applyServer(await api.sync()); } catch { /* offline, keep drifting */ }
       await claim();
     }, SYNC_MS);
     claim();
-    return () => { un(); clearInterval(t); };
+    return () => {
+      un(); clearInterval(t); clearInterval(cats);
+      document.removeEventListener("visibilitychange", catOnFocus);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
@@ -2484,7 +2490,25 @@ function PatronFloor() {
     return () => clearInterval(t);
   }, [phase, applyServer]);
 
-  const buy = async (item) => { const r = await guard(() => api.buyItem(item.id)); if (r) sfx("buy"); };
+  const buy = async (item) => {
+    try {
+      applyServer(await api.buyItem(item.id));
+      sfx("buy");
+    } catch (e) {
+      if (/afford/i.test(e.message || "")) {
+        const fresh = await loadCatalog().catch(() => null);
+        if (fresh) {
+          const now = (fresh.items || []).find((x) => x.id === item.id);
+          if (now && now.cost !== item.cost) {
+            setCat(fresh);
+            flash("Prices changed. Refreshed — have another look.");
+            return;
+          }
+        }
+      }
+      flash(prettyError(e));
+    }
+  };
   const buyUp = async (u) => {
     const r = await guard(() => api.buyUpgrade(u.id), `Approved: ${u.name}`);
     if (r) sfx("buy");
