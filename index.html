@@ -21,9 +21,9 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 
 .pg-hud{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper);
   border:2px solid var(--ink);border-bottom-width:3px;padding:8px 10px}
-.pg-hudid{min-width:0;flex:1 1 90px}
+.pg-hudid{min-width:0;flex:1 1 120px}
 .pg-hudname{font-weight:700;font-size:14px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pg-hudrole{font-family:var(--mono);font-size:10px;color:var(--soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg-hudrole{font-family:var(--mono);font-size:10px;color:var(--soft);white-space:normal;overflow-wrap:break-word;line-height:1.3}
 .pg-hudpp{margin-left:auto;text-align:right;min-width:0;flex:0 1 auto;padding-left:10px}
 .pg-ppnum{font-family:var(--mono);font-size:clamp(22px,6vw,32px);font-weight:700;line-height:1;color:var(--brass)}
 .pg-pplabel{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
@@ -1952,7 +1952,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 63";
+const BUILD = "build 64";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2714,8 +2714,8 @@ function PatronFloor() {
             {underReview && <span className="pg-tag bad">under review −25%</span>}
           </div>
         </div>
-        <button className="pg-help" onClick={() => setShowHelp(true)}>?</button>
         <div className="pg-hudbtns">
+          <button className="pg-help" onClick={() => setShowHelp(true)}>?</button>
         <button className="pg-help" onClick={() => { const m = setMuted(!mute); setMute(m);
                 if (!m) { wakeAudio(); sfx("door"); } }}
                 title={mute ? "Sound off" : "Sound on"}>{mute ? "\u2715" : "\u266a"}</button>
