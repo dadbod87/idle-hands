@@ -1934,7 +1934,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 49";
+const BUILD = "build 50";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3491,7 +3491,8 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
         Your desk earns <b>{fmt(rate)} PP/sec</b> — that's <b>{fmt(rate * 3600)} PP</b> an hour,
         whether this tab is open or not. Buy more staff to raise it.
       </div>
-      <Tabsy tabs={[["hire", "Requisitions"], ["ups", "Approvals"], ["restr", "Restructure"]]}>
+      <Tabsy tabs={[["hire", "Requisitions"], ["ups", "Approvals"],
+                    ["today", "Today"], ["restr", "Equity"]]}>
         {(t) => t === "hire" ? (
           <div className="pg-list">
             {(cat.items || []).map((it, i) => {
@@ -3528,6 +3529,16 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
             ))}
             <div className="pg-note">Approvals unlock as you hire. They multiply what you already own.</div>
           </div>
+        ) : t === "today" ? (
+          <Today me={me}
+            onClaim={async (i) => {
+              const r = await guard(() => api.claimContract(i));
+              if (r) { sfx("achieve"); flash("Contract cleared."); }
+            }}
+            onMail={async () => {
+              const r = await guard(() => api.openMail());
+              if (r) sfx("kind");
+            }} />
         ) : (
           <div className="pg-pad">
             <p>Restructuring wipes your desk: points, hires and approvals all go. Your lifetime PP
@@ -3538,6 +3549,11 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
             <button className="pg-btn danger" disabled={avail < 1} onClick={onRestructure}>
               Restructure the department
             </button>
+            <EquityShop me={me} cat={cat}
+              onBuy={async (id) => {
+                const r = await guard(() => api.buyPerk(id));
+                if (r) { sfx("raise"); flash("Spent."); }
+              }} />
           </div>
         )}
       </Tabsy>
