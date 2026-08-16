@@ -1630,6 +1630,120 @@ const CLOSING_LINE =
   "past it convincingly, and that you intend to begin earning immediately.";
 
 
+/* ===== lib/sound.js ===== */
+/* ==================================================================
+   SOUND
+   Everything here is synthesised at runtime — no audio files, so
+   nothing extra to upload and nothing extra to load. Short, quiet,
+   and office-safe: somebody will be playing this with the volume up
+   at a desk two feet from a colleague.
+   ================================================================== */
+
+let ctx = null;
+let muted = false;
+
+try {
+  muted = localStorage.getItem("ih_muted") === "1";
+} catch { /* private mode */ }
+
+function isMuted() { return muted; }
+
+function setMuted(v) {
+  muted = !!v;
+  try { localStorage.setItem("ih_muted", muted ? "1" : "0"); } catch { /* ignore */ }
+  return muted;
+}
+
+/** Browsers won't let audio start until the user has interacted. */
+function wakeAudio() {
+  if (muted) return;
+  try {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === "suspended") ctx.resume();
+  } catch { ctx = null; }
+}
+
+function tone({ freq = 440, to = null, dur = 0.14, type = "sine", vol = 0.09, delay = 0 }) {
+  if (muted || !ctx) return;
+  const t0 = ctx.currentTime + delay;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, t0);
+  if (to) osc.frequency.exponentialRampToValueAtTime(Math.max(30, to), t0 + dur);
+  // quick attack, smooth tail — no clicks
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + dur + 0.02);
+}
+
+function noise({ dur = 0.18, vol = 0.05, delay = 0, hp = 800 }) {
+  if (muted || !ctx) return;
+  const t0 = ctx.currentTime + delay;
+  const frames = Math.floor(ctx.sampleRate * dur);
+  const buf = ctx.createBuffer(1, frames, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < frames; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / frames);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const filt = ctx.createBiquadFilter();
+  filt.type = "highpass";
+  filt.frequency.value = hp;
+  const gain = ctx.createGain();
+  gain.gain.value = vol;
+  src.connect(filt).connect(gain).connect(ctx.destination);
+  src.start(t0);
+}
+
+const SOUNDS = {
+  /* --- the good stuff --- */
+  kind:    () => { tone({ freq: 523, to: 784, dur: 0.16, type: "triangle" });
+                   tone({ freq: 784, dur: 0.22, type: "triangle", vol: 0.07, delay: 0.12 }); },
+  buy:     () => { tone({ freq: 660, dur: 0.07, type: "square", vol: 0.05 });
+                   tone({ freq: 990, dur: 0.11, type: "square", vol: 0.045, delay: 0.06 }); },
+  chair:   () => { [523, 659, 784, 1047].forEach((f, i) =>
+                     tone({ freq: f, dur: 0.16, type: "triangle", vol: 0.075, delay: i * 0.07 })); },
+  achieve: () => { [784, 988, 1319].forEach((f, i) =>
+                     tone({ freq: f, dur: 0.2, type: "sine", vol: 0.08, delay: i * 0.09 })); },
+  raise:   () => { tone({ freq: 392, to: 784, dur: 0.4, type: "sine", vol: 0.08 }); },
+
+  /* --- the bad stuff --- */
+  sabotage:() => { tone({ freq: 220, to: 90, dur: 0.3, type: "sawtooth", vol: 0.07 });
+                   noise({ dur: 0.12, vol: 0.03, hp: 300, delay: 0.05 }); },
+  hit:     () => { tone({ freq: 180, to: 70, dur: 0.36, type: "square", vol: 0.06 }); },
+  heat:    () => { tone({ freq: 140, dur: 0.5, type: "sawtooth", vol: 0.05 });
+                   tone({ freq: 147, dur: 0.5, type: "sawtooth", vol: 0.05 }); },
+  deny:    () => { tone({ freq: 300, dur: 0.06, type: "square", vol: 0.05 });
+                   tone({ freq: 240, dur: 0.09, type: "square", vol: 0.05, delay: 0.08 }); },
+  error:   () => { tone({ freq: 200, to: 150, dur: 0.16, type: "square", vol: 0.05 }); },
+
+  /* --- office noises --- */
+  jam:     () => { noise({ dur: 0.5, vol: 0.05, hp: 500 });
+                   tone({ freq: 120, to: 80, dur: 0.5, type: "sawtooth", vol: 0.04 }); },
+  fixed:   () => { noise({ dur: 0.12, vol: 0.035, hp: 900 });
+                   tone({ freq: 700, to: 1100, dur: 0.18, type: "triangle", vol: 0.06, delay: 0.08 }); },
+  drink:   () => { noise({ dur: 0.09, vol: 0.04, hp: 1600 });
+                   tone({ freq: 900, dur: 0.1, type: "sine", vol: 0.05, delay: 0.05 }); },
+  event:   () => { tone({ freq: 587, dur: 0.16, type: "sine", vol: 0.07 });
+                   tone({ freq: 880, dur: 0.24, type: "sine", vol: 0.07, delay: 0.14 }); },
+  door:    () => { tone({ freq: 420, dur: 0.08, type: "sine", vol: 0.045 }); },
+  badge:   () => { [392, 523, 659, 784].forEach((f, i) =>
+                     tone({ freq: f, dur: 0.26, type: "sine", vol: 0.08, delay: i * 0.11 })); },
+  work:    () => { tone({ freq: 1100 + Math.random() * 200, dur: 0.035,
+                          type: "square", vol: 0.025 }); },
+};
+
+function sfx(name) {
+  if (muted) return;
+  wakeAudio();
+  const fn = SOUNDS[name];
+  if (fn) { try { fn(); } catch { /* audio is never worth an exception */ } }
+}
+
+
 /* ===== lib/supabaseClient.js ===== */
 
 const supabase = SB.createClient(
@@ -1810,7 +1924,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 46";
+const BUILD = "build 47";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -1850,6 +1964,7 @@ function PatronFloor() {
   const [jam, setJam] = useState(null);
   const [streakCard, setStreakCard] = useState(null);
   const [bubble, setBubble] = useState(null);      // speech, anchored to a thing on the floor
+  const [mute, setMute] = useState(isMuted());
   const [code, setCode] = useState("");
   const [facing, setFacing] = useState(1);
   const liveRef = useRef(null);
@@ -2094,6 +2209,7 @@ function PatronFloor() {
       const id = cur ? cur.id + cur.start : null;
       if (id && id !== lastEvId.current) {
         lastEvId.current = id;
+        sfx("event");
         say(`${cur.name.toUpperCase()} — ${cur.line}`, cur.mult >= 1 ? "good" : "bad");
         flash(`${cur.name} · ${cur.mult}× for 4 minutes`);
         if (notify && typeof Notification !== "undefined" && Notification.permission === "granted") {
@@ -2108,6 +2224,7 @@ function PatronFloor() {
         jamSeen.current = j.window;
         say("The printer has jammed. Somebody is going to have to deal with it.", "bad");
         flash("The printer jammed");
+        sfx("jam");
       }
       const ch = chanceAt(now, catRef.current.chance_extra || []);
       setChance(ch);
@@ -2191,6 +2308,16 @@ function PatronFloor() {
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [phase]);
+
+  useEffect(() => {
+    const wake = () => wakeAudio();
+    window.addEventListener("pointerdown", wake, { once: true });
+    window.addEventListener("keydown", wake, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", wake);
+      window.removeEventListener("keydown", wake);
+    };
+  }, []);
 
   useEffect(() => {
     if (phase !== "play") return;
@@ -2329,6 +2456,7 @@ function PatronFloor() {
     }
     setDrift((v) => v + clickPow);   // instant feedback
     clickBuf.current += 1;           // banked, then credited by the server
+    sfx("work");
     if (Math.random() < 0.04) say(`You ${pick(WORK_VERBS)}. Nobody saw. The ledger saw.`, "sys");
   };
 
@@ -2345,12 +2473,16 @@ function PatronFloor() {
     return () => clearInterval(t);
   }, [phase, applyServer]);
 
-  const buy = (item) => guard(() => api.buyItem(item.id));
-  const buyUp = (u) => guard(() => api.buyUpgrade(u.id), `Approved: ${u.name}`);
+  const buy = async (item) => { const r = await guard(() => api.buyItem(item.id)); if (r) sfx("buy"); };
+  const buyUp = async (u) => {
+    const r = await guard(() => api.buyUpgrade(u.id), `Approved: ${u.name}`);
+    if (r) sfx("buy");
+  };
   const commit = async (target, kind) => {
     const T = DEED_TEXT[kind];
     const row = await guard(() => api.doDeed(target.id, kind));
     if (row) {
+      sfx(T.good ? "kind" : "sabotage");
       say(T.mine(target.name), T.good ? "good" : "bad");
       flash(T.good ? "Logged. With your name on it." : "Logged. They will see it was you.");
       setPanel(null);
@@ -2374,6 +2506,7 @@ function PatronFloor() {
     setChair(null);
     const row = await guard(() => api.grabChair());
     if (row) {
+      sfx("chair");
       if (row.frenzy_until && new Date(row.frenzy_until) > new Date()) {
         say("You found the good chair. Seven times output for 77 seconds.", "good");
         flash("THE GOOD CHAIR · 7× for 77s");
@@ -2436,10 +2569,12 @@ function PatronFloor() {
       setKnocks((k) => ({ ...k, [f.id]: (k[f.id] || 0) + 1 }));
       const extra = (catRef.current.deny_extra || {})[f.id] || [];
       const line = pick(f.deny.concat(extra));
+      sfx("deny");
       sayAt(f.x + f.w / 2, f.y + f.h + 4, line);
       if (Math.random() < 0.4) say(line, "sys");
       return;
     }
+    sfx("door");
     setPanel(f.panel);
   };
   const walkTo = (f, e) => {
@@ -2509,6 +2644,9 @@ function PatronFloor() {
           </div>
         </div>
         <button className="pg-help" onClick={() => setShowHelp(true)}>?</button>
+        <button className="pg-help" onClick={() => { const m = setMuted(!mute); setMute(m);
+                if (!m) { wakeAudio(); sfx("door"); } }}
+                title={mute ? "Sound off" : "Sound on"}>{mute ? "\u2715" : "\u266a"}</button>
         <button className="pg-help" onClick={() => setPanel("account")} title="Your account">
           {user?.is_anonymous ? "!" : "✓"}
         </button>
@@ -2722,7 +2860,8 @@ function PatronFloor() {
           {panel === "owner" && (
             <Owner me={me} board={board} lifetime={lifetime} pp={pp} cool={cool} cat={cat}
                    onMeeting={() => guard(() => api.takeMeeting(), "File cleared")}
-                   onRaise={() => guard(() => api.askRaise(), "+2% forever")}
+                   onRaise={async () => { const r = await guard(() => api.askRaise(), "+2% forever");
+                                          if (r) sfx("raise"); }}
                    onBlame={commit} />
           )}
           {panel === "wire" && (
@@ -2762,7 +2901,7 @@ function PatronFloor() {
           {panel === "printer" && (
             <Printer jam={jam} onFix={async () => {
               const row = await guard(() => api.fixPrinter());
-              if (row) { say("You fixed the printer. Nobody will ever know how.", "good");
+              if (row) { sfx("fixed"); say("You fixed the printer. Nobody will ever know how.", "good");
                          flash("Printer fixed"); setPanel(null); }
             }} />
           )}
@@ -2770,12 +2909,16 @@ function PatronFloor() {
             <Cooler cat={cat} me={me}
                     onDrink={async (id, name) => {
                       const row = await guard(() => api.takeBreak(id), name);
-                      if (row) { setBeers((b) => b + 1); say(`You had a ${name}. At work. Openly.`, "good"); }
+                      if (row) { sfx("drink"); setBeers((b) => b + 1);
+                                 say(`You had a ${name}. At work. Openly.`, "good"); }
                     }} />
           )}
           {(panel === "coffee" || panel === "fridge") && (
             <BreakRoom where={panel} cat={cat} me={me}
-                       onDrink={(id, name) => guard(() => api.takeBreak(id), name)} />
+                       onDrink={async (id, name) => {
+                         const r = await guard(() => api.takeBreak(id), name);
+                         if (r) sfx("drink");
+                       }} />
           )}
           {panel === "wardrobe" && (
             <Wardrobe me={me} board={board} lifetime={lifetime} pp={pp} cool={cool} cat={cat}
