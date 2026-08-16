@@ -21,10 +21,10 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 
 .pg-hud{display:flex;align-items:center;gap:10px;background:var(--paper);
   border:2px solid var(--ink);border-bottom-width:3px;padding:8px 10px}
-.pg-hudid{min-width:0}
-.pg-hudname{font-weight:700;font-size:14px;line-height:1.15}
-.pg-hudrole{font-family:var(--mono);font-size:10px;color:var(--soft)}
-.pg-hudpp{margin-left:auto;text-align:right;min-width:0}
+.pg-hudid{min-width:0;flex:1}
+.pg-hudname{font-weight:700;font-size:14px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg-hudrole{font-family:var(--mono);font-size:10px;color:var(--soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg-hudpp{margin-left:auto;text-align:right;min-width:0;padding-left:12px;flex:none}
 .pg-ppnum{font-family:var(--mono);font-size:clamp(22px,6vw,32px);font-weight:700;line-height:1;color:var(--brass)}
 .pg-pplabel{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
 .pg-ppsub{font-family:var(--mono);font-size:10.5px;color:var(--soft);margin-top:3px}
@@ -1951,7 +1951,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 61";
+const BUILD = "build 62";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2693,7 +2693,6 @@ function PatronFloor() {
   return (
     <div className="pg-root">
       <div className="pg-hud">
-        <div className="pg-hudmark"><PatronMark size={26} wordmark={false} /></div>
         <Face src={me?.avatar_url} name={me?.name} size={40} />
         <div className="pg-hudid">
           <div className="pg-hudname">{me?.name}</div>
