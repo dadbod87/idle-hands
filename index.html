@@ -1934,7 +1934,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 48";
+const BUILD = "build 49";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3746,40 +3746,65 @@ function Wire({ wire, feed, lifetime, onPineapple }) {
 function Personnel({ me, lifetime, cat, onDept }) {
   const have = me?.achievements || [];
   const depts = cat?.depts || [];
+  const got = ACHV.filter((a) => have.includes(a.id)).length;
+
   return (
-    <div>
-      <div className="pg-earnbar">
-        Pick a department. It goes on your office door and changes how you play. You can switch
-        whenever you like — nobody here has ever been stopped from changing job title.
-      </div>
-      <div className="pg-list">
-        {depts.map((d, i) => (
-          <button key={d.id}
-                  className={"pg-row" + (i % 2 ? " alt" : "") + (me?.dept === d.id ? " mine" : "")}
-                  onClick={() => onDept(d.id)}>
-            <span className="pg-ct">{me?.dept === d.id ? "✓" : "·"}</span>
-            <span className="pg-main"><b>{d.name}</b><span>{d.note}</span></span>
-            <span className="pg-right"><b className="pg-got">{d.perk}</b></span>
-          </button>
-        ))}
-      </div>
-      <div className="pg-stats">
-        <div><b>{fmt(lifetime)}</b><span>lifetime Patron Points</span></div>
-        <div><b>{me?.equity || 0}</b><span>equity · +{(me?.equity || 0) * 3}%</span></div>
-        <div><b>{me?.goodwill || 0}</b><span>goodwill · +{Math.min(me?.goodwill || 0, 30)}%</span></div>
-        <div><b>{me?.notoriety || 0}</b><span>notoriety</span></div>
-        <div><b>{me?.raises || 0}</b><span>raises · +{(me?.raises || 0) * 2}%</span></div>
-        <div><b>{me?.heat || 0}</b><span>heat on file</span></div>
-      </div>
-      <div className="pg-list">
-        {ACHV.map((a, i) => (
-          <div key={a.id} className={"pg-row static" + (i % 2 ? " alt" : "") + (have.includes(a.id) ? "" : " poor")}>
-            <span className="pg-ct">{have.includes(a.id) ? "✓" : "·"}</span>
-            <span className="pg-main"><b>{a.name}</b><span>{a.note}</span></span>
+    <Tabsy tabs={[["dept", "Department"], ["file", "Your File"],
+                  ["achv", `Awards ${got}/${ACHV.length}`]]}>
+      {(t) => t === "dept" ? (
+        <>
+          <div className="pg-earnbar">
+            Pick a department. It goes on your office door and changes how you play. Switch whenever
+            you like — nobody here has ever been stopped from changing job title.
           </div>
-        ))}
-      </div>
-    </div>
+          <div className="pg-list">
+            {depts.map((d, i) => (
+              <button key={d.id}
+                      className={"pg-row" + (i % 2 ? " alt" : "") + (me?.dept === d.id ? " mine" : "")}
+                      onClick={() => onDept(d.id)}>
+                <span className="pg-ct">{me?.dept === d.id ? "✓" : "·"}</span>
+                <span className="pg-main"><b>{d.name}</b><span>{d.note}</span></span>
+                <span className="pg-right"><b className="pg-got">{d.perk}</b></span>
+              </button>
+            ))}
+            {depts.length === 0 && <div className="pg-note">No departments listed. Odd.</div>}
+          </div>
+          <div className="pg-note">
+            {me?.dept
+              ? "Your door has been repainted. Nobody was consulted."
+              : "You are currently unassigned, which is its own kind of job."}
+          </div>
+        </>
+      ) : t === "file" ? (
+        <>
+          <div className="pg-stats">
+            <div><b>{fmt(lifetime)}</b><span>lifetime PP</span></div>
+            <div><b>{roleFor(lifetime)}</b><span>current title</span></div>
+            <div><b>{me?.equity || 0}</b><span>equity · +{(me?.equity || 0) * 3}%</span></div>
+            <div><b>{me?.raises || 0}</b><span>raises · +{(me?.raises || 0) * 2}%</span></div>
+            <div><b>{me?.goodwill || 0}</b><span>goodwill · +{Math.min(me?.goodwill || 0, 30)}%</span></div>
+            <div><b>{me?.notoriety || 0}</b><span>notoriety</span></div>
+            <div><b>{me?.heat || 0}</b><span>heat on file</span></div>
+            <div><b>{me?.streak || 0}</b><span>day streak</span></div>
+            <div><b>{me?.trophies || 0}</b><span>weeks won</span></div>
+            <div><b>{me?.grabs || 0}</b><span>chairs caught</span></div>
+          </div>
+          <div className="pg-note">
+            Signed the paperwork {me?.signed_at ? new Date(me.signed_at).toLocaleDateString() : "—"}.
+            Everything above is visible to whoever asks, which is the arrangement you agreed to.
+          </div>
+        </>
+      ) : (
+        <div className="pg-list">
+          {ACHV.map((a, i) => (
+            <div key={a.id} className={"pg-row static" + (i % 2 ? " alt" : "") + (have.includes(a.id) ? "" : " poor")}>
+              <span className="pg-ct">{have.includes(a.id) ? "✓" : "·"}</span>
+              <span className="pg-main"><b>{a.name}</b><span>{a.note}</span></span>
+            </div>
+          ))}
+        </div>
+      )}
+    </Tabsy>
   );
 }
 
