@@ -820,11 +820,12 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 
 /* ---------------- rooms you can see but never enter ---------------- */
 .pg-room{position:absolute;box-sizing:border-box;background:#6E7466;
-  border:8px solid #2A2F26;overflow:hidden}
+  border:8px solid #2A2F26}
 .pg-room.west{border-left:none}
 .pg-room.east{border-right:none}
-.pg-roomfloor{position:absolute;inset:0;
+.pg-roomfloor{position:absolute;inset:0;overflow:hidden;
   background:repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 18px,rgba(0,0,0,0) 18px 36px)}
+.pg-room .pg-art{overflow:hidden}
 .pg-roomplate{position:absolute;top:50%;white-space:nowrap;background:#1B211C;
   border:2px solid #C9A253;padding:3px 11px;text-align:center;line-height:1.2;z-index:6}
 .pg-room.west .pg-roomplate{right:-14px;transform:translate(100%,-50%)}
@@ -997,8 +998,10 @@ const OFFICES = [
   mk({ i: 5, x: 2120, y: 1300, w: OFF_W, h: 380, door: "top" }),
   mk({ i: 6, x: 2440, y: 1340, w: OFF_W, h: 340, door: "top" }),
   mk({ i: 7, x: 2760, y: 1300, w: OFF_W, h: 380, door: "top" }),
-  mk({ i: 8, x: 260,  y: 180,  w: 300,  h: 240, door: "bottom" }),   // Chance
-].map((o) => ({ ...o, deskX: o.x + 50, deskY: o.y + o.h - 160,
+  mk({ i: 8, x: 240,  y: 170,  w: 380,  h: 330, door: "bottom" }),   // Chance
+].map((o) => ({ ...o, deskX: o.x + 60,
+                // desk sits at the far end from the door, whichever end that is
+                deskY: o.door === "bottom" ? o.y + 70 : o.y + o.h - 170,
                 deskW: 200, deskH: 100 }));
 const STAFF_OFFICES = 8;
 
@@ -1330,7 +1333,6 @@ const FIXTURES = [
   { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 800, y: 820, w: 112, h: 120 },
   { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 360, y: 600, w: 210, h: 96 },
   { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 630, y: 590, w: 130, h: 170 },
-  { id: "mirror", panel: "mirror", label: "The Mirror", sub: "Redo your badge photo", x: 1320, y: 520, w: 92, h: 156 },
   { id: "suggestion", panel: "suggest", label: "Suggestion Box", sub: "Write a memo the office will read", x: 1940, y: 520, w: 116, h: 96 },
   { id: "wardrobe", panel: "wardrobe", label: "Supply Closet", sub: "Costumes, 45 minutes", x: 1620, y: 540, w: 112, h: 140 },
   { id: "lounge", panel: null, label: "Cigar Lounge", sub: "Under construction", x: 140, y: 915, w: 44, h: 90,
@@ -2159,7 +2161,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 73";
+const BUILD = "build 74";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3204,18 +3206,7 @@ function PatronFloor() {
                   onPineapple={() => guard(() => api.pineapple(), "Pineapple.")} />
           )}
           {panel === "personnel" && (
-            <Personnel me={me} lifetime={lifetime} cat={cat}
-              onDept={async (id) => {
-                const r = await guard(() => api.setDept(id));
-                if (r) { sfx("badge"); flash("Department updated."); }
-              }} />
-          )}
-          {panel === "account" && <Account user={user} onLinked={() => setPanel(null)} />}
-          {panel === "mirror" && (
-            <Mirror me={me} user={user}
-              onLook={async (look) => {
-                try { applyServer(await api.setLook(look)); } catch { /* keep going */ }
-              }}
+            <Personnel me={me} lifetime={lifetime} cat={cat} user={user}
               onSave={async (name, dataUrl) => {
                 try {
                   let url = null;
@@ -3223,10 +3214,17 @@ function PatronFloor() {
                   applyServer(await api.upsertPlayer(name || me.name, url, null));
                   setFloor(await loadFloor());
                   flash("Badge reissued.");
-                  setPanel(null);
                 } catch (e) { flash(prettyError(e)); }
+              }}
+              onLook={async (look) => {
+                try { applyServer(await api.setLook(look)); } catch { /* cosmetic */ }
+              }}
+              onDept={async (id) => {
+                const r = await guard(() => api.setDept(id));
+                if (r) { sfx("badge"); flash("Department updated."); }
               }} />
           )}
+          {panel === "account" && <Account user={user} onLinked={() => setPanel(null)} />}
           {panel === "suggest" && (
             <SuggestionBox sugg={sugg} me={me} admin={cat.admin_id}
               onSend={async (t) => {
@@ -3406,7 +3404,7 @@ const PANEL_TITLES = {
   sabotage: "Meeting room", wire: "Bulletin board", personnel: "Personnel file",
   fund: "Office fund", owner: "Dave's office", account: "Your account",
   wardrobe: "Supply closet", coffee: "The coffee bar", fridge: "The fridge",
-  suggest: "Suggestion box", printer: "The printer", mirror: "The mirror",
+  suggest: "Suggestion box", printer: "The printer",
   cooler: "The Merican cooler",
 };
 
@@ -4140,13 +4138,13 @@ function Wire({ wire, feed, lifetime, onPineapple }) {
   );
 }
 
-function Personnel({ me, lifetime, cat, onDept }) {
+function Personnel({ me, lifetime, cat, onDept, user, onSave, onLook }) {
   const have = me?.achievements || [];
   const depts = cat?.depts || [];
   const got = ACHV.filter((a) => have.includes(a.id)).length;
 
   return (
-    <Tabsy tabs={[["dept", "Department"], ["file", "Your File"],
+    <Tabsy tabs={[["dept", "Department"], ["badge", "Your Badge"], ["file", "Your File"],
                   ["achv", `Awards ${got}/${ACHV.length}`]]}>
       {(t) => t === "dept" ? (
         <>
@@ -4172,6 +4170,8 @@ function Personnel({ me, lifetime, cat, onDept }) {
               : "You are currently unassigned, which is its own kind of job."}
           </div>
         </>
+      ) : t === "badge" ? (
+        <Mirror me={me} user={user} onSave={onSave} onLook={onLook} />
       ) : t === "file" ? (
         <>
           <div className="pg-stats">
