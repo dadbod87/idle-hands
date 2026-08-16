@@ -248,7 +248,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-wide{width:100%;margin-top:8px}
 .pg-err{color:var(--stamp)}
 
-.pg-hat{position:absolute;left:50%;transform:translateX(-50%);top:-17px;width:38px;z-index:3;pointer-events:none}
+.pg-hat{position:absolute;left:50%;transform:translateX(-50%);top:-21px;width:46px;z-index:3;pointer-events:none}
 .pg-worn{position:absolute;left:50%;transform:translateX(-50%);bottom:-13px;white-space:nowrap;
   font-family:var(--mono);font-size:8px;letter-spacing:.06em;text-transform:uppercase;
   color:#FFE08A;text-shadow:0 1px 3px rgba(0,0,0,.9)}
@@ -968,7 +968,7 @@ const ACHV = [
   { id: "a11", name: "Quick Hands", note: "Catch the good chair 5 times.", test: (s) => s.grabs >= 5 },
   { id: "a12", name: "Restructured", note: "Restructure once.", test: (s) => s.equity > 0 },
   { id: "a13", name: "Vested", note: "Hold 25 equity.", test: (s) => s.equity >= 25 },
-  { id: "a14", name: "Billion With A B", note: "1T lifetime PP.", test: (s) => s.lifetime >= 1e12 },
+  { id: "a14", name: "Billion With A B", note: "1Qa lifetime PP.", test: (s) => s.lifetime >= 1e15 },
   { id: "a15", name: "Beloved", note: "Receive 10 kind things.", test: (s) => s.kind_received >= 10 },
   { id: "a16", name: "Fired Guy", note: "Have 10 unkind things done to you.",
     test: (s) => Object.keys(s.hits || {}).filter((k) => DEED_TEXT[k] && !DEED_TEXT[k].good)
@@ -985,7 +985,7 @@ const ACHV = [
   { id: "a26", name: "Three-Peat", note: "Win three weeks.", test: (s) => s.trophies >= 3 },
   { id: "a27", name: "I Don't Hate It", note: "Own 25 of any one thing.",
     test: (s) => Object.values(s.owned || {}).some((v) => v >= 25) },
-  { id: "a28", name: "Theoretically", note: "A quintillion lifetime PP.", test: (s) => s.lifetime >= 1e18 },
+  { id: "a28", name: "Theoretically", note: "A sextillion lifetime PP.", test: (s) => s.lifetime >= 1e21 },
   { id: "a29", name: "Say More Words", note: "Do 25 things to other people.",
     test: (s) => Object.values(s.tally || {}).reduce((a, b) => a + b, 0) >= 25 },
   { id: "a29b", name: "Merican Made", note: "Have a work beer.", test: (s) => (s.beers || 0) >= 1 },
@@ -1141,14 +1141,14 @@ const WORK_VERBS = ["circled back", "touched base", "moved the needle", "took it
   "closed the loop", "boiled the ocean", "unpacked the ask"];
 
 const FUND_TIERS = [
-  { at: 1e9,  label: "Replace the flickering hallway bulb" },
-  { at: 1e14, label: "Second coffee machine (the good one)" },
-  { at: 5e16, label: "Bagel Friday, indefinitely" },
-  { at: 1.4e18, label: "Chairs that go up AND down" },
-  { at: 2e20, label: "A door on the phone booth" },
-  { at: 4.5e21, label: "Office dog (part-time, salaried)" },
-  { at: 6e22, label: "The nap room they said we'd never get" },
-  { at: 3e24, label: "Buy the building. Evict the landlord." },
+  { at: 7.86e12, label: "Replace the flickering hallway bulb" },
+  { at: 8.83e17, label: "Second coffee machine (the good one)" },
+  { at: 6.99e20, label: "Bagel Friday, indefinitely" },
+  { at: 5.95e22, label: "Chairs that go up AND down" },
+  { at: 1.16e24, label: "A door on the phone booth" },
+  { at: 1.75e25, label: "Office dog (part-time, salaried)" },
+  { at: 1.27e26, label: "The nap room they said we'd never get" },
+  { at: 5.12e26, label: "Buy the building. Evict the landlord." },
 ];
 
 const FIXTURES = [
@@ -1401,15 +1401,15 @@ const deskSpots = (n) => {
 };
 
 function roleFor(lt) {
-  if (lt < 2e3) return "Probationary";
-  if (lt < 2e5) return "Associate";
-  if (lt < 2e7) return "Senior Associate";
-  if (lt < 1e9) return "Employee Morale Coordinator";
-  if (lt < 5e10) return "Manager, unclear scope";
-  if (lt < 3e12) return "Director of Something";
-  if (lt < 2e14) return "VP, Special Projects";
-  if (lt < 1e16) return "Chief Officer of Officers";
-  if (lt < 5e18) return "Founder, retroactively";
+  if (lt < 5e3) return "Probationary";
+  if (lt < 1e6) return "Associate";
+  if (lt < 5e8) return "Senior Associate";
+  if (lt < 1e11) return "Employee Morale Coordinator";
+  if (lt < 5e13) return "Manager, unclear scope";
+  if (lt < 1e16) return "Director of Something";
+  if (lt < 5e18) return "VP, Special Projects";
+  if (lt < 1e21) return "Chief Officer of Officers";
+  if (lt < 1e24) return "Founder, retroactively";
   return "Majority Shareholder, allegedly";
 }
 function ago(t) {
@@ -1951,7 +1951,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 57";
+const BUILD = "build 60";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2444,9 +2444,9 @@ function PatronFloor() {
       say("The good chair is on the floor. Somebody get it.", "good");
       flash("THE GOOD CHAIR — 35 seconds");
       setTimeout(() => setChair((c) => (c && c.born === born ? null : c)), 35000);
-      to = setTimeout(spawn, 120000 + Math.random() * 180000);
+      to = setTimeout(spawn, 240000 + Math.random() * 240000);
     };
-    to = setTimeout(spawn, 25000 + Math.random() * 25000);
+    to = setTimeout(spawn, 60000 + Math.random() * 60000);
     return () => clearTimeout(to);
   }, [phase]);
 
@@ -3372,9 +3372,9 @@ function Hat({ kind }) {
   return (
     <svg className="pg-hat" viewBox="0 0 40 26" aria-hidden="true">
       {kind === "cone" && <>
-        <path d="M20 1l9 20H11Z" fill="#D8622C" />
-        <rect x="13" y="12" width="14" height="4" fill="#F2F3E8" />
-        <rect x="7" y="21" width="26" height="4" rx="1" fill="#C0561F" />
+        <path d="M20 0l11 22H9Z" fill="#D8622C" />
+        <rect x="12" y="11" width="16" height="5" fill="#F2F3E8" />
+        <rect x="4" y="22" width="32" height="5" rx="1" fill="#C0561F" />
       </>}
       {kind === "party" && <>
         <path d="M20 1l8 22H12Z" fill="#B23B2E" />
@@ -4139,15 +4139,18 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
           <span>{worn.by_name ? `Courtesy of ${worn.by_name}.` : "Your own doing."}
             {" "}Ends {ago(worn.until).replace(" ago", "")} from now.</span>
           <div className="pg-incbtns">
-            <button className="pg-btn" disabled={committed} onClick={onCommit}>
+            <button className="pg-btn" disabled={committed || !worn.by_name} onClick={onCommit}>
               {committed ? "Committed" : "Commit to the bit"} <em>+25% output</em>
             </button>
             <button className="pg-btn danger" onClick={onChange}>
               Change clothes <em>{fmt(Math.max(200, lifetime * 0.03))} PP</em>
             </button>
           </div>
-          <div className="pg-fine">Wearing it out earns more than hiding does. Dignity is
-            not one of the tracked statistics.</div>
+          <div className="pg-fine">
+            {worn.by_name
+              ? "Wearing it out earns more than hiding does. Dignity is not one of the tracked statistics."
+              : "You put this on yourself, so there's no bit to commit to. The bonus is for wearing something somebody else chose for you."}
+          </div>
         </div>
       )}
 
