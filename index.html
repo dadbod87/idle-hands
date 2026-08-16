@@ -903,6 +903,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   background:#5D6C5B;border-radius:0 0 3px 3px}
 .pg-wcooler u{position:absolute;left:10px;bottom:6px;width:14px;height:16px;background:#F2F3E8;
   border:2px solid #7C8378;clip-path:polygon(0 0,100% 0,70% 100%,30% 100%)}
+.pg-office.ghost{opacity:.9}
+.pg-office.ghost .pg-officefloor{filter:grayscale(.45) brightness(.92)}
 
 </style>
 </head>
@@ -960,7 +962,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
    Edit anything in this file freely; it can never corrupt a save.
    ================================================================== */
 
-const ROOM = { w: 3200, h: 1700 };
+const ROOM = { w: 3400, h: 1700 };
 const WALL_H = 130;
 const HEAT_LIMIT = 5;
 
@@ -998,9 +1000,9 @@ const OFFICES = [
   mk({ i: 5, x: 2120, y: 1300, w: OFF_W, h: 380, door: "top" }),
   mk({ i: 6, x: 2440, y: 1340, w: OFF_W, h: 340, door: "top" }),
   mk({ i: 7, x: 2760, y: 1300, w: OFF_W, h: 380, door: "top" }),
-  mk({ i: 8, x: 2560, y: 170,  w: 380,  h: 330, door: "bottom" }),   // Chance
-].map((o) => ({ ...o, deskX: o.x + 60,
-                // desk sits at the far end from the door, whichever end that is
+  // the desk at the end of the row that nobody reassigned
+  mk({ i: 8, x: 3080, y: 1340, w: OFF_W, h: 340, door: "top" }),
+].map((o) => ({ ...o, deskX: o.x + 50,
                 deskY: o.door === "bottom" ? o.y + 70 : o.y + o.h - 170,
                 deskW: 200, deskH: 100 }));
 const STAFF_OFFICES = 8;
@@ -1266,7 +1268,7 @@ const MEMOS = [
 const GHOST_DESK = {
   name: "Chance",
   plate: "FORMER EMPLOYEE",
-  x: 2620, y: 250,
+  x: 3130, y: 1510,
   lines: [
     "Chance quit again. His desk is still here. So is his mug.",
     "QuickBooks is still open on his monitor. It has been open for three years.",
@@ -1299,7 +1301,7 @@ const FIXTURES = [
   { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1640, y: 16, w: 150, h: 96 },
   { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 1990, y: 8, w: 170, h: 114 },
   { id: "coffee", panel: "kindness", label: "The Break Table", sub: "Be nice to someone", x: 560, y: 810, w: 112, h: 132 },
-  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 3050, y: 860, w: 110, h: 160 },
+  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 3250, y: 860, w: 110, h: 160 },
   { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 800, y: 820, w: 112, h: 120 },
   { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 360, y: 600, w: 210, h: 96 },
   { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 630, y: 590, w: 130, h: 170 },
@@ -1320,7 +1322,7 @@ const FIXTURES = [
       "The ventilation is being sorted. It has been being sorted for some time.",
       "You look through the gap in the paper. It looks the same as last time.",
     ] },
-  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Work beers · after 11", x: 820, y: 600, w: 118, h: 140 },
+  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Work beers · after 11", x: 40,   y: 820,  w: 110, h: 160 },
   { id: "confb", panel: null, label: "Conference Room B", sub: "Booked", x: 40,   y: 420,  w: 110, h: 160,
     deny: [
       "Booked. Recurring. Through 2031.",
@@ -1352,7 +1354,7 @@ const FIXTURES = [
       "Occupied. You check the time. You will check it again shortly.",
     ] },
   { id: "watercooler", panel: null, label: "Water Cooler", sub: "Where things get said",
-    x: 2600, y: 520, w: 64, h: 104, deny: [
+    x: 40,   y: 420,  w: 110, h: 160, deny: [
       "The bottle is empty. It has been empty long enough that this is now normal.",
       "You take a cup. Somebody appears within four seconds to talk about their weekend.",
       "It gurgles. Everyone in a twenty foot radius pretends not to have heard it.",
@@ -1360,7 +1362,7 @@ const FIXTURES = [
       "Two people are already here having the conversation. You wait. You leave.",
     ] },
   { id: "thermostat", panel: null, label: "The Thermostat", sub: "Do not touch it",
-    x: 1860, y: 44, w: 54, h: 54, deny: [
+    x: 3250, y: 420,  w: 110, h: 160, deny: [
       "It reads 71. It has read 71 for two years. The room is not 71.",
       "You reach for it. Somewhere in the building, somebody senses this.",
       "There is a small handwritten sign taped beside it. It says DON'T.",
@@ -1390,13 +1392,13 @@ const CHANCE = {
   offsetMs: 7 * 60000,
   stayMs: 95000,
   path: [
-    { x: 2750, y: 290 },
-    { x: 2750, y: 560 },   // out of his corner office
-    { x: 2200, y: 800 },
-    { x: 1600, y: 950 },   // across the hall
-    { x: 1000, y: 800 },
-    { x: 600,  y: 640 },   // a look at the kitchen he no longer works near
-    { x: 200,  y: 500 },
+    { x: 3230, y: 1520 },  // his old desk, at the end of the row
+    { x: 3230, y: 1260 },  // out of the office
+    { x: 2600, y: 1050 },
+    { x: 1900, y: 900 },   // across the hall
+    { x: 1200, y: 800 },
+    { x: 700,  y: 700 },   // past the kitchen
+    { x: 200,  y: 560 },
   ],
   mumbles: [
     "I don't even work here.",
@@ -1422,11 +1424,10 @@ const DECOR = [
   { t: "window", x: 420, y: 22 }, { t: "window", x: 2260, y: 22 },
   { t: "mascot", x: 2440, y: 20 },
   { t: "rug", x: 1560, y: 900 },
-  { t: "plant", x: 1120, y: 620 }, { t: "plant", x: 2300, y: 620 },
+  { t: "plant", x: 1120, y: 620 }, { t: "plant", x: 2300, y: 620 }, { t: "plant", x: 3120, y: 620 },
   { t: "plant", x: 1520, y: 1180 }, { t: "deadplant", x: 1640, y: 1180 },
   { t: "boxes", x: 1440, y: 1260 }, { t: "boxes", x: 1620, y: 1300 },
   { t: "wetfloor", x: 1080, y: 1000 },
-  { t: "cooler", x: 2900, y: 1200 },
 ];
 
 /* Real things real people here actually say. These float above coworkers'
@@ -1661,8 +1662,8 @@ function chairAt(t = Date.now()) {
   h = (h ^ (h >>> 13)) >>> 0;
   // the central hall only — never inside a room, never behind a wall
   // the central hall only
-  const x = 1100 + (h % 1700);
-  const y = 700 + ((h >>> 7) % 560);
+  const x = 1150 + (h % 1900);
+  const y = 700 + ((h >>> 7) % 520);
   return { window: w, x, y, endsIn: (40 - into) * 1000 };
 }
 
@@ -2131,7 +2132,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 75";
+const BUILD = "build 76";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
