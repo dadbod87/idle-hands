@@ -818,6 +818,70 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-watercooler::before{content:"";position:absolute;left:6px;right:6px;top:4px;height:30px;
   background:#9FC4D8;border-radius:3px}
 
+/* ---------------- rooms off the main floor ---------------- */
+.pg-room{position:absolute;box-sizing:border-box;border:10px solid #33392F;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)}
+.pg-roomfloor{position:absolute;inset:0;background:#8E937F;
+  background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 24px,rgba(0,0,0,0) 24px 48px),
+                   repeating-linear-gradient(0deg,rgba(0,0,0,.05) 0 24px,rgba(0,0,0,0) 24px 48px)}
+.pg-room.locked{border-color:#2A2F26}
+.pg-room.locked .pg-roomfloor{background:#6E7466;filter:brightness(.82)}
+/* the doorway is a hole in the front wall */
+.pg-roomgap{position:absolute;bottom:-10px;height:10px;background:#9AA48C;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.pg-roomplate{position:absolute;bottom:-42px;transform:translateX(-50%);white-space:nowrap;
+  background:#1B211C;border:2px solid #C9A253;padding:3px 11px;text-align:center;line-height:1.2;
+  z-index:5}
+.pg-roomplate b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:#F6E3AE}
+.pg-roomplate span{display:block;font-family:var(--mono);font-size:8.5px;color:#A9A18A}
+.pg-room.locked .pg-roomplate{border-color:#7C8378}
+
+.pg-art{position:absolute;inset:10px;pointer-events:none}
+.pg-art i{position:absolute;display:block}
+.pg-artnote{position:absolute;left:50%;bottom:14%;transform:translateX(-50%) rotate(-3deg);
+  background:#E8B23C;color:#3A2E10;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  padding:3px 8px;border:2px solid #8A6A1E;white-space:nowrap}
+/* conference room B */
+.confb .tbl{left:18%;top:34%;right:18%;height:34%;background:#7C6647;border:3px solid #5E4C33;border-radius:40px}
+.confb .ch{width:20px;height:20px;background:#4A5568;border-radius:4px}
+.confb .ch.a{left:12%;top:30%} .confb .ch.b{left:12%;bottom:26%}
+.confb .ch.c{right:12%;top:30%} .confb .ch.d{right:12%;bottom:26%}
+.confb .scr{left:50%;top:6%;width:38%;height:16%;margin-left:-19%;background:#20262B;border:3px solid #454D42}
+.confb .cord{left:50%;top:22%;width:2px;height:12%;background:#454D42}
+/* the cigar lounge, forever unfinished */
+.lounge .sheet{left:6%;top:6%;width:44%;height:56%;background:rgba(230,235,225,.35);
+  border:2px dashed rgba(255,255,255,.5)}
+.lounge .scaffold{right:8%;top:10%;width:34%;height:60%;
+  background:repeating-linear-gradient(0deg,#8A7A4A 0 4px,rgba(0,0,0,0) 4px 22px),
+             repeating-linear-gradient(90deg,#8A7A4A 0 4px,rgba(0,0,0,0) 4px 40px)}
+.lounge .chair{left:16%;bottom:16%;width:52px;height:38px;background:#6B3B2E;border:3px solid #4A2820;border-radius:8px 8px 3px 3px}
+.lounge .bucket{right:16%;bottom:14%;width:26px;height:22px;background:#9AA294;border:2px solid #6E756B;border-radius:0 0 5px 5px}
+.lounge .web{width:34px;height:34px;border-top:2px solid rgba(255,255,255,.45);
+  border-left:2px solid rgba(255,255,255,.45);border-radius:0 0 100% 0}
+.lounge .web.w1{left:2px;top:2px} .lounge .web.w2{right:2px;top:2px;transform:scaleX(-1)}
+/* restroom */
+.restroom .stall{top:8%;width:38%;height:52%;background:#B8C0B2;border:3px solid #8A9084}
+.restroom .stall.a{left:6%} .restroom .stall.b{right:6%}
+.restroom .basin{left:50%;bottom:14%;width:34%;height:16%;margin-left:-17%;background:#DDE2D4;border:3px solid #8A9084;border-radius:6px}
+.restroom .mirror{left:50%;bottom:34%;width:26%;height:14%;margin-left:-13%;background:#C9D6DC;border:2px solid #8A9084}
+/* meeting room */
+.meeting .tbl{left:14%;top:26%;right:14%;height:40%;background:#7C6647;border:3px solid #5E4C33}
+.meeting .ch{width:20px;height:20px;background:#4A5568;border-radius:4px}
+.meeting .ch.a{left:6%;top:44%} .meeting .ch.b{right:6%;top:44%}
+.meeting .board{left:20%;top:6%;right:20%;height:14%;background:#EDF0E6;border:3px solid #8A9084}
+/* kitchen */
+.kitchen .counter{left:0;bottom:0;right:0;height:16%;background:#A89878;border-top:4px solid #7C6B4A}
+.kitchen .tile{left:0;right:0;top:0;height:26%;
+  background:repeating-linear-gradient(90deg,#D7DBCE 0 22px,#C9CFBE 22px 44px)}
+
+/* clearer scenery */
+.pg-wetfloor{width:44px;height:58px;background:linear-gradient(#F0C24A,#D89A22);
+  clip-path:polygon(50% 0,100% 100%,0 100%);border-bottom:4px solid #8A6A1E;position:relative}
+.pg-wetfloor::after{content:"";position:absolute;left:50%;bottom:8px;transform:translateX(-50%);
+  width:10px;height:18px;background:#3A2E10;
+  clip-path:polygon(40% 0,60% 0,60% 40%,100% 100%,70% 100%,50% 60%,30% 100%,0 100%,40% 40%)}
+
 </style>
 </head>
 <body>
@@ -894,14 +958,42 @@ const OFFICES = Array.from({ length: 9 }, (_, i) => {
   };
 });
 
+/* Rooms off the main floor. Doors face the corridor; locked ones you can see
+   into but never enter, which is the entire joke. */
+const ROOMS = [
+  { id: "kitchen",  x: 80,   y: 190, w: 660, h: 420, label: "The Kitchen",
+    sub: "Coffee, fridge, cooler, sink", locked: false },
+  { id: "confb",    x: 860,  y: 190, w: 380, h: 340, label: "Conference Room B",
+    sub: "Booked", locked: true },
+  { id: "lounge",   x: 1360, y: 190, w: 420, h: 380, label: "The Cigar Lounge",
+    sub: "Coming soon", locked: true },
+  { id: "restroom", x: 1900, y: 190, w: 300, h: 320, label: "Restroom",
+    sub: "Occupied", locked: true },
+  { id: "meeting",  x: 2320, y: 190, w: 420, h: 380, label: "Meeting Room",
+    sub: "Where it happens", locked: false },
+];
+const ROOM_DOOR = 90;
+function roomDoorX(r) { return r.x + (r.w - ROOM_DOOR) / 2; }
+
 /* Wall segments, used for drawing and for stopping people walking through them */
-const WALLS = OFFICES.flatMap((o) => [
+const WALLS = ROOMS.flatMap((r) => {
+  const dx = roomDoorX(r);
+  return [
+    { x: r.x, y: r.y, w: r.w, h: 10 },                                   // back
+    { x: r.x, y: r.y, w: 10, h: r.h },                                   // left
+    { x: r.x + r.w - 10, y: r.y, w: 10, h: r.h },                        // right
+    { x: r.x, y: r.y + r.h - 10, w: dx - r.x, h: 10 },                   // front left
+    { x: dx + ROOM_DOOR, y: r.y + r.h - 10, w: r.x + r.w - dx - ROOM_DOOR, h: 10 },
+    // a locked room has no gap at all
+    ...(r.locked ? [{ x: dx, y: r.y + r.h - 10, w: ROOM_DOOR, h: 10 }] : []),
+  ];
+}).concat(OFFICES.flatMap((o) => [
   { x: o.x, y: o.y, w: (OFFICE_W - DOOR_W) / 2, h: 10 },
   { x: o.doorX + DOOR_W, y: o.y, w: (OFFICE_W - DOOR_W) / 2, h: 10 },
   { x: o.x, y: o.y, w: 10, h: OFFICE_H },
   { x: o.x + OFFICE_W - 10, y: o.y, w: 10, h: OFFICE_H },
   { x: o.x, y: o.y + OFFICE_H - 10, w: OFFICE_W, h: 10 },
-]);
+]));
 
 /** Which office, if any, contains this point. */
 function officeAt(x, y) {
@@ -1181,15 +1273,15 @@ const FIXTURES = [
   { id: "portrait", panel: "standings", label: "Employee Of The Month", sub: "Currently in the lead", x: 1420, y: 12, w: 158, h: 108 },
   { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1740, y: 16, w: 150, h: 96 },
   { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 2300, y: 8, w: 170, h: 114 },
-  { id: "coffee", panel: "kindness", label: "Break Room", sub: "Be nice to someone", x: 60, y: 250, w: 112, h: 132 },
-  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 1900, y: 240, w: 112, h: 146 },
-  { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 880, y: 230, w: 112, h: 156 },
-  { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 240, y: 260, w: 210, h: 96 },
-  { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 520, y: 230, w: 130, h: 170 },
-  { id: "mirror", panel: "mirror", label: "The Mirror", sub: "Redo your badge photo", x: 1120, y: 230, w: 92, h: 156 },
-  { id: "suggestion", panel: "suggest", label: "Suggestion Box", sub: "Write a memo the office will read", x: 1460, y: 270, w: 116, h: 96 },
-  { id: "wardrobe", panel: "wardrobe", label: "Supply Closet", sub: "Costumes, 45 minutes", x: 1280, y: 250, w: 112, h: 140 },
-  { id: "lounge", panel: null, label: "Cigar Lounge", sub: "Under construction", x: 2620, y: 250, w: 176, h: 132,
+  { id: "coffee", panel: "kindness", label: "Break Room", sub: "Be nice to someone", x: 560, y: 430, w: 112, h: 132 },
+  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 2470, y: 300, w: 112, h: 146 },
+  { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 300, y: 420, w: 112, h: 156 },
+  { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 130, y: 250, w: 210, h: 96 },
+  { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 400, y: 240, w: 130, h: 170 },
+  { id: "mirror", panel: "mirror", label: "The Mirror", sub: "Redo your badge photo", x: 300, y: 730, w: 92, h: 156 },
+  { id: "suggestion", panel: "suggest", label: "Suggestion Box", sub: "Write a memo the office will read", x: 1180, y: 770, w: 116, h: 96 },
+  { id: "wardrobe", panel: "wardrobe", label: "Supply Closet", sub: "Costumes, 45 minutes", x: 760, y: 745, w: 112, h: 140 },
+  { id: "lounge", panel: null, label: "Cigar Lounge", sub: "Under construction", x: 1525, y: 535, w: 90, h: 46,
     deny: [
       "Under construction. It was under construction before you started here.",
       "Plastic sheeting, tape, and one extension cord going nowhere.",
@@ -1204,8 +1296,8 @@ const FIXTURES = [
       "The ventilation is being sorted. It has been being sorted for some time.",
       "You look through the gap in the paper. It looks the same as last time.",
     ] },
-  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Work beers · after 11", x: 700, y: 240, w: 118, h: 150 },
-  { id: "confb", panel: null, label: "Conference Room B", sub: "Booked", x: 2100, y: 250, w: 150, h: 120,
+  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Work beers · after 11", x: 570, y: 250, w: 118, h: 150 },
+  { id: "confb", panel: null, label: "Conference Room B", sub: "Booked", x: 1005, y: 495, w: 90, h: 46,
     deny: [
       "Booked. Recurring. Through 2031.",
       "Booked until three. Then booked again at three.",
@@ -1220,7 +1312,7 @@ const FIXTURES = [
       "A single chair faces the wrong way. The blinds are down.",
       "You reach for the handle. You reconsider. You keep walking.",
     ] },
-  { id: "restroom", panel: null, label: "Restroom", sub: "Occupied", x: 2380, y: 230, w: 124, h: 150,
+  { id: "restroom", panel: null, label: "Restroom", sub: "Occupied", x: 2005, y: 475, w: 90, h: 46,
     deny: [
       "Occupied.",
       "Still occupied.",
@@ -1235,6 +1327,14 @@ const FIXTURES = [
       "Occupied. You've decided you didn't need to go anyway.",
       "Occupied. You check the time. You will check it again shortly.",
     ] },
+  { id: "watercooler", panel: null, label: "Water Cooler", sub: "Where things get said",
+    x: 2000, y: 760, w: 64, h: 104, deny: [
+      "The bottle is empty. It has been empty long enough that this is now normal.",
+      "You take a cup. Somebody appears within four seconds to talk about their weekend.",
+      "It gurgles. Everyone in a twenty foot radius pretends not to have heard it.",
+      "There is one cone-shaped cup left, which cannot be put down once filled.",
+      "Two people are already here having the conversation. You wait. You leave.",
+    ] },
   { id: "thermostat", panel: null, label: "The Thermostat", sub: "Do not touch it",
     x: 2216, y: 44, w: 54, h: 54, deny: [
       "It reads 71. It has read 71 for two years. The room is not 71.",
@@ -1245,14 +1345,14 @@ const FIXTURES = [
       "It has been declared load-bearing. Nobody has challenged the declaration.",
     ] },
   { id: "sink", panel: null, label: "The Sink", sub: "Somebody's mug lives here",
-    x: 400, y: 640, w: 128, h: 84, deny: [
+    x: 130, y: 430, w: 128, h: 84, deny: [
       "One mug. Cold tea. It has been here since March and has developed opinions.",
       "A sign reads: YOUR MOTHER DOES NOT WORK HERE. Somebody has added: SHE MIGHT.",
       "The sponge is a crime scene. Nobody will be the one to replace it.",
       "There are eleven mugs in the cupboard and everyone drinks from the same four.",
       "You wash one plate that isn't yours. Nobody will ever know. You will know.",
     ] },
-  { id: "printer", panel: "printer", label: "The Printer", sub: "It works, mostly", x: 1650, y: 270, w: 132, h: 92 },
+  { id: "printer", panel: "printer", label: "The Printer", sub: "It works, mostly", x: 1620, y: 770, w: 132, h: 92 },
 ];
 
 /* ------------------------------------------------------------------
@@ -1296,15 +1396,15 @@ const CHANCE = {
 
 /* Scenery. Purely decorative — click nothing, mean nothing, look like an office. */
 const DECOR = [
-  { t: "plant", x: 200, y: 190 }, { t: "plant", x: 200, y: 660 },
-  { t: "plant", x: 2260, y: 640 }, { t: "plant", x: 2500, y: 660 },
-  { t: "cooler", x: 60, y: 620 },
+  { t: "plant", x: 200, y: 190 }, { t: "plant", x: 60, y: 780 },
+  { t: "plant", x: 2820, y: 760 }, { t: "plant", x: 1900, y: 900 },
+  { t: "cooler", x: 2880, y: 860 },
 
-  { t: "boxes", x: 2700, y: 200 }, { t: "boxes", x: 2780, y: 700 },
-  { t: "rug", x: 1180, y: 560 },
-  { t: "wetfloor", x: 760, y: 700 },
-  { t: "deadplant", x: 1620, y: 640 },
-  { t: "watercooler", x: 1020, y: 660 },
+  { t: "boxes", x: 2700, y: 200 }, { t: "boxes", x: 2600, y: 880 },
+  { t: "rug", x: 900, y: 720 },
+  { t: "wetfloor", x: 1420, y: 860 },
+  { t: "deadplant", x: 2250, y: 800 },
+
   { t: "window", x: 26, y: 22 }, { t: "window", x: 2020, y: 22 },
 
   { t: "mascot", x: 1060, y: 20 },
@@ -2010,7 +2110,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 66";
+const BUILD = "build 67";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2880,6 +2980,23 @@ function PatronFloor() {
             </div>
           ))}
 
+          {ROOMS.map((r) => (
+            <div key={r.id} className={"pg-room" + (r.locked ? " locked" : "")}
+                 style={{ left: r.x, top: r.y, width: r.w, height: r.h,
+                          zIndex: Math.round(r.y) }}>
+              <div className="pg-roomfloor" />
+              <RoomArt id={r.id} />
+              {!r.locked && (
+                <div className="pg-roomgap"
+                     style={{ left: roomDoorX(r) - r.x, width: ROOM_DOOR }} />
+              )}
+              <div className="pg-roomplate"
+                   style={{ left: roomDoorX(r) - r.x + ROOM_DOOR / 2 }}>
+                <b>{r.label}</b><span>{r.sub}</span>
+              </div>
+            </div>
+          ))}
+
           {OFFICES.map((o) => {
             const order = [...board].sort((a, b) =>
               new Date(a.created_at || 0) - new Date(b.created_at || 0));
@@ -3387,6 +3504,36 @@ function wearing(p) {
  * player's photo sits inside the suit — in the dinosaur's open mouth, which
  * is exactly how those things look in real life.
  */
+/** Interiors. You can see all of it. You can enter almost none of it. */
+function RoomArt({ id }) {
+  if (id === "confb") return (
+    <div className="pg-art confb">
+      <i className="tbl" /><i className="ch a" /><i className="ch b" /><i className="ch c" />
+      <i className="ch d" /><i className="scr" /><i className="cord" />
+    </div>
+  );
+  if (id === "lounge") return (
+    <div className="pg-art lounge">
+      <i className="sheet" /><i className="scaffold" /><i className="chair" />
+      <i className="bucket" /><i className="web w1" /><i className="web w2" />
+      <div className="pg-artnote">PARDON OUR DUST</div>
+    </div>
+  );
+  if (id === "restroom") return (
+    <div className="pg-art restroom">
+      <i className="stall a" /><i className="stall b" /><i className="basin" /><i className="mirror" />
+    </div>
+  );
+  if (id === "meeting") return (
+    <div className="pg-art meeting"><i className="tbl" /><i className="ch a" /><i className="ch b" />
+      <i className="board" /></div>
+  );
+  if (id === "kitchen") return (
+    <div className="pg-art kitchen"><i className="counter" /><i className="tile" /></div>
+  );
+  return null;
+}
+
 function CostumeSuit({ art, layer }) {
   if (art === "dino") {
     return layer === "back" ? (
