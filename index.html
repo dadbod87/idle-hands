@@ -1950,7 +1950,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 54";
+const BUILD = "build 55";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3100,7 +3100,8 @@ function blocked(x, y) {
 }
 
 function prettyError(e) {
-  const m = (e?.message || "").toLowerCase();
+  const raw = e?.message || e?.error_description || e?.details || String(e || "");
+  const m = raw.toLowerCase();
   if (m.includes("afford")) return "Not enough Patron Points.";
   if (m.includes("cooling")) return "Cooling off. One office favor at a time.";
   if (m.includes("goodwill")) return "Dave asks what you've done for anyone lately.";
@@ -3110,7 +3111,17 @@ function prettyError(e) {
   if (m.includes("too early")) return "The cooler opens at eleven. Have some water.";
   if (m.includes("caffeinated")) return "You just had something. Give it twenty minutes.";
   if (m.includes("cycle")) return "Not enough earned this cycle yet.";
-  return "That didn't work.";
+  if (m.includes("unlocked")) return "Not unlocked yet — hire more of that first.";
+  if (m.includes("already owned")) return "You already have that one.";
+  if (m.includes("maxed")) return "That's maxed out.";
+  if (m.includes("equity")) return "Not enough equity.";
+  if (m.includes("closed")) return "The office is closed to new staff.";
+  if (m.includes("full")) return "The office is full.";
+  if (m.includes("fetch") || m.includes("network") || m.includes("failed to"))
+    return "Lost the connection for a second. Try again.";
+  // Nothing matched — show the real thing rather than a shrug, so a bug
+  // reports itself instead of hiding behind a friendly sentence.
+  return raw ? "Error: " + raw.slice(0, 120) : "That didn't work.";
 }
 
 const PANEL_TITLES = {
