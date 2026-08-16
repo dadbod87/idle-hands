@@ -1061,7 +1061,6 @@ function officeAt(x, y) {
   return OFFICES.find((o) => x > o.x && x < o.x + o.w && y > o.y && y < o.y + o.h) || null;
 }
 
-const STAFF_OFFICES = 8;          // the ninth belongs to a man who quit
 
 function officeFor(board, id) {
   const order = [...board].sort((a, b) =>
@@ -2168,7 +2167,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 71";
+const BUILD = "build 72";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
