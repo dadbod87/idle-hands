@@ -827,11 +827,15 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-room.locked{border-color:#2A2F26}
 .pg-room.locked .pg-roomfloor{background:#6E7466;filter:brightness(.82)}
 /* the doorway is a hole in the front wall */
-.pg-roomgap{position:absolute;bottom:-10px;height:10px;background:#9AA48C;
+.pg-roomgap{position:absolute;height:10px;background:#9AA48C;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
-.pg-roomplate{position:absolute;bottom:-42px;transform:translateX(-50%);white-space:nowrap;
+.pg-roomgap.bottom{bottom:-10px}
+.pg-roomgap.top{top:-10px}
+.pg-roomplate{position:absolute;transform:translateX(-50%);white-space:nowrap;
   background:#1B211C;border:2px solid #C9A253;padding:3px 11px;text-align:center;line-height:1.2;
   z-index:5}
+.pg-roomplate.bottom{bottom:-44px}
+.pg-roomplate.top{top:-44px}
 .pg-roomplate b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:#F6E3AE}
 .pg-roomplate span{display:block;font-family:var(--mono);font-size:8.5px;color:#A9A18A}
@@ -938,7 +942,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
    Edit anything in this file freely; it can never corrupt a save.
    ================================================================== */
 
-const ROOM = { w: 3000, h: 1600 };
+const ROOM = { w: 3400, h: 1600 };
 const WALL_H = 130;
 const HEAT_LIMIT = 5;
 
@@ -961,31 +965,42 @@ const OFFICES = Array.from({ length: 9 }, (_, i) => {
 /* Rooms off the main floor. Doors face the corridor; locked ones you can see
    into but never enter, which is the entire joke. */
 const ROOMS = [
-  { id: "kitchen",  x: 80,   y: 190, w: 660, h: 420, label: "The Kitchen",
-    sub: "Coffee, fridge, cooler, sink", locked: false },
-  { id: "confb",    x: 860,  y: 190, w: 380, h: 340, label: "Conference Room B",
-    sub: "Booked", locked: true },
-  { id: "lounge",   x: 1360, y: 190, w: 420, h: 380, label: "The Cigar Lounge",
-    sub: "Coming soon", locked: true },
-  { id: "restroom", x: 1900, y: 190, w: 300, h: 320, label: "Restroom",
-    sub: "Occupied", locked: true },
-  { id: "meeting",  x: 2320, y: 190, w: 420, h: 380, label: "Meeting Room",
-    sub: "Where it happens", locked: false },
+  // left side
+  { id: "confb",    x: 40,   y: 150, w: 520, h: 250, door: "bottom", locked: true,
+    label: "Conference Room B", sub: "Booked" },
+  { id: "kitchen",  x: 40,   y: 540, w: 820, h: 450, door: "top",    locked: false,
+    label: "The Kitchen", sub: "Coffee, fridge, cooler, sink" },
+  // right side
+  { id: "lounge",   x: 2820, y: 150, w: 540, h: 250, door: "bottom", locked: true,
+    label: "The Cigar Lounge", sub: "Coming soon" },
+  { id: "restroom", x: 2960, y: 500, w: 400, h: 190, door: "bottom", locked: true,
+    label: "Restroom", sub: "Occupied" },
+  { id: "meeting",  x: 2620, y: 770, w: 740, h: 220, door: "top",    locked: false,
+    label: "Meeting Room", sub: "Where it happens" },
 ];
 const ROOM_DOOR = 90;
 function roomDoorX(r) { return r.x + (r.w - ROOM_DOOR) / 2; }
+/** The y of the wall the door is cut into. */
+function roomDoorY(r) { return r.door === "top" ? r.y : r.y + r.h - 10; }
+function roomAt(x, y) {
+  return ROOMS.find((r) => x > r.x && x < r.x + r.w && y > r.y && y < r.y + r.h) || null;
+}
 
 /* Wall segments, used for drawing and for stopping people walking through them */
 const WALLS = ROOMS.flatMap((r) => {
   const dx = roomDoorX(r);
+  const topY = r.y, botY = r.y + r.h - 10;
+  const gapOnTop = r.door === "top" && !r.locked;
+  const gapOnBottom = r.door === "bottom" && !r.locked;
+  const row = (y, gap) => gap
+    ? [{ x: r.x, y, w: dx - r.x, h: 10 },
+       { x: dx + ROOM_DOOR, y, w: r.x + r.w - dx - ROOM_DOOR, h: 10 }]
+    : [{ x: r.x, y, w: r.w, h: 10 }];
   return [
-    { x: r.x, y: r.y, w: r.w, h: 10 },                                   // back
-    { x: r.x, y: r.y, w: 10, h: r.h },                                   // left
-    { x: r.x + r.w - 10, y: r.y, w: 10, h: r.h },                        // right
-    { x: r.x, y: r.y + r.h - 10, w: dx - r.x, h: 10 },                   // front left
-    { x: dx + ROOM_DOOR, y: r.y + r.h - 10, w: r.x + r.w - dx - ROOM_DOOR, h: 10 },
-    // a locked room has no gap at all
-    ...(r.locked ? [{ x: dx, y: r.y + r.h - 10, w: ROOM_DOOR, h: 10 }] : []),
+    ...row(topY, gapOnTop),
+    ...row(botY, gapOnBottom),
+    { x: r.x, y: r.y, w: 10, h: r.h },
+    { x: r.x + r.w - 10, y: r.y, w: 10, h: r.h },
   ];
 }).concat(OFFICES.flatMap((o) => [
   { x: o.x, y: o.y, w: (OFFICE_W - DOOR_W) / 2, h: 10 },
@@ -1268,20 +1283,20 @@ const FUND_TIERS = [
 ];
 
 const FIXTURES = [
-  { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 300, y: 22, w: 216, h: 86 },
-  { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Patron Points leaderboard", x: 640, y: 14, w: 330, h: 100 },
-  { id: "portrait", panel: "standings", label: "Employee Of The Month", sub: "Currently in the lead", x: 1420, y: 12, w: 158, h: 108 },
-  { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1740, y: 16, w: 150, h: 96 },
-  { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 2300, y: 8, w: 170, h: 114 },
-  { id: "coffee", panel: "kindness", label: "Break Room", sub: "Be nice to someone", x: 560, y: 430, w: 112, h: 132 },
-  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 2470, y: 300, w: 112, h: 146 },
-  { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 300, y: 420, w: 112, h: 156 },
-  { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 130, y: 250, w: 210, h: 96 },
-  { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 400, y: 240, w: 130, h: 170 },
-  { id: "mirror", panel: "mirror", label: "The Mirror", sub: "Redo your badge photo", x: 300, y: 730, w: 92, h: 156 },
-  { id: "suggestion", panel: "suggest", label: "Suggestion Box", sub: "Write a memo the office will read", x: 1180, y: 770, w: 116, h: 96 },
-  { id: "wardrobe", panel: "wardrobe", label: "Supply Closet", sub: "Costumes, 45 minutes", x: 760, y: 745, w: 112, h: 140 },
-  { id: "lounge", panel: null, label: "Cigar Lounge", sub: "Under construction", x: 1525, y: 535, w: 90, h: 46,
+  { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 760, y: 22, w: 216, h: 86 },
+  { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Patron Points leaderboard", x: 1060, y: 14, w: 330, h: 100 },
+  { id: "portrait", panel: "standings", label: "Employee Of The Month", sub: "Currently in the lead", x: 1460, y: 12, w: 158, h: 108 },
+  { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1700, y: 16, w: 150, h: 96 },
+  { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 2160, y: 8, w: 170, h: 114 },
+  { id: "coffee", panel: "kindness", label: "Break Room", sub: "Be nice to someone", x: 120, y: 810, w: 112, h: 132 },
+  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 2900, y: 850, w: 112, h: 120 },
+  { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 700, y: 800, w: 112, h: 156 },
+  { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 90, y: 620, w: 210, h: 96 },
+  { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 350, y: 600, w: 130, h: 170 },
+  { id: "mirror", panel: "mirror", label: "The Mirror", sub: "Redo your badge photo", x: 1080, y: 560, w: 92, h: 156 },
+  { id: "suggestion", panel: "suggest", label: "Suggestion Box", sub: "Write a memo the office will read", x: 1740, y: 590, w: 116, h: 96 },
+  { id: "wardrobe", panel: "wardrobe", label: "Supply Closet", sub: "Costumes, 45 minutes", x: 1400, y: 570, w: 112, h: 140 },
+  { id: "lounge", panel: null, label: "Cigar Lounge", sub: "Under construction", x: 3045, y: 356, w: 90, h: 46,
     deny: [
       "Under construction. It was under construction before you started here.",
       "Plastic sheeting, tape, and one extension cord going nowhere.",
@@ -1296,8 +1311,8 @@ const FIXTURES = [
       "The ventilation is being sorted. It has been being sorted for some time.",
       "You look through the gap in the paper. It looks the same as last time.",
     ] },
-  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Work beers · after 11", x: 570, y: 250, w: 118, h: 150 },
-  { id: "confb", panel: null, label: "Conference Room B", sub: "Booked", x: 1005, y: 495, w: 90, h: 46,
+  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Work beers · after 11", x: 530, y: 610, w: 118, h: 150 },
+  { id: "confb", panel: null, label: "Conference Room B", sub: "Booked", x: 255, y: 356, w: 90, h: 46,
     deny: [
       "Booked. Recurring. Through 2031.",
       "Booked until three. Then booked again at three.",
@@ -1312,7 +1327,7 @@ const FIXTURES = [
       "A single chair faces the wrong way. The blinds are down.",
       "You reach for the handle. You reconsider. You keep walking.",
     ] },
-  { id: "restroom", panel: null, label: "Restroom", sub: "Occupied", x: 2005, y: 475, w: 90, h: 46,
+  { id: "restroom", panel: null, label: "Restroom", sub: "Occupied", x: 3115, y: 646, w: 90, h: 46,
     deny: [
       "Occupied.",
       "Still occupied.",
@@ -1328,7 +1343,7 @@ const FIXTURES = [
       "Occupied. You check the time. You will check it again shortly.",
     ] },
   { id: "watercooler", panel: null, label: "Water Cooler", sub: "Where things get said",
-    x: 2000, y: 760, w: 64, h: 104, deny: [
+    x: 1560, y: 830, w: 64, h: 104, deny: [
       "The bottle is empty. It has been empty long enough that this is now normal.",
       "You take a cup. Somebody appears within four seconds to talk about their weekend.",
       "It gurgles. Everyone in a twenty foot radius pretends not to have heard it.",
@@ -1336,7 +1351,7 @@ const FIXTURES = [
       "Two people are already here having the conversation. You wait. You leave.",
     ] },
   { id: "thermostat", panel: null, label: "The Thermostat", sub: "Do not touch it",
-    x: 2216, y: 44, w: 54, h: 54, deny: [
+    x: 1920, y: 44, w: 54, h: 54, deny: [
       "It reads 71. It has read 71 for two years. The room is not 71.",
       "You reach for it. Somewhere in the building, somebody senses this.",
       "There is a small handwritten sign taped beside it. It says DON'T.",
@@ -1345,14 +1360,14 @@ const FIXTURES = [
       "It has been declared load-bearing. Nobody has challenged the declaration.",
     ] },
   { id: "sink", panel: null, label: "The Sink", sub: "Somebody's mug lives here",
-    x: 130, y: 430, w: 128, h: 84, deny: [
+    x: 700, y: 620, w: 128, h: 84, deny: [
       "One mug. Cold tea. It has been here since March and has developed opinions.",
       "A sign reads: YOUR MOTHER DOES NOT WORK HERE. Somebody has added: SHE MIGHT.",
       "The sponge is a crime scene. Nobody will be the one to replace it.",
       "There are eleven mugs in the cupboard and everyone drinks from the same four.",
       "You wash one plate that isn't yours. Nobody will ever know. You will know.",
     ] },
-  { id: "printer", panel: "printer", label: "The Printer", sub: "It works, mostly", x: 1620, y: 770, w: 132, h: 92 },
+  { id: "printer", panel: "printer", label: "The Printer", sub: "It works, mostly", x: 2100, y: 590, w: 132, h: 92 },
 ];
 
 /* ------------------------------------------------------------------
@@ -1396,18 +1411,18 @@ const CHANCE = {
 
 /* Scenery. Purely decorative — click nothing, mean nothing, look like an office. */
 const DECOR = [
-  { t: "plant", x: 200, y: 190 }, { t: "plant", x: 60, y: 780 },
-  { t: "plant", x: 2820, y: 760 }, { t: "plant", x: 1900, y: 900 },
-  { t: "cooler", x: 2880, y: 860 },
+  { t: "plant", x: 200, y: 190 }, { t: "plant", x: 960, y: 400 },
+  { t: "plant", x: 2500, y: 900 }, { t: "plant", x: 2700, y: 300 },
+  { t: "cooler", x: 2560, y: 240 },
 
-  { t: "boxes", x: 2700, y: 200 }, { t: "boxes", x: 2600, y: 880 },
-  { t: "rug", x: 900, y: 720 },
-  { t: "wetfloor", x: 1420, y: 860 },
-  { t: "deadplant", x: 2250, y: 800 },
+  { t: "boxes", x: 2700, y: 200 }, { t: "boxes", x: 940, y: 900 },
+  { t: "rug", x: 1900, y: 740 },
+  { t: "wetfloor", x: 1180, y: 880 },
+  { t: "deadplant", x: 2440, y: 620 },
 
-  { t: "window", x: 26, y: 22 }, { t: "window", x: 2020, y: 22 },
+  { t: "window", x: 600, y: 22 }, { t: "window", x: 2400, y: 22 },
 
-  { t: "mascot", x: 1060, y: 20 },
+  { t: "mascot", x: 2600, y: 20 },
 ];
 
 /* Real things real people here actually say. These float above coworkers'
@@ -2110,7 +2125,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 67";
+const BUILD = "build 68";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2774,13 +2789,27 @@ function PatronFloor() {
    * out of the room you're in, then into the one you're going to.
    */
   const routeTo = (tx, ty, then, forceOffice) => {
-    const from = officeAt(posRef.current.x, posRef.current.y);
+    const path = [];
+    const p = posRef.current;
+
+    // rooms first — kitchen and meeting room have one door each
+    const rFrom = roomAt(p.x, p.y);
+    const rTo = roomAt(tx, ty);
+    const rOut = (r) => ({ x: roomDoorX(r) + ROOM_DOOR / 2,
+                           y: r.door === "top" ? r.y - 52 : r.y + r.h + 52 });
+    const rIn  = (r) => ({ x: roomDoorX(r) + ROOM_DOOR / 2,
+                           y: r.door === "top" ? r.y + 62 : r.y + r.h - 62 });
+    if (rFrom && rFrom !== rTo && !rFrom.locked) path.push(rIn(rFrom), rOut(rFrom));
+
+    // then offices
+    const from = officeAt(p.x, p.y);
     const to = forceOffice || officeAt(tx, ty);
     const outside = (o) => ({ x: o.doorX + DOOR_W / 2, y: o.y - 48 });
     const inside  = (o) => ({ x: o.doorX + DOOR_W / 2, y: o.y + 58 });
-    const path = [];
     if (from && from !== to) path.push(inside(from), outside(from));
     if (to && to !== from) path.push(outside(to), inside(to));
+
+    if (rTo && rTo !== rFrom && !rTo.locked) path.push(rOut(rTo), rIn(rTo));
     path.push({ x: tx, y: ty });
     goRef.current = { path, then };
   };
@@ -2987,10 +3016,10 @@ function PatronFloor() {
               <div className="pg-roomfloor" />
               <RoomArt id={r.id} />
               {!r.locked && (
-                <div className="pg-roomgap"
+                <div className={"pg-roomgap " + r.door}
                      style={{ left: roomDoorX(r) - r.x, width: ROOM_DOOR }} />
               )}
-              <div className="pg-roomplate"
+              <div className={"pg-roomplate " + r.door}
                    style={{ left: roomDoorX(r) - r.x + ROOM_DOOR / 2 }}>
                 <b>{r.label}</b><span>{r.sub}</span>
               </div>
