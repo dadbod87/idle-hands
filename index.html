@@ -816,7 +816,10 @@ const HEAT_LIMIT = 5;
 
 /* Eight private offices along the bottom of the floor. Your desk lives in
    yours, and work only happens there. */
-const OFFICE_W = 300, OFFICE_H = 420, OFFICE_Y = 1020, DOOR_W = 70;
+const OFFICE_W = 300;
+const OFFICE_H = 420;
+const OFFICE_Y = 1020;
+const DOOR_W = 70;
 const OFFICES = Array.from({ length: 8 }, (_, i) => {
   const x = 20 + i * 320;
   return {
@@ -835,6 +838,11 @@ const WALLS = OFFICES.flatMap((o) => [
   { x: o.x + OFFICE_W - 10, y: o.y, w: 10, h: OFFICE_H },
   { x: o.x, y: o.y + OFFICE_H - 10, w: OFFICE_W, h: 10 },
 ]);
+
+/** Which office, if any, contains this point. */
+function officeAt(x, y) {
+  return OFFICES.find((o) => x > o.x && x < o.x + o.w && y > o.y && y < o.y + o.h) || null;
+}
 
 function officeFor(board, id) {
   const order = [...board].sort((a, b) =>
@@ -1755,7 +1763,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 40";
+const BUILD = "build 41";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2080,17 +2088,22 @@ function PatronFloor() {
         const l = Math.hypot(dx, dy) || 1;
         p.x += (dx / l) * SPEED * dt; p.y += (dy / l) * SPEED * dt;
       } else if (goRef.current) {
-        const g = goRef.current, d = dist(p, g);
-        if (d < 10) {
-          goRef.current = null;
-          if (g.then) {
-            const id = g.then;
-            if (id === "desk") setTimeout(() => setPanel("shop"), 40);
-            else setTimeout(() => openFixture(FIXTURES.find((f) => f.id === id)), 40);
+        const g = goRef.current;
+        const leg = g.path[0];
+        const d = dist(p, leg);
+        if (d < 12) {
+          g.path.shift();
+          if (!g.path.length) {
+            goRef.current = null;
+            if (g.then) {
+              const id = g.then;
+              if (id === "desk") setTimeout(() => setPanel("shop"), 40);
+              else setTimeout(() => openFixture(FIXTURES.find((f) => f.id === id)), 40);
+            }
           }
         } else {
-          p.x += ((g.x - p.x) / d) * SPEED * dt;
-          p.y += ((g.y - p.y) / d) * SPEED * dt;
+          p.x += ((leg.x - p.x) / d) * SPEED * dt;
+          p.y += ((leg.y - p.y) / d) * SPEED * dt;
         }
       }
       p.x = clamp(p.x, 45, ROOM.w - 45);
@@ -2254,7 +2267,7 @@ function PatronFloor() {
   const doWork = () => {
     if (!atDeskRef.current) {        // you work at your desk, like everybody else
       const o = officeRef.current;
-      if (o) goRef.current = { x: o.cx, y: o.cy + 40 };
+      if (o) routeTo(o.cx, o.cy + 40);
       flash("Work happens at your desk. Heading there.");
       return;
     }
@@ -2339,10 +2352,27 @@ function PatronFloor() {
   const cool = me?.last_deed
     ? Math.max(0, 300000 - (Date.now() - new Date(me.last_deed).getTime())) : 0;
 
+  /**
+   * Offices have one door. Walking straight at a wall doesn't work, so any
+   * trip that crosses an office threshold gets routed through the doorway:
+   * out of the room you're in, then into the one you're going to.
+   */
+  const routeTo = (tx, ty, then) => {
+    const from = officeAt(posRef.current.x, posRef.current.y);
+    const to = officeAt(tx, ty);
+    const outside = (o) => ({ x: o.doorX + DOOR_W / 2, y: o.y - 48 });
+    const inside  = (o) => ({ x: o.doorX + DOOR_W / 2, y: o.y + 58 });
+    const path = [];
+    if (from && from !== to) path.push(inside(from), outside(from));
+    if (to && to !== from) path.push(outside(to), inside(to));
+    path.push({ x: tx, y: ty });
+    goRef.current = { path, then };
+  };
+
   const walkClick = (e) => {
     if (!roomRef.current) return;
     const r = roomRef.current.getBoundingClientRect();
-    goRef.current = { x: e.clientX - r.left, y: e.clientY - r.top };
+    routeTo(e.clientX - r.left, e.clientY - r.top);
   };
   const openFixture = (f) => {
     if (!f) return;
@@ -2358,7 +2388,7 @@ function PatronFloor() {
   };
   const walkTo = (f, e) => {
     e.stopPropagation();
-    goRef.current = { x: f.x + f.w / 2, y: Math.min(ROOM.h - 50, f.y + f.h + 60), then: f.id };
+    routeTo(f.x + f.w / 2, Math.min(ROOM.h - 50, f.y + f.h + 60), f.id);
   };
 
   /* ------------------------------- ui ----------------------------- */
@@ -2521,7 +2551,7 @@ function PatronFloor() {
                               width: o.deskW, height: o.deskH }}
                      onClick={(e) => {
                        e.stopPropagation();
-                       if (mine) goRef.current = { x: o.cx, y: o.cy + 40, then: "desk" };
+                       if (mine) routeTo(o.cx, o.cy + 40, "desk");
                      }}>
                   <span /><b />
                   {mine && <div className="pg-fxlabel">Your Desk</div>}
