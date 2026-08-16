@@ -331,14 +331,18 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 @keyframes pgdance{0%,100%{transform:rotate(-9deg) translateY(0)}50%{transform:rotate(9deg) translateY(-5px)}}
 .pg-body.em-dance .pg-arm.left{animation:pgswing .38s ease-in-out infinite}
 .pg-body.em-dance .pg-arm.right{animation:pgswing .38s ease-in-out infinite reverse}
-.pg-body.em-wave .pg-arm.right{animation:pgwave .3s ease-in-out infinite;transform-origin:50% 100%}
-@keyframes pgwave{0%,100%{transform:rotate(-150deg)}50%{transform:rotate(-115deg)}}
+/* Raised hand, swaying above the shoulder. Rotating from the wrist with the
+   arm down reads very differently and we are not doing that. */
+.pg-body.em-wave .pg-arm.right{animation:pgwave .62s ease-in-out infinite;transform-origin:50% 0}
+@keyframes pgwave{0%,100%{transform:rotate(158deg)}50%{transform:rotate(186deg)}}
 .pg-body.em-panic .pg-rig{animation:pgshake .09s linear infinite}
 @keyframes pgshake{0%,100%{transform:translateX(-2.5px)}50%{transform:translateX(2.5px)}}
 .pg-body.em-shrug .pg-arm{animation:pgshrug 1.1s ease-in-out infinite}
 @keyframes pgshrug{0%,100%{transform:rotate(0)}50%{transform:rotate(-58deg)}}
-.pg-body.em-type .pg-arm{animation:pgtype .1s linear infinite}
-@keyframes pgtype{0%,100%{transform:rotate(58deg) translateY(0)}50%{transform:rotate(58deg) translateY(-2px)}}
+/* Arms held forward and still; the hunch does the work. */
+.pg-body.em-type .pg-arm{transform:rotate(74deg)}
+.pg-body.em-type .pg-rig{animation:pgtype .18s linear infinite}
+@keyframes pgtype{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
 
 .pg-emotes{display:flex;gap:4px;flex:none}
 .pg-emote{width:30px;height:30px;border:2px solid var(--ink);background:var(--bar);cursor:pointer;
@@ -357,7 +361,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   box-shadow:6px -10px 0 -1px #B08A56,6px -10px 0 2px #8A6A3E}
 .pg-rug{width:230px;height:150px;background:repeating-linear-gradient(90deg,#5F6B5E 0 18px,#57634F 18px 36px);
   border:6px solid #4E5A4C;opacity:.65}
-.pg-window{width:220px;height:76px;background:linear-gradient(160deg,#BCD6E2,#8FB4C4);
+.pg-window{width:160px;height:74px;background:linear-gradient(160deg,#BCD6E2,#8FB4C4);
   border:6px solid #9AA48C;box-shadow:inset 0 0 0 3px rgba(255,255,255,.35)}
 .pg-clock{width:34px;height:34px;border-radius:50%;background:#F2F3E8;border:4px solid #4A5248;
   box-shadow:inset 0 -8px 0 -6px #4A5248}
@@ -635,6 +639,22 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-badstag{width:100%;height:58px;display:block;opacity:.92}
 .pg-mascotplate{font-family:var(--mono);font-size:8px;letter-spacing:.22em;color:#C9A253;margin-top:2px}
 .pg-mascotfine{font-family:var(--mono);font-size:6px;letter-spacing:.08em;color:#7E7660}
+
+.pg-mapchair{position:absolute;width:7px;height:7px;margin:-3px 0 0 -3px;border-radius:50%;
+  background:#B23B2E;box-shadow:0 0 0 2px rgba(255,233,168,.9);animation:pgping 1s ease-in-out infinite}
+@keyframes pgping{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+.pg-chairping{position:absolute;z-index:60;transform:translate(-50%,-50%);color:#FFE08A;
+  font-size:15px;text-shadow:0 1px 4px rgba(0,0,0,.9);pointer-events:none;text-align:center;
+  animation:pgping 1s ease-in-out infinite}
+.pg-chairping span{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.1em;
+  text-transform:uppercase;white-space:nowrap}
+
+.pg-stale{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--brass);
+  color:#FFF8E4;border:2px solid var(--ink);border-top:none;padding:8px 12px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.03em}
+.pg-stale span{flex:1;min-width:180px}
+.pg-stale button{background:#FFF8E4;color:var(--ink);border:none;padding:5px 12px;cursor:pointer;
+  font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
 
 </style>
 </head>
@@ -951,10 +971,10 @@ const FUND_TIERS = [
 ];
 
 const FIXTURES = [
-  { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 210, y: 22, w: 216, h: 86 },
-  { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Patron Points leaderboard", x: 640, y: 14, w: 330, h: 100 },
-  { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1150, y: 16, w: 150, h: 96 },
-  { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 1500, y: 8, w: 170, h: 114 },
+  { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 224, y: 22, w: 216, h: 86 },
+  { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Patron Points leaderboard", x: 486, y: 14, w: 330, h: 100 },
+  { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1120, y: 16, w: 150, h: 96 },
+  { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 1512, y: 8, w: 170, h: 114 },
   { id: "coffee", panel: "kindness", label: "Break Room", sub: "Be nice to someone", x: 24, y: 430, w: 112, h: 132 },
   { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 1668, y: 380, w: 112, h: 146 },
   { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 1668, y: 820, w: 112, h: 156 },
@@ -1055,9 +1075,9 @@ const DECOR = [
   { t: "printer", x: 1000, y: 1090 },
   { t: "boxes", x: 200, y: 1060 }, { t: "boxes", x: 1580, y: 240 },
   { t: "rug", x: 700, y: 760 },
-  { t: "window", x: 60, y: 20 }, { t: "window", x: 1010, y: 20 },
-  { t: "clock", x: 980, y: 30 },
-  { t: "mascot", x: 452, y: 22 },
+  { t: "window", x: 26, y: 22 }, { t: "window", x: 1312, y: 22 },
+  { t: "clock", x: 1046, y: 34 },
+  { t: "mascot", x: 862, y: 20 },
 ];
 
 /* Real things real people here actually say. These float above coworkers'
@@ -1174,7 +1194,10 @@ function liveMult(p) {
   let m = 1 + (p.equity || 0) * 0.03 + Math.min(p.goodwill || 0, 30) * 0.01 + (p.raises || 0) * 0.02;
   if ((p.heat || 0) >= HEAT_LIMIT) m *= 0.75;
   for (const b of p.buffs || []) {
-    const started = !b.from || Date.parse(b.from) <= now;   // crashes land later
+    // Delayed starts live in `start`. Older rows put a timestamp in `from`,
+    // and older rows still put a *label* there — so only trust a real date.
+    const raw = b.start || (/^\d{4}-\d{2}-\d{2}/.test(b.from || "") ? b.from : null);
+    const started = !raw || Date.parse(raw) <= now;
     if (started && new Date(b.until).getTime() > now) m *= b.mult;
   }
   if (p.frenzy_until && new Date(p.frenzy_until).getTime() > now) m *= 7;
@@ -1183,7 +1206,7 @@ function liveMult(p) {
 
 /** Where Chance is right now, or null. Derived from the clock so everyone
     in the office sees him on the floor at the same moment. */
-function chanceAt(t = Date.now()) {
+function chanceAt(t = Date.now(), extra = []) {
   const bucket = Math.floor((t - CHANCE.offsetMs) / CHANCE.everyMs);
   const start = bucket * CHANCE.everyMs + CHANCE.offsetMs;
   const into = t - start;
@@ -1193,8 +1216,8 @@ function chanceAt(t = Date.now()) {
   const leg = Math.min(legs - 1, Math.floor(into / per));
   const f = (into - leg * per) / per;
   const a = CHANCE.path[leg], b = CHANCE.path[leg + 1];
-  const line = CHANCE.mumbles[
-    (Math.abs(bucket) * 3 + Math.floor(into / 7000)) % CHANCE.mumbles.length];
+  const pool = CHANCE.mumbles.concat(extra || []);
+  const line = pool[(Math.abs(bucket) * 3 + Math.floor(into / 7000)) % pool.length];
   return {
     x: a.x + (b.x - a.x) * f,
     y: a.y + (b.y - a.y) * f,
@@ -1530,7 +1553,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 24";
+const BUILD = "build 30";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -1565,11 +1588,14 @@ function PatronFloor() {
   const [knocks, setKnocks] = useState({});      // per door, times you've tried it anyway
   const [beers, setBeers] = useState(0);   // {id, text} — somebody said a thing
   const [recap, setRecap] = useState(null);
+  const [stale, setStale] = useState(false);      // a newer build is on the server
   const [code, setCode] = useState("");
   const [facing, setFacing] = useState(1);
   const liveRef = useRef(null);
   const lastSent = useRef(0);
   const facingRef = useRef(1);
+  const buildTag = useRef(null);
+  const catRef = useRef({});
   const clickBuf = useRef(0);
   const [err, setErr] = useState(null);
 
@@ -1723,6 +1749,28 @@ function PatronFloor() {
     return () => clearInterval(t);
   }, [phase, cat]);
 
+  /* --------------------- is there a newer build? ------------------- */
+  // Compares the ETag of this very page against the one we booted with.
+  // No extra file to keep in sync, and the request carries no body.
+  useEffect(() => {
+    if (phase !== "play") return;
+    const check = async () => {
+      try {
+        const r = await fetch(location.pathname + "?v=" + Date.now(),
+                              { method: "HEAD", cache: "no-store" });
+        const tag = r.headers.get("etag") || r.headers.get("last-modified");
+        if (!tag) return;                      // host sends neither; skip quietly
+        if (!buildTag.current) { buildTag.current = tag; return; }
+        if (tag !== buildTag.current) setStale(true);
+      } catch { /* offline, try again later */ }
+    };
+    check();
+    const t = setInterval(check, 4 * 60000);
+    const vis = () => { if (!document.hidden) check(); };
+    document.addEventListener("visibilitychange", vis);
+    return () => { clearInterval(t); document.removeEventListener("visibilitychange", vis); };
+  }, [phase]);
+
   /* ----------------------- live floor presence -------------------- */
   useEffect(() => {
     if (phase !== "play" || !me?.id) return;
@@ -1772,7 +1820,7 @@ function PatronFloor() {
         }
       }
       if (!cur) lastEvId.current = null;
-      const ch = chanceAt(now);
+      const ch = chanceAt(now, catRef.current.chance_extra || []);
       setChance(ch);
       if (ch && !chanceSeen.current) {
         chanceSeen.current = true;
@@ -1908,12 +1956,22 @@ function PatronFloor() {
     let to;
     const spawn = () => {
       const born = Date.now();
-      setChair({ x: 200 + Math.random() * (ROOM.w - 400),
-                 y: WALL_H + 90 + Math.random() * (ROOM.h - WALL_H - 220), born });
-      setTimeout(() => setChair((c) => (c && c.born === born ? null : c)), 26000);
-      to = setTimeout(spawn, 150000 + Math.random() * 210000);
+      // Land it somewhere the player could plausibly get to, not in a far
+      // corner of a room four times the size of the viewport.
+      const p = posRef.current;
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 220 + Math.random() * 380;
+      setChair({
+        x: clamp(p.x + Math.cos(ang) * dist, 140, ROOM.w - 140),
+        y: clamp(p.y + Math.sin(ang) * dist, WALL_H + 90, ROOM.h - 140),
+        born,
+      });
+      say("The good chair is on the floor. Somebody get it.", "good");
+      flash("THE GOOD CHAIR — 35 seconds");
+      setTimeout(() => setChair((c) => (c && c.born === born ? null : c)), 35000);
+      to = setTimeout(spawn, 120000 + Math.random() * 180000);
     };
-    to = setTimeout(spawn, 40000 + Math.random() * 60000);
+    to = setTimeout(spawn, 25000 + Math.random() * 25000);
     return () => clearTimeout(to);
   }, [phase]);
 
@@ -1925,7 +1983,8 @@ function PatronFloor() {
       const pool = others.length ? others : (me ? [me] : []);
       if (!pool.length) return;
       const who = pick(pool);
-      setChatter({ id: who.id, text: pick(CATCHPHRASES) });
+      const lines = CATCHPHRASES.concat(catRef.current.catchphrases_extra || []);
+      setChatter({ id: who.id, text: pick(lines) });
       setTimeout(() => setChatter((c) => (c && c.id === who.id ? null : c)), 5200);
     }, 17000);
     return () => clearInterval(t);
@@ -1936,7 +1995,8 @@ function PatronFloor() {
     say("You badge in. The floor is quiet. The ledger is not.", "sys");
     const t = setInterval(() => {
       const who = meRef.current?.name || "you";
-      say(pick(MEMOS).replace(/\{me\}/g, who), "sys");
+      const pool = MEMOS.concat(catRef.current.memos_extra || []);
+      say(pick(pool).replace(/\{me\}/g, who), "sys");
     }, 55000);
     return () => clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2046,7 +2106,8 @@ function PatronFloor() {
     if (!f) return;
     if (f.deny) {                       // some doors don't open
       setKnocks((k) => ({ ...k, [f.id]: (k[f.id] || 0) + 1 }));
-      const line = pick(f.deny);
+      const extra = (catRef.current.deny_extra || {})[f.id] || [];
+      const line = pick(f.deny.concat(extra));
       flash(line);
       if (Math.random() < 0.5) say(line, "sys");
       return;
@@ -2111,7 +2172,7 @@ function PatronFloor() {
             earning {fmt(rate)} PP every second
             {(me?.buffs || []).filter((b) => new Date(b.until) > new Date()).map((b, i) => (
               <span key={i} className={"pg-tag " + (b.mult > 1 ? "good" : "bad")}>
-                {b.mult > 1 ? "▲" : "▼"} {b.from}
+                {b.mult > 1 ? "▲" : "▼"} {b.from_name || b.from || b.kind}
               </span>
             ))}
             {me?.raises > 0 && <span className="pg-tag good">+{me.raises * 2}% raises</span>}
@@ -2129,6 +2190,13 @@ function PatronFloor() {
         <button className="pg-unsaved" onClick={() => setPanel("account")}>
           This desk only exists in this browser. <em>Add an email to keep it →</em>
         </button>
+      )}
+
+      {stale && (
+        <div className="pg-stale">
+          <span>A newer version of Idle Hands is out. Your points are safe either way.</span>
+          <button onClick={() => location.reload()}>Refresh</button>
+        </div>
       )}
 
       {underReview && (
@@ -2259,7 +2327,15 @@ function PatronFloor() {
                   emote={emote && emote.until > Date.now() ? emote.id : null} />
           </div>
         </div>
-        <MiniMap pos={pos} board={board} spots={spots} meId={me?.id} cam={cam} view={view} />
+        <MiniMap pos={pos} board={board} spots={spots} meId={me?.id} cam={cam} view={view}
+                 chair={chair} />
+        {chair && (chair.x < cam.x || chair.x > cam.x + view.w ||
+                   chair.y < cam.y || chair.y > cam.y + view.h) && (
+          <div className="pg-chairping" style={{
+            left: clamp(chair.x - cam.x, 26, view.w - 26),
+            top: clamp(chair.y - cam.y, 26, view.h - 26),
+          }}>&#9670;<span>good chair</span></div>
+        )}
       </div>
 
       <div className="pg-bar">
@@ -2664,7 +2740,7 @@ function Hat({ kind }) {
   );
 }
 
-function MiniMap({ pos, board, spots, meId, cam, view }) {
+function MiniMap({ pos, board, spots, meId, cam, view, chair }) {
   const W = 148, H = Math.round((ROOM.h / ROOM.w) * W);
   const sx = W / ROOM.w, sy = H / ROOM.h;
   return (
@@ -2681,6 +2757,7 @@ function MiniMap({ pos, board, spots, meId, cam, view }) {
       })}
       <div className="pg-mapview" style={{ left: cam.x * sx, top: cam.y * sy,
                                            width: view.w * sx, height: view.h * sy }} />
+      {chair && <div className="pg-mapchair" style={{ left: chair.x * sx, top: chair.y * sy }} />}
       <div className="pg-mapme" style={{ left: pos.x * sx, top: pos.y * sy }} />
       <div className="pg-maplabel">You are here</div>
     </div>
@@ -2804,6 +2881,9 @@ function Help({ onClose, rate }) {
         <li>Walk to <b>your desk</b> and hire them. Now you earn without clicking.</li>
         <li>Close the tab. Come back after lunch. Collect.</li>
       </ol>
+      <p className="pg-small">Joined after everyone else? A signing bonus has already cleared into
+        your account, scaled to what the office has earned. Spend it at your desk — starting from
+        nothing against a week-old leaderboard would be no fun for anybody.</p>
 
       <div className="pg-helpsub">The floor</div>
       <ul className="pg-helplist">
