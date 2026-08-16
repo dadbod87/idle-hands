@@ -777,6 +777,12 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-deskbubble::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);
   border:7px solid transparent;border-top-color:var(--ink)}
 
+.pg-mail{padding:12px;border-top:2px solid var(--ink);background:var(--bar)}
+.pg-mailhead{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:6px}
+.pg-mail p{margin:0 0 8px}
+.pg-equity{border-top:2px solid var(--ink);margin-top:14px;padding-top:12px}
+
 </style>
 </head>
 <body>
@@ -1846,6 +1852,10 @@ const api = {
   suggestMemo: (text) => rpc("suggest_memo", { p_text: text }),
   approveSuggestion: (id, ok) => rpc("approve_suggestion", { p_id: id, p_ok: ok }),
   setLook: (look) => rpc("set_look", { p_look: look }),
+  setDept: (id) => rpc("set_dept", { p_dept: id }),
+  buyPerk: (id) => rpc("buy_perk", { p_id: id }),
+  claimContract: (i) => rpc("claim_contract", { p_idx: i }),
+  openMail: () => rpc("open_mail"),
   signAgreement: (sig, version) =>
     rpc("sign_agreement", { p_signature: sig, p_version: version }),
 };
@@ -1924,7 +1934,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 47";
+const BUILD = "build 48";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2742,7 +2752,8 @@ function PatronFloor() {
                   {chances
                     ? <><b>Chance</b><span>Former Employee</span></>
                     : p ? <><b>{p.name}</b>
-                            {jobFor(p.name) && <span className="pg-job">{jobFor(p.name)}</span>}
+                            {(deptName(cat, p.dept) || jobFor(p.name)) &&
+                              <span className="pg-job">{deptName(cat, p.dept) || jobFor(p.name)}</span>}
                             <span>{fmt(p.lifetime || 0)} PP</span></>
                         : <b className="pg-vacant">Vacant</b>}
                 </div>
@@ -2849,7 +2860,7 @@ function PatronFloor() {
         <Panel onClose={() => setPanel(null)} title={PANEL_TITLES[panel]}>
           {panel === "shop" && (
             <Shop cat={cat} me={me} pp={pp} rate={rate} clickPow={clickPow} lifetime={lifetime}
-                  onBuy={buy} onUp={buyUp}
+                  onBuy={buy} onUp={buyUp} guard={guard} flash={flash}
                   onRestructure={() => guard(() => api.restructure(), "Restructured")} />
           )}
           {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} />}
@@ -2868,7 +2879,13 @@ function PatronFloor() {
             <Wire wire={wire} feed={feed} lifetime={lifetime}
                   onPineapple={() => guard(() => api.pineapple(), "Pineapple.")} />
           )}
-          {panel === "personnel" && <Personnel me={me} lifetime={lifetime} />}
+          {panel === "personnel" && (
+            <Personnel me={me} lifetime={lifetime} cat={cat}
+              onDept={async (id) => {
+                const r = await guard(() => api.setDept(id));
+                if (r) { sfx("badge"); flash("Department updated."); }
+              }} />
+          )}
           {panel === "account" && <Account user={user} onLinked={() => setPanel(null)} />}
           {panel === "mirror" && (
             <Mirror me={me} user={user}
@@ -3464,7 +3481,7 @@ function Help({ onClose, rate }) {
   );
 }
 
-function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure }) {
+function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure, guard, flash }) {
   const owned = me?.owned || {}, ups = me?.upgrades || [];
   const cycle = me?.cycle || 0;
   const avail = Math.floor(Math.sqrt(cycle / 1e9));
@@ -3726,10 +3743,26 @@ function Wire({ wire, feed, lifetime, onPineapple }) {
   );
 }
 
-function Personnel({ me, lifetime }) {
+function Personnel({ me, lifetime, cat, onDept }) {
   const have = me?.achievements || [];
+  const depts = cat?.depts || [];
   return (
     <div>
+      <div className="pg-earnbar">
+        Pick a department. It goes on your office door and changes how you play. You can switch
+        whenever you like — nobody here has ever been stopped from changing job title.
+      </div>
+      <div className="pg-list">
+        {depts.map((d, i) => (
+          <button key={d.id}
+                  className={"pg-row" + (i % 2 ? " alt" : "") + (me?.dept === d.id ? " mine" : "")}
+                  onClick={() => onDept(d.id)}>
+            <span className="pg-ct">{me?.dept === d.id ? "✓" : "·"}</span>
+            <span className="pg-main"><b>{d.name}</b><span>{d.note}</span></span>
+            <span className="pg-right"><b className="pg-got">{d.perk}</b></span>
+          </button>
+        ))}
+      </div>
       <div className="pg-stats">
         <div><b>{fmt(lifetime)}</b><span>lifetime Patron Points</span></div>
         <div><b>{me?.equity || 0}</b><span>equity · +{(me?.equity || 0) * 3}%</span></div>
@@ -4281,6 +4314,86 @@ function CodeDoor({ onOk }) {
       <div className="pg-doorfine">
         There is nothing behind this door until the code is right — no account is created,
         nothing is saved. If you found this by accident, you found nothing.
+      </div>
+    </div>
+  );
+}
+
+function deptName(cat, id) {
+  if (!id) return null;
+  const d = (cat?.depts || []).find((x) => x.id === id);
+  return d ? d.name : null;
+}
+
+function Today({ me, onClaim, onMail }) {
+  const c = me?.contracts;
+  const list = c?.list || [];
+  const claimed = c?.claimed || [];
+  const done = (k) => Number((me?.today || {})[k] || 0);
+  const mail = me?.mail;
+  const opened = !!mail?.opened;
+  const item = mail?.item;
+
+  return (
+    <div>
+      <div className="pg-earnbar">
+        Three jobs a day, drawn fresh each morning. They reset when you badge in, so there is no
+        way to bank them and no penalty for missing one.
+      </div>
+      <div className="pg-list">
+        {list.length === 0 && <div className="pg-note">Nothing assigned yet. Badge in tomorrow.</div>}
+        {list.map((x, i) => {
+          const n = done(x.key), need = x.n;
+          const got = claimed.includes(x.id);
+          const ready = n >= need;
+          return (
+            <button key={x.id} className={"pg-row" + (i % 2 ? " alt" : "") + (got || !ready ? " poor" : "")}
+                    disabled={got || !ready} onClick={() => onClaim(i)}>
+              <span className="pg-ct">{got ? "✓" : ready ? "!" : Math.min(n, need) + "/" + need}</span>
+              <span className="pg-main"><b>{x.label}</b>
+                <span>{got ? "collected" : ready ? "ready to collect" : `${n} of ${need} so far`}</span></span>
+              <span className="pg-right"><b>{got ? "—" : "collect"}</b></span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="pg-mail">
+        <div className="pg-mailhead">Today's post</div>
+        {!item ? <p className="pg-small">Nothing came for you.</p>
+          : opened
+            ? <p className="pg-small">{item.text}</p>
+            : <>
+                <p className="pg-small">An envelope is sitting on your desk. It has your name on it,
+                  spelled correctly, which is unusual.</p>
+                <button className="pg-btn" onClick={onMail}>Open it</button>
+              </>}
+      </div>
+    </div>
+  );
+}
+
+function EquityShop({ me, cat, onBuy }) {
+  const perks = cat?.perks || [];
+  const have = (id) => Number((me?.perks || {})[id] || 0);
+  return (
+    <div className="pg-equity">
+      <div className="pg-mailhead">Spend equity</div>
+      <p className="pg-small">Equity is the only thing that survives a restructure. You can hold it
+        for the multiplier, or spend it here on things that change how the job works.</p>
+      <div className="pg-list">
+        {perks.map((k, i) => {
+          const n = have(k.id), maxed = n >= k.max;
+          const afford = (me?.equity || 0) >= k.cost;
+          return (
+            <button key={k.id} className={"pg-row" + (i % 2 ? " alt" : "") + (maxed || !afford ? " poor" : "")}
+                    disabled={maxed || !afford} onClick={() => onBuy(k.id)}>
+              <span className="pg-ct">{n}/{k.max}</span>
+              <span className="pg-main"><b>{k.name}</b><span>{k.note}</span></span>
+              <span className="pg-right"><b>{maxed ? "maxed" : k.cost + " eq"}</b></span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
