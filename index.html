@@ -946,8 +946,8 @@ const COSTUMES = {
 const ACHV = [
   { id: "a1", name: "Badged In", note: "Show up at all.", test: (s) => s.lifetime > 0 },
   { id: "a2", name: "First Hire", note: "Requisition anything.", test: (s) => Object.keys(s.owned || {}).length > 0 },
-  { id: "a3", name: "Thousandaire", note: "1K lifetime Patron Points.", test: (s) => s.lifetime >= 1000 },
-  { id: "a4", name: "Six Figures Of Nothing", note: "100K lifetime PP.", test: (s) => s.lifetime >= 1e5 },
+  { id: "a3", name: "Thousandaire", note: "10K lifetime Patron Points.", test: (s) => s.lifetime >= 1e4 },
+  { id: "a4", name: "Six Figures Of Nothing", note: "10M lifetime PP.", test: (s) => s.lifetime >= 1e7 },
   { id: "a5", name: "Middle Management", note: "Employ 10 managers.", test: (s) => (s.owned?.manager || 0) >= 10 },
   { id: "a6", name: "Caffeine Dependent", note: "Own 15 coffee machines.", test: (s) => (s.owned?.coffee || 0) >= 15 },
   { id: "a7", name: "Good Egg", note: "Do 5 kind things.", test: (s) => s.goodwill >= 5 },
@@ -957,7 +957,7 @@ const ACHV = [
   { id: "a11", name: "Quick Hands", note: "Catch the good chair 5 times.", test: (s) => s.grabs >= 5 },
   { id: "a12", name: "Restructured", note: "Restructure once.", test: (s) => s.equity > 0 },
   { id: "a13", name: "Vested", note: "Hold 25 equity.", test: (s) => s.equity >= 25 },
-  { id: "a14", name: "Billion With A B", note: "1B lifetime PP.", test: (s) => s.lifetime >= 1e9 },
+  { id: "a14", name: "Billion With A B", note: "1T lifetime PP.", test: (s) => s.lifetime >= 1e12 },
   { id: "a15", name: "Beloved", note: "Receive 10 kind things.", test: (s) => s.kind_received >= 10 },
   { id: "a16", name: "Fired Guy", note: "Have 10 unkind things done to you.",
     test: (s) => Object.keys(s.hits || {}).filter((k) => DEED_TEXT[k] && !DEED_TEXT[k].good)
@@ -974,7 +974,7 @@ const ACHV = [
   { id: "a26", name: "Three-Peat", note: "Win three weeks.", test: (s) => s.trophies >= 3 },
   { id: "a27", name: "I Don't Hate It", note: "Own 25 of any one thing.",
     test: (s) => Object.values(s.owned || {}).some((v) => v >= 25) },
-  { id: "a28", name: "Theoretically", note: "One trillion lifetime PP.", test: (s) => s.lifetime >= 1e12 },
+  { id: "a28", name: "Theoretically", note: "A quintillion lifetime PP.", test: (s) => s.lifetime >= 1e18 },
   { id: "a29", name: "Say More Words", note: "Do 25 things to other people.",
     test: (s) => Object.values(s.tally || {}).reduce((a, b) => a + b, 0) >= 25 },
   { id: "a29b", name: "Merican Made", note: "Have a work beer.", test: (s) => (s.beers || 0) >= 1 },
@@ -1130,14 +1130,14 @@ const WORK_VERBS = ["circled back", "touched base", "moved the needle", "took it
   "closed the loop", "boiled the ocean", "unpacked the ask"];
 
 const FUND_TIERS = [
-  { at: 5e4, label: "Replace the flickering hallway bulb" },
-  { at: 2e6, label: "Second coffee machine (the good one)" },
-  { at: 8e7, label: "Bagel Friday, indefinitely" },
-  { at: 3e9, label: "Chairs that go up AND down" },
-  { at: 9e10, label: "A door on the phone booth" },
-  { at: 4e12, label: "Office dog (part-time, salaried)" },
-  { at: 8e13, label: "The nap room they said we'd never get" },
-  { at: 1e15, label: "Buy the building. Evict the landlord." },
+  { at: 1e5,  label: "Replace the flickering hallway bulb" },
+  { at: 1.17e7, label: "Second coffee machine (the good one)" },
+  { at: 1.37e9, label: "Bagel Friday, indefinitely" },
+  { at: 1.6e11, label: "Chairs that go up AND down" },
+  { at: 1.87e13, label: "A door on the phone booth" },
+  { at: 2.19e15, label: "Office dog (part-time, salaried)" },
+  { at: 2.56e17, label: "The nap room they said we'd never get" },
+  { at: 3.0e19, label: "Buy the building. Evict the landlord." },
 ];
 
 const FIXTURES = [
@@ -1390,15 +1390,16 @@ const deskSpots = (n) => {
 };
 
 function roleFor(lt) {
-  if (lt < 500) return "Probationary";
-  if (lt < 2e4) return "Associate";
-  if (lt < 1e6) return "Senior Associate";
-  if (lt < 8e6) return "Employee Morale Coordinator";
-  if (lt < 5e7) return "Manager, unclear scope";
-  if (lt < 2e9) return "Director of Something";
-  if (lt < 5e11) return "VP, Special Projects";
-  if (lt < 1e14) return "Chief Officer of Officers";
-  return "Founder, retroactively";
+  if (lt < 2e3) return "Probationary";
+  if (lt < 2e5) return "Associate";
+  if (lt < 2e7) return "Senior Associate";
+  if (lt < 1e9) return "Employee Morale Coordinator";
+  if (lt < 5e10) return "Manager, unclear scope";
+  if (lt < 3e12) return "Director of Something";
+  if (lt < 2e14) return "VP, Special Projects";
+  if (lt < 1e16) return "Chief Officer of Officers";
+  if (lt < 5e18) return "Founder, retroactively";
+  return "Majority Shareholder, allegedly";
 }
 function ago(t) {
   const s = Math.max(1, Math.round((Date.now() - new Date(t).getTime()) / 1000));
@@ -1934,7 +1935,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 50";
+const BUILD = "build 51";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3484,7 +3485,7 @@ function Help({ onClose, rate }) {
 function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure, guard, flash }) {
   const owned = me?.owned || {}, ups = me?.upgrades || [];
   const cycle = me?.cycle || 0;
-  const avail = Math.floor(Math.sqrt(cycle / 1e9));
+  const avail = cycle <= 1e9 ? 0 : Math.floor(1.6 * Math.log10(cycle / 1e9));
   return (
     <>
       <div className="pg-earnbar">
@@ -3545,7 +3546,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
               and your place on the whiteboard stay exactly where they are.</p>
             <p>You keep <b>equity</b> — a permanent <b>+3%</b> to everything, per point, forever.</p>
             <p className="pg-big">{avail} equity available</p>
-            <p className="pg-small">You hold {me?.equity || 0}. Next point at {fmt(Math.pow((me?.equity || 0) + 1, 2) * 1e9)} PP this cycle.</p>
+            <p className="pg-small">You hold {me?.equity || 0}. Next point at {fmt(Math.pow(10, (avail + 1) / 1.6) * 1e9)} PP this cycle.</p>
             <button className="pg-btn danger" disabled={avail < 1} onClick={onRestructure}>
               Restructure the department
             </button>
