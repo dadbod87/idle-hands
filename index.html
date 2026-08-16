@@ -1950,7 +1950,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 55";
+const BUILD = "build 56";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2079,7 +2079,16 @@ function PatronFloor() {
         loadSuggestions().then(setSugg).catch(() => {});
         setPhase(row.signed_at ? "play" : "sign");
       } else {
-        setPhase("hire");
+        // Signed in, but no character — after a wipe, or if they never
+        // finished intake. The door still applies.
+        let held = null;
+        try { held = localStorage.getItem("ih_code"); } catch { /* private mode */ }
+        if (held && await checkCode(held).catch(() => false)) {
+          setCode(held);
+          setPhase("hire");
+        } else {
+          setPhase("code");
+        }
       }
       setFloor(await loadFloor());
       try {
@@ -2649,10 +2658,12 @@ function PatronFloor() {
   );
   if (phase === "code") return (
     <div className="pg-root pg-marble">
-      <CodeDoor onOk={(c) => {
+      <CodeDoor onOk={async (c) => {
         setCode(c);
         try { localStorage.setItem("ih_code", c); } catch { /* private mode */ }
-        setPhase("gate");
+        const u = await getUser();
+        if (u) { setUser(u); setCat(await loadCatalog().catch(() => cat)); setPhase("hire"); }
+        else setPhase("gate");
       }} />
     </div>
   );
@@ -4681,6 +4692,7 @@ function Onboard({ user, code, onDone }) {
     try {
       let url = null;
       if (img) { try { url = await uploadBadge(user.id, img); } catch { /* optional */ } }
+      if (!code) throw new Error("missing office code — reload and enter it at the door");
       const row = await api.upsertPlayer(name.trim().slice(0, 12), url, code);
       try { await api.setLook(randomLook()); } catch { /* cosmetic */ }
       onDone(row);
