@@ -770,8 +770,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officeplate .pg-job{color:#C9A253;font-size:8.5px;letter-spacing:.08em}
 
 .pg-deskbubble{position:absolute;transform:translate(-50%,-100%);background:var(--paper);
-  border:2px solid var(--ink);border-radius:12px;padding:6px 11px;font-size:11.5px;font-style:italic;
-  width:max-content;max-width:240px;white-space:normal;overflow-wrap:break-word;text-align:center;
+  border:2px solid var(--ink);border-radius:12px;padding:8px 13px;font-size:12px;font-style:italic;
+  width:max-content;max-width:260px;white-space:normal;overflow-wrap:break-word;text-align:center;
   line-height:1.4;box-shadow:0 4px 10px rgba(0,0,0,.35);pointer-events:none;
   animation:pgpop .2s ease-out}
 .pg-deskbubble::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);
@@ -1810,7 +1810,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 45";
+const BUILD = "build 46";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -1849,7 +1849,7 @@ function PatronFloor() {
   const [sugg, setSugg] = useState([]);
   const [jam, setJam] = useState(null);
   const [streakCard, setStreakCard] = useState(null);
-  const [ghostSay, setGhostSay] = useState(null);   // Chance's desk, muttering
+  const [bubble, setBubble] = useState(null);      // speech, anchored to a thing on the floor
   const [code, setCode] = useState("");
   const [facing, setFacing] = useState(1);
   const liveRef = useRef(null);
@@ -1857,6 +1857,7 @@ function PatronFloor() {
   const facingRef = useRef(1);
   const buildTag = useRef(null);
   const catRef = useRef({});
+  const bubbleN = useRef(0);
   const jamSeen = useRef(null);
   const suggRef = useRef([]);
   const atDeskRef = useRef(false);
@@ -1878,6 +1879,13 @@ function PatronFloor() {
   const say = useCallback((text, tone) => {
     setFeed((f) => [{ text, tone, k: Math.random() }, ...f].slice(0, 60));
   }, []);
+  /** A bubble beside the object you clicked, rather than a toast at the bottom. */
+  const sayAt = useCallback((x, y, text, ms = 7500) => {
+    const k = ++bubbleN.current;
+    setBubble({ x, y, text, k });
+    setTimeout(() => setBubble((b) => (b && b.k === k ? null : b)), ms);
+  }, []);
+
   const flash = useCallback((text) => {
     setToast({ text, k: Math.random() });
     setTimeout(() => setToast(null), 2800);
@@ -2428,8 +2436,8 @@ function PatronFloor() {
       setKnocks((k) => ({ ...k, [f.id]: (k[f.id] || 0) + 1 }));
       const extra = (catRef.current.deny_extra || {})[f.id] || [];
       const line = pick(f.deny.concat(extra));
-      flash(line);
-      if (Math.random() < 0.5) say(line, "sys");
+      sayAt(f.x + f.w / 2, f.y + f.h + 4, line);
+      if (Math.random() < 0.4) say(line, "sys");
       return;
     }
     setPanel(f.panel);
@@ -2606,12 +2614,7 @@ function PatronFloor() {
                      onClick={(e) => {
                        e.stopPropagation();
                        if (mine) routeTo(o.cx, o.cy + 40, "desk", o);
-                       else if (chances) {
-                         const text = pick(GHOST_DESK.lines);
-                         setGhostSay({ text, x: o.cx, y: o.deskY - 6, k: Math.random() });
-                         setTimeout(() => setGhostSay((g) =>
-                           (g && g.k === undefined ? null : g && g.text === text ? null : g)), 6000);
-                       }
+                       else if (chances) sayAt(o.cx, o.deskY - 6, pick(GHOST_DESK.lines));
                      }}>
                   <span /><b />
                   {mine && <div className="pg-fxlabel">Your Desk</div>}
@@ -2655,10 +2658,10 @@ function PatronFloor() {
             </button>
           )}
 
-          {ghostSay && (
-            <div className="pg-deskbubble"
-                 style={{ left: ghostSay.x, top: ghostSay.y, zIndex: Math.round(ghostSay.y) + 8 }}>
-              {ghostSay.text}
+          {bubble && (
+            <div key={bubble.k} className="pg-deskbubble"
+                 style={{ left: bubble.x, top: bubble.y, zIndex: Math.round(bubble.y) + 40 }}>
+              {bubble.text}
             </div>
           )}
 
