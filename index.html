@@ -795,6 +795,29 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-marghead{display:block;font-size:16px;margin:2px 0 4px}
 .pg-jam.done{background:#3E5A46;cursor:default}
 
+/* the thermostat nobody is allowed to touch */
+.pg-thermo{width:100%;height:100%;background:#E8EAE0;border:3px solid #6E756B;
+  display:flex;align-items:center;justify-content:center;position:relative}
+.pg-thermo i{position:absolute;left:6px;right:6px;top:6px;height:3px;background:#B23B2E}
+.pg-thermo b{font-family:var(--mono);font-size:15px;color:#2C3330}
+/* the sink, and the mug that lives in it */
+.pg-sink{width:100%;height:100%;background:#C3C8BC;border:4px solid #8A9084;position:relative}
+.pg-sink i{position:absolute;left:12%;right:12%;top:24%;bottom:18%;background:#9AA294;
+  border:2px solid #7C8378}
+.pg-sink span{position:absolute;left:50%;transform:translateX(-50%);top:-9px;width:6px;height:16px;
+  background:#8A9084;border-radius:3px 3px 0 0}
+.pg-sink u{position:absolute;right:20%;bottom:26%;width:14px;height:12px;background:#F2F3E8;
+  border:2px solid #7C8378;border-radius:0 0 3px 3px}
+/* scenery */
+.pg-wetfloor{width:40px;height:52px;background:linear-gradient(#E8B23C,#D89A22);
+  clip-path:polygon(50% 0,100% 100%,0 100%);border-bottom:3px solid #8A6A1E}
+.pg-deadplant{width:34px;height:50px;background:#8A6A3E;border-radius:0 0 6px 6px;position:relative}
+.pg-deadplant::after{content:"";position:absolute;left:50%;transform:translateX(-50%);top:-12px;
+  width:3px;height:16px;background:#7C6B4A;box-shadow:5px 3px 0 #7C6B4A,-5px 4px 0 #7C6B4A}
+.pg-watercooler{width:46px;height:78px;background:#DDE2D4;border:3px solid #8A9084;border-radius:4px}
+.pg-watercooler::before{content:"";position:absolute;left:6px;right:6px;top:4px;height:30px;
+  background:#9FC4D8;border-radius:3px}
+
 </style>
 </head>
 <body>
@@ -1158,15 +1181,15 @@ const FIXTURES = [
   { id: "portrait", panel: "standings", label: "Employee Of The Month", sub: "Currently in the lead", x: 1420, y: 12, w: 158, h: 108 },
   { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1740, y: 16, w: 150, h: 96 },
   { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 2300, y: 8, w: 170, h: 114 },
-  { id: "coffee", panel: "kindness", label: "Break Room", sub: "Be nice to someone", x: 40, y: 300, w: 112, h: 132 },
-  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 2820, y: 300, w: 112, h: 146 },
-  { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 2820, y: 560, w: 112, h: 156 },
-  { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 300, y: 260, w: 210, h: 96 },
-  { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 1010, y: 250, w: 130, h: 170 },
-  { id: "mirror", panel: "mirror", label: "The Mirror", sub: "Redo your badge photo", x: 620, y: 250, w: 92, h: 156 },
-  { id: "suggestion", panel: "suggest", label: "Suggestion Box", sub: "Write a memo the office will read", x: 800, y: 270, w: 116, h: 96 },
-  { id: "wardrobe", panel: "wardrobe", label: "Supply Closet", sub: "Costumes, 45 minutes", x: 1400, y: 260, w: 112, h: 140 },
-  { id: "lounge", panel: null, label: "Cigar Lounge", sub: "Under construction", x: 340, y: 700, w: 176, h: 132,
+  { id: "coffee", panel: "kindness", label: "Break Room", sub: "Be nice to someone", x: 60, y: 250, w: 112, h: 132 },
+  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 1900, y: 240, w: 112, h: 146 },
+  { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 880, y: 230, w: 112, h: 156 },
+  { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 240, y: 260, w: 210, h: 96 },
+  { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 520, y: 230, w: 130, h: 170 },
+  { id: "mirror", panel: "mirror", label: "The Mirror", sub: "Redo your badge photo", x: 1120, y: 230, w: 92, h: 156 },
+  { id: "suggestion", panel: "suggest", label: "Suggestion Box", sub: "Write a memo the office will read", x: 1460, y: 270, w: 116, h: 96 },
+  { id: "wardrobe", panel: "wardrobe", label: "Supply Closet", sub: "Costumes, 45 minutes", x: 1280, y: 250, w: 112, h: 140 },
+  { id: "lounge", panel: null, label: "Cigar Lounge", sub: "Under construction", x: 2620, y: 250, w: 176, h: 132,
     deny: [
       "Under construction. It was under construction before you started here.",
       "Plastic sheeting, tape, and one extension cord going nowhere.",
@@ -1181,8 +1204,8 @@ const FIXTURES = [
       "The ventilation is being sorted. It has been being sorted for some time.",
       "You look through the gap in the paper. It looks the same as last time.",
     ] },
-  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Work beers · after 11", x: 1200, y: 250, w: 118, h: 150 },
-  { id: "confb", panel: null, label: "Conference Room B", sub: "Booked", x: 1700, y: 700, w: 150, h: 120,
+  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Work beers · after 11", x: 700, y: 240, w: 118, h: 150 },
+  { id: "confb", panel: null, label: "Conference Room B", sub: "Booked", x: 2100, y: 250, w: 150, h: 120,
     deny: [
       "Booked. Recurring. Through 2031.",
       "Booked until three. Then booked again at three.",
@@ -1197,7 +1220,7 @@ const FIXTURES = [
       "A single chair faces the wrong way. The blinds are down.",
       "You reach for the handle. You reconsider. You keep walking.",
     ] },
-  { id: "restroom", panel: null, label: "Restroom", sub: "Occupied", x: 2100, y: 700, w: 124, h: 150,
+  { id: "restroom", panel: null, label: "Restroom", sub: "Occupied", x: 2380, y: 230, w: 124, h: 150,
     deny: [
       "Occupied.",
       "Still occupied.",
@@ -1212,7 +1235,24 @@ const FIXTURES = [
       "Occupied. You've decided you didn't need to go anyway.",
       "Occupied. You check the time. You will check it again shortly.",
     ] },
-  { id: "printer", panel: "printer", label: "The Printer", sub: "It works, mostly", x: 1620, y: 270, w: 132, h: 92 },
+  { id: "thermostat", panel: null, label: "The Thermostat", sub: "Do not touch it",
+    x: 2216, y: 44, w: 54, h: 54, deny: [
+      "It reads 71. It has read 71 for two years. The room is not 71.",
+      "You reach for it. Somewhere in the building, somebody senses this.",
+      "There is a small handwritten sign taped beside it. It says DON'T.",
+      "The casing is locked. Nobody knows who has the key. Everyone has a theory.",
+      "You nudge it one degree. Four people will feel this and none will know why.",
+      "It has been declared load-bearing. Nobody has challenged the declaration.",
+    ] },
+  { id: "sink", panel: null, label: "The Sink", sub: "Somebody's mug lives here",
+    x: 400, y: 640, w: 128, h: 84, deny: [
+      "One mug. Cold tea. It has been here since March and has developed opinions.",
+      "A sign reads: YOUR MOTHER DOES NOT WORK HERE. Somebody has added: SHE MIGHT.",
+      "The sponge is a crime scene. Nobody will be the one to replace it.",
+      "There are eleven mugs in the cupboard and everyone drinks from the same four.",
+      "You wash one plate that isn't yours. Nobody will ever know. You will know.",
+    ] },
+  { id: "printer", panel: "printer", label: "The Printer", sub: "It works, mostly", x: 1650, y: 270, w: 132, h: 92 },
 ];
 
 /* ------------------------------------------------------------------
@@ -1256,12 +1296,15 @@ const CHANCE = {
 
 /* Scenery. Purely decorative — click nothing, mean nothing, look like an office. */
 const DECOR = [
-  { t: "plant", x: 200, y: 190 }, { t: "plant", x: 1480, y: 640 },
-  { t: "plant", x: 1900, y: 300 }, { t: "plant", x: 2660, y: 640 },
+  { t: "plant", x: 200, y: 190 }, { t: "plant", x: 200, y: 660 },
+  { t: "plant", x: 2260, y: 640 }, { t: "plant", x: 2500, y: 660 },
   { t: "cooler", x: 60, y: 620 },
 
-  { t: "boxes", x: 2700, y: 200 }, { t: "boxes", x: 2600, y: 780 },
-  { t: "rug", x: 900, y: 560 },
+  { t: "boxes", x: 2700, y: 200 }, { t: "boxes", x: 2780, y: 700 },
+  { t: "rug", x: 1180, y: 560 },
+  { t: "wetfloor", x: 760, y: 700 },
+  { t: "deadplant", x: 1620, y: 640 },
+  { t: "watercooler", x: 1020, y: 660 },
   { t: "window", x: 26, y: 22 }, { t: "window", x: 2020, y: 22 },
 
   { t: "mascot", x: 1060, y: 20 },
@@ -1485,6 +1528,21 @@ function printerJam(t = Date.now()) {
   const into = sec % 1200;
   if (bucket % 3 !== 1 || into >= 240) return null;
   return { window: bucket, endsIn: (240 - into) * 1000 };
+}
+
+/** Mirrors chair_window() in Postgres: one chair every 7 minutes, 40 seconds
+    on the floor, in the same spot for everybody. Change one, change both. */
+function chairAt(t = Date.now()) {
+  const sec = Math.floor(t / 1000);
+  const into = sec % 420;
+  if (into >= 40) return null;
+  const w = Math.floor(sec / 420);
+  // deterministic position so all eight people sprint at the same chair
+  let h = (w * 2654435761) % 2147483647;
+  h = (h ^ (h >>> 13)) >>> 0;
+  const x = 160 + (h % 2600);
+  const y = 230 + ((h >>> 7) % 620);
+  return { window: w, x, y, endsIn: (40 - into) * 1000 };
 }
 
 
@@ -1952,7 +2010,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 64";
+const BUILD = "build 66";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2003,6 +2061,7 @@ function PatronFloor() {
   const catRef = useRef({});
   const bubbleN = useRef(0);
   const jamSeen = useRef(null);
+  const chairSeen = useRef(null);
   const suggRef = useRef([]);
   const atDeskRef = useRef(false);
   const officeRef = useRef(null);
@@ -2429,26 +2488,21 @@ function PatronFloor() {
   /* ------------------------ chair + ambience ---------------------- */
   useEffect(() => {
     if (phase !== "play") return;
-    let to;
-    const spawn = () => {
-      const born = Date.now();
-      // Land it somewhere the player could plausibly get to, not in a far
-      // corner of a room four times the size of the viewport.
-      const p = posRef.current;
-      const ang = Math.random() * Math.PI * 2;
-      const dist = 220 + Math.random() * 380;
-      setChair({
-        x: clamp(p.x + Math.cos(ang) * dist, 140, ROOM.w - 140),
-        y: clamp(p.y + Math.sin(ang) * dist, WALL_H + 90, ROOM.h - 140),
-        born,
-      });
-      say("The good chair is on the floor. Somebody get it.", "good");
-      flash("THE GOOD CHAIR — 35 seconds");
-      setTimeout(() => setChair((c) => (c && c.born === born ? null : c)), 35000);
-      to = setTimeout(spawn, 240000 + Math.random() * 240000);
+    // The chair is the same chair for everyone now — derived from the clock,
+    // claimed on the server. First one there wins it; everybody else watches.
+    const tick = () => {
+      const c = chairAt(Date.now());
+      setChair(c);
+      if (c && chairSeen.current !== c.window) {
+        chairSeen.current = c.window;
+        say("The good chair is on the floor. Somebody get it.", "good");
+        flash("THE GOOD CHAIR — 40 seconds");
+        loadOffice().then(setOffice).catch(() => {});
+      }
     };
-    to = setTimeout(spawn, 60000 + Math.random() * 60000);
-    return () => clearTimeout(to);
+    tick();
+    const to = setInterval(tick, 1000);
+    return () => clearInterval(to);
   }, [phase]);
 
   // Somebody on the floor says something. It is never important.
@@ -2569,8 +2623,8 @@ function PatronFloor() {
   };
 
   const grabChair = async () => {
-    setChair(null);
     const row = await guard(() => api.grabChair());
+    loadOffice().then(setOffice).catch(() => {});
     if (row) {
       sfx("chair");
       if (row.frenzy_until && new Date(row.frenzy_until) > new Date()) {
@@ -2607,6 +2661,9 @@ function PatronFloor() {
   const jamClaim = office?.printer || null;
   const jamFixedBy = jam && jamClaim && jamClaim.window === jam.window ? jamClaim.by : null;
   const jamMine = !!(jamClaim && jamClaim.mine);
+  const chairClaim = office?.chair || null;
+  const chairTakenBy = chair && chairClaim && chairClaim.window === chair.window
+    ? chairClaim.by : null;
 
   const cool = me?.last_deed
     ? Math.max(0, 300000 - (Date.now() - new Date(me.last_deed).getTime())) : 0;
@@ -2729,6 +2786,13 @@ function PatronFloor() {
         <button className="pg-unsaved" onClick={() => setPanel("account")}>
           This desk only exists in this browser. <em>Add an email to keep it →</em>
         </button>
+      )}
+
+      {chair && chairTakenBy && (
+        <div className="pg-jam done">
+          {chairClaim?.mine ? "You got the good chair." : `${chairTakenBy} got the good chair.`}
+          <em>gone</em>
+        </div>
       )}
 
       {jam && (
@@ -2874,7 +2938,7 @@ function PatronFloor() {
           )}
 
 
-          {chair && (
+          {chair && !chairTakenBy && (
             <button className="pg-chair" style={{ left: chair.x, top: chair.y }}
                     onClick={(e) => { e.stopPropagation(); grabChair(); }}>
               <svg viewBox="0 0 40 48">
@@ -3446,6 +3510,12 @@ function FixtureArt({ id, board, tierPct }) {
       </div>
     );
   }
+  if (id === "thermostat") return (
+    <div className="pg-thermo"><i /><b>71</b></div>
+  );
+  if (id === "sink") return (
+    <div className="pg-sink"><i /><span /><u /></div>
+  );
   if (id === "mirror") return (
     <div className="pg-mirrorfx"><i /></div>
   );
