@@ -792,6 +792,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-margbox{padding:12px;background:var(--bar);border-bottom:2px solid var(--ink)}
 .pg-margbox.won{background:#DCEFE2}
 .pg-marghead{display:block;font-size:16px;margin:2px 0 4px}
+.pg-jam.done{background:#3E5A46;cursor:default}
 
 </style>
 </head>
@@ -1950,7 +1951,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 56";
+const BUILD = "build 57";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2270,6 +2271,7 @@ function PatronFloor() {
         say("The printer has jammed. Somebody is going to have to deal with it.", "bad");
         flash("The printer jammed");
         sfx("jam");
+        loadOffice().then(setOffice).catch(() => {});
       }
       const ch = chanceAt(now, catRef.current.chance_extra || []);
       setChance(ch);
@@ -2601,6 +2603,10 @@ function PatronFloor() {
     x: ROOM.w <= view.w ? 0 : clamp(pos.x - view.w / 2, 0, ROOM.w - view.w),
     y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h / 2, 0, ROOM.h - view.h),
   };
+  const jamClaim = office?.printer || null;
+  const jamFixedBy = jam && jamClaim && jamClaim.window === jam.window ? jamClaim.by : null;
+  const jamMine = !!(jamClaim && jamClaim.mine);
+
   const cool = me?.last_deed
     ? Math.max(0, 300000 - (Date.now() - new Date(me.last_deed).getTime())) : 0;
 
@@ -2724,9 +2730,17 @@ function PatronFloor() {
       )}
 
       {jam && (
-        <button className="pg-jam" onClick={() => setPanel("printer")}>
-          The printer has jammed. <em>{Math.ceil(jam.endsIn / 1000)}s — first one there fixes it</em>
-        </button>
+        jamFixedBy ? (
+          <div className="pg-jam done">
+            {jamMine ? "You fixed the printer. Nobody knows how."
+                     : `${jamFixedBy} got to the printer first.`}
+            <em>sorted</em>
+          </div>
+        ) : (
+          <button className="pg-jam" onClick={() => setPanel("printer")}>
+            The printer has jammed. <em>{Math.ceil(jam.endsIn / 1000)}s — first one there fixes it</em>
+          </button>
+        )
       )}
 
       {office?.hit && (
@@ -2979,10 +2993,15 @@ function PatronFloor() {
               }} />
           )}
           {panel === "printer" && (
-            <Printer jam={jam} onFix={async () => {
+            <Printer jam={jam} fixedBy={jamFixedBy} mine={jamMine} onFix={async () => {
               const row = await guard(() => api.fixPrinter());
-              if (row) { sfx("fixed"); say("You fixed the printer. Nobody will ever know how.", "good");
-                         flash("Printer fixed"); setPanel(null); }
+              if (row) {
+                sfx("fixed");
+                say("You fixed the printer. Nobody will ever know how.", "good");
+                flash("Printer fixed");
+                setPanel(null);
+                loadOffice().then(setOffice).catch(() => {});
+              }
             }} />
           )}
           {panel === "cooler" && (
@@ -4318,7 +4337,17 @@ function SuggestionBox({ sugg, me, admin, onSend, onJudge }) {
   );
 }
 
-function Printer({ jam, onFix }) {
+function Printer({ jam, fixedBy, mine, onFix }) {
+  if (jam && fixedBy) {
+    return (
+      <div className="pg-pad">
+        <div className="pg-stamp">Sorted</div>
+        <p>{mine ? "You opened the tray, removed nothing visible, and closed it again. It works."
+                 : `${fixedBy} got there first and has taken the credit.`}</p>
+        <p className="pg-small">It will jam again. It always jams again.</p>
+      </div>
+    );
+  }
   return (
     <div className="pg-pad">
       {jam ? (
