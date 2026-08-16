@@ -783,6 +783,16 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-mail p{margin:0 0 8px}
 .pg-equity{border-top:2px solid var(--ink);margin-top:14px;padding-top:12px}
 
+.pg-marg{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#2C7A5B;color:#F2FBF4;
+  border:2px solid var(--ink);border-top:none;padding:9px 12px;font-family:var(--mono);font-size:12px;
+  letter-spacing:.06em}
+.pg-marg b{letter-spacing:.14em}
+.pg-marg span{flex:1;min-width:170px;font-size:11px;opacity:.9}
+.pg-marg em{font-style:normal;border:1px solid rgba(255,255,255,.5);padding:2px 7px;font-size:10px}
+.pg-margbox{padding:12px;background:var(--bar);border-bottom:2px solid var(--ink)}
+.pg-margbox.won{background:#DCEFE2}
+.pg-marghead{display:block;font-size:16px;margin:2px 0 4px}
+
 </style>
 </head>
 <body>
@@ -1880,6 +1890,11 @@ async function loadCatalog() {
   return out;
 }
 
+async function loadOffice() {
+  const { data } = await supabase.rpc("office_state");
+  return data || null;
+}
+
 async function loadSuggestions() {
   const { data } = await supabase.from("suggestions").select("*")
     .order("created_at", { ascending: false }).limit(60);
@@ -1935,7 +1950,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 53";
+const BUILD = "build 54";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -1972,6 +1987,7 @@ function PatronFloor() {
   const [recap, setRecap] = useState(null);
   const [stale, setStale] = useState(false);      // a newer build is on the server
   const [sugg, setSugg] = useState([]);
+  const [office, setOffice] = useState(null);
   const [jam, setJam] = useState(null);
   const [streakCard, setStreakCard] = useState(null);
   const [bubble, setBubble] = useState(null);      // speech, anchored to a thing on the floor
@@ -2102,7 +2118,10 @@ function PatronFloor() {
   /* ------------------------- live + heartbeat --------------------- */
   useEffect(() => {
     if (phase !== "play") return;
-    const refresh = async () => setFloor(await loadFloor());
+    const refresh = async () => {
+      setFloor(await loadFloor());
+      loadOffice().then(setOffice).catch(() => {});
+    };
     const un = subscribeFloor(refresh);
     const cats = setInterval(() => { loadCatalog().then(setCat).catch(() => {}); }, 180000);
     const catOnFocus = () => { if (!document.hidden) loadCatalog().then(setCat).catch(() => {}); };
@@ -2699,6 +2718,14 @@ function PatronFloor() {
         </button>
       )}
 
+      {office?.hit && (
+        <div className="pg-marg">
+          <b>MARGARITA FRIDAY</b>
+          <span>The office hit the goal. Everybody doubles for 24 hours.</span>
+          {office.streak > 1 && <em>{office.streak} weeks running</em>}
+        </div>
+      )}
+
       {stale && (
         <div className="pg-stale">
           <span>A newer version of Idle Hands is out. Your points are safe either way.</span>
@@ -2968,7 +2995,9 @@ function PatronFloor() {
                       onChange={() => guard(() => api.changeClothes(), "Changed.")}
                       onCommit={() => guard(() => api.commitToBit(), "+25% for the duration")} />
           )}
-          {panel === "fund" && <Fund fund={fund} nextTier={nextTier} prevTier={prevTier} />}
+          {panel === "fund" && (
+            <Fund fund={fund} nextTier={nextTier} prevTier={prevTier} office={office} />
+          )}
         </Panel>
       )}
 
@@ -3849,10 +3878,30 @@ function Personnel({ me, lifetime, cat, onDept }) {
   );
 }
 
-function Fund({ fund, nextTier, prevTier }) {
+function Fund({ fund, nextTier, prevTier, office }) {
   const unlocked = FUND_TIERS.filter((t) => fund >= t.at).length;
+  const g = office?.goal || {};
+  const pct = office ? Math.min(100, (office.total / office.target) * 100) : 0;
   return (
     <div>
+      <div className={"pg-margbox" + (office?.hit ? " won" : "")}>
+        <div className="pg-mailhead">This week's office goal</div>
+        <b className="pg-marghead">{g.name || "The Margarita Machine"}</b>
+        <p className="pg-small">{g.blurb}</p>
+        <div className="pg-progress"><i style={{ width: pct + "%" }} /></div>
+        <p className="pg-small">
+          <b>{fmt(office?.total || 0)}</b> of {fmt(office?.target || 0)} PP earned by the office
+          this week. Individual scores don't matter here — only the pile.
+        </p>
+        {office?.hit
+          ? <p className="pg-small pg-got"><b>Bought.</b> {g.won}</p>
+          : <p className="pg-small">Miss it and the streak resets. Hit it and it stays in the
+              break room for as long as the office keeps hitting it.</p>}
+        <div className="pg-stats">
+          <div><b>{office?.streak || 0}</b><span>week streak · +{2 * Math.min(office?.streak || 0, 10)}% each</span></div>
+          <div><b>{office?.best || 0}</b><span>best run</span></div>
+        </div>
+      </div>
       <div className="pg-earnbar">
         Everyone's lifetime Patron Points, pooled. Nobody spends it — it decides what the office
         gets. <b>Every tier the office passes gives every single person a permanent +3% to
