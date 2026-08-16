@@ -135,8 +135,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em}
 
 .pg-wirestrip{background:var(--paper);border:2px solid var(--ink);border-top:none;padding:6px 10px}
-.pg-wl{font-family:var(--mono);font-size:11px;line-height:1.65;border-bottom:1px dotted var(--rule);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg-wl{font-family:var(--mono);font-size:11px;line-height:1.6;border-bottom:1px dotted var(--rule);
+  white-space:normal;overflow-wrap:break-word;padding:2px 0}
 .pg-wl.good{color:#2C6B45}.pg-wl.bad{color:var(--stamp)}.pg-wl.sys{color:var(--soft)}
 .pg-build{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--soft);opacity:.65;text-align:right;padding-top:4px}
@@ -169,8 +169,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-row.done{opacity:.75;cursor:default}
 .pg-ct{font-family:var(--mono);font-weight:700;width:24px;flex:none;text-align:center;color:var(--soft)}
 .pg-main{flex:1;min-width:0}
-.pg-main b{display:block;font-size:13px;line-height:1.32}
-.pg-main span{display:block;font-size:11px;color:var(--soft);line-height:1.4}
+.pg-main b{display:block;font-size:13px;line-height:1.32;overflow-wrap:break-word}
+.pg-main span{display:block;font-size:11px;color:var(--soft);line-height:1.4;overflow-wrap:break-word}
 .pg-right{text-align:right;flex:none;font-family:var(--mono)}
 .pg-right b{display:block;font-size:12.5px}
 .pg-right span{display:block;font-size:10px;color:var(--soft)}
@@ -225,7 +225,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-inc em{display:block;font-style:normal;font-size:11.5px;color:var(--soft);margin-top:2px}
 .pg-incbtns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .pg-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);
-  color:var(--paper);font-family:var(--mono);font-size:12px;padding:10px 14px;z-index:300;max-width:88vw;text-align:center}
+  color:var(--paper);font-family:var(--mono);font-size:12px;padding:10px 14px;z-index:300;
+  max-width:88vw;text-align:center;white-space:normal;overflow-wrap:break-word;line-height:1.45}
 .pg-hirepage{max-width:430px;margin:0 auto;background:var(--paper);border:2px solid var(--ink);padding:20px}
 .pg-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--soft)}
 .pg-h1{font-family:var(--mono);font-size:30px;text-transform:uppercase;margin:2px 0 10px;
@@ -404,9 +405,10 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-chance.leaving{animation:pgfadeout 12s linear forwards}
 @keyframes pgfadein{from{opacity:0}to{opacity:1}}
 @keyframes pgfadeout{from{opacity:1}to{opacity:.15}}
-.pg-mumble{position:absolute;left:50%;transform:translateX(-50%);top:-30px;white-space:nowrap;
-  background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:3px 9px;
-  font-size:11px;font-style:italic;z-index:12;max-width:230px;overflow:hidden;text-overflow:ellipsis}
+.pg-mumble{position:absolute;left:50%;transform:translateX(-50%);top:-38px;
+  background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:4px 10px;
+  font-size:11px;font-style:italic;z-index:12;width:max-content;max-width:230px;
+  white-space:normal;overflow-wrap:break-word;text-align:center;line-height:1.35}
 .pg-mumble::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);
   border:6px solid transparent;border-top-color:var(--ink)}
 .pg-peername em{font-style:normal;display:block;font-family:var(--mono);font-size:8px;
@@ -721,31 +723,43 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 
 .pg-got{color:#2C6B45}
 
-/* ---------------- private offices ---------------- */
-.pg-office{position:absolute;border:10px solid #6E7A6B;border-top-width:0;
-  box-sizing:border-box;background:transparent}
-.pg-office .pg-officefloor{position:absolute;inset:0;
-  background:repeating-linear-gradient(45deg,#7C8878 0 16px,#74806F 16px 32px);
-  border-top:10px solid #6E7A6B;box-sizing:border-box;
-  -webkit-mask-image:linear-gradient(#000,#000);}
-.pg-office{border-top:10px solid rgba(0,0,0,0)}
-.pg-office::before,.pg-office::after{content:"";position:absolute;top:-10px;height:10px;
-  background:#6E7A6B}
-.pg-office::before{left:-10px;width:calc(50% - 25px)}
-.pg-office::after{right:-10px;width:calc(50% - 25px)}
-.pg-office.mine{border-color:#8A7248}
-.pg-office.mine::before,.pg-office.mine::after{background:#8A7248}
-.pg-officeplate{position:absolute;left:50%;transform:translateX(-50%);top:-34px;white-space:nowrap;
-  background:rgba(18,32,22,.9);border:1px solid rgba(255,255,255,.25);padding:3px 10px;
-  text-align:center;line-height:1.2}
-.pg-officeplate b{display:block;font-size:11px;color:#F6F8EE;font-family:var(--mono);
-  letter-spacing:.08em;text-transform:uppercase}
-.pg-officeplate span{display:block;font-family:var(--mono);font-size:9px;color:#C9CFBE}
-.pg-officeplate .pg-vacant{color:#9AA48C}
-.pg-office.mine .pg-officeplate{background:#8A7248;border-color:#FFE9A8}
+/* ---------------- private offices ----------------
+   Walls are dark charcoal with a pale top edge. Doorways are a bright
+   gap with two brass posts and a mat, so a door never reads as a wall. */
+.pg-office{position:absolute;box-sizing:border-box}
+.pg-officefloor{position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,#847F6E 0 16px,#7C7768 16px 32px);
+  border:9px solid #33392F;border-top:none;box-sizing:border-box;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.10)}
+/* the two top wall segments, leaving the doorway open */
+.pg-office::before,.pg-office::after{content:"";position:absolute;top:0;height:9px;
+  background:#33392F;box-shadow:inset 0 2px 0 rgba(255,255,255,.14)}
+.pg-office::before{left:0;width:calc(50% - 35px)}
+.pg-office::after{right:0;width:calc(50% - 35px)}
+.pg-officedoor{position:absolute;top:-3px;left:50%;transform:translateX(-50%);
+  width:70px;height:16px}
+.pg-officedoor i{position:absolute;top:0;width:7px;height:16px;background:#C9A253;
+  box-shadow:0 0 0 1px #6E5C22}
+.pg-officedoor i:first-child{left:-4px}
+.pg-officedoor i:last-child{right:-4px}
+.pg-officedoor span{position:absolute;left:6px;right:6px;top:6px;height:9px;
+  background:#9C8A5A;opacity:.85;border-radius:2px}
+.pg-office.mine .pg-officefloor{border-color:#7A5F22;
+  background:repeating-linear-gradient(45deg,#8E876E 0 16px,#867F66 16px 32px)}
+.pg-office.mine::before,.pg-office.mine::after{background:#7A5F22}
+.pg-officeplate{position:absolute;left:50%;transform:translateX(-50%);top:-40px;white-space:nowrap;
+  background:#1B211C;border:2px solid #C9A253;padding:4px 12px;text-align:center;line-height:1.25;
+  box-shadow:0 3px 8px rgba(0,0,0,.45)}
+.pg-officeplate b{display:block;font-size:12px;color:#F6E3AE;font-family:var(--mono);
+  letter-spacing:.1em;text-transform:uppercase}
+.pg-officeplate span{display:block;font-family:var(--mono);font-size:9px;color:#A9A18A}
+.pg-officeplate .pg-vacant{color:#8A9480}
+.pg-officeplate.ghost{border-color:#6E756B;opacity:.8}
+.pg-office.mine .pg-officeplate{background:#7A5F22;border-color:#FFE9A8}
 .pg-officedesk{position:absolute;background:#B79A6B;border:3px solid #8A7248;
   box-shadow:0 3px 0 rgba(0,0,0,.22)}
-.pg-officedesk.mine{cursor:pointer;background:#C9A96F;border-color:#FFE9A8}
+.pg-officedesk.mine{cursor:pointer;background:#D2B478;border-color:#FFE9A8}
+.pg-officedesk.ghost{opacity:.55;filter:grayscale(.6)}
 .pg-officedesk span{position:absolute;left:16px;top:14px;width:56px;height:36px;
   background:#2C3330;border-bottom:6px solid #555}
 .pg-officedesk b{position:absolute;right:18px;top:24px;width:66px;height:22px;
@@ -753,6 +767,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officedesk .pg-fxlabel{bottom:-24px}
 .pg-work.away{background:#5D6C5B}
 .pg-mapoffice{position:absolute;border:1px solid rgba(201,207,190,.55);box-sizing:border-box}
+.pg-officeplate .pg-job{color:#C9A253;font-size:8.5px;letter-spacing:.08em}
 
 </style>
 </head>
@@ -810,7 +825,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
    Edit anything in this file freely; it can never corrupt a save.
    ================================================================== */
 
-const ROOM = { w: 2600, h: 1600 };
+const ROOM = { w: 3000, h: 1600 };
 const WALL_H = 130;
 const HEAT_LIMIT = 5;
 
@@ -820,7 +835,7 @@ const OFFICE_W = 300;
 const OFFICE_H = 420;
 const OFFICE_Y = 1020;
 const DOOR_W = 70;
-const OFFICES = Array.from({ length: 8 }, (_, i) => {
+const OFFICES = Array.from({ length: 9 }, (_, i) => {
   const x = 20 + i * 320;
   return {
     i, x, y: OFFICE_Y, w: OFFICE_W, h: OFFICE_H,
@@ -844,11 +859,13 @@ function officeAt(x, y) {
   return OFFICES.find((o) => x > o.x && x < o.x + o.w && y > o.y && y < o.y + o.h) || null;
 }
 
+const STAFF_OFFICES = 8;          // the ninth belongs to a man who quit
+
 function officeFor(board, id) {
   const order = [...board].sort((a, b) =>
     new Date(a.created_at || 0) - new Date(b.created_at || 0));
   const i = order.findIndex((p) => p.id === id);
-  return i < 0 ? null : OFFICES[i % OFFICES.length];
+  return i < 0 ? null : OFFICES[i % STAFF_OFFICES];
 }
 
 /* Deed copy. The numbers come from the DB; these are the jokes. */
@@ -1086,6 +1103,8 @@ const GHOST_DESK = {
   x: 1290, y: 800,
   lines: [
     "Chance quit again. His desk is still here. So is his mug.",
+    "QuickBooks is still open on his monitor. It has been open for three years.",
+    "A reconciliation from 2023 is half finished on the screen. Nobody dares touch it.",
     "Chance's monitor is still on. It has been on for three years.",
     "Somebody sat at Chance's desk once. They do not talk about it.",
     "Chance walked past his own desk and did not acknowledge it.",
@@ -1110,12 +1129,12 @@ const FUND_TIERS = [
 const FIXTURES = [
   { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 300, y: 22, w: 216, h: 86 },
   { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Patron Points leaderboard", x: 640, y: 14, w: 330, h: 100 },
-  { id: "portrait", panel: "standings", label: "Employee Of The Month", sub: "Currently in the lead", x: 1260, y: 12, w: 158, h: 108 },
-  { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1500, y: 16, w: 150, h: 96 },
-  { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 1960, y: 8, w: 170, h: 114 },
+  { id: "portrait", panel: "standings", label: "Employee Of The Month", sub: "Currently in the lead", x: 1420, y: 12, w: 158, h: 108 },
+  { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1740, y: 16, w: 150, h: 96 },
+  { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 2300, y: 8, w: 170, h: 114 },
   { id: "coffee", panel: "kindness", label: "Break Room", sub: "Be nice to someone", x: 40, y: 300, w: 112, h: 132 },
-  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 2440, y: 300, w: 112, h: 146 },
-  { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 2440, y: 560, w: 112, h: 156 },
+  { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 2820, y: 300, w: 112, h: 146 },
+  { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 2820, y: 560, w: 112, h: 156 },
   { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 300, y: 260, w: 210, h: 96 },
   { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 1010, y: 250, w: 130, h: 170 },
   { id: "mirror", panel: "mirror", label: "The Mirror", sub: "Redo your badge photo", x: 620, y: 250, w: 92, h: 156 },
@@ -1181,8 +1200,10 @@ const CHANCE = {
   offsetMs: 7 * 60000,
   stayMs: 95000,
   path: [
-    { x: 2180, y: 940 },   // his old desk, out in the corridor
-    { x: 1800, y: 900 },
+    { x: 2730, y: 1240 },  // his old office
+    { x: 2730, y: 1078 },  // out through his own door
+    { x: 2730, y: 950 },
+    { x: 2000, y: 880 },
     { x: 1300, y: 820 },   // past the fridge
     { x: 900,  y: 760 },   // through the middle, slowly
     { x: 460,  y: 700 },   // the coffee bar
@@ -1210,12 +1231,12 @@ const CHANCE = {
 /* Scenery. Purely decorative — click nothing, mean nothing, look like an office. */
 const DECOR = [
   { t: "plant", x: 200, y: 190 }, { t: "plant", x: 1480, y: 640 },
-  { t: "plant", x: 1900, y: 300 }, { t: "plant", x: 2320, y: 640 },
+  { t: "plant", x: 1900, y: 300 }, { t: "plant", x: 2660, y: 640 },
   { t: "cooler", x: 60, y: 620 },
 
-  { t: "boxes", x: 2300, y: 200 }, { t: "boxes", x: 2260, y: 760 },
+  { t: "boxes", x: 2700, y: 200 }, { t: "boxes", x: 2600, y: 780 },
   { t: "rug", x: 900, y: 560 },
-  { t: "window", x: 26, y: 22 }, { t: "window", x: 1720, y: 22 },
+  { t: "window", x: 26, y: 22 }, { t: "window", x: 2020, y: 22 },
 
   { t: "mascot", x: 1060, y: 20 },
 ];
@@ -1246,6 +1267,24 @@ const CATCHPHRASES = [
   "Big Beautiful Bill.",
   "Shania.",
 ];
+
+/* What people actually do here. Matched on first name, case-insensitively,
+   and shown on the office nameplate under the name. */
+const JOBS = {
+  chance:   "QuickBooks",
+  matt:     "Contracts",
+  jess:     "Office Admin",
+  john:     "Project Developer",
+  avah:     "Rent & Maintenance",
+  nick:     "App Development",
+  angelica: "Patron Group",
+  dave:     "Owner",
+};
+function jobFor(name) {
+  if (!name) return null;
+  const key = String(name).trim().toLowerCase().split(/[\s.]+/)[0];
+  return JOBS[key] || null;
+}
 
 /* Emotes. Everybody on the floor sees them the moment you press the button. */
 const EMOTES = [
@@ -1763,7 +1802,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 41";
+const BUILD = "build 44";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2267,7 +2306,7 @@ function PatronFloor() {
   const doWork = () => {
     if (!atDeskRef.current) {        // you work at your desk, like everybody else
       const o = officeRef.current;
-      if (o) routeTo(o.cx, o.cy + 40);
+      if (o) routeTo(o.cx, o.cy + 40, null, o);
       flash("Work happens at your desk. Heading there.");
       return;
     }
@@ -2357,9 +2396,9 @@ function PatronFloor() {
    * trip that crosses an office threshold gets routed through the doorway:
    * out of the room you're in, then into the one you're going to.
    */
-  const routeTo = (tx, ty, then) => {
+  const routeTo = (tx, ty, then, forceOffice) => {
     const from = officeAt(posRef.current.x, posRef.current.y);
-    const to = officeAt(tx, ty);
+    const to = forceOffice || officeAt(tx, ty);
     const outside = (o) => ({ x: o.doorX + DOOR_W / 2, y: o.y - 48 });
     const inside  = (o) => ({ x: o.doorX + DOOR_W / 2, y: o.y + 58 });
     const path = [];
@@ -2536,22 +2575,29 @@ function PatronFloor() {
           {OFFICES.map((o) => {
             const order = [...board].sort((a, b) =>
               new Date(a.created_at || 0) - new Date(b.created_at || 0));
-            const p = order[o.i];
+            const chances = o.i >= STAFF_OFFICES;
+            const p = chances ? null : order[o.i];
             const mine = me && p && p.id === me.id;
             return (
               <div key={"o" + o.i} className={"pg-office" + (mine ? " mine" : "")}
                    style={{ left: o.x, top: o.y, width: o.w, height: o.h, zIndex: 1 }}>
                 <div className="pg-officefloor" />
-                <div className="pg-officeplate">
-                  {p ? <><b>{p.name}</b><span>{fmt(p.lifetime || 0)} PP</span></>
-                     : <b className="pg-vacant">Vacant</b>}
+                <div className="pg-officedoor"><i /><span /><i /></div>
+                <div className={"pg-officeplate" + (chances ? " ghost" : "")}>
+                  {chances
+                    ? <><b>Chance</b><span>Former Employee</span></>
+                    : p ? <><b>{p.name}</b>
+                            {jobFor(p.name) && <span className="pg-job">{jobFor(p.name)}</span>}
+                            <span>{fmt(p.lifetime || 0)} PP</span></>
+                        : <b className="pg-vacant">Vacant</b>}
                 </div>
-                <div className={"pg-officedesk" + (mine ? " mine" : "")}
+                <div className={"pg-officedesk" + (mine ? " mine" : "") + (chances ? " ghost" : "")}
                      style={{ left: o.deskX - o.x, top: o.deskY - o.y,
                               width: o.deskW, height: o.deskH }}
                      onClick={(e) => {
                        e.stopPropagation();
-                       if (mine) routeTo(o.cx, o.cy + 40, "desk");
+                       if (mine) routeTo(o.cx, o.cy + 40, "desk", o);
+                       else if (chances) say(pick(GHOST_DESK.lines), "sys");
                      }}>
                   <span /><b />
                   {mine && <div className="pg-fxlabel">Your Desk</div>}
@@ -2582,16 +2628,6 @@ function PatronFloor() {
             </div>
           )}
 
-          <div className="pg-desk ghost" style={{ left: GHOST_DESK.x, top: GHOST_DESK.y,
-                                                  zIndex: Math.round(GHOST_DESK.y) }}
-               onClick={(e) => { e.stopPropagation(); say(pick(GHOST_DESK.lines), "sys"); }}>
-            <div className="pg-deskart" />
-            <div className="pg-desklabel">
-              <em>{GHOST_DESK.plate}</em>
-              <b>{GHOST_DESK.name}</b>
-              <span>— PP</span>
-            </div>
-          </div>
 
           {chair && (
             <button className="pg-chair" style={{ left: chair.x, top: chair.y }}
