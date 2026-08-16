@@ -295,6 +295,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 
 /* ---------------- characters: rig, walk cycle, emotes ---------------- */
 .pg-body{position:relative;width:60px;height:88px;transform-origin:50% 100%}
+.pg-flip{position:absolute;inset:0}
 .pg-rig{position:absolute;inset:0}
 .pg-body .pg-face{position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:3}
 .pg-torso{position:absolute;left:50%;top:30px;transform:translateX(-50%);width:54px;z-index:2}
@@ -1553,7 +1554,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 30";
+const BUILD = "build 31";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2605,8 +2606,9 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   ].filter(Boolean).join(" ");
 
   return (
-    <div className={cls} style={{ transform: `scaleX(${facing})` }}>
+    <div className={cls}>
       {emote && <div className="pg-bubble">{EMOTE_ICON[emote] || "!"}</div>}
+      <div className="pg-flip" style={{ transform: `scaleX(${facing})` }}>
       <div className="pg-rig">
         {c && <Hat kind={c.hat} />}
         <Face src={src} name={p.name} size={40} />
@@ -2627,7 +2629,12 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
         <span className="pg-arm right" style={{ background: shirt }} />
         <span className="pg-leg left" style={{ background: pants }} />
         <span className="pg-leg right" style={{ background: pants }} />
-        {c?.sign && <div className="pg-sign">{c.sign}</div>}
+        {c?.sign && (
+          <div className="pg-sign" style={{
+            transform: facing < 0 ? "translateX(-50%) scaleX(-1)" : "translateX(-50%)",
+          }}>{c.sign}</div>
+        )}
+      </div>
       </div>
       <span className="pg-shadow" />
       {c && <div className="pg-worn">{c.name}</div>}
