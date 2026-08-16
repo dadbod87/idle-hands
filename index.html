@@ -727,17 +727,17 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
    Walls are dark charcoal with a pale top edge. Doorways are a bright
    gap with two brass posts and a mat, so a door never reads as a wall. */
 .pg-office{position:absolute;box-sizing:border-box}
-.pg-officefloor{position:absolute;inset:0;
+.pg-officefloor{position:absolute;inset:0;z-index:0;
   background:repeating-linear-gradient(45deg,#847F6E 0 16px,#7C7768 16px 32px);
   border:9px solid #33392F;border-top:none;box-sizing:border-box;
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.10)}
 /* the two top wall segments, leaving the doorway open */
-.pg-office::before,.pg-office::after{content:"";position:absolute;top:0;height:9px;
+.pg-office::before,.pg-office::after{content:"";position:absolute;top:0;height:9px;z-index:2;
   background:#33392F;box-shadow:inset 0 2px 0 rgba(255,255,255,.14)}
 .pg-office::before{left:0;width:calc(50% - 35px)}
 .pg-office::after{right:0;width:calc(50% - 35px)}
 .pg-officedoor{position:absolute;top:-3px;left:50%;transform:translateX(-50%);
-  width:70px;height:16px}
+  width:70px;height:16px;z-index:3}
 .pg-officedoor i{position:absolute;top:0;width:7px;height:16px;background:#C9A253;
   box-shadow:0 0 0 1px #6E5C22}
 .pg-officedoor i:first-child{left:-4px}
@@ -747,7 +747,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-office.mine .pg-officefloor{border-color:#7A5F22;
   background:repeating-linear-gradient(45deg,#8E876E 0 16px,#867F66 16px 32px)}
 .pg-office.mine::before,.pg-office.mine::after{background:#7A5F22}
-.pg-officeplate{position:absolute;left:50%;transform:translateX(-50%);top:-40px;white-space:nowrap;
+.pg-officeplate{position:absolute;z-index:4;left:50%;transform:translateX(-50%);top:-40px;white-space:nowrap;
   background:#1B211C;border:2px solid #C9A253;padding:4px 12px;text-align:center;line-height:1.25;
   box-shadow:0 3px 8px rgba(0,0,0,.45)}
 .pg-officeplate b{display:block;font-size:12px;color:#F6E3AE;font-family:var(--mono);
@@ -756,7 +756,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officeplate .pg-vacant{color:#8A9480}
 .pg-officeplate.ghost{border-color:#6E756B;opacity:.8}
 .pg-office.mine .pg-officeplate{background:#7A5F22;border-color:#FFE9A8}
-.pg-officedesk{position:absolute;background:#B79A6B;border:3px solid #8A7248;
+.pg-officedesk{position:absolute;z-index:1;background:#B79A6B;border:3px solid #8A7248;
   box-shadow:0 3px 0 rgba(0,0,0,.22)}
 .pg-officedesk.mine{cursor:pointer;background:#D2B478;border-color:#FFE9A8}
 .pg-officedesk.ghost{opacity:.55;filter:grayscale(.6)}
@@ -768,6 +768,14 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-work.away{background:#5D6C5B}
 .pg-mapoffice{position:absolute;border:1px solid rgba(201,207,190,.55);box-sizing:border-box}
 .pg-officeplate .pg-job{color:#C9A253;font-size:8.5px;letter-spacing:.08em}
+
+.pg-deskbubble{position:absolute;transform:translate(-50%,-100%);background:var(--paper);
+  border:2px solid var(--ink);border-radius:12px;padding:6px 11px;font-size:11.5px;font-style:italic;
+  width:max-content;max-width:240px;white-space:normal;overflow-wrap:break-word;text-align:center;
+  line-height:1.4;box-shadow:0 4px 10px rgba(0,0,0,.35);pointer-events:none;
+  animation:pgpop .2s ease-out}
+.pg-deskbubble::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);
+  border:7px solid transparent;border-top-color:var(--ink)}
 
 </style>
 </head>
@@ -1277,7 +1285,7 @@ const JOBS = {
   john:     "Project Developer",
   avah:     "Rent & Maintenance",
   nick:     "App Development",
-  angelica: "Patron Group",
+  angelica: "Resale",
   dave:     "Owner",
 };
 function jobFor(name) {
@@ -1802,7 +1810,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 44";
+const BUILD = "build 45";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -1841,6 +1849,7 @@ function PatronFloor() {
   const [sugg, setSugg] = useState([]);
   const [jam, setJam] = useState(null);
   const [streakCard, setStreakCard] = useState(null);
+  const [ghostSay, setGhostSay] = useState(null);   // Chance's desk, muttering
   const [code, setCode] = useState("");
   const [facing, setFacing] = useState(1);
   const liveRef = useRef(null);
@@ -2597,7 +2606,12 @@ function PatronFloor() {
                      onClick={(e) => {
                        e.stopPropagation();
                        if (mine) routeTo(o.cx, o.cy + 40, "desk", o);
-                       else if (chances) say(pick(GHOST_DESK.lines), "sys");
+                       else if (chances) {
+                         const text = pick(GHOST_DESK.lines);
+                         setGhostSay({ text, x: o.cx, y: o.deskY - 6, k: Math.random() });
+                         setTimeout(() => setGhostSay((g) =>
+                           (g && g.k === undefined ? null : g && g.text === text ? null : g)), 6000);
+                       }
                      }}>
                   <span /><b />
                   {mine && <div className="pg-fxlabel">Your Desk</div>}
@@ -2639,6 +2653,13 @@ function PatronFloor() {
                 <rect x="8" y="40" width="25" height="4" rx="2" fill="#3C3C3C" />
               </svg>
             </button>
+          )}
+
+          {ghostSay && (
+            <div className="pg-deskbubble"
+                 style={{ left: ghostSay.x, top: ghostSay.y, zIndex: Math.round(ghostSay.y) + 8 }}>
+              {ghostSay.text}
+            </div>
           )}
 
           <div className="pg-me" style={{ left: pos.x, top: pos.y, zIndex: Math.round(pos.y) + 5 }}>
