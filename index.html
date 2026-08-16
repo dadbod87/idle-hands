@@ -657,6 +657,58 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-stale button{background:#FFF8E4;color:var(--ink);border:none;padding:5px 12px;cursor:pointer;
   font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
 
+.pg-jam{display:block;width:100%;background:#7C4A1F;color:#FFF1D9;border:2px solid var(--ink);
+  border-top:none;padding:9px 12px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;cursor:pointer;text-align:left}
+.pg-jam em{font-style:normal;float:right;text-decoration:underline}
+.pg-suggest{width:100%;min-height:78px;padding:10px;border:2px solid var(--ink);background:#fff;
+  font-family:var(--sans);font-size:13.5px;line-height:1.5;resize:vertical}
+.pg-portrait{width:100%;height:100%;background:#2B2013;border:5px solid #C9B063;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.pg-portraitframe{background:#F3F5EC;border:2px solid #8A6E1F;padding:4px;line-height:0}
+.pg-portraitplate{font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:#E4C97A;
+  text-transform:uppercase;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg-sugbox{width:100%;height:100%;background:#6E5540;border:4px solid #4E3B2B;position:relative}
+.pg-sugbox i{position:absolute;left:14%;right:14%;top:22%;height:7px;background:#2C2A26}
+.pg-sugbox span{position:absolute;left:20%;right:20%;bottom:16%;height:26px;background:#F2F3E8;
+  border:2px solid #4E3B2B}
+.pg-printerfx{width:100%;height:100%;background:#A8AFA4;border:4px solid #6E756B;position:relative}
+.pg-printerfx i{position:absolute;left:10%;right:10%;top:14%;height:16px;background:#7E857B}
+.pg-printerfx b{position:absolute;left:16%;right:16%;bottom:24%;height:10px;background:#F2F3E8}
+.pg-printerfx u{position:absolute;left:26%;right:26%;bottom:8%;height:6px;background:#5D6459}
+
+.pg-mirrorfx{width:100%;height:100%;background:#8A6A3E;border:5px solid #6A502D;padding:6px}
+.pg-mirrorfx i{display:block;width:100%;height:100%;
+  background:linear-gradient(160deg,#C9D6DC 0%,#9FB3BC 38%,#D8E2E6 52%,#8FA4AD 70%,#B9C8CF 100%);
+  border:2px solid #5C4A32}
+.pg-mirrorrow{display:flex;align-items:center;justify-content:center;gap:20px;padding:16px 12px;
+  background:var(--bar);border-bottom:2px solid var(--ink)}
+.pg-mirrorrow > div{text-align:center}
+.pg-mirrorlabel{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:6px}
+.pg-mirrorarrow{font-size:20px;color:var(--soft)}
+
+.pg-skirt{position:absolute;left:50%;top:62px;transform:translateX(-50%);width:56px;z-index:1}
+.pg-body.bt-skirt .pg-leg{top:82px;height:14px}
+.pg-body.bt-shorts .pg-leg{top:72px;height:16px}
+.pg-preview{width:60px;height:92px;position:relative;margin:0 auto}
+.pg-preview .pg-body{position:absolute;left:0;top:0}
+.pg-lookrow{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:var(--paper);
+  border-bottom:2px solid var(--ink)}
+.pg-lookbtn{flex:1;min-width:74px;background:var(--bar);border:2px solid var(--ink);padding:6px 4px;
+  cursor:pointer;text-align:center;font-family:var(--sans)}
+.pg-lookbtn span{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--soft)}
+.pg-lookbtn b{display:block;font-size:12px;margin-top:2px}
+.pg-lookbtn i{display:block;width:100%;height:14px;margin-top:4px;border:1px solid var(--ink)}
+.pg-lookbtn.wide{flex-basis:100%}
+.pg-lookbtn:active{transform:translateY(1px)}
+
+.pg-suit{position:absolute;left:50%;transform:translateX(-50%);top:-16px;width:82px;pointer-events:none}
+.pg-suit.back{z-index:0}
+.pg-suit.front{z-index:4}
+.pg-body.big .pg-suit{width:92px}
+
 </style>
 </head>
 <body>
@@ -771,8 +823,10 @@ const COSTUMES = {
   robe:    { name: "Bathrobe",       shirt: "#B8C4CE", note: "Works from home now, apparently." },
   hawaii:  { name: "Hawaiian Shirt", shirt: "#2E8B79", floral: true, note: "Mentally on vacation. Physically at the printer." },
   suit:    { name: "Interview Suit", shirt: "#2A2F36", tie: "#B23B2E", note: "Three pieces. Everyone noticed." },
-  trex:    { name: "Inflatable T-Rex", shirt: "#4F8A3C", big: true, note: "Cannot reach the keyboard. Still on payroll." },
-  mascot:  { name: "Patron the Ledger Lynx", shirt: "#8A6E1F", big: true, note: "The mascot nobody approved." },
+  trex:    { name: "Inflatable T-Rex", shirt: "#4F8A3C", big: true, art: "dino",
+             note: "Cannot reach the keyboard. Still on payroll." },
+  mascot:  { name: "Patron the Ledger Lynx", shirt: "#8A6E1F", big: true, art: "lynx",
+             note: "The mascot nobody approved." },
   board:   { name: "Sandwich Board", shirt: "#8A6A3E", sign: "ASK ME ABOUT SYNERGY", note: "Reads: ASK ME ABOUT SYNERGY." },
 };
 
@@ -974,13 +1028,16 @@ const FUND_TIERS = [
 const FIXTURES = [
   { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 224, y: 22, w: 216, h: 86 },
   { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Patron Points leaderboard", x: 486, y: 14, w: 330, h: 100 },
-  { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1120, y: 16, w: 150, h: 96 },
-  { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 1512, y: 8, w: 170, h: 114 },
+  { id: "portrait", panel: "standings", label: "Employee Of The Month", sub: "Currently in the lead", x: 1046, y: 18, w: 122, h: 96 },
+  { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1206, y: 16, w: 150, h: 96 },
+  { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 1596, y: 8, w: 170, h: 114 },
   { id: "coffee", panel: "kindness", label: "Break Room", sub: "Be nice to someone", x: 24, y: 430, w: 112, h: 132 },
   { id: "meeting", panel: "sabotage", label: "Meeting Room", sub: "Be awful to someone", x: 1668, y: 380, w: 112, h: 146 },
   { id: "vending", panel: "fund", label: "Vending Machine", sub: "Office fund", x: 1668, y: 820, w: 112, h: 156 },
   { id: "coffeebar", panel: "coffee", label: "Coffee Bar", sub: "Two machines, real beans", x: 300, y: 620, w: 210, h: 96 },
   { id: "fridge", panel: "fridge", label: "The Fridge", sub: "Sodas, waters, shakes, energy", x: 1120, y: 600, w: 130, h: 170 },
+  { id: "mirror", panel: "mirror", label: "The Mirror", sub: "Redo your badge photo", x: 178, y: 636, w: 92, h: 156 },
+  { id: "suggestion", panel: "suggest", label: "Suggestion Box", sub: "Write a memo the office will read", x: 640, y: 620, w: 116, h: 96 },
   { id: "wardrobe", panel: "wardrobe", label: "Supply Closet", sub: "Costumes, 45 minutes", x: 24, y: 800, w: 112, h: 140 },
   { id: "lounge", panel: null, label: "Cigar Lounge", sub: "Under construction", x: 56, y: 1010, w: 176, h: 132,
     deny: [
@@ -1028,6 +1085,7 @@ const FIXTURES = [
       "Occupied. You've decided you didn't need to go anyway.",
       "Occupied. You check the time. You will check it again shortly.",
     ] },
+  { id: "printer", panel: "printer", label: "The Printer", sub: "It works, mostly", x: 1290, y: 1060, w: 132, h: 92 },
   { id: "desk", panel: "shop", label: "Your Desk", sub: "Hire people to earn PP", x: 790, y: 980, w: 240, h: 122 },
 ];
 
@@ -1073,11 +1131,11 @@ const DECOR = [
   { t: "plant", x: 150, y: 190 }, { t: "plant", x: 1600, y: 640 },
   { t: "plant", x: 620, y: 1100 }, { t: "plant", x: 1420, y: 1080 },
   { t: "cooler", x: 60, y: 640 },
-  { t: "printer", x: 1000, y: 1090 },
+
   { t: "boxes", x: 200, y: 1060 }, { t: "boxes", x: 1580, y: 240 },
   { t: "rug", x: 700, y: 760 },
-  { t: "window", x: 26, y: 22 }, { t: "window", x: 1312, y: 22 },
-  { t: "clock", x: 1046, y: 34 },
+  { t: "window", x: 26, y: 22 }, { t: "window", x: 1396, y: 22 },
+
   { t: "mascot", x: 862, y: 20 },
 ];
 
@@ -1132,6 +1190,50 @@ const DRINK_TEXT = {
   soda: "The good flavour is always gone by Wednesday.",
   water: "Clears whatever anyone did to you. Hydration is a counterspell.",
 };
+
+/* ------------------------------------------------------------------
+   CHARACTER LOOKS
+   The head is a photo, so the body carries the rest of the identity.
+   Anyone can combine any build with any bottoms — no gender switch,
+   just parts.
+   ------------------------------------------------------------------ */
+const BUILDS = {
+  slim:    { torso: "M30 0C21 0 15 8 13 38h34C45 8 39 0 30 0Z", arm: 6,  legX: 21, legW: 7 },
+  regular: { torso: "M30 0C18 0 10 8 8 38h44C50 8 42 0 30 0Z",  arm: 7,  legX: 19, legW: 8 },
+  broad:   { torso: "M30 0C15 0 6 9 4 38h52C54 9 45 0 30 0Z",   arm: 8,  legX: 17, legW: 10 },
+};
+const BUILD_LIST = ["slim", "regular", "broad"];
+const BOTTOM_LIST = ["trousers", "skirt", "shorts"];
+
+/* collared shirts, because that is the dress code */
+const TOPS = ["#4A6B8A", "#7A5B7E", "#4F7A63", "#8A6A3E",
+                     "#6A5C8A", "#8A4A4A", "#3E5570", "#5E6E52"];
+const LEGS = ["#3E5570", "#45607C", "#374B63", "#4A4237", "#2F3A45"];
+
+const BOTTOM_LABEL = { trousers: "Trousers", skirt: "Skirt", shorts: "Shorts" };
+const BUILD_LABEL = { slim: "Slim", regular: "Regular", broad: "Broad" };
+
+/** A stable look for anyone who hasn't chosen one, derived from their name. */
+function lookFor(p) {
+  if (p && p.look && p.look.build) return p.look;
+  const seed = ((p && p.name) || "x").split("")
+    .reduce((a, c) => a + c.charCodeAt(0) * 13, 0);
+  return {
+    build: BUILD_LIST[seed % 3],
+    bottom: BOTTOM_LIST[Math.floor(seed / 3) % 3],
+    top: seed % TOPS.length,
+    legs: Math.floor(seed / 7) % LEGS.length,
+  };
+}
+
+function randomLook() {
+  return {
+    build: pick(BUILD_LIST),
+    bottom: pick(BOTTOM_LIST),
+    top: Math.floor(Math.random() * TOPS.length),
+    legs: Math.floor(Math.random() * LEGS.length),
+  };
+}
 
 /* ------------------------------ utils ---------------------------- */
 
@@ -1487,6 +1589,11 @@ const api = {
   takeBreak: (drink) => rpc("take_break", { p_drink: drink }),
   doWork: (clicks) => rpc("do_work", { p_clicks: clicks }),
   markRecap: (week) => rpc("mark_recap", { p_week: week }),
+  checkIn: () => rpc("check_in"),
+  fixPrinter: () => rpc("fix_printer"),
+  suggestMemo: (text) => rpc("suggest_memo", { p_text: text }),
+  approveSuggestion: (id, ok) => rpc("approve_suggestion", { p_id: id, p_ok: ok }),
+  setLook: (look) => rpc("set_look", { p_look: look }),
   signAgreement: (sig, version) =>
     rpc("sign_agreement", { p_signature: sig, p_version: version }),
 };
@@ -1503,7 +1610,17 @@ async function loadCatalog() {
   if (error) throw error;
   const out = {};
   for (const row of data) out[row.key] = row.data;
+  try {                       // who may approve suggestions
+    const { data: d } = await supabase.rpc("who_approves");
+    out.admin_id = d || null;
+  } catch { out.admin_id = null; }
   return out;
+}
+
+async function loadSuggestions() {
+  const { data } = await supabase.from("suggestions").select("*")
+    .order("created_at", { ascending: false }).limit(60);
+  return data || [];
 }
 
 async function loadFloor() {
@@ -1522,7 +1639,8 @@ async function uploadBadge(userId, dataUrl) {
     .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
   if (error) throw error;
   const { data } = supabase.storage.from("badges").getPublicUrl(path);
-  return data.publicUrl;
+  // same filename every time, so bust the cache or everyone keeps seeing the old face
+  return data.publicUrl + "?v=" + Date.now();
 }
 
 /**
@@ -1554,7 +1672,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 31";
+const BUILD = "build 35";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -1590,6 +1708,9 @@ function PatronFloor() {
   const [beers, setBeers] = useState(0);   // {id, text} — somebody said a thing
   const [recap, setRecap] = useState(null);
   const [stale, setStale] = useState(false);      // a newer build is on the server
+  const [sugg, setSugg] = useState([]);
+  const [jam, setJam] = useState(null);
+  const [streakCard, setStreakCard] = useState(null);
   const [code, setCode] = useState("");
   const [facing, setFacing] = useState(1);
   const liveRef = useRef(null);
@@ -1597,6 +1718,8 @@ function PatronFloor() {
   const facingRef = useRef(1);
   const buildTag = useRef(null);
   const catRef = useRef({});
+  const jamSeen = useRef(null);
+  const suggRef = useRef([]);
   const clickBuf = useRef(0);
   const [err, setErr] = useState(null);
 
@@ -1654,6 +1777,15 @@ function PatronFloor() {
             (new Date(row.last_tick) - new Date(existing.last_tick)) / 60000);
           if (mins >= 4) setReport({ mins, earned: gained });
         }
+        try {
+          const before = row.streak || 0;
+          const after = await api.checkIn();
+          if ((after.streak || 0) > before) {
+            setStreakCard({ streak: after.streak, gained: (after.pp || 0) - (row.pp || 0) });
+          }
+          applyServer(after);
+        } catch { /* already checked in today */ }
+        loadSuggestions().then(setSugg).catch(() => {});
         setPhase(row.signed_at ? "play" : "sign");
       } else {
         setPhase("hire");
@@ -1821,6 +1953,13 @@ function PatronFloor() {
         }
       }
       if (!cur) lastEvId.current = null;
+      const j = printerJam(now);
+      setJam(j);
+      if (j && jamSeen.current !== j.window) {
+        jamSeen.current = j.window;
+        say("The printer has jammed. Somebody is going to have to deal with it.", "bad");
+        flash("The printer jammed");
+      }
       const ch = chanceAt(now, catRef.current.chance_extra || []);
       setChance(ch);
       if (ch && !chanceSeen.current) {
@@ -1996,7 +2135,7 @@ function PatronFloor() {
     say("You badge in. The floor is quiet. The ledger is not.", "sys");
     const t = setInterval(() => {
       const who = meRef.current?.name || "you";
-      const pool = MEMOS.concat(catRef.current.memos_extra || []);
+      const pool = MEMOS.concat(catRef.current.memos_extra || [], suggRef.current);
       say(pick(pool).replace(/\{me\}/g, who), "sys");
     }, 55000);
     return () => clearInterval(t);
@@ -2193,6 +2332,12 @@ function PatronFloor() {
         </button>
       )}
 
+      {jam && (
+        <button className="pg-jam" onClick={() => setPanel("printer")}>
+          The printer has jammed. <em>{Math.ceil(jam.endsIn / 1000)}s — first one there fixes it</em>
+        </button>
+      )}
+
       {stale && (
         <div className="pg-stale">
           <span>A newer version of Idle Hands is out. Your points are safe either way.</span>
@@ -2386,6 +2531,41 @@ function PatronFloor() {
           )}
           {panel === "personnel" && <Personnel me={me} lifetime={lifetime} />}
           {panel === "account" && <Account user={user} onLinked={() => setPanel(null)} />}
+          {panel === "mirror" && (
+            <Mirror me={me} user={user}
+              onLook={async (look) => {
+                try { applyServer(await api.setLook(look)); } catch { /* keep going */ }
+              }}
+              onSave={async (name, dataUrl) => {
+                try {
+                  let url = null;
+                  if (dataUrl) url = await uploadBadge(user.id, dataUrl);
+                  applyServer(await api.upsertPlayer(name || me.name, url, null));
+                  setFloor(await loadFloor());
+                  flash("Badge reissued.");
+                  setPanel(null);
+                } catch (e) { flash(prettyError(e)); }
+              }} />
+          )}
+          {panel === "suggest" && (
+            <SuggestionBox sugg={sugg} me={me} admin={cat.admin_id}
+              onSend={async (t) => {
+                try { await api.suggestMemo(t); setSugg(await loadSuggestions());
+                      flash("Filed. It goes up if it's approved."); }
+                catch (e) { flash(prettyError(e)); }
+              }}
+              onJudge={async (id, ok) => {
+                try { await api.approveSuggestion(id, ok); setSugg(await loadSuggestions()); }
+                catch (e) { flash(prettyError(e)); }
+              }} />
+          )}
+          {panel === "printer" && (
+            <Printer jam={jam} onFix={async () => {
+              const row = await guard(() => api.fixPrinter());
+              if (row) { say("You fixed the printer. Nobody will ever know how.", "good");
+                         flash("Printer fixed"); setPanel(null); }
+            }} />
+          )}
           {panel === "cooler" && (
             <Cooler cat={cat} me={me}
                     onDrink={async (id, name) => {
@@ -2413,6 +2593,19 @@ function PatronFloor() {
           <button className="pg-btn" onClick={() => {
             api.markRecap(recap.week_key).catch(() => {}); setRecap(null);
           }}>Back to work</button>
+        </Modal>
+      )}
+
+      {streakCard && (
+        <Modal onClose={() => setStreakCard(null)}>
+          <div className="pg-stamp">Attendance</div>
+          <p className="pg-big">Day {streakCard.streak}</p>
+          <p>{streakCard.streak === 1
+            ? "You badged in. The record now exists."
+            : `${streakCard.streak} days running. HR has noticed, in the way HR notices things.`}</p>
+          <p className="pg-small">+{fmt(streakCard.gained)} PP. Three days of grace, so a weekend
+            won't cost you the streak.</p>
+          <button className="pg-btn" onClick={() => setStreakCard(null)}>Get to work</button>
         </Modal>
       )}
 
@@ -2503,6 +2696,7 @@ const PANEL_TITLES = {
   sabotage: "Meeting room", wire: "Bulletin board", personnel: "Personnel file",
   fund: "Office fund", owner: "Dave's office", account: "Your account",
   wardrobe: "Supply closet", coffee: "The coffee bar", fridge: "The fridge",
+  suggest: "Suggestion box", printer: "The printer", mirror: "The mirror",
   cooler: "The Merican cooler",
 };
 
@@ -2591,18 +2785,17 @@ function Face({ src, name, size = 40 }) {
 }
 
 function Body({ p, src, me, moving, facing = 1, emote }) {
-  const seed = (p.name || "x").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  const shirts = ["#4A6B8A", "#7A5B7E", "#4F7A63", "#8A6A3E", "#6A5C8A", "#8A4A4A"];
   const worn = wearing(p);
   const c = worn ? COSTUMES[worn.id] : null;
-  const shirt = c?.shirt || shirts[seed % 6];
-  const pants = ["#3E5570", "#45607C", "#374B63"][seed % 3];   // office dress code: jeans
+  const L = lookFor(p);
+  const B = BUILDS[L.build] || BUILDS.regular;
+  const shirt = c?.shirt || TOPS[L.top % TOPS.length];
+  const pants = LEGS[L.legs % LEGS.length];
+  const bottom = c ? "trousers" : L.bottom;      // costumes override the outfit
   const cls = [
-    "pg-body",
-    me ? "me" : "",
-    c?.big ? "big" : "",
-    moving ? "walking" : "idling",
-    emote ? "em-" + emote : "",
+    "pg-body", me ? "me" : "", c?.big ? "big" : "",
+    moving ? "walking" : "idling", emote ? "em-" + emote : "",
+    "bt-" + bottom,
   ].filter(Boolean).join(" ");
 
   return (
@@ -2610,10 +2803,12 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       {emote && <div className="pg-bubble">{EMOTE_ICON[emote] || "!"}</div>}
       <div className="pg-flip" style={{ transform: `scaleX(${facing})` }}>
       <div className="pg-rig">
+        {c?.art && <CostumeSuit art={c.art} layer="back" />}
         {c && <Hat kind={c.hat} />}
         <Face src={src} name={p.name} size={40} />
+        {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
-          <path d="M30 0C18 0 10 8 8 38h44C50 8 42 0 30 0Z" fill={shirt} />
+          <path d={B.torso} fill={shirt} />
           {c?.skirt && <path d="M12 30h36l5 15H7Z" fill={c.skirt} />}
           {c?.tie && <path d="M30 6l4 4-4 16-4-16Z" fill={c.tie} />}
           {c?.floral && <>
@@ -2625,10 +2820,15 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
             <path d="M24 1l6 3-6 4Zm12 0l-6 3 6 4Z" fill="rgba(0,0,0,.18)" />
           </>}
         </svg>
-        <span className="pg-arm left" style={{ background: shirt }} />
-        <span className="pg-arm right" style={{ background: shirt }} />
-        <span className="pg-leg left" style={{ background: pants }} />
-        <span className="pg-leg right" style={{ background: pants }} />
+        {bottom === "skirt" && (
+          <svg viewBox="0 0 60 26" className="pg-skirt" aria-hidden="true">
+            <path d="M14 0h32l7 24H7Z" fill={pants} />
+          </svg>
+        )}
+        <span className="pg-arm left"  style={{ background: shirt, width: B.arm, left: 30 - B.legX - 4 }} />
+        <span className="pg-arm right" style={{ background: shirt, width: B.arm, right: 30 - B.legX - 4 }} />
+        <span className="pg-leg left"  style={{ background: pants, width: B.legW, left: B.legX }} />
+        <span className="pg-leg right" style={{ background: pants, width: B.legW, right: B.legX }} />
         {c?.sign && (
           <div className="pg-sign" style={{
             transform: facing < 0 ? "translateX(-50%) scaleX(-1)" : "translateX(-50%)",
@@ -2642,73 +2842,6 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   );
 }
 
-function ChanceBody({ facing = 1 }) {
-  return (
-    <div className="pg-body chance walking" style={{ transform: `scaleX(${facing})` }}>
-      <div className="pg-rig">
-        <svg viewBox="0 0 74 92" className="pg-chancesvg" aria-hidden="true">
-          {/* head — round, a little heavy through the jaw */}
-          <ellipse cx="37" cy="20" rx="17" ry="16" fill="#E8C6A6" />
-          <path d="M21 15c2-9 10-13 16-13s14 4 16 13c-6-4-10-5-16-5s-10 1-16 5Z" fill="#7A5638" />
-          <ellipse cx="30" cy="20" rx="1.8" ry="2.2" fill="#2C2622" />
-          <ellipse cx="44" cy="20" rx="1.8" ry="2.2" fill="#2C2622" />
-          <path d="M31 28c4 2 8 2 12 0" stroke="#8A6A55" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-          {/* collared shirt, untucked, comfortable */}
-          <path d="M37 36c-14 0-22 6-24 30h48c-2-24-10-30-24-30Z" fill="#5B7A9E" />
-          <path d="M37 36l-7 4 7 9 7-9-7-4Z" fill="#EDF0E6" />
-          <path d="M30 37l7 3-7 4Zm14 0l-7 3 7 4Z" fill="#43607F" />
-          {/* jeans */}
-          <rect x="17" y="66" width="40" height="9" fill="#3E5570" />
-          <rect x="21" y="74" width="14" height="16" rx="2" fill="#3E5570" />
-          <rect x="39" y="74" width="14" height="16" rx="2" fill="#3E5570" />
-        </svg>
-      </div>
-      <span className="pg-shadow wide" />
-    </div>
-  );
-}
-
-function Recap({ season }) {
-  const st = season.stats || {};
-  const row = (label, text) => text ? (
-    <div className="pg-recaprow"><b>{label}</b><span>{text}</span></div>
-  ) : null;
-  return (
-    <>
-      <div className="pg-stamp">Week in review</div>
-      <h3 className="pg-helph">
-        {season.winner_name
-          ? <>Employee of the Week: {season.winner_name}</>
-          : <>Nobody earned anything. Bleak.</>}
-      </h3>
-      {season.winner_name && (
-        <p className="pg-small">{fmt(season.top)} Patron Points in one week. That's a trophy, permanently.</p>
-      )}
-      <div className="pg-recap">
-        {row("Incidents logged", st.total ? `${st.total} things happened to somebody` : null)}
-        {row("Biggest heist", st.heist
-          ? `${st.heist.actor} took credit for ${st.heist.target}'s work — ${fmt(st.heist.amount)} PP`
-          : null)}
-        {row("Ongoing situation", st.feud && st.feud.n >= 3
-          ? `${st.feud.a} and ${st.feud.b} exchanged ${st.feud.n} hostilities`
-          : null)}
-        {row("Wardrobe department", st.stylist
-          ? `${st.stylist.name} dressed people ${st.stylist.n} times`
-          : null)}
-        {row("Actually pleasant", st.kindest
-          ? `${st.kindest.name}, ${st.kindest.n} kind acts. Suspicious.`
-          : null)}
-        {row("Menace of the week", st.menace ? `${st.menace.name}, ${st.menace.n} hostilities` : null)}
-        {row("Took it hardest", st.punchbag
-          ? `${st.punchbag.name} was on the receiving end ${st.punchbag.n} times`
-          : null)}
-        {row("Cover-ups", st.hushed ? `${st.hushed} deed(s) scrubbed with a pineapple` : null)}
-      </div>
-      <p className="pg-small">Weekly points are back to zero. Lifetime totals are untouched.</p>
-    </>
-  );
-}
-
 const EMOTE_ICON = {
   jump: "!", dance: "\u266a", wave: "\u2022\u2022", panic: "\u203c", shrug: "?", type: "\u2328",
 };
@@ -2718,6 +2851,57 @@ function wearing(p) {
   if (!o || !COSTUMES[o.id]) return null;
   if (new Date(o.until).getTime() < Date.now()) return null;
   return o;
+}
+
+/**
+ * Costumes that need more than a shirt colour. Drawn in two layers so the
+ * player's photo sits inside the suit — in the dinosaur's open mouth, which
+ * is exactly how those things look in real life.
+ */
+function CostumeSuit({ art, layer }) {
+  if (art === "dino") {
+    return layer === "back" ? (
+      <svg viewBox="0 0 90 100" className="pg-suit back" aria-hidden="true">
+        {/* tail */}
+        <path d="M20 74c-12 2-19-4-19-12 0-6 5-9 10-8 5 1 6 6 3 9-2 2-6 1-6-2"
+              fill="none" stroke="#3F7431" strokeWidth="7" strokeLinecap="round" />
+        {/* crest ridge behind the head */}
+        <path d="M45 8c-7 2-12 8-14 15 5-3 9-4 14-4s9 1 14 4c-2-7-7-13-14-15Z" fill="#3F7431" />
+      </svg>
+    ) : (
+      <svg viewBox="0 0 90 100" className="pg-suit front" aria-hidden="true">
+        {/* upper jaw + snout over the top of the head */}
+        <path d="M27 20c0-9 8-15 18-15s18 6 18 15c0 3-1 5-2 7H29c-1-2-2-4-2-7Z" fill="#4F8A3C" />
+        <path d="M63 12c8 0 14 3 17 7 2 3 1 6-3 6H62Z" fill="#4F8A3C" />
+        <circle cx="70" cy="16" r="1.8" fill="#1E3A18" />
+        <path d="M31 27l3 5 3-5 3 5 3-5 3 5 3-5 3 5 3-5 3 5 3-5v0H31Z" fill="#F2F3E8" />
+        {/* lower jaw under the chin */}
+        <path d="M30 47c0 5 7 8 15 8s15-3 15-8c0-2-1-4-2-5H32c-1 1-2 3-2 5Z" fill="#3F7431" />
+        <path d="M33 42l3-5 3 5 3-5 3 5 3-5 3 5 3-5 3 5 3-5 3 5H33Z" fill="#F2F3E8" />
+        {/* stubby arms */}
+        <path d="M22 62c-4 0-6 3-6 6s3 5 6 4" fill="none" stroke="#4F8A3C"
+              strokeWidth="6" strokeLinecap="round" />
+        <path d="M68 62c4 0 6 3 6 6s-3 5-6 4" fill="none" stroke="#4F8A3C"
+              strokeWidth="6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (art === "lynx") {
+    return layer === "back" ? (
+      <svg viewBox="0 0 90 100" className="pg-suit back" aria-hidden="true">
+        <path d="M22 76c-11 0-17-6-16-13 1-6 7-8 11-5" fill="none" stroke="#8A6E1F"
+              strokeWidth="7" strokeLinecap="round" />
+        <path d="M30 14l-6-12 14 6Zm30 0l6-12-14 6Z" fill="#8A6E1F" />
+      </svg>
+    ) : (
+      <svg viewBox="0 0 90 100" className="pg-suit front" aria-hidden="true">
+        <path d="M28 10l-5-9 12 5Zm34 0l5-9-12 5Z" fill="#C9A253" />
+        <path d="M36 50c3 3 6 4 9 4s6-1 9-4" fill="none" stroke="#5C4A16"
+              strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return null;
 }
 
 function Hat({ kind }) {
@@ -2783,6 +2967,26 @@ function FixtureArt({ id, board, tierPct }) {
       ))}
       <div className="pg-wbtray" />
     </div>
+  );
+  if (id === "portrait") {
+    const top = board[0];
+    return (
+      <div className="pg-portrait">
+        <div className="pg-portraitframe">
+          <Face src={top?.avatar_url} name={top?.name} size={44} />
+        </div>
+        <div className="pg-portraitplate">{top?.name || "VACANT"}</div>
+      </div>
+    );
+  }
+  if (id === "mirror") return (
+    <div className="pg-mirrorfx"><i /></div>
+  );
+  if (id === "suggestion") return (
+    <div className="pg-sugbox"><i /><span /></div>
+  );
+  if (id === "printer") return (
+    <div className="pg-printerfx"><i /><b /><u /></div>
   );
   if (id === "bulletin") return <div className="pg-bb"><i /><i /><i /><i /><i /><i /></div>;
   if (id === "hr") return <div className="pg-cab"><i /><i /><i /></div>;
@@ -3480,6 +3684,174 @@ function CodeDoor({ onOk }) {
   );
 }
 
+function Mirror({ me, user, onSave, onLook }) {
+  const [img, setImg] = useState(null);
+  const [name, setName] = useState(me?.name || "");
+  const [busy, setBusy] = useState(false);
+  const [look, setLook] = useState(lookFor(me));
+  const fileRef = useRef(null);
+  const cycle = (key, list) => setLook((L) => ({
+    ...L, [key]: list[(list.indexOf(L[key]) + 1) % list.length] }));
+  const cycleN = (key, n) => setLook((L) => ({ ...L, [key]: ((L[key] || 0) + 1) % n }));
+
+  const onFile = (e) => {
+    const f = e.target.files?.[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        const S = 256, cv = document.createElement("canvas");
+        cv.width = S; cv.height = S;
+        const ctx = cv.getContext("2d");
+        const side = Math.min(im.width, im.height);
+        ctx.drawImage(im, (im.width - side) / 2, (im.height - side) / 2, side, side, 0, 0, S, S);
+        setImg(cv.toDataURL("image/jpeg", 0.85));
+      };
+      im.src = r.result;
+    };
+    r.readAsDataURL(f);
+  };
+
+  return (
+    <div>
+      <div className="pg-earnbar">
+        Full length, slightly smudged, tilted just enough to be unflattering. Everyone checks it
+        on the way past and nobody admits to it.
+      </div>
+      <div className="pg-mirrorrow">
+        <div>
+          <div className="pg-mirrorlabel">Now</div>
+          <div className="pg-preview"><Body p={me} src={me?.avatar_url} /></div>
+        </div>
+        <div className="pg-mirrorarrow">&rarr;</div>
+        <div>
+          <div className="pg-mirrorlabel">After</div>
+          <div className="pg-preview">
+            <Body p={{ ...me, name: name || me?.name, look }} src={img || me?.avatar_url} />
+          </div>
+        </div>
+      </div>
+
+      <div className="pg-lookrow">
+        <button className="pg-lookbtn" onClick={() => cycle("build", BUILD_LIST)}>
+          <span>Build</span><b>{BUILD_LABEL[look.build]}</b>
+        </button>
+        <button className="pg-lookbtn" onClick={() => cycle("bottom", BOTTOM_LIST)}>
+          <span>Bottoms</span><b>{BOTTOM_LABEL[look.bottom]}</b>
+        </button>
+        <button className="pg-lookbtn" onClick={() => cycleN("top", TOPS.length)}>
+          <span>Shirt</span><i style={{ background: TOPS[look.top % TOPS.length] }} />
+        </button>
+        <button className="pg-lookbtn" onClick={() => cycleN("legs", LEGS.length)}>
+          <span>Colour</span><i style={{ background: LEGS[look.legs % LEGS.length] }} />
+        </button>
+        <button className="pg-lookbtn wide" onClick={() => setLook(randomLook())}>
+          <b>Shuffle</b>
+        </button>
+      </div>
+      <div className="pg-pad">
+        <button className="pg-btn ghost pg-wide" onClick={() => fileRef.current?.click()}>
+          {img ? "Try a different photo" : "New badge photo"}
+        </button>
+        <input ref={fileRef} type="file" accept="image/*" onChange={onFile}
+               style={{ display: "none" }} />
+        <label className="pg-field" style={{ marginTop: 14 }}>
+          <span>Name on the badge <i className="pg-count">{name.length}/12</i></span>
+          <input value={name} maxLength={12} onKeyDown={(e) => e.stopPropagation()}
+                 onChange={(e) => setName(e.target.value.slice(0, 12))} />
+        </label>
+        <button className="pg-work big" disabled={busy}
+                onClick={async () => {
+                  setBusy(true);
+                  await onLook(look);
+                  await onSave(name.trim(), img);
+                  setBusy(false);
+                }}>
+          {busy ? "Reissuing…" : "Reissue the badge"}
+        </button>
+        <div className="pg-fine">Your points, standing, streak and personnel file are untouched.
+          Only the face and the name plate change.</div>
+      </div>
+    </div>
+  );
+}
+
+function SuggestionBox({ sugg, me, admin, onSend, onJudge }) {
+  const [t, setT] = useState("");
+  const isAdmin = me && admin && me.id === admin;
+  const mine = (sugg || []).filter((x) => x.author === me?.id);
+  const pending = (sugg || []).filter((x) => !x.approved);
+  const live = (sugg || []).filter((x) => x.approved);
+  return (
+    <div>
+      <div className="pg-earnbar">
+        Write a memo. If it's approved it joins the rotation on the office wire and everybody
+        reads it, forever, at random, with no explanation.
+      </div>
+      <div className="pg-pad">
+        <textarea className="pg-suggest" maxLength={160} value={t}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  onChange={(e) => setT(e.target.value)}
+                  placeholder="The microwave has been beeping since Tuesday. Nobody opened it." />
+        <div className="pg-fine">{t.length}/160 · five a day, keep them office-safe</div>
+        <button className="pg-btn" disabled={t.trim().length < 4}
+                onClick={() => { onSend(t.trim()); setT(""); }}>File it</button>
+      </div>
+      {isAdmin && pending.length > 0 && (
+        <>
+          <div className="pg-note">Awaiting your approval:</div>
+          <div className="pg-list">
+            {pending.map((x) => (
+              <div key={x.id} className="pg-row static">
+                <span className="pg-main"><b>{x.text}</b><span>{x.author_name}</span></span>
+                <span className="pg-incbtns">
+                  <button className="pg-btn" onClick={() => onJudge(x.id, true)}>Post</button>
+                  <button className="pg-btn danger" onClick={() => onJudge(x.id, false)}>Bin</button>
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+      {!isAdmin && mine.length > 0 && (
+        <div className="pg-list">
+          {mine.map((x) => (
+            <div key={x.id} className="pg-row static">
+              <span className={"pg-dot " + (x.approved ? "good" : "")} />
+              <span className="pg-main"><b>{x.text}</b>
+                <span>{x.approved ? "in rotation" : "awaiting approval"}</span></span>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="pg-note">{live.length} suggestion(s) currently in the wire.</div>
+    </div>
+  );
+}
+
+function Printer({ jam, onFix }) {
+  return (
+    <div className="pg-pad">
+      {jam ? (
+        <>
+          <div className="pg-stamp">Paper jam</div>
+          <p>It is making the noise. Somebody has to open the tray, remove nothing visible,
+            close the tray, and have it work again.</p>
+          <p className="pg-small">First person to fix it takes the credit and about ten minutes
+            of production. {Math.ceil(jam.endsIn / 1000)}s before somebody else gets there.</p>
+          <button className="pg-btn" onClick={onFix}>Open the tray</button>
+        </>
+      ) : (
+        <>
+          <p>The printer is working. This is a temporary condition and everyone knows it.</p>
+          <p className="pg-small">It jams every so often. When it does, the whole floor is told —
+            and whoever reaches it first gets the credit.</p>
+        </>
+      )}
+    </div>
+  );
+}
+
 function Gate({ onNew }) {
   const [mode, setMode] = useState(null);   // null | "back"
   const [email, setEmail] = useState("");
@@ -3636,7 +4008,9 @@ function Onboard({ user, code, onDone }) {
     try {
       let url = null;
       if (img) { try { url = await uploadBadge(user.id, img); } catch { /* optional */ } }
-      onDone(await api.upsertPlayer(name.trim().slice(0, 12), url, code));
+      const row = await api.upsertPlayer(name.trim().slice(0, 12), url, code);
+      try { await api.setLook(randomLook()); } catch { /* cosmetic */ }
+      onDone(row);
     } catch (e) {
       const m = (e.message || "").toLowerCase();
       setErr(m.includes("code") ? "That's not the office code."
