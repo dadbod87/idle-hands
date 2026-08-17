@@ -776,6 +776,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   animation:pgpop .2s ease-out}
 .pg-deskbubble::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);
   border:7px solid transparent;border-top-color:var(--ink)}
+/* a little more room to breathe near the walls */
+.pg-deskbubble{max-width:min(260px,42vw)}
 
 .pg-mail{padding:12px;border-top:2px solid var(--ink);background:var(--bar)}
 .pg-mailhead{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
@@ -2176,7 +2178,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 84";
+const BUILD = "build 85";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2255,7 +2257,11 @@ function PatronFloor() {
   /** A bubble beside the object you clicked, rather than a toast at the bottom. */
   const sayAt = useCallback((x, y, text, ms = 7500) => {
     const k = ++bubbleN.current;
-    setBubble({ x, y, text, k });
+    // keep it inside the floor — objects on the edge would otherwise have
+    // half the bubble clipped off by the edge of the map
+    const bx = clamp(x, 150, ROOM.w - 150);
+    const by = Math.max(y, 150);
+    setBubble({ x: bx, y: by, text, k });
     setTimeout(() => setBubble((b) => (b && b.k === k ? null : b)), ms);
   }, []);
 
