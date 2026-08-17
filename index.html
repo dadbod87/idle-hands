@@ -914,6 +914,40 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;
   padding-bottom:12px;border-bottom:1px solid var(--rule)}
 
+/* ---------------- the landing card, matched to the invite door ----------------
+   Door and landing are the brand. The badge and the paperwork stay on paper,
+   because those are documents. */
+.pg-hirepage.pg-gate{
+  background:linear-gradient(180deg,rgba(13,13,16,.90),rgba(8,8,10,.94));
+  border:1px solid rgba(201,176,99,.40);
+  box-shadow:0 40px 90px rgba(0,0,0,.72), 0 0 190px 110px rgba(0,0,0,.55),
+             inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(7px) saturate(1.1);
+  -webkit-backdrop-filter:blur(7px) saturate(1.1);
+  position:relative;color:rgba(233,228,214,.82)}
+.pg-gate::before{content:"";position:absolute;inset:9px;pointer-events:none;
+  border:1px solid rgba(201,176,99,.16)}
+.pg-gate .pg-gatehead{color:rgba(201,176,99,.72);border-bottom-color:rgba(201,176,99,.22)}
+.pg-gate .pg-eyebrow{color:rgba(201,176,99,.55)}
+.pg-gate .pg-h1{
+  background:linear-gradient(180deg,#FBF0D2 0%,#E0C176 38%,#B8934A 62%,#7E6224 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 1px 0 rgba(0,0,0,.6))}
+.pg-gate .pg-tagline{color:#C9A253;border-color:rgba(201,176,99,.35)}
+.pg-gate .pg-pitch li{color:rgba(233,228,214,.80)}
+.pg-gate .pg-pitch li b{color:#F6E3AE}
+.pg-gate .pg-fine{color:rgba(196,190,172,.45)}
+.pg-gate .pg-work{background:linear-gradient(180deg,#C9A253,#8A6A2A);color:#14140F;
+  border:1px solid rgba(255,233,168,.5);box-shadow:0 3px 0 rgba(0,0,0,.45)}
+.pg-gate .pg-btn.ghost{background:rgba(0,0,0,0);color:#E8DFC4;
+  border:1px solid rgba(201,176,99,.45)}
+.pg-gate .pg-field span{color:rgba(201,176,99,.7)}
+.pg-gate .pg-field input{background:rgba(0,0,0,.35);color:#F6E3AE;
+  border:1px solid rgba(201,176,99,.4)}
+.pg-gate .pg-stamp{color:#C9A253;border-color:rgba(201,176,99,.5)}
+.pg-gate .pg-pad p{color:rgba(233,228,214,.8)}
+.pg-gate .pg-pad p b{color:#F6E3AE}
+
 </style>
 </head>
 <body>
@@ -2142,7 +2176,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 82";
+const BUILD = "build 83";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4854,7 +4888,7 @@ function Gate({ onNew }) {
   };
 
   return (
-    <div className="pg-hirepage pg-paper">
+    <div className="pg-hirepage pg-gate">
       <div className="pg-gatehead">The Patron Group</div>
       <div className="pg-eyebrow">A Patron Group production · {BUILD}</div>
       <h1 className="pg-h1">Idle Hands</h1>
