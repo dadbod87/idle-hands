@@ -1363,7 +1363,7 @@ const FIXTURES = [
       "Two people are already here having the conversation. You wait. You leave.",
     ] },
   { id: "thermostat", panel: null, label: "The Thermostat", sub: "Do not touch it",
-    x: 1860, y: 44, w: 54, h: 54, deny: [
+    x: 1866, y: 52, w: 38, h: 38, deny: [
       "It reads 71. It has read 71 for two years. The room is not 71.",
       "You reach for it. Somewhere in the building, somebody senses this.",
       "There is a small handwritten sign taped beside it. It says DON'T.",
@@ -2133,7 +2133,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 79";
+const BUILD = "build 80";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2153,7 +2153,11 @@ function PatronFloor() {
   const [chair, setChair] = useState(null);
   const [pos, setPos] = useState({ x: 900, y: 700 });
   const [near, setNear] = useState(null);
-  const [view, setView] = useState({ w: 900, h: 560 });
+  const [stage, setStage] = useState({ w: 900, h: 560 });
+  // A phone is ~400 CSS px wide against a 3400px floor. Without a zoom you see
+  // a tenth of the room and every object looks enormous.
+  const zoom = clamp(stage.w / 820, 0.5, 1);
+  const view = { w: stage.w / zoom, h: stage.h / zoom };
   const [showHelp, setShowHelp] = useState(false);
   const [ev, setEv] = useState(null);
   const [nextEv, setNextEv] = useState(null);
@@ -2585,7 +2589,7 @@ function PatronFloor() {
       const chrome = 170;                       // action bar + ticker + breathing room
       const avail = window.innerHeight - top - chrome;
       const h = clamp(Math.round(avail), 320, Math.min(ROOM.h, 820));
-      setView((v) => (v.w === w && v.h === h ? v : { w, h }));
+      setStage((v) => (v.w === w && v.h === h ? v : { w, h }));
     };
     fit();
     window.addEventListener("resize", fit);
@@ -2821,8 +2825,8 @@ function PatronFloor() {
 
   const walkClick = (e) => {
     if (!roomRef.current) return;
-    const r = roomRef.current.getBoundingClientRect();
-    routeTo(e.clientX - r.left, e.clientY - r.top);
+    const r = stageRef.current.getBoundingClientRect();
+    routeTo((e.clientX - r.left) / zoom + cam.x, (e.clientY - r.top) / zoom + cam.y);
   };
   const openFixture = (f) => {
     if (!f) return;
@@ -2985,9 +2989,10 @@ function PatronFloor() {
         )}
       </div>
 
-      <div ref={stageRef} className="pg-stage" style={{ height: view.h }}>
+      <div ref={stageRef} className="pg-stage" style={{ height: stage.h }}>
         <div ref={roomRef} className="pg-room"
-             style={{ width: ROOM.w, height: ROOM.h, transform: `translate(${-cam.x}px, ${-cam.y}px)` }}
+             style={{ width: ROOM.w, height: ROOM.h, transformOrigin: "0 0",
+                      transform: `scale(${zoom}) translate(${-cam.x}px, ${-cam.y}px)` }}
              onClick={walkClick}>
           <div className="pg-wall" style={{ height: WALL_H }} />
           <div className="pg-carpet" style={{ top: WALL_H }} />
