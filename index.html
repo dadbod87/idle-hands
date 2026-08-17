@@ -2178,7 +2178,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 85";
+const BUILD = "build 86";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4042,6 +4042,15 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit }) {
           </button>
         ))}
       </div>
+      {target && !mine && cool > 0 && (
+        <div className="pg-note pg-tooearly">
+          You did something to somebody {Math.ceil(cool / 60000) >= 1
+            ? `${Math.ceil(cool / 60000)} minute(s)` : "moments"} ago. There's a five minute
+          cooling-off period before you can do anything to a coworker again — dressing yourself
+          still works.
+        </div>
+      )}
+
       {target && (
         <div className="pg-list">
           {kinds.map((k, i) => {
@@ -4051,7 +4060,8 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit }) {
                       disabled={pp < price || cool > 0} onClick={() => onCommit(target, k)}>
                 <span className={"pg-dot " + (good ? "good" : "bad")} />
                 <span className="pg-main"><b>{DEED_TEXT[k].label}</b><span>{DEED_TEXT[k].eff}</span></span>
-                <span className="pg-right"><b>{fmt(price)}</b><span>PP</span></span>
+                <span className="pg-right"><b>{fmt(price)}</b>
+                  <span>{cooling ? "cooling off" : broke ? "can't afford" : "PP"}</span></span>
               </button>
             );
           })}
@@ -4114,6 +4124,15 @@ function Owner({ me, board, lifetime, pp, cool, cat, onMeeting, onRaise, onBlame
           </button>
         ))}
       </div>
+      {target && !mine && cool > 0 && (
+        <div className="pg-note pg-tooearly">
+          You did something to somebody {Math.ceil(cool / 60000) >= 1
+            ? `${Math.ceil(cool / 60000)} minute(s)` : "moments"} ago. There's a five minute
+          cooling-off period before you can do anything to a coworker again — dressing yourself
+          still works.
+        </div>
+      )}
+
       {target && (
         <div className="pg-list">
           <button className={"pg-row" + (pp < blameCost || cool > 0 || heat <= 0 ? " poor" : "")}
@@ -4475,18 +4494,30 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
         ))}
       </div>
 
+      {target && !mine && cool > 0 && (
+        <div className="pg-note pg-tooearly">
+          You did something to somebody {Math.ceil(cool / 60000) >= 1
+            ? `${Math.ceil(cool / 60000)} minute(s)` : "moments"} ago. There's a five minute
+          cooling-off period before you can do anything to a coworker again — dressing yourself
+          still works.
+        </div>
+      )}
+
       {target && (
         <div className="pg-list">
           {list.map((c, i) => {
             const price = Math.max(120, lifetime * c.cost) * (mine ? 1 : 2);
-            const disabled = pp < price || (!mine && cool > 0);
+            const broke = pp < price;
+            const cooling = !mine && cool > 0;
+            const disabled = broke || cooling;
             return (
               <button key={c.id} className={"pg-row" + (i % 2 ? " alt" : "") + (disabled ? " poor" : "")}
                       disabled={disabled} onClick={() => onDress(target, c.id)}>
                 <span className="pg-costume"><Hat kind={COSTUMES[c.id]?.hat} />
                   {!COSTUMES[c.id]?.hat && <i style={{ background: COSTUMES[c.id]?.shirt }} />}</span>
                 <span className="pg-main"><b>{c.name}</b><span>{COSTUMES[c.id]?.note}</span></span>
-                <span className="pg-right"><b>{fmt(price)}</b><span>PP</span></span>
+                <span className="pg-right"><b>{fmt(price)}</b>
+                  <span>{cooling ? "cooling off" : broke ? "can't afford" : "PP"}</span></span>
               </button>
             );
           })}
