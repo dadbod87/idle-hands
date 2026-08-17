@@ -795,10 +795,11 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-jam.done{background:#3E5A46;cursor:default}
 
 /* the thermostat nobody is allowed to touch */
-.pg-thermo{width:100%;height:100%;background:#E8EAE0;border:3px solid #6E756B;
-  display:flex;align-items:center;justify-content:center;position:relative}
-.pg-thermo i{position:absolute;left:6px;right:6px;top:6px;height:3px;background:#B23B2E}
-.pg-thermo b{font-family:var(--mono);font-size:15px;color:#2C3330}
+.pg-thermo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:38px;height:38px;background:#E8EAE0;border:3px solid #6E756B;
+  display:flex;align-items:center;justify-content:center}
+.pg-thermo i{position:absolute;left:5px;right:5px;top:4px;height:3px;background:#B23B2E}
+.pg-thermo b{font-family:var(--mono);font-size:12px;color:#2C3330}
 /* the sink, and the mug that lives in it */
 .pg-sink{width:100%;height:100%;background:#C3C8BC;border:4px solid #8A9084;position:relative}
 .pg-sink i{position:absolute;left:12%;right:12%;top:24%;bottom:18%;background:#9AA294;
@@ -904,6 +905,14 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   border:2px solid #7C8378;clip-path:polygon(0 0,100% 0,70% 100%,30% 100%)}
 .pg-office.ghost{opacity:.9}
 .pg-office.ghost .pg-officefloor{filter:grayscale(.45) brightness(.92)}
+
+/* small objects get an invisible tap margin so a finger can hit them */
+.pg-fx::before{content:"";position:absolute;inset:-14px;}
+
+/* the landing card sits on the artwork; it doesn't need the mark repeated */
+.pg-gatehead{font-family:var(--mono);font-size:10px;letter-spacing:.4em;text-indent:.4em;
+  text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;
+  padding-bottom:12px;border-bottom:1px solid var(--rule)}
 
 </style>
 </head>
@@ -1363,7 +1372,7 @@ const FIXTURES = [
       "Two people are already here having the conversation. You wait. You leave.",
     ] },
   { id: "thermostat", panel: null, label: "The Thermostat", sub: "Do not touch it",
-    x: 1866, y: 52, w: 38, h: 38, deny: [
+    x: 1850, y: 36, w: 76, h: 76, deny: [
       "It reads 71. It has read 71 for two years. The room is not 71.",
       "You reach for it. Somewhere in the building, somebody senses this.",
       "There is a small handwritten sign taped beside it. It says DON'T.",
@@ -2133,7 +2142,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 80";
+const BUILD = "build 82";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4846,7 +4855,7 @@ function Gate({ onNew }) {
 
   return (
     <div className="pg-hirepage pg-paper">
-      <div className="pg-markhead"><PatronMark size={86} /></div>
+      <div className="pg-gatehead">The Patron Group</div>
       <div className="pg-eyebrow">A Patron Group production · {BUILD}</div>
       <h1 className="pg-h1">Idle Hands</h1>
       <p className="pg-tagline">An idle office game. It plays while you work.</p>
