@@ -2176,7 +2176,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 83";
+const BUILD = "build 84";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2194,7 +2194,7 @@ function PatronFloor() {
   const [report, setReport] = useState(null);
   const [toast, setToast] = useState(null);
   const [chair, setChair] = useState(null);
-  const [pos, setPos] = useState({ x: 900, y: 700 });
+  const [pos, setPos] = useState({ x: 1500, y: 860 });   // middle of the hall
   const [near, setNear] = useState(null);
   const [stage, setStage] = useState({ w: 900, h: 560 });
   // A phone is ~400 CSS px wide against a 3400px floor. Without a zoom you see
@@ -2238,7 +2238,7 @@ function PatronFloor() {
   const clickBuf = useRef(0);
   const [err, setErr] = useState(null);
 
-  const posRef = useRef({ x: 900, y: 700 });
+  const posRef = useRef({ x: 1500, y: 860 });
   const goRef = useRef(null);
   const keysRef = useRef({});
   const roomRef = useRef(null);
