@@ -323,7 +323,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 @keyframes pgstep{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-3px) rotate(1.5deg)}}
 @keyframes pgswing{0%,100%{transform:rotate(24deg)}50%{transform:rotate(-24deg)}}
 
-.pg-bubble{position:absolute;left:50%;transform:translateX(-50%);top:-26px;z-index:9;
+.pg-bubble{z-index:20;position:absolute;left:50%;transform:translateX(-50%);top:-26px;z-index:9;
   background:var(--paper);border:2px solid var(--ink);border-radius:10px;padding:1px 7px;
   font-family:var(--mono);font-size:12px;font-weight:700;animation:pgpop .25s ease-out}
 @keyframes pgpop{from{transform:translateX(-50%) scale(0)}to{transform:translateX(-50%) scale(1)}}
@@ -406,7 +406,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-chance.leaving{animation:pgfadeout 12s linear forwards}
 @keyframes pgfadein{from{opacity:0}to{opacity:1}}
 @keyframes pgfadeout{from{opacity:1}to{opacity:.15}}
-.pg-mumble{position:absolute;left:50%;transform:translateX(-50%);top:-38px;
+.pg-mumble{position:absolute;left:50%;transform:translateX(-50%);top:-38px;z-index:20;
   background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:4px 10px;
   font-size:11px;font-style:italic;z-index:12;width:max-content;max-width:230px;
   white-space:normal;overflow-wrap:break-word;text-align:center;line-height:1.35}
@@ -2178,7 +2178,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 86";
+const BUILD = "build 87";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3115,7 +3115,7 @@ function PatronFloor() {
             if (!live || (me && p.id === me.id)) return null;
             return (
               <div key={"live" + p.id} className="pg-me"
-                   style={{ left: live.x, top: live.y, zIndex: Math.round(live.y) + 4 }}>
+                   style={{ left: live.x, top: live.y, zIndex: 5000 + Math.round(live.y) }}>
                 {chatter?.id === p.id && <div className="pg-mumble said">{chatter.text}</div>}
                 <Body p={p} src={p.avatar_url} moving={live.m} facing={live.f || 1} emote={live.e} />
                 <div className="pg-peername">{p.name}</div>
@@ -3125,7 +3125,7 @@ function PatronFloor() {
 
           {chance && (
             <div className={"pg-me pg-chance" + (chance.leaving ? " leaving" : "")}
-                 style={{ left: chance.x, top: chance.y, zIndex: Math.round(chance.y) + 6 }}>
+                 style={{ left: chance.x, top: chance.y, zIndex: 5000 + Math.round(chance.y) }}>
               <div className="pg-mumble">{chance.line}</div>
               <ChanceBody facing={chance.facing} />
               <div className="pg-peername">Chance <em>former employee</em></div>
@@ -3147,12 +3147,12 @@ function PatronFloor() {
 
           {bubble && (
             <div key={bubble.k} className="pg-deskbubble"
-                 style={{ left: bubble.x, top: bubble.y, zIndex: Math.round(bubble.y) + 40 }}>
+                 style={{ left: bubble.x, top: bubble.y, zIndex: 6000 + Math.round(bubble.y) }}>
               {bubble.text}
             </div>
           )}
 
-          <div className="pg-me" style={{ left: pos.x, top: pos.y, zIndex: Math.round(pos.y) + 5 }}>
+          <div className="pg-me" style={{ left: pos.x, top: pos.y, zIndex: 5000 + Math.round(pos.y) }}>
             <Body p={me || { name: me?.name }} src={me?.avatar_url} me
                   moving={moving} facing={facing}
                   emote={emote && emote.until > Date.now() ? emote.id : null} />
