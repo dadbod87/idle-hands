@@ -2178,7 +2178,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 87";
+const BUILD = "build 88";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4042,12 +4042,10 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit }) {
           </button>
         ))}
       </div>
-      {target && !mine && cool > 0 && (
+      {target && cool > 0 && (
         <div className="pg-note pg-tooearly">
-          You did something to somebody {Math.ceil(cool / 60000) >= 1
-            ? `${Math.ceil(cool / 60000)} minute(s)` : "moments"} ago. There's a five minute
-          cooling-off period before you can do anything to a coworker again — dressing yourself
-          still works.
+          You did something to somebody recently. There's a five minute cooling-off period
+          before you can do anything to a coworker again.
         </div>
       )}
 
@@ -4124,12 +4122,10 @@ function Owner({ me, board, lifetime, pp, cool, cat, onMeeting, onRaise, onBlame
           </button>
         ))}
       </div>
-      {target && !mine && cool > 0 && (
+      {target && cool > 0 && (
         <div className="pg-note pg-tooearly">
-          You did something to somebody {Math.ceil(cool / 60000) >= 1
-            ? `${Math.ceil(cool / 60000)} minute(s)` : "moments"} ago. There's a five minute
-          cooling-off period before you can do anything to a coworker again — dressing yourself
-          still works.
+          You did something to somebody recently. There's a five minute cooling-off period
+          before you can do anything to a coworker again.
         </div>
       )}
 
