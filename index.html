@@ -1086,6 +1086,19 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   text-transform:uppercase;color:#F6E3AE}
 .pg-betanote span{display:block;font-family:var(--mono);font-size:10.5px;color:#A9A18A;margin-top:3px}
 
+/* the machine, with a window you can watch */
+.pg-slot{display:flex;align-items:center;gap:12px;margin:10px 0 8px;padding:12px;
+  background:#1B211C;border:2px solid #3A4238}
+.pg-slotwin{width:64px;height:64px;flex:none;background:#0E120F;border:3px solid #C9A253;
+  border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  box-shadow:inset 0 0 14px rgba(0,0,0,.8)}
+.pg-slotreel{font-family:var(--mono);font-size:30px;color:#F6E3AE;line-height:1}
+.pg-slot.pulling .pg-slotwin{border-color:#E8B23C}
+.pg-slot.pulling .pg-slotreel{animation:pgReel .09s steps(2) infinite}
+.pg-slot.landed .pg-slotwin{box-shadow:inset 0 0 14px rgba(0,0,0,.8), 0 0 16px rgba(201,162,83,.65)}
+@keyframes pgReel{0%{transform:translateY(-6px);opacity:.35}100%{transform:translateY(6px);opacity:1}}
+.pg-slotout{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:#E9E4D6}
+
 </style>
 </head>
 <body>
@@ -1219,8 +1232,9 @@ function officeFor(board, id) {
 /* Deed copy. The numbers come from the DB; these are the jokes. */
 const DEED_TEXT = {
   nickname: { label: "Nickname", eff: "Names them for an hour. Everyone sees it.",
-              mine: (n, d) => `You started calling ${n} "${d}". It will stick.`,
-              theirs: (n, d) => `${n} started calling you "${d}".` },
+    mine: (n, d) => `You started calling ${n} "${d}". It will stick.`,
+    wire: (a, b, amt, d) => `${a} started calling ${b} "${d || "something"}".`,
+    hit: (n, d) => `${n} started calling you "${d || "something"}". It is catching on.` },
   coffee: { label: "Leave a coffee", eff: "+35% output for 30 min", good: true,
     mine: (n) => `You left a coffee on ${n}'s desk. Generous. Suspicious.`,
     wire: (a, b) => `${a} left a coffee on ${b}'s desk.`,
@@ -2296,6 +2310,7 @@ const api = {
   setPin: (id) => rpc("set_pin", { p_id: id }),
   spendBoard: () => rpc("spend_board"),
   betaTesters: () => rpc("beta_testers"),
+  allPrices: () => rpc("all_prices"),
   signCard: () => rpc("sign_card"),
   signAgreement: (sig, version) =>
     rpc("sign_agreement", { p_signature: sig, p_version: version }),
@@ -2385,7 +2400,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 107";
+const BUILD = "build 108";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2441,6 +2456,8 @@ function PatronFloor() {
   const [pins, setPins] = useState(null);
   const [spend, setSpend] = useState(null);
   const [testers, setTesters] = useState(null);
+  const [prices, setPrices] = useState(null);   // server quotes; lifetime-based sums drift
+  const vendQuote = { vend: prices?.vending ?? 0 };
   const [mascotReal, setMascotReal] = useState(false);
   const [jam, setJam] = useState(null);
   const [streakCard, setStreakCard] = useState(null);
@@ -2594,6 +2611,7 @@ function PatronFloor() {
       api.weeklyPins().then(setPins).catch(() => {});
       api.spendBoard().then(setSpend).catch(() => {});
       api.betaTesters().then(setTesters).catch(() => {});
+      api.allPrices().then(setPrices).catch(() => {});
     };
     const un = subscribeFloor(refresh);
     const cats = setInterval(() => { loadCatalog().then(setCat).catch(() => {}); }, 180000);
@@ -3463,6 +3481,7 @@ function PatronFloor() {
                   setFloor(await loadFloor());
                   api.spendBoard().then(setSpend).catch(() => {});
       api.betaTesters().then(setTesters).catch(() => {});
+      api.allPrices().then(setPrices).catch(() => {});
                   sfx("buy");
                   flash(x.name + " — pinned on.");
                 } catch (e) { flash(prettyError(e)); }
@@ -3485,7 +3504,7 @@ function PatronFloor() {
           {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} />}
           {(panel === "kindness" || panel === "sabotage") && (
             <Targets good={panel === "kindness"} board={board} me={me} cat={cat}
-                     lifetime={lifetime} pp={pp} cool={cool} onCommit={commit} />
+                     lifetime={lifetime} pp={pp} cool={cool} onCommit={commit} prices={prices} />
           )}
           {panel === "owner" && (
             <Owner me={me} board={board} lifetime={lifetime} pp={pp} cool={cool} cat={cat}
@@ -3580,6 +3599,7 @@ function PatronFloor() {
           )}
           {panel === "wardrobe" && (
             <Wardrobe me={me} board={board} lifetime={lifetime} pp={pp} cool={cool} cat={cat}
+                      prices={prices}
                       onNickname={async (t, text) => {
                         try {
                           applyServer(await api.giveNickname(t.id, text));
@@ -3594,6 +3614,7 @@ function PatronFloor() {
           )}
           {panel === "fund" && (
             <Fund fund={fund} nextTier={nextTier} prevTier={prevTier} office={office} card={card}
+              pp={pp} quote={vendQuote}
               onVend={async () => {
                 try {
                   const prize = await api.useVending();
@@ -4426,7 +4447,7 @@ function Standings({ board, me, fund, feuds = [] }) {
   );
 }
 
-function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit }) {
+function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit, prices }) {
   const [sel, setSel] = useState(null);
   const kinds = Object.keys(DEED_TEXT).filter(
     (k) => DEED_TEXT[k].good === good && !DEED_TEXT[k].office && !DEED_TEXT[k].elsewhere);
@@ -4453,7 +4474,8 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit }) {
       {target && (
         <div className="pg-list">
           {kinds.map((k, i) => {
-            const price = Math.max(60, lifetime * (cat.deeds?.[k]?.cost || 0.02));
+            const price = prices?.["deed_" + k]
+              ?? Math.max(60, lifetime * (cat.deeds?.[k]?.cost || 0.02));
             return (
               <button key={k} className={"pg-row" + (i % 2 ? " alt" : "") + (pp < price || cool > 0 ? " poor" : "")}
                       disabled={pp < price || cool > 0} onClick={() => onCommit(target, k)}>
@@ -4558,7 +4580,8 @@ function Wire({ wire, feed, lifetime, onPineapple, testers }) {
     <div className="pg-list">
       {wire.length === 0 && <div className="pg-note">Nothing has happened yet. Somebody should do something.</div>}
       {wire.map((d, i) => {
-        const T = DEED_TEXT[d.kind]; if (!T) return null;
+        const T = DEED_TEXT[d.kind];
+        if (!T || typeof T.wire !== "function") return null;   // never crash the board
         return (
           <div key={d.id} className={"pg-row static" + (i % 2 ? " alt" : "")}>
             <span className={"pg-dot " + (T.good ? "good" : "bad")} />
@@ -4706,9 +4729,13 @@ function Personnel({ me, lifetime, cat, onDept, user, onSave, onLook, spend, pin
   );
 }
 
-function Fund({ fund, nextTier, prevTier, office, card, onVend, onSign }) {
+const FACES = ["$", "+", "—", "?", "*", "!"];
+
+function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSign }) {
   const [prize, setPrize] = useState(null);
   const [vending, setVending] = useState(false);
+  const [reel, setReel] = useState("?");
+  const vendPrice = quote?.vend ?? 0;
   const signed = !!card?.mine;
   const need = Math.max(0, (card?.staff || 0) - (card?.signers?.length || 0));
   const unlocked = FUND_TIERS.filter((t) => fund >= t.at).length;
@@ -4774,17 +4801,32 @@ function Fund({ fund, nextTier, prevTier, office, card, onVend, onSign }) {
       <div className="pg-sep" />
       <h4 className="pg-h4">The Machine</h4>
       <p className="pg-note">Put money in. Something comes out. Usually.</p>
-      <button className="pg-btn pg-wide" disabled={vending}
+
+      <div className={"pg-slot" + (vending ? " pulling" : "") + (prize ? " landed" : "")}>
+        <div className="pg-slotwin">
+          <span className="pg-slotreel">{vending ? reel : (prize ? prize.glyph : "?")}</span>
+        </div>
+        <div className="pg-slotout">
+          {vending ? "..." : prize ? prize.text : "Nothing in the tray."}
+        </div>
+      </div>
+
+      <button className="pg-btn pg-wide danger" disabled={vending || pp < vendPrice}
               onClick={async () => {
-                setVending(true);
-                const p = await onVend();
-                if (p) setPrize(p.text || "Something fell out.");
-                setVending(false);
+                setVending(true); setPrize(null);
+                const spin = setInterval(() => setReel(FACES[Math.floor(Math.random() * FACES.length)]), 90);
+                const got = await onVend();
+                setTimeout(() => {
+                  clearInterval(spin);
+                  setPrize(got ? { text: got.text || "Something fell out.",
+                                   glyph: got.kind === "pp" ? "$" : got.mult ? "+" : "—" } : null);
+                  setVending(false);
+                }, 1100);
               }}>
-        {vending ? "The coil is turning..." : "Try the vending machine"}
+        {vending ? "..." : pp < vendPrice ? "Not enough for a pull" : "Pull — " + fmt(vendPrice) + " PP"}
       </button>
-      {prize && <div className="pg-vendout">{prize}</div>}
-      <div className="pg-fine">Once every ten minutes. The machine does not negotiate.</div>
+      <div className="pg-fine">One pull every ten minutes. Nine things can come out and one of
+        them is nothing at all. The machine does not negotiate.</div>
 
       {card && (
         <>
@@ -4948,7 +4990,7 @@ function Cooler({ cat, me, onDrink }) {
   );
 }
 
-function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCommit, onNickname }) {
+function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCommit, onNickname, prices }) {
   const [nick, setNick] = useState("");
   const [sel, setSel] = useState(me?.id || null);
   const target = board.find((p) => p.id === sel);
@@ -5006,7 +5048,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
           </div>
           <button className="pg-btn pg-wide" disabled={nick.trim().length < 2}
                   onClick={() => { onNickname(target, nick.trim()); setNick(""); }}>
-            Make it stick — {fmt(Math.max(100, lifetime * 0.012))} PP
+            Make it stick — {fmt(prices?.nickname ?? Math.max(100, lifetime * 0.012))} PP
           </button>
           <div className="pg-fine">Hangs under their name for an hour, for everybody. They
             can't take it off, but somebody else can replace it. Keep it office-safe.</div>
@@ -5025,7 +5067,8 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
       {target && (
         <div className="pg-list">
           {list.map((c, i) => {
-            const price = Math.max(120, lifetime * c.cost) * (mine ? 1 : 2);
+            const base = prices?.["cos_" + c.id] ?? Math.max(120, lifetime * c.cost);
+            const price = base * (mine ? 1 : 2);
             const broke = pp < price;
             const cooling = !mine && cool > 0;
             const disabled = broke || cooling;
