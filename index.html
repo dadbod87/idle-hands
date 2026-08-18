@@ -951,6 +951,19 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-gate .pg-pad p{color:rgba(233,228,214,.8)}
 .pg-gate .pg-pad p b{color:#F6E3AE}
 
+/* nicknames, out of office, and the stag that briefly behaves */
+.pg-nick{position:absolute;left:50%;transform:translateX(-50%);bottom:-17px;white-space:nowrap;
+  font-family:var(--mono);font-size:8px;letter-spacing:.05em;color:#FFC9C9;
+  text-shadow:0 1px 3px rgba(0,0,0,.9)}
+.pg-ooo{display:block;font-family:var(--mono);font-size:7.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:#C9A253;margin-top:1px}
+.pg-mascot{cursor:pointer}
+.pg-mascot.real{background-image:url("./logo.png");background-size:contain;
+  background-repeat:no-repeat;background-position:center;background-color:#14140F;
+  box-shadow:0 0 26px rgba(201,162,83,.55)}
+.pg-mascot.real::before,.pg-mascot.real::after{opacity:0}
+.pg-nickbox{border:1px solid var(--rule);padding:12px;margin:12px 0;background:rgba(0,0,0,.02)}
+
 </style>
 </head>
 <body>
@@ -1083,6 +1096,9 @@ function officeFor(board, id) {
 
 /* Deed copy. The numbers come from the DB; these are the jokes. */
 const DEED_TEXT = {
+  nickname: { label: "Nickname", eff: "Names them for an hour. Everyone sees it.",
+              mine: (n, d) => `You started calling ${n} "${d}". It will stick.`,
+              theirs: (n, d) => `${n} started calling you "${d}".` },
   coffee: { label: "Leave a coffee", eff: "+35% output for 30 min", good: true,
     mine: (n) => `You left a coffee on ${n}'s desk. Generous. Suspicious.`,
     wire: (a, b) => `${a} left a coffee on ${b}'s desk.`,
@@ -2096,6 +2112,10 @@ const api = {
   buyPerk: (id) => rpc("buy_perk", { p_id: id }),
   claimContract: (i) => rpc("claim_contract", { p_idx: i }),
   openMail: () => rpc("open_mail"),
+  giveNickname: (id, text) => rpc("give_nickname", { p_target: id, p_text: text }),
+  setOoo: (text) => rpc("set_ooo", { p_text: text }),
+  useVending: () => rpc("use_vending"),
+  signCard: () => rpc("sign_card"),
   signAgreement: (sig, version) =>
     rpc("sign_agreement", { p_signature: sig, p_version: version }),
 };
@@ -2117,6 +2137,11 @@ async function loadCatalog() {
     out.admin_id = d || null;
   } catch { out.admin_id = null; }
   return out;
+}
+
+async function loadCard() {
+  const { data } = await supabase.rpc("card_state");
+  return data || null;
 }
 
 async function loadOffice() {
@@ -2179,7 +2204,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 90";
+const BUILD = "build 91";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2221,6 +2246,8 @@ function PatronFloor() {
   const [stale, setStale] = useState(false);      // a newer build is on the server
   const [sugg, setSugg] = useState([]);
   const [office, setOffice] = useState(null);
+  const [card, setCard] = useState(null);
+  const [mascotReal, setMascotReal] = useState(false);
   const [jam, setJam] = useState(null);
   const [streakCard, setStreakCard] = useState(null);
   const [bubble, setBubble] = useState(null);      // speech, anchored to a thing on the floor
@@ -2234,6 +2261,8 @@ function PatronFloor() {
   const catRef = useRef({});
   const bubbleN = useRef(0);
   const jamSeen = useRef(null);
+  const knocks = useRef({});
+  const eggs = useRef({ stag: 0, opened: false });
   const chairSeen = useRef(null);
   const suggRef = useRef([]);
   const atDeskRef = useRef(false);
@@ -2368,6 +2397,7 @@ function PatronFloor() {
     const refresh = async () => {
       setFloor(await loadFloor());
       loadOffice().then(setOffice).catch(() => {});
+      loadCard().then(setCard).catch(() => {});
     };
     const un = subscribeFloor(refresh);
     const cats = setInterval(() => { loadCatalog().then(setCat).catch(() => {}); }, 180000);
@@ -2880,6 +2910,17 @@ function PatronFloor() {
   };
   const openFixture = (f) => {
     if (!f) return;
+    if (f.id === "restroom") {
+      knocks.current.restroom = (knocks.current.restroom || 0) + 1;
+      if (knocks.current.restroom >= 50 && !eggs.current.opened) {
+        eggs.current.opened = true;
+        sfx("good");
+        sayAt(f.x + f.w / 2, f.y + f.h + 4,
+          "The door opens. A man you have never seen looks up from a paperback, says " +
+          "\"nearly done\", and closes it again. It never opens again.", 11000);
+        return;
+      }
+    }
     if (f.deny) {                       // some doors don't open
       setKnocks((k) => ({ ...k, [f.id]: (k[f.id] || 0) + 1 }));
       const extra = (catRef.current.deny_extra || {})[f.id] || [];
@@ -3053,6 +3094,17 @@ function PatronFloor() {
               <i /><span>The Kitchen</span>
             </div>
           ) : d.t === "mascot" ? (
+            <div key={"d" + i} className={"pg-mascot" + (mascotReal ? " real" : "")}
+                 style={{ left: d.x, top: d.y, zIndex: Math.round(d.y) - 1 }}
+                 onClick={() => {
+                   eggs.current.stag = (eggs.current.stag || 0) + 1;
+                   if (eggs.current.stag % 10 === 0) {
+                     setMascotReal(true);
+                     sfx("good");
+                     setTimeout(() => setMascotReal(false), 4000);
+                   }
+                 }} />
+          ) : d.t === "__never" ? (
             <div key={"d" + i} className="pg-decor pg-mascotframe"
                  style={{ left: d.x, top: d.y, zIndex: Math.round(d.y) - 1 }}>
               <BadStag />
@@ -3091,6 +3143,7 @@ function PatronFloor() {
                   {chances
                     ? <><b>Chance</b><span>Former Employee</span></>
                     : p ? <><b>{p.name}</b>
+                            {p.ooo && <span className="pg-ooo">{p.ooo}</span>}
                             {(deptName(cat, p.dept) || jobFor(p.name)) &&
                               <span className="pg-job">{deptName(cat, p.dept) || jobFor(p.name)}</span>}
                             <span>{fmt(p.lifetime || 0)} PP</span></>
@@ -3295,12 +3348,36 @@ function PatronFloor() {
           )}
           {panel === "wardrobe" && (
             <Wardrobe me={me} board={board} lifetime={lifetime} pp={pp} cool={cool} cat={cat}
+                      onNickname={async (t, text) => {
+                        try {
+                          applyServer(await api.giveNickname(t.id, text));
+                          setFloor(await loadFloor());
+                          sfx("dress");
+                          say(`You started calling ${t.name} "${text}".`, "bad");
+                        } catch (e) { flash(prettyError(e)); }
+                      }}
                       onDress={dress}
                       onChange={() => guard(() => api.changeClothes(), "Changed.")}
                       onCommit={() => guard(() => api.commitToBit(), "+25% for the duration")} />
           )}
           {panel === "fund" && (
-            <Fund fund={fund} nextTier={nextTier} prevTier={prevTier} office={office} />
+            <Fund fund={fund} nextTier={nextTier} prevTier={prevTier} office={office} card={card}
+              onVend={async () => {
+                try {
+                  const prize = await api.useVending();
+                  applyServer(await api.getMe());
+                  sfx("good");
+                  say(prize?.text || "Something fell out.", "good");
+                } catch (e) { flash(prettyError(e)); }
+              }}
+              onSign={async () => {
+                try {
+                  const st = await api.signCard();
+                  setCard(st);
+                  applyServer(await api.getMe());
+                  flash(st?.paid ? "Everybody signed. Cake." : "You signed the card.");
+                } catch (e) { flash(prettyError(e)); }
+              }} />
           )}
         </Panel>
       )}
@@ -3525,6 +3602,8 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const worn = wearing(p);
   const c = worn ? COSTUMES[worn.id] : null;
   const L = lookFor(p);
+  const nickOn = p?.nickname && new Date(p.nickname.until) > new Date();
+  const nick = nickOn ? p.nickname.text : null;
   const B = BUILDS[L.build] || BUILDS.regular;
   const shirt = c?.shirt || TOPS[L.top % TOPS.length];
   const pants = LEGS[L.legs % LEGS.length];
@@ -3574,6 +3653,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       </div>
       </div>
       <span className="pg-shadow" />
+      {nick && <div className="pg-nick">"{nick}"</div>}
       {c && <div className="pg-worn">{c.name}</div>}
     </div>
   );
@@ -4241,7 +4321,9 @@ function Personnel({ me, lifetime, cat, onDept, user, onSave, onLook }) {
   );
 }
 
-function Fund({ fund, nextTier, prevTier, office }) {
+function Fund({ fund, nextTier, prevTier, office, card, onVend, onSign }) {
+  const signed = !!card?.mine;
+  const need = Math.max(0, (card?.staff || 0) - (card?.signers?.length || 0));
   const unlocked = FUND_TIERS.filter((t) => fund >= t.at).length;
   const g = office?.goal || {};
   const pct = office ? Math.min(100, (office.total / office.target) * 100) : 0;
@@ -4301,6 +4383,31 @@ function Fund({ fund, nextTier, prevTier, office }) {
       </div>
       {prevTier && <div className="pg-note">Most recently unlocked: {prevTier.label}. Everybody
         felt that, whether they noticed or not.</div>}
+
+      <div className="pg-sep" />
+      <h4 className="pg-h4">The Machine</h4>
+      <p className="pg-note">Put money in. Something comes out. Usually.</p>
+      <button className="pg-btn pg-wide" onClick={onVend}>Try the vending machine</button>
+      <div className="pg-fine">Once every ten minutes. The machine does not negotiate.</div>
+
+      {card && (
+        <>
+          <div className="pg-sep" />
+          <h4 className="pg-h4">The Birthday Card</h4>
+          <p className="pg-note">
+            {card.paid
+              ? "Everybody signed. The cake happened. It was fine."
+              : need === 0
+                ? "Everyone has signed. Something is about to happen."
+                : `${card.signers?.length || 0} of ${card.staff} have signed. ${need} to go.`}
+          </p>
+          <button className="pg-btn pg-wide" onClick={onSign} disabled={signed || card.paid}>
+            {card.paid ? "Already done" : signed ? "You signed it" : "Sign the card"}
+          </button>
+          <div className="pg-fine">Everyone chips in. When the last person signs the pot doubles,
+            splits, and there's cake for half an hour. One holdout stops everybody.</div>
+        </>
+      )}
     </div>
   );
 }
@@ -4636,7 +4743,13 @@ function SuggestionBox({ sugg, me, admin, onSend, onJudge }) {
       <div className="pg-pad">
         <textarea className="pg-suggest" maxLength={160} value={t}
                   onKeyDown={(e) => e.stopPropagation()}
-                  onChange={(e) => setT(e.target.value)}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    // legal have asked us not to discuss it
+                    setT(/pineapple/i.test(v)
+                      ? v.replace(/pineapple/gi, "\u2588".repeat(9))
+                      : v);
+                  }}
                   placeholder="The microwave has been beeping since Tuesday. Nobody opened it." />
         <div className="pg-fine">{t.length}/160 · five a day, keep them office-safe</div>
         <button className="pg-btn" disabled={t.trim().length < 4}
