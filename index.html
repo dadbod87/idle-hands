@@ -2400,7 +2400,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 108";
+const BUILD = "build 109";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3087,6 +3087,9 @@ function PatronFloor() {
   };
   const jamClaim = office?.printer || null;
   const jamFixedBy = jam && jamClaim && jamClaim.window === jam.window ? jamClaim.by : null;
+  const printerBox = FIXTURES.find((x) => x.id === "printer");
+  const atPrinter = !!printerBox && dist(pos.x, pos.y,
+    printerBox.x + printerBox.w / 2, printerBox.y + printerBox.h + 40) < REACH;
   const jamMine = !!(jamClaim && jamClaim.mine);
   const chairClaim = office?.chair || null;
   const chairTakenBy = chair && chairClaim && chairClaim.window === chair.window
@@ -3253,8 +3256,12 @@ function PatronFloor() {
             <em>sorted</em>
           </div>
         ) : (
-          <button className="pg-jam" onClick={() => setPanel("printer")}>
-            The printer has jammed. <em>{Math.ceil(jam.endsIn / 1000)}s — first one there fixes it</em>
+          <button className="pg-jam" onClick={() => {
+                    const f = FIXTURES.find((x) => x.id === "printer");
+                    if (f) walkTo(f);
+                  }}>
+            The printer has jammed. <em>{Math.ceil(jam.endsIn / 1000)}s — {atPrinter
+              ? "you're there, open it" : "get to the printer"}</em>
           </button>
         )
       )}
@@ -3571,7 +3578,8 @@ function PatronFloor() {
               }} />
           )}
           {panel === "printer" && (
-            <Printer jam={jam} fixedBy={jamFixedBy} mine={jamMine} onFix={async () => {
+            <Printer jam={jam} fixedBy={jamFixedBy} mine={jamMine} near={atPrinter} onFix={async () => {
+              if (!atPrinter) { flash("You have to be at the printer."); return; }
               const row = await guard(() => api.fixPrinter());
               if (row) {
                 sfx("fixed");
@@ -5245,7 +5253,7 @@ function SuggestionBox({ sugg, me, admin, onSend, onJudge }) {
   );
 }
 
-function Printer({ jam, fixedBy, mine, onFix }) {
+function Printer({ jam, fixedBy, mine, near, onFix }) {
   if (jam && fixedBy) {
     return (
       <div className="pg-pad">
@@ -5265,7 +5273,9 @@ function Printer({ jam, fixedBy, mine, onFix }) {
             close the tray, and have it work again.</p>
           <p className="pg-small">First person to fix it takes the credit and about ten minutes
             of production. {Math.ceil(jam.endsIn / 1000)}s before somebody else gets there.</p>
-          <button className="pg-btn" onClick={onFix}>Open the tray</button>
+          <button className="pg-btn" onClick={onFix} disabled={!near}>
+            {near ? "Open the tray" : "You are not at the printer"}
+          </button>
         </>
       ) : (
         <>
