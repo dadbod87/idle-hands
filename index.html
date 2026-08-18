@@ -1744,9 +1744,15 @@ function calcRate(p, cat) {
   }
   return r;
 }
-function liveMult(p) {
+/** Must stay in step with live_mult() in Postgres. The server pays out; if the
+    two disagree, the screen is lying. Order and terms mirror the SQL exactly.
+    `ctx` carries the office-wide pieces the player row doesn't hold:
+    { tiers, streak, tz }. */
+function liveMult(p, ctx = {}) {
   const now = Date.now();
   let m = 1 + (p.equity || 0) * 0.03 + Math.min(p.goodwill || 0, 30) * 0.01 + (p.raises || 0) * 0.02;
+  m *= 1 + 0.05 * perkCount(p, "compound");
+  if (p.dept === "finance") m *= 1.12;
   if ((p.heat || 0) >= HEAT_LIMIT) m *= 0.75;
   for (const b of p.buffs || []) {
     // Delayed starts live in `start`. Older rows put a timestamp in `from`,
@@ -1755,8 +1761,35 @@ function liveMult(p) {
     const started = !raw || Date.parse(raw) <= now;
     if (started && new Date(b.until).getTime() > now) m *= b.mult;
   }
-  if (p.frenzy_until && new Date(p.frenzy_until).getTime() > now) m *= 7;
+  if (p.frenzy_until && new Date(p.frenzy_until).getTime() > now) m *= 5;
+  m *= 1 + 0.03 * (ctx.tiers || 0);
+  m *= 1 + 0.02 * Math.min(ctx.streak || 0, 10);
+  const h = officeHour(ctx.tz);
+  if (h.hour >= 18 || h.hour < 7 || h.dow > 5) m *= 1.15;
   return m;
+}
+
+/** How many of a perk you hold — mirrors perk_of() in Postgres. */
+function perkCount(p, key) {
+  const list = p?.perks;
+  if (Array.isArray(list)) return list.filter((x) => x === key || x?.id === key).length;
+  if (list && typeof list === "object") return Number(list[key] || 0);
+  return 0;
+}
+
+/** The office clock, not yours — after-hours pays the same for everybody. */
+function officeHour(tz = "America/New_York") {
+  try {
+    const f = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz, hour: "numeric", hour12: false, weekday: "short",
+    }).formatToParts(new Date());
+    const hour = Number(f.find((x) => x.type === "hour").value) % 24;
+    const days = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
+    return { hour, dow: days[f.find((x) => x.type === "weekday").value] || 1 };
+  } catch {
+    const d = new Date();
+    return { hour: d.getHours(), dow: ((d.getDay() + 6) % 7) + 1 };
+  }
 }
 
 /** Where Chance is right now, or null. Derived from the clock so everyone
@@ -2285,7 +2318,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 98";
+const BUILD = "build 99";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2516,7 +2549,13 @@ function PatronFloor() {
 
   /* --------------------------- local tick ------------------------- */
   const evMult = ev ? ev.mult : 1;
-  const rate = me ? calcRate(me, cat) * liveMult(me) * evMult : 0;
+  // the office-wide terms live on the server; feed them in so the two agree
+  const rateCtx = {
+    tiers: office?.tiers || 0,
+    streak: office?.streak || 0,
+    tz: office?.tz || "America/New_York",
+  };
+  const rate = me ? calcRate(me, cat) * liveMult(me, rateCtx) * evMult : 0;
   const clickPow = (1 + rate * 0.1) *
     (cat.upgrades || []).filter((u) => u.t === "click" && (me?.upgrades || []).includes(u.id))
       .reduce((m, u) => m * u.mult, 1);
