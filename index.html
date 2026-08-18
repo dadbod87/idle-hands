@@ -1003,14 +1003,15 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   border:2px solid #8A6A2A;border-radius:3px;box-shadow:0 0 10px rgba(201,162,83,.9)}
 
 /* atmosphere */
-.pg-body.aura-a1::after,.pg-body.aura-a2::after,.pg-body.aura-a3::after{
-  content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);
-  width:66px;height:66px;border-radius:50%;pointer-events:none}
-.pg-body.aura-a1::after{background:radial-gradient(circle,rgba(255,244,210,.30) 0%,rgba(0,0,0,0) 70%)}
-.pg-body.aura-a2::after{background:radial-gradient(circle,rgba(214,238,255,.45) 0%,rgba(0,0,0,0) 70%);
-  animation:pgShimmer 2.6s ease-in-out infinite}
-.pg-body.aura-a3::after{background:radial-gradient(circle,rgba(255,150,40,.55) 0%,rgba(180,40,0,.15) 45%,rgba(0,0,0,0) 72%);
-  animation:pgShimmer 1.1s ease-in-out infinite}
+/* atmosphere — its own element, so it can't fight the shadow rule */
+.pg-aura{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);
+  width:86px;height:86px;border-radius:50%;pointer-events:none;z-index:-1;display:block}
+.pg-aura.aura-a1{background:radial-gradient(circle,rgba(255,240,190,.55) 0%,rgba(255,230,150,.18) 45%,rgba(0,0,0,0) 72%);
+  animation:pgShimmer 3.4s ease-in-out infinite}
+.pg-aura.aura-a2{background:radial-gradient(circle,rgba(206,238,255,.72) 0%,rgba(150,210,255,.28) 45%,rgba(0,0,0,0) 72%);
+  animation:pgShimmer 2.2s ease-in-out infinite}
+.pg-aura.aura-a3{background:radial-gradient(circle,rgba(255,170,50,.85) 0%,rgba(210,70,10,.35) 45%,rgba(0,0,0,0) 74%);
+  animation:pgShimmer 1s ease-in-out infinite}
 @keyframes pgShimmer{0%,100%{opacity:.45}50%{opacity:1}}
 
 /* the office fittings */
@@ -1023,7 +1024,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   box-shadow:0 0 18px rgba(0,0,0,.55)}
 .pg-officefloor.rug-r1::after,.pg-officefloor.rug-r2::after,
 .pg-officefloor.rug-r3::after,.pg-officefloor.rug-r4::after{
-  content:"";position:absolute;left:14%;right:14%;bottom:12%;height:34%;border-radius:6px}
+  content:"";position:absolute;left:10%;right:10%;top:22%;height:26%;border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,.25)}
 .pg-officefloor.rug-r1::after{background:#8A7A62}
 .pg-officefloor.rug-r2::after{background:repeating-linear-gradient(45deg,#7C6B8A 0 12px,#6B5C78 12px 24px)}
 .pg-officefloor.rug-r3::after{background:radial-gradient(ellipse,#B23B2E 0%,#7A2119 70%);
@@ -1037,7 +1039,9 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officeart.art-w3{background:linear-gradient(150deg,#2C4A6B,#7C3B2E)}
 .pg-officeart.art-w4{background:linear-gradient(160deg,#1B211C,#3A2C1C);border-color:#C9A253;
   box-shadow:0 0 14px rgba(201,162,83,.5)}
-.pg-officechair{position:absolute;left:22%;bottom:26%;width:26px;height:30px;border-radius:5px;z-index:2}
+.pg-officechair{position:absolute;left:50%;transform:translateX(-50%);top:42%;
+  width:30px;height:34px;border-radius:6px 6px 3px 3px;z-index:1;
+  box-shadow:0 3px 0 rgba(0,0,0,.25)}
 .pg-officechair.chair-c1{background:#5D6C5B}
 .pg-officechair.chair-c2{background:#4A5568;box-shadow:inset 0 -6px 0 rgba(0,0,0,.2)}
 .pg-officechair.chair-c3{background:repeating-linear-gradient(0deg,#3E4A54 0 3px,#55636E 3px 6px)}
@@ -2318,7 +2322,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 99";
+const BUILD = "build 100";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3785,6 +3789,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       </div>
       </div>
       <span className="pg-shadow" />
+      {v.aura && <i className={"pg-aura aura-" + v.aura} />}
       {v.held && <i className={"pg-held held-" + v.held} />}
       {nick && <div className="pg-nick">"{nick}"</div>}
       {c && <div className="pg-worn">{c.name}</div>}
