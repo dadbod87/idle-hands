@@ -1064,10 +1064,11 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officechair.chair-c4{background:linear-gradient(#6B3B2E,#4A2820);box-shadow:0 3px 8px rgba(0,0,0,.4)}
 
 /* the weekly pin, worn beside the badge */
-.pg-pin{position:absolute;left:-16px;top:60px;width:20px;height:20px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;
-  color:#FFF8E6;border:2px solid rgba(0,0,0,.45);z-index:7;
-  box-shadow:0 2px 4px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.35)}
+/* worn on the whiteboard beside the name, not carried around the floor */
+.pg-boardpin{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;
+  width:17px;height:17px;margin-left:6px;border-radius:50%;font-style:normal;font-size:10px;
+  color:#FFF8E6;border:1.5px solid rgba(0,0,0,.4);
+  box-shadow:0 1px 2px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.35)}
 .pg-spendrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;
   border-bottom:1px dotted var(--rule);font-size:12.5px}
 .pg-spendrow b{font-weight:700}
@@ -2384,7 +2385,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 106";
+const BUILD = "build 107";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3834,7 +3835,6 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const c = worn ? COSTUMES[worn.id] : null;
   const L = lookFor(p);
   const v = p?.vanity || {};
-  const pin = p?.pin ? PIN_INDEX[p.pin] : null;
   const nickOn = p?.nickname && new Date(p.nickname.until) > new Date();
   const nick = nickOn ? p.nickname.text : null;
   const B = BUILDS[L.build] || BUILDS.regular;
@@ -3889,7 +3889,6 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       </div>
       <span className="pg-shadow" />
       {v.aura && <i className={"pg-aura aura-" + v.aura} />}
-      {pin && <i className="pg-pin" style={{ background: pin.hue }}>{pin.glyph}</i>}
       {v.held && <i className={"pg-held held-" + v.held} />}
       {nick && <div className="pg-nick">"{nick}"</div>}
       {c && <div className="pg-worn">{c.name}</div>}
@@ -4375,7 +4374,7 @@ function Standings({ board, me, fund, feuds = [] }) {
       </div>
       <div className="pg-earnbar">
         {tab === "week"
-          ? <>Resets Monday morning. Whoever tops it gets a <b>trophy</b> that never goes away.</>
+          ? <>Settled Friday at five. Whoever tops it gets a <b>trophy</b> that never goes away, and the new week starts straight away — the weekend counts toward it.</>
           : <>Every point anyone has ever earned. This one never resets.</>}
       </div>
       <div className="pg-list">
@@ -4385,6 +4384,10 @@ function Standings({ board, me, fund, feuds = [] }) {
             <Face src={p.avatar_url} name={p.name} size={34} />
             <span className="pg-main">
               <b>{p.name}{me && p.id === me.id ? " (you)" : ""}
+                {p.pin && PIN_INDEX[p.pin] && (
+                  <i className="pg-boardpin" title={PIN_INDEX[p.pin].name + " — " + PIN_INDEX[p.pin].note}
+                     style={{ background: PIN_INDEX[p.pin].hue }}>{PIN_INDEX[p.pin].glyph}</i>
+                )}
                 {p.trophies > 0 && <span className="pg-trophy">{"\u25C6".repeat(Math.min(p.trophies, 5))}</span>}</b>
               <span>{roleFor(p.lifetime || 0)}{p.equity ? ` · ${p.equity} equity` : ""}
                 {(p.heat || 0) >= HEAT_LIMIT ? " · under review" : ""}</span>
