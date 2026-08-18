@@ -2400,7 +2400,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 110";
+const BUILD = "build 111";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3158,7 +3158,7 @@ function PatronFloor() {
     setPanel(f.panel);
   };
   const walkTo = (f, e) => {
-    e.stopPropagation();
+    e?.stopPropagation?.();          // the jam banner calls this with no event
     routeTo(f.x + f.w / 2, Math.min(ROOM.h - 50, f.y + f.h + 60), f.id);
   };
 
