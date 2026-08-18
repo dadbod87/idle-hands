@@ -965,6 +965,10 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-mascotframe.real > *{opacity:0;transition:opacity .2s}
 .pg-nickbox{border:1px solid var(--rule);padding:12px;margin:12px 0;background:rgba(0,0,0,.02)}
 
+/* whatever the machine gave you, said where you can actually read it */
+.pg-vendout{margin:10px 0 0;padding:10px 12px;background:#1B211C;color:#F6E3AE;
+  font-family:var(--mono);font-size:11.5px;line-height:1.45;border-left:3px solid #C9A253}
+
 </style>
 </head>
 <body>
@@ -2205,7 +2209,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 94";
+const BUILD = "build 95";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3366,8 +3370,8 @@ function PatronFloor() {
                   const prize = await api.useVending();
                   applyServer(await api.getMe());
                   sfx("good");
-                  say(prize?.text || "Something fell out.", "good");
-                } catch (e) { flash(prettyError(e)); }
+                  return prize;                      // the panel shows it; the floor can't
+                } catch (e) { flash(prettyError(e)); return null; }
               }}
               onSign={async () => {
                 try {
@@ -4321,6 +4325,8 @@ function Personnel({ me, lifetime, cat, onDept, user, onSave, onLook }) {
 }
 
 function Fund({ fund, nextTier, prevTier, office, card, onVend, onSign }) {
+  const [prize, setPrize] = useState(null);
+  const [vending, setVending] = useState(false);
   const signed = !!card?.mine;
   const need = Math.max(0, (card?.staff || 0) - (card?.signers?.length || 0));
   const unlocked = FUND_TIERS.filter((t) => fund >= t.at).length;
@@ -4386,7 +4392,16 @@ function Fund({ fund, nextTier, prevTier, office, card, onVend, onSign }) {
       <div className="pg-sep" />
       <h4 className="pg-h4">The Machine</h4>
       <p className="pg-note">Put money in. Something comes out. Usually.</p>
-      <button className="pg-btn pg-wide" onClick={onVend}>Try the vending machine</button>
+      <button className="pg-btn pg-wide" disabled={vending}
+              onClick={async () => {
+                setVending(true);
+                const p = await onVend();
+                if (p) setPrize(p.text || "Something fell out.");
+                setVending(false);
+              }}>
+        {vending ? "The coil is turning..." : "Try the vending machine"}
+      </button>
+      {prize && <div className="pg-vendout">{prize}</div>}
       <div className="pg-fine">Once every ten minutes. The machine does not negotiate.</div>
 
       {card && (
