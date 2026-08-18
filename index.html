@@ -1738,7 +1738,14 @@ function fmt(n) {
   while (n >= 1000 && t < SUF.length - 1) { n /= 1000; t++; }
   return (n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : Math.floor(n)) + SUF[t];
 }
-const costOf = (item, c) => Math.ceil(item.cost * Math.pow(1.15, c));
+/* Per-unit growth is set in the catalogue so the climb can be tuned without a
+   deploy. Must match item_growth() in Postgres. */
+let ITEM_GROWTH = 1.15;
+function setItemGrowth(g) {
+  const n = Number(g);
+  if (Number.isFinite(n) && n > 1) ITEM_GROWTH = n;
+}
+const costOf = (item, c) => Math.ceil(item.cost * Math.pow(ITEM_GROWTH, c));
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -2377,7 +2384,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 105";
+const BUILD = "build 106";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2392,6 +2399,7 @@ function PatronFloor() {
     setCatRaw((prev) => {
       const next = typeof k === "function" ? k(prev) : k;
       setPinIndex(next?.weekly_pins, next?.special_pins);
+      setItemGrowth(next?.tuning?.growth);
       return next;
     });
   }, []);
