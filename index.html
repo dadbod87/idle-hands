@@ -2204,7 +2204,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 92";
+const BUILD = "build 93";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4550,7 +4550,8 @@ function Cooler({ cat, me, onDrink }) {
   );
 }
 
-function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCommit }) {
+function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCommit, onNickname }) {
+  const [nick, setNick] = useState("");
   const [sel, setSel] = useState(me?.id || null);
   const target = board.find((p) => p.id === sel);
   const mine = target && me && target.id === me.id;
@@ -4595,6 +4596,24 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
           </button>
         ))}
       </div>
+
+      {target && !mine && (
+        <div className="pg-nickbox">
+          <h4 className="pg-h4">Call them something</h4>
+          <div className="pg-field">
+            <span>Nickname</span>
+            <input value={nick} maxLength={18} placeholder="Two Lunches"
+                   onKeyDown={(e) => e.stopPropagation()}
+                   onChange={(e) => setNick(e.target.value)} />
+          </div>
+          <button className="pg-btn pg-wide" disabled={nick.trim().length < 2}
+                  onClick={() => { onNickname(target, nick.trim()); setNick(""); }}>
+            Make it stick — {fmt(Math.max(100, lifetime * 0.012))} PP
+          </button>
+          <div className="pg-fine">Hangs under their name for an hour, for everybody. They
+            can't take it off, but somebody else can replace it. Keep it office-safe.</div>
+        </div>
+      )}
 
       {target && !mine && cool > 0 && (
         <div className="pg-note pg-tooearly">
