@@ -2195,6 +2195,7 @@ const api = {
   setOoo: (text) => rpc("set_ooo", { p_text: text }),
   useVending: () => rpc("use_vending"),
   buyFitting: (key, id) => rpc("buy_fitting", { p_key: key, p_id: id }),
+  fittingPrices: () => rpc("fitting_prices"),
   signCard: () => rpc("sign_card"),
   signAgreement: (sig, version) =>
     rpc("sign_agreement", { p_signature: sig, p_version: version }),
@@ -2284,7 +2285,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 97";
+const BUILD = "build 98";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4057,11 +4058,22 @@ function Help({ onClose, rate }) {
 /** Mail order. None of it earns you anything. That is the entire appeal. */
 function Catalogue({ cat, me, pp, rate, onFitting }) {
   const [which, setWhich] = useState("vanity");
+  // the server quotes the price; the client's own rate sum disagrees with it
+  const [quote, setQuote] = useState(null);
+  useEffect(() => {
+    let live = true;
+    api.fittingPrices().then((q) => { if (live) setQuote(q); }).catch(() => {});
+    const t = setInterval(() => {
+      api.fittingPrices().then((q) => { if (live) setQuote(q); }).catch(() => {});
+    }, 20000);
+    return () => { live = false; clearInterval(t); };
+  }, []);
   const list = (which === "vanity" ? cat.vanity : cat.office_kit) || [];
   const have = which === "vanity" ? (me?.vanity || {}) : (me?.kit || {});
   const slots = [...new Set(list.map((x) => x.slot))];
   const tierOf = (id) => (list.find((x) => x.id === id) || {}).tier || 0;
-  const priceOf = (x) => Math.max(1000, (rate || 0) * (x.secs || 0));
+  const priceOf = (x) => quote?.prices?.[x.id]
+    ?? Math.max(1000, (rate || 0) * (x.secs || 0));
   const spell = (secs) => secs >= 86400 ? Math.round(secs / 86400) + "d of output"
                         : secs >= 3600  ? Math.round(secs / 3600) + "h of output"
                         : Math.round(secs / 60) + " min of output";
