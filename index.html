@@ -2400,7 +2400,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 109";
+const BUILD = "build 110";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3515,13 +3515,14 @@ function PatronFloor() {
           )}
           {panel === "owner" && (
             <Owner me={me} board={board} lifetime={lifetime} pp={pp} cool={cool} cat={cat}
+                   prices={prices}
                    onMeeting={() => guard(() => api.takeMeeting(), "File cleared")}
                    onRaise={async () => { const r = await guard(() => api.askRaise(), "+2% forever");
                                           if (r) sfx("raise"); }}
                    onBlame={commit} />
           )}
           {panel === "wire" && (
-            <Wire wire={wire} feed={feed} lifetime={lifetime} testers={testers}
+            <Wire wire={wire} feed={feed} lifetime={lifetime} testers={testers} prices={prices}
                   onPineapple={() => guard(() => api.pineapple(), "Pineapple.")} />
           )}
           {panel === "personnel" && (
@@ -4505,13 +4506,14 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit, prices })
   );
 }
 
-function Owner({ me, board, lifetime, pp, cool, cat, onMeeting, onRaise, onBlame }) {
+function Owner({ me, board, lifetime, pp, cool, cat, prices, onMeeting, onRaise, onBlame }) {
   const [sel, setSel] = useState(null);
   const heat = me?.heat || 0;
   const others = board.filter((p) => p.id !== me?.id);
   const target = others.find((p) => p.id === sel);
-  const meetingCost = Math.max(500, lifetime * 0.05);
-  const raiseCost = Math.max(1000, lifetime * 0.12);
+  // the server prices these off current output; lifetime never resets
+  const meetingCost = prices?.meeting ?? Math.max(500, lifetime * 0.05);
+  const raiseCost   = prices?.raise   ?? Math.max(1000, lifetime * 0.12);
   const blameCost = Math.max(60, lifetime * (cat.deeds?.blame?.cost || 0.015));
   return (
     <div>
@@ -4576,7 +4578,7 @@ function Owner({ me, board, lifetime, pp, cool, cat, onMeeting, onRaise, onBlame
   );
 }
 
-function Wire({ wire, feed, lifetime, onPineapple, testers }) {
+function Wire({ wire, feed, lifetime, onPineapple, testers, prices }) {
   return (
     <>
       {(testers || []).length > 0 && (
@@ -4600,7 +4602,7 @@ function Wire({ wire, feed, lifetime, onPineapple, testers }) {
       <div className="pg-note">Everything anyone does to anyone lands here, with names attached.</div>
       <div className="pg-pad">
         <button className="pg-btn danger" onClick={onPineapple}>
-          Say pineapple <em>{fmt(Math.max(200, lifetime * 0.08))} PP</em>
+          Say pineapple <em>{fmt(prices?.pineapple ?? Math.max(200, lifetime * 0.08))} PP</em>
         </button>
         <div className="pg-fine">Scrubs your name off your most recent entry. The deed still
           happened — the wire just says "Someone".</div>
@@ -5019,7 +5021,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
               {committed ? "Committed" : "Commit to the bit"} <em>+25% output</em>
             </button>
             <button className="pg-btn danger" onClick={onChange}>
-              Change clothes <em>{fmt(Math.max(200, lifetime * 0.03))} PP</em>
+              Change clothes <em>{fmt(prices?.change ?? Math.max(200, lifetime * 0.03))} PP</em>
             </button>
           </div>
           <div className="pg-fine">
