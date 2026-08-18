@@ -969,6 +969,80 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-vendout{margin:10px 0 0;padding:10px 12px;background:#1B211C;color:#F6E3AE;
   font-family:var(--mono);font-size:11.5px;line-height:1.45;border-left:3px solid #C9A253}
 
+/* ---------------- mail order: things that do nothing ---------------- */
+.pg-catswitch{display:flex;gap:8px;margin:10px 0 14px}
+.pg-catswitch .pg-btn{flex:1}
+.pg-catswitch .pg-btn.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pg-catslot{margin-bottom:16px}
+.pg-row.done{opacity:.6}
+.pg-row.done .pg-right b{color:#2C6B45}
+
+/* glow — a ring of light around the whole person */
+.pg-body.glow-g1{filter:drop-shadow(0 0 6px rgba(255,236,190,.55))}
+.pg-body.glow-g2{filter:drop-shadow(0 0 9px rgba(201,162,83,.85))}
+.pg-body.glow-g3{filter:drop-shadow(0 0 11px rgba(96,158,214,.9))}
+.pg-body.glow-g4{filter:drop-shadow(0 0 13px rgba(200,60,45,.92))}
+.pg-body.glow-g5{filter:drop-shadow(0 0 13px rgba(70,205,120,.92))}
+.pg-body.glow-g6{filter:drop-shadow(0 0 16px rgba(168,88,232,.95))
+  drop-shadow(0 0 30px rgba(168,88,232,.5))}
+
+/* presence */
+.pg-body.size-s1{transform:scale(1.10);transform-origin:50% 100%}
+.pg-body.size-s2{transform:scale(1.20);transform-origin:50% 100%}
+.pg-body.size-s3{transform:scale(1.35);transform-origin:50% 100%}
+
+/* something to carry */
+.pg-held{position:absolute;right:-14px;top:64px;display:block;z-index:6}
+.pg-held.held-h1{width:13px;height:14px;background:#E8EAE0;border:2px solid #6E756B;
+  border-radius:0 0 4px 4px}
+.pg-held.held-h2{width:14px;height:19px;background:#C9A96E;border:2px solid #6B5433}
+.pg-held.held-h3{width:22px;height:16px;background:#5E4A33;border:2px solid #3A2C1C;border-radius:2px}
+.pg-held.held-h4{width:14px;height:20px;background:linear-gradient(#F3D68B,#B8933F);
+  border:2px solid #7E6224;border-radius:7px 7px 2px 2px}
+.pg-held.held-h5{width:18px;height:12px;background:linear-gradient(#FBEFC8,#C9A253);
+  border:2px solid #8A6A2A;border-radius:3px;box-shadow:0 0 10px rgba(201,162,83,.9)}
+
+/* atmosphere */
+.pg-body.aura-a1::after,.pg-body.aura-a2::after,.pg-body.aura-a3::after{
+  content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);
+  width:66px;height:66px;border-radius:50%;pointer-events:none}
+.pg-body.aura-a1::after{background:radial-gradient(circle,rgba(255,244,210,.30) 0%,rgba(0,0,0,0) 70%)}
+.pg-body.aura-a2::after{background:radial-gradient(circle,rgba(214,238,255,.45) 0%,rgba(0,0,0,0) 70%);
+  animation:pgShimmer 2.6s ease-in-out infinite}
+.pg-body.aura-a3::after{background:radial-gradient(circle,rgba(255,150,40,.55) 0%,rgba(180,40,0,.15) 45%,rgba(0,0,0,0) 72%);
+  animation:pgShimmer 1.1s ease-in-out infinite}
+@keyframes pgShimmer{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* the office fittings */
+.pg-officedesk[data-desk="d1"]{background:#A08A62}
+.pg-officedesk[data-desk="d2"]{background:linear-gradient(160deg,#CFE0E6,#A8C2CC);
+  border-color:#8FA6AE}
+.pg-officedesk[data-desk="d3"]{background:linear-gradient(160deg,#7C5230,#5A3A20);border-color:#3E2714}
+.pg-officedesk[data-desk="d4"]{background:linear-gradient(160deg,#EDEAE3,#CFCabc);border-color:#A8A296}
+.pg-officedesk[data-desk="d5"]{background:linear-gradient(160deg,#20211F,#0C0D0C);border-color:#000;
+  box-shadow:0 0 18px rgba(0,0,0,.55)}
+.pg-officefloor.rug-r1::after,.pg-officefloor.rug-r2::after,
+.pg-officefloor.rug-r3::after,.pg-officefloor.rug-r4::after{
+  content:"";position:absolute;left:14%;right:14%;bottom:12%;height:34%;border-radius:6px}
+.pg-officefloor.rug-r1::after{background:#8A7A62}
+.pg-officefloor.rug-r2::after{background:repeating-linear-gradient(45deg,#7C6B8A 0 12px,#6B5C78 12px 24px)}
+.pg-officefloor.rug-r3::after{background:radial-gradient(ellipse,#B23B2E 0%,#7A2119 70%);
+  box-shadow:inset 0 0 0 4px #E8C87C}
+.pg-officefloor.rug-r4::after{background:repeating-linear-gradient(90deg,#2C6B45 0 8px,#1D4A2F 8px 16px);
+  box-shadow:inset 0 0 0 5px #C9A253}
+.pg-officeart{position:absolute;left:50%;top:16px;transform:translateX(-50%);
+  width:74px;height:52px;border:4px solid #5E4A33;z-index:2}
+.pg-officeart.art-w1{background:#DCE6EC}
+.pg-officeart.art-w2{background:#F6F3E4;border-color:#C9A253}
+.pg-officeart.art-w3{background:linear-gradient(150deg,#2C4A6B,#7C3B2E)}
+.pg-officeart.art-w4{background:linear-gradient(160deg,#1B211C,#3A2C1C);border-color:#C9A253;
+  box-shadow:0 0 14px rgba(201,162,83,.5)}
+.pg-officechair{position:absolute;left:22%;bottom:26%;width:26px;height:30px;border-radius:5px;z-index:2}
+.pg-officechair.chair-c1{background:#5D6C5B}
+.pg-officechair.chair-c2{background:#4A5568;box-shadow:inset 0 -6px 0 rgba(0,0,0,.2)}
+.pg-officechair.chair-c3{background:repeating-linear-gradient(0deg,#3E4A54 0 3px,#55636E 3px 6px)}
+.pg-officechair.chair-c4{background:linear-gradient(#6B3B2E,#4A2820);box-shadow:0 3px 8px rgba(0,0,0,.4)}
+
 </style>
 </head>
 <body>
@@ -2120,6 +2194,7 @@ const api = {
   giveNickname: (id, text) => rpc("give_nickname", { p_target: id, p_text: text }),
   setOoo: (text) => rpc("set_ooo", { p_text: text }),
   useVending: () => rpc("use_vending"),
+  buyFitting: (key, id) => rpc("buy_fitting", { p_key: key, p_id: id }),
   signCard: () => rpc("sign_card"),
   signAgreement: (sig, version) =>
     rpc("sign_agreement", { p_signature: sig, p_version: version }),
@@ -2209,7 +2284,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 95";
+const BUILD = "build 97";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3139,7 +3214,9 @@ function PatronFloor() {
               <div key={"o" + o.i} className={"pg-office " + o.door + (mine ? " mine" : "")}
                    style={{ left: o.x, top: o.y, width: o.w, height: o.h,
                             zIndex: Math.round(o.y) }}>
-                <div className="pg-officefloor" />
+                <div className={"pg-officefloor" + (p?.kit?.rug ? " rug-" + p.kit.rug : "")} />
+                {p?.kit?.art && <div className={"pg-officeart art-" + p.kit.art} />}
+                {p?.kit?.chair && <div className={"pg-officechair chair-" + p.kit.chair} />}
                 <div className="pg-officedoor"
                      style={{ left: o.doorX - o.x, width: DOOR_W }}><i /><span /><i /></div>
                 <div className={"pg-officeplate " + o.door + (chances ? " ghost" : "")}>
@@ -3155,6 +3232,7 @@ function PatronFloor() {
                 <div className={"pg-officedesk" + (mine ? " mine" : "") + (chances ? " ghost" : "")}
                      style={{ left: o.deskX - o.x, top: o.deskY - o.y,
                               width: o.deskW, height: o.deskH }}
+                   data-desk={p?.kit?.desk || ""}
                      onClick={(e) => {
                        e.stopPropagation();
                        if (mine) routeTo(o.cx, o.cy + 40, "desk", o);
@@ -3254,7 +3332,15 @@ function PatronFloor() {
       {panel && (
         <Panel onClose={() => setPanel(null)} title={PANEL_TITLES[panel]}>
           {panel === "shop" && (
-            <Shop cat={cat} me={me} pp={pp} rate={rate} clickPow={clickPow} lifetime={lifetime}
+            <Shop cat={cat} me={me} pp={pp} rate={rate}
+              onFitting={async (which, x) => {
+                try {
+                  applyServer(await api.buyFitting(which, x.id));
+                  setFloor(await loadFloor());
+                  sfx("buy");
+                  flash(x.name + " — installed.");
+                } catch (e) { flash(prettyError(e)); }
+              }} clickPow={clickPow} lifetime={lifetime}
                   onBuy={buy} onUp={buyUp} guard={guard} flash={flash}
                   onRestructure={() => guard(() => api.restructure(), "Restructured")} />
           )}
@@ -3605,6 +3691,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const worn = wearing(p);
   const c = worn ? COSTUMES[worn.id] : null;
   const L = lookFor(p);
+  const v = p?.vanity || {};
   const nickOn = p?.nickname && new Date(p.nickname.until) > new Date();
   const nick = nickOn ? p.nickname.text : null;
   const B = BUILDS[L.build] || BUILDS.regular;
@@ -3615,6 +3702,8 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
     "pg-body", me ? "me" : "", c?.big ? "big" : "",
     moving ? "walking" : "idling", emote ? "em-" + emote : "",
     "bt-" + bottom,
+    v.glow ? "glow-" + v.glow : "", v.size ? "size-" + v.size : "",
+    v.aura ? "aura-" + v.aura : "",
   ].filter(Boolean).join(" ");
 
   return (
@@ -3656,6 +3745,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       </div>
       </div>
       <span className="pg-shadow" />
+      {v.held && <i className={"pg-held held-" + v.held} />}
       {nick && <div className="pg-nick">"{nick}"</div>}
       {c && <div className="pg-worn">{c.name}</div>}
     </div>
@@ -3964,7 +4054,72 @@ function Help({ onClose, rate }) {
   );
 }
 
-function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure, guard, flash }) {
+/** Mail order. None of it earns you anything. That is the entire appeal. */
+function Catalogue({ cat, me, pp, rate, onFitting }) {
+  const [which, setWhich] = useState("vanity");
+  const list = (which === "vanity" ? cat.vanity : cat.office_kit) || [];
+  const have = which === "vanity" ? (me?.vanity || {}) : (me?.kit || {});
+  const slots = [...new Set(list.map((x) => x.slot))];
+  const tierOf = (id) => (list.find((x) => x.id === id) || {}).tier || 0;
+  const priceOf = (x) => Math.max(1000, (rate || 0) * (x.secs || 0));
+  const spell = (secs) => secs >= 86400 ? Math.round(secs / 86400) + "d of output"
+                        : secs >= 3600  ? Math.round(secs / 3600) + "h of output"
+                        : Math.round(secs / 60) + " min of output";
+
+  return (
+    <div>
+      <div className="pg-earnbar">
+        None of this makes you a single point. Everybody can see all of it. Bought in order,
+        kept forever, survives a restructure.
+      </div>
+      <div className="pg-catswitch">
+        <button className={"pg-btn" + (which === "vanity" ? " on" : "")}
+                onClick={() => setWhich("vanity")}>Yourself</button>
+        <button className={"pg-btn" + (which === "office_kit" ? " on" : "")}
+                onClick={() => setWhich("office_kit")}>Your Office</button>
+      </div>
+
+      {slots.map((slot) => {
+        const tiers = list.filter((x) => x.slot === slot).sort((a, b) => a.tier - b.tier);
+        const owned = tierOf(have[slot]);
+        return (
+          <div key={slot} className="pg-catslot">
+            <h4 className="pg-h4">{SLOT_NAMES[slot] || slot}</h4>
+            <div className="pg-list">
+              {tiers.map((x, i) => {
+                const mine = x.tier <= owned;
+                const next = x.tier === owned + 1;
+                const price = priceOf(x);
+                const afford = pp >= price;
+                return (
+                  <button key={x.id}
+                          className={"pg-row" + (i % 2 ? " alt" : "") + (mine ? " done" : "")
+                                     + (next && !afford ? " poor" : "")}
+                          disabled={!next || !afford}
+                          onClick={() => onFitting(which, x)}>
+                    <span className="pg-main"><b>{x.name}</b><span>{x.note}</span></span>
+                    <span className="pg-right">
+                      {mine ? <b>owned</b>
+                            : <><b>{fmt(price)}</b>
+                                <span>{next ? spell(x.secs) : "locked"}</span></>}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const SLOT_NAMES = { glow: "Glow", size: "Presence", held: "Something To Carry",
+                     aura: "Atmosphere", desk: "The Desk", chair: "The Chair",
+                     rug: "The Floor", art: "The Wall" };
+
+function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure,
+                onFitting, guard, flash }) {
   const owned = me?.owned || {}, ups = me?.upgrades || [];
   const cycle = me?.cycle || 0;
   const avail = cycle <= 1e9 ? 0 : Math.floor(1.6 * Math.log10(cycle / 1e9));
@@ -3975,8 +4130,10 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
         whether this tab is open or not. Buy more staff to raise it.
       </div>
       <Tabsy tabs={[["hire", "Requisitions"], ["ups", "Approvals"],
-                    ["today", "Today"], ["restr", "Equity"]]}>
-        {(t) => t === "hire" ? (
+                    ["today", "Today"], ["restr", "Equity"], ["cat", "Catalogue"]]}>
+        {(t) => t === "cat" ? (
+          <Catalogue cat={cat} me={me} pp={pp} rate={rate} onFitting={onFitting} />
+        ) : t === "hire" ? (
           <div className="pg-list">
             {(cat.items || []).map((it, i) => {
               const have = owned[it.id] || 0, c = costOf(it, have);
