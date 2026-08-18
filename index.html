@@ -957,11 +957,11 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   text-shadow:0 1px 3px rgba(0,0,0,.9)}
 .pg-ooo{display:block;font-family:var(--mono);font-size:7.5px;letter-spacing:.06em;
   text-transform:uppercase;color:#C9A253;margin-top:1px}
-.pg-mascot{cursor:pointer}
-.pg-mascot.real{background-image:url("./logo.png");background-size:contain;
+.pg-mascotframe{cursor:pointer}
+.pg-mascotframe.real{background-image:url("./logo.png");background-size:contain;
   background-repeat:no-repeat;background-position:center;background-color:#14140F;
   box-shadow:0 0 26px rgba(201,162,83,.55)}
-.pg-mascot.real::before,.pg-mascot.real::after{opacity:0}
+.pg-mascotframe.real > *{opacity:0;transition:opacity .2s}
 .pg-nickbox{border:1px solid var(--rule);padding:12px;margin:12px 0;background:rgba(0,0,0,.02)}
 
 </style>
@@ -2204,7 +2204,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 91";
+const BUILD = "build 92";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2261,7 +2261,6 @@ function PatronFloor() {
   const catRef = useRef({});
   const bubbleN = useRef(0);
   const jamSeen = useRef(null);
-  const knocks = useRef({});
   const eggs = useRef({ stag: 0, opened: false });
   const chairSeen = useRef(null);
   const suggRef = useRef([]);
@@ -2911,8 +2910,9 @@ function PatronFloor() {
   const openFixture = (f) => {
     if (!f) return;
     if (f.id === "restroom") {
-      knocks.current.restroom = (knocks.current.restroom || 0) + 1;
-      if (knocks.current.restroom >= 50 && !eggs.current.opened) {
+      const tries = (knocks.restroom || 0) + 1;
+      setKnocks((k) => ({ ...k, restroom: tries }));
+      if (tries >= 50 && !eggs.current.opened) {
         eggs.current.opened = true;
         sfx("good");
         sayAt(f.x + f.w / 2, f.y + f.h + 4,
@@ -3094,7 +3094,8 @@ function PatronFloor() {
               <i /><span>The Kitchen</span>
             </div>
           ) : d.t === "mascot" ? (
-            <div key={"d" + i} className={"pg-mascot" + (mascotReal ? " real" : "")}
+            <div key={"d" + i}
+                 className={"pg-decor pg-mascotframe" + (mascotReal ? " real" : "")}
                  style={{ left: d.x, top: d.y, zIndex: Math.round(d.y) - 1 }}
                  onClick={() => {
                    eggs.current.stag = (eggs.current.stag || 0) + 1;
@@ -3103,10 +3104,7 @@ function PatronFloor() {
                      sfx("good");
                      setTimeout(() => setMascotReal(false), 4000);
                    }
-                 }} />
-          ) : d.t === "__never" ? (
-            <div key={"d" + i} className="pg-decor pg-mascotframe"
-                 style={{ left: d.x, top: d.y, zIndex: Math.round(d.y) - 1 }}>
+                 }}>
               <BadStag />
               <div className="pg-mascotplate">OUR BRAND</div>
               <div className="pg-mascotfine">2026 refresh &middot; do not reprint</div>
