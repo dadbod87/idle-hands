@@ -1032,13 +1032,29 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   box-shadow:inset 0 0 0 4px #E8C87C}
 .pg-officefloor.rug-r4::after{background:repeating-linear-gradient(90deg,#2C6B45 0 8px,#1D4A2F 8px 16px);
   box-shadow:inset 0 0 0 5px #C9A253}
-.pg-officeart{position:absolute;left:50%;top:16px;transform:translateX(-50%);
-  width:74px;height:52px;border:4px solid #5E4A33;z-index:2}
-.pg-officeart.art-w1{background:#DCE6EC}
-.pg-officeart.art-w2{background:#F6F3E4;border-color:#C9A253}
-.pg-officeart.art-w3{background:linear-gradient(150deg,#2C4A6B,#7C3B2E)}
-.pg-officeart.art-w4{background:linear-gradient(160deg,#1B211C,#3A2C1C);border-color:#C9A253;
-  box-shadow:0 0 14px rgba(201,162,83,.5)}
+/* hung on the office wall, not lying on the floor: frame, mount, glass and wire */
+.pg-officeart{position:absolute;left:50%;transform:translateX(-50%);top:-6px;
+  width:84px;height:60px;box-sizing:border-box;border:5px solid #3A2C1C;border-radius:2px;
+  background:#EFE9D8;z-index:5;
+  box-shadow:0 7px 12px rgba(0,0,0,.45), inset 0 0 0 3px #CDBE93}
+.pg-officeart::before{content:"";position:absolute;inset:5px;box-shadow:inset 0 0 8px rgba(0,0,0,.25)}
+/* the wire it hangs from */
+.pg-officeart::after{content:"";position:absolute;left:50%;top:-11px;width:26px;height:11px;
+  margin-left:-13px;border-top:2px solid #6E6350;border-radius:50% 50% 0 0}
+.pg-officeart.art-w1::before{background:linear-gradient(#BFD6E4 0%,#BFD6E4 58%,#8FAF7E 58%,#8FAF7E 100%)}
+.pg-officeart.art-w1{border-color:#5E4A33}
+.pg-officeart.art-w2::before{background:#FBF7E7;
+  box-shadow:inset 0 0 0 2px #C9A253, inset 0 0 10px rgba(0,0,0,.12)}
+.pg-officeart.art-w2{border-color:#8A6A2A}
+.pg-officeart.art-w3::before{
+  background:radial-gradient(circle at 32% 34%, #E8C87C 0%, rgba(0,0,0,0) 42%),
+             linear-gradient(150deg,#2C4A6B 0%,#4E3A66 52%,#7C3B2E 100%)}
+.pg-officeart.art-w3{border-color:#2A2118}
+.pg-officeart.art-w4::before{
+  background:radial-gradient(ellipse at 50% 38%, #6B5836 0%, #2A2118 62%, #14140F 100%)}
+.pg-officeart.art-w4{border-color:#C9A253;
+  box-shadow:0 7px 14px rgba(0,0,0,.55), inset 0 0 0 3px #8A6A2A, 0 0 16px rgba(201,162,83,.45)}
+
 .pg-officechair{position:absolute;left:50%;transform:translateX(-50%);top:42%;
   width:30px;height:34px;border-radius:6px 6px 3px 3px;z-index:1;
   box-shadow:0 3px 0 rgba(0,0,0,.25)}
@@ -2322,7 +2338,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 100";
+const BUILD = "build 101";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
