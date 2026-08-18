@@ -1063,6 +1063,28 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officechair.chair-c3{background:repeating-linear-gradient(0deg,#3E4A54 0 3px,#55636E 3px 6px)}
 .pg-officechair.chair-c4{background:linear-gradient(#6B3B2E,#4A2820);box-shadow:0 3px 8px rgba(0,0,0,.4)}
 
+/* the weekly pin, worn beside the badge */
+.pg-pin{position:absolute;left:-16px;top:60px;width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;
+  color:#FFF8E6;border:2px solid rgba(0,0,0,.45);z-index:7;
+  box-shadow:0 2px 4px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.35)}
+.pg-spendrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;
+  border-bottom:1px dotted var(--rule);font-size:12.5px}
+.pg-spendrow b{font-weight:700}
+.pg-spendrow span{font-family:var(--mono);font-size:11px;color:var(--soft)}
+.pg-pinshelf{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 4px}
+.pg-pinchip{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:16px;color:#FFF8E6;border:2px solid rgba(0,0,0,.35);
+  cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.pg-pinchip.on{outline:3px solid var(--ink);outline-offset:2px}
+.pg-pinchip.off{opacity:.25;cursor:default}
+
+/* opening week, named on the board */
+.pg-betanote{border:2px solid #C9A253;background:#1B211C;padding:9px 12px;margin-bottom:12px}
+.pg-betanote b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:#F6E3AE}
+.pg-betanote span{display:block;font-family:var(--mono);font-size:10.5px;color:#A9A18A;margin-top:3px}
+
 </style>
 </head>
 <body>
@@ -1863,6 +1885,18 @@ function chairAt(t = Date.now()) {
 }
 
 
+/* Pins are bought weekly and worn indefinitely, so a character may be wearing
+   one that is no longer stocked. Index the whole pool once the catalogue loads
+   rather than threading it through every component that draws a person. */
+let PIN_INDEX = {};
+function setPinIndex(weekly, special) {
+  PIN_INDEX = Object.fromEntries(
+    [...(weekly || []), ...(special || [])].map((x) => [x.id, x]));
+}
+/** Given, never sold. */
+function isSpecialPin(id) { return id === "beta"; }
+
+
 /* ===== lib/events.js ===== */
 /* ==================================================================
    OFFICE-WIDE EVENTS
@@ -2249,6 +2283,11 @@ const api = {
   useVending: () => rpc("use_vending"),
   buyFitting: (key, id) => rpc("buy_fitting", { p_key: key, p_id: id }),
   fittingPrices: () => rpc("fitting_prices"),
+  weeklyPins: () => rpc("weekly_pins"),
+  buyPin: (id) => rpc("buy_pin", { p_id: id }),
+  setPin: (id) => rpc("set_pin", { p_id: id }),
+  spendBoard: () => rpc("spend_board"),
+  betaTesters: () => rpc("beta_testers"),
   signCard: () => rpc("sign_card"),
   signAgreement: (sig, version) =>
     rpc("sign_agreement", { p_signature: sig, p_version: version }),
@@ -2338,7 +2377,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 102";
+const BUILD = "build 105";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2346,7 +2385,16 @@ const SYNC_MS = 10000;
 function PatronFloor() {
   const [phase, setPhase] = useState("boot");
   const [user, setUser] = useState(null);
-  const [cat, setCat] = useState({ items: [], upgrades: [], deeds: {} });
+  const [catRaw, setCatRaw] = useState({ items: [], upgrades: [], deeds: {} });
+  const cat = catRaw;
+  // index the pin pool wherever the catalogue lands, so no call site can miss it
+  const setCat = useCallback((k) => {
+    setCatRaw((prev) => {
+      const next = typeof k === "function" ? k(prev) : k;
+      setPinIndex(next?.weekly_pins, next?.special_pins);
+      return next;
+    });
+  }, []);
   const [me, setMe] = useState(null);
   const [floor, setFloor] = useState({ players: [], deeds: [] });
   const [drift, setDrift] = useState(0);          // points earned since last server sync
@@ -2381,6 +2429,9 @@ function PatronFloor() {
   const [sugg, setSugg] = useState([]);
   const [office, setOffice] = useState(null);
   const [card, setCard] = useState(null);
+  const [pins, setPins] = useState(null);
+  const [spend, setSpend] = useState(null);
+  const [testers, setTesters] = useState(null);
   const [mascotReal, setMascotReal] = useState(false);
   const [jam, setJam] = useState(null);
   const [streakCard, setStreakCard] = useState(null);
@@ -2531,6 +2582,9 @@ function PatronFloor() {
       setFloor(await loadFloor());
       loadOffice().then(setOffice).catch(() => {});
       loadCard().then(setCard).catch(() => {});
+      api.weeklyPins().then(setPins).catch(() => {});
+      api.spendBoard().then(setSpend).catch(() => {});
+      api.betaTesters().then(setTesters).catch(() => {});
     };
     const un = subscribeFloor(refresh);
     const cats = setInterval(() => { loadCatalog().then(setCat).catch(() => {}); }, 180000);
@@ -3393,6 +3447,21 @@ function PatronFloor() {
         <Panel onClose={() => setPanel(null)} title={PANEL_TITLES[panel]}>
           {panel === "shop" && (
             <Shop cat={cat} me={me} pp={pp} rate={rate}
+              pins={pins}
+              onPin={async (x) => {
+                try {
+                  applyServer(await api.buyPin(x.id));
+                  setFloor(await loadFloor());
+                  api.spendBoard().then(setSpend).catch(() => {});
+      api.betaTesters().then(setTesters).catch(() => {});
+                  sfx("buy");
+                  flash(x.name + " — pinned on.");
+                } catch (e) { flash(prettyError(e)); }
+              }}
+              onWear={async (id) => {
+                try { applyServer(await api.setPin(id)); setFloor(await loadFloor()); }
+                catch (e) { flash(prettyError(e)); }
+              }}
               onFitting={async (which, x) => {
                 try {
                   applyServer(await api.buyFitting(which, x.id));
@@ -3417,11 +3486,16 @@ function PatronFloor() {
                    onBlame={commit} />
           )}
           {panel === "wire" && (
-            <Wire wire={wire} feed={feed} lifetime={lifetime}
+            <Wire wire={wire} feed={feed} lifetime={lifetime} testers={testers}
                   onPineapple={() => guard(() => api.pineapple(), "Pineapple.")} />
           )}
           {panel === "personnel" && (
             <Personnel me={me} lifetime={lifetime} cat={cat} user={user}
+              spend={spend} pins={pins}
+              onWear={async (id) => {
+                try { applyServer(await api.setPin(id)); setFloor(await loadFloor()); }
+                catch (e) { flash(prettyError(e)); }
+              }}
               onSave={async (name, dataUrl) => {
                 try {
                   let url = null;
@@ -3752,6 +3826,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const c = worn ? COSTUMES[worn.id] : null;
   const L = lookFor(p);
   const v = p?.vanity || {};
+  const pin = p?.pin ? PIN_INDEX[p.pin] : null;
   const nickOn = p?.nickname && new Date(p.nickname.until) > new Date();
   const nick = nickOn ? p.nickname.text : null;
   const B = BUILDS[L.build] || BUILDS.regular;
@@ -3806,6 +3881,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       </div>
       <span className="pg-shadow" />
       {v.aura && <i className={"pg-aura aura-" + v.aura} />}
+      {pin && <i className="pg-pin" style={{ background: pin.hue }}>{pin.glyph}</i>}
       {v.held && <i className={"pg-held held-" + v.held} />}
       {nick && <div className="pg-nick">"{nick}"</div>}
       {c && <div className="pg-worn">{c.name}</div>}
@@ -4116,7 +4192,7 @@ function Help({ onClose, rate }) {
 }
 
 /** Mail order. None of it earns you anything. That is the entire appeal. */
-function Catalogue({ cat, me, pp, rate, onFitting }) {
+function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear }) {
   const [which, setWhich] = useState("vanity");
   // the server quotes the price; the client's own rate sum disagrees with it
   const [quote, setQuote] = useState(null);
@@ -4191,7 +4267,7 @@ const SLOT_NAMES = { glow: "Glow", size: "Presence", held: "Something To Carry",
                      rug: "The Floor", art: "The Wall" };
 
 function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure,
-                onFitting, guard, flash }) {
+                onFitting, pins, onPin, onWear, guard, flash }) {
   const owned = me?.owned || {}, ups = me?.upgrades || [];
   const cycle = me?.cycle || 0;
   const avail = cycle <= 1e9 ? 0 : Math.floor(1.6 * Math.log10(cycle / 1e9));
@@ -4204,7 +4280,8 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
       <Tabsy tabs={[["hire", "Requisitions"], ["ups", "Approvals"],
                     ["today", "Today"], ["restr", "Equity"], ["cat", "Catalogue"]]}>
         {(t) => t === "cat" ? (
-          <Catalogue cat={cat} me={me} pp={pp} rate={rate} onFitting={onFitting} />
+          <Catalogue cat={cat} me={me} pp={pp} rate={rate} onFitting={onFitting}
+                     pins={pins} onPin={onPin} onWear={onWear} />
         ) : t === "hire" ? (
           <div className="pg-list">
             {(cat.items || []).map((it, i) => {
@@ -4458,8 +4535,15 @@ function Owner({ me, board, lifetime, pp, cool, cat, onMeeting, onRaise, onBlame
   );
 }
 
-function Wire({ wire, feed, lifetime, onPineapple }) {
+function Wire({ wire, feed, lifetime, onPineapple, testers }) {
   return (
+    <>
+      {(testers || []).length > 0 && (
+        <div className="pg-betanote">
+          <b>β  Opening Week</b>
+          <span>{testers.join(" · ")} were here before it worked.</span>
+        </div>
+      )}
     <div className="pg-list">
       {wire.length === 0 && <div className="pg-note">Nothing has happened yet. Somebody should do something.</div>}
       {wire.map((d, i) => {
@@ -4483,16 +4567,72 @@ function Wire({ wire, feed, lifetime, onPineapple }) {
         {feed.slice(0, 12).map((f) => <div key={f.k} className={"pg-memo " + (f.tone || "")}>{f.text}</div>)}
       </div>
     </div>
+    </>
   );
 }
 
-function Personnel({ me, lifetime, cat, onDept, user, onSave, onLook }) {
+/** What you've poured into things that do nothing, and who has poured more. */
+function SpendFile({ me, spend, pins, onWear }) {
+  const mine = spend?.mine;
+  const owned = me?.extras || [];
+  const all = Object.values(PIN_INDEX);
+  return (
+    <div>
+      <div className="pg-earnbar">
+        Nothing in here earns a single point. That is the entire appeal, and the
+        ledger keeps score anyway.
+      </div>
+
+      <h4 className="pg-h4">Your Collection</h4>
+      <div className="pg-spendrow"><b>Spent on the catalogue</b><span>{fmt(mine?.spent || 0)} PP</span></div>
+      <div className="pg-spendrow"><b>Personal effects</b><span>{mine?.vanity || 0} of 4 slots</span></div>
+      <div className="pg-spendrow"><b>Office fittings</b><span>{mine?.kit || 0} of 4 slots</span></div>
+      <div className="pg-spendrow"><b>Pins collected</b>
+        <span>{mine?.pins || 0} of {mine?.total_pins || 0}</span></div>
+
+      {owned.length > 0 && (
+        <>
+          <h4 className="pg-h4">Wear One</h4>
+          <div className="pg-pinshelf">
+            {all.filter((x) => owned.includes(x.id))
+                .sort((a, b) => (isSpecialPin(b.id) ? 1 : 0) - (isSpecialPin(a.id) ? 1 : 0))
+                .map((x) => (
+              <span key={x.id}
+                    className={"pg-pinchip" + (me?.pin === x.id ? " on" : "")}
+                    style={{ background: x.hue,
+                             boxShadow: isSpecialPin(x.id)
+                               ? "0 0 0 2px #C9A253, 0 0 12px rgba(201,162,83,.7)" : undefined }}
+                    title={x.name + " — " + x.note}
+                    onClick={() => onWear(me?.pin === x.id ? null : x.id)}>{x.glyph}</span>
+            ))}
+          </div>
+          <div className="pg-fine">Tap to wear it. Tap again to take it off.</div>
+        </>
+      )}
+
+      <h4 className="pg-h4">Biggest Spenders</h4>
+      <div className="pg-list">
+        {(spend?.top || []).length === 0 && <div className="pg-note">Nobody has bought anything yet.</div>}
+        {(spend?.top || []).map((r, i) => (
+          <div key={r.name} className={"pg-row" + (i % 2 ? " alt" : "")}>
+            <span className="pg-main"><b>{i + 1}. {r.name}</b>
+              <span>{r.pieces} piece{r.pieces === 1 ? "" : "s"}</span></span>
+            <span className="pg-right"><b>{fmt(r.spent)}</b><span>PP spent</span></span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Personnel({ me, lifetime, cat, onDept, user, onSave, onLook, spend, pins, onWear }) {
   const have = me?.achievements || [];
   const depts = cat?.depts || [];
   const got = ACHV.filter((a) => have.includes(a.id)).length;
 
   return (
-    <Tabsy tabs={[["dept", "Department"], ["badge", "Your Badge"], ["file", "Your File"],
+    <Tabsy tabs={[["dept", "Department"], ["badge", "Your Badge"], ["spend", "Collection"],
+                  ["file", "Your File"],
                   ["achv", `Awards ${got}/${ACHV.length}`]]}>
       {(t) => t === "dept" ? (
         <>
@@ -4518,6 +4658,8 @@ function Personnel({ me, lifetime, cat, onDept, user, onSave, onLook }) {
               : "You are currently unassigned, which is its own kind of job."}
           </div>
         </>
+      ) : t === "spend" ? (
+        <SpendFile me={me} spend={spend} pins={pins} onWear={onWear} />
       ) : t === "badge" ? (
         <Mirror me={me} user={user} onSave={onSave} onLook={onLook} />
       ) : t === "file" ? (
