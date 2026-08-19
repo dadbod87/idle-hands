@@ -1063,6 +1063,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officechair.chair-c3{background:repeating-linear-gradient(0deg,#3E4A54 0 3px,#55636E 3px 6px)}
 .pg-officechair.chair-c4{background:linear-gradient(#6B3B2E,#4A2820);box-shadow:0 3px 8px rgba(0,0,0,.4)}
 
+.pg-here{width:7px;height:7px;border-radius:50%;background:#4E8B5A;flex:none;
+  margin-left:-4px;align-self:center;box-shadow:0 0 0 2px #FBFCF7}
 /* the weekly pin, worn beside the badge */
 /* worn on the whiteboard beside the name, not carried around the floor */
 .pg-boardpin{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;
@@ -2400,7 +2402,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 114";
+const BUILD = "build 115";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3060,7 +3062,7 @@ function PatronFloor() {
         flash("THE GOOD CHAIR · 7× for 77s");
       } else {
         say("You found the good chair. Underneath it: unfiled expense receipts.", "good");
-        flash("Windfall");
+        flash("Windfall · ten minutes of production");
       }
     }
   };
@@ -3529,23 +3531,11 @@ function PatronFloor() {
                   onPineapple={() => guard(() => api.pineapple(), "Pineapple.")} />
           )}
           {panel === "personnel" && (
-            <Personnel me={me} lifetime={lifetime} cat={cat} user={user}
+            <Personnel me={me} lifetime={lifetime} cat={cat}
               spend={spend} pins={pins}
               onWear={async (id) => {
                 try { applyServer(await api.setPin(id)); setFloor(await loadFloor()); }
                 catch (e) { flash(prettyError(e)); }
-              }}
-              onSave={async (name, dataUrl) => {
-                try {
-                  let url = null;
-                  if (dataUrl) url = await uploadBadge(user.id, dataUrl);
-                  applyServer(await api.upsertPlayer(name || me.name, url, null));
-                  setFloor(await loadFloor());
-                  flash("Badge reissued.");
-                } catch (e) { flash(prettyError(e)); }
-              }}
-              onLook={async (look) => {
-                try { applyServer(await api.setLook(look)); } catch { /* cosmetic */ }
               }}
               onDept={async (id) => {
                 const r = await guard(() => api.setDept(id));
@@ -4415,6 +4405,9 @@ function Standings({ board, me, fund, feuds = [] }) {
           <div key={p.id} className={"pg-row static" + (i % 2 ? " alt" : "") + (me && p.id === me.id ? " mine" : "")}>
             <span className="pg-ct">{i + 1}</span>
             <Face src={p.avatar_url} name={p.name} size={34} />
+            {p.last_seen && Date.now() - new Date(p.last_seen).getTime() < 120000 && (
+              <i className="pg-here" title="on the floor now" />
+            )}
             <span className="pg-main">
               <b>{p.name}{me && p.id === me.id ? " (you)" : ""}
                 {p.pin && PIN_INDEX[p.pin] && (
@@ -4672,13 +4665,13 @@ function SpendFile({ me, spend, pins, onWear }) {
   );
 }
 
-function Personnel({ me, lifetime, cat, onDept, user, onSave, onLook, spend, pins, onWear }) {
+function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear }) {
   const have = me?.achievements || [];
   const depts = cat?.depts || [];
   const got = ACHV.filter((a) => have.includes(a.id)).length;
 
   return (
-    <Tabsy tabs={[["dept", "Department"], ["badge", "Your Badge"], ["spend", "Collection"],
+    <Tabsy tabs={[["dept", "Department"], ["spend", "Collection"],
                   ["file", "Your File"],
                   ["achv", `Awards ${got}/${ACHV.length}`]]}>
       {(t) => t === "dept" ? (
@@ -4707,8 +4700,6 @@ function Personnel({ me, lifetime, cat, onDept, user, onSave, onLook, spend, pin
         </>
       ) : t === "spend" ? (
         <SpendFile me={me} spend={spend} pins={pins} onWear={onWear} />
-      ) : t === "badge" ? (
-        <Mirror me={me} user={user} onSave={onSave} onLook={onLook} />
       ) : t === "file" ? (
         <>
           <div className="pg-stats">
