@@ -402,6 +402,31 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-cowlevel{position:fixed;inset:0;z-index:9000;overflow:hidden;
   background:linear-gradient(160deg,#6FD36F 0%,#37B24D 34%,#F2C744 62%,#EE7BD0 100%)}
 .pg-cowlevel.live{animation:pgcowtrip 5s linear infinite}
+.pg-cowlevel.live.frantic{animation:pgcowtrip 1.6s linear infinite}
+.pg-cowlevel.live.shaking{animation:pgcowtrip 5s linear infinite,pgcowshake .2s ease-out}
+.pg-cowlevel.live.frantic.shaking{animation:pgcowtrip 1.6s linear infinite,pgcowshake .2s ease-out}
+@keyframes pgcowshake{0%{transform:translate(0,0)}25%{transform:translate(-6px,3px)}
+  50%{transform:translate(5px,-4px)}75%{transform:translate(-3px,-2px)}
+  100%{transform:translate(0,0)}}
+.pg-cow.runner{filter:drop-shadow(0 0 10px rgba(255,220,90,.95)) saturate(1.5)}
+.pg-cowpop.gold i{background:#FFE9A8;border-color:#8A6A1E}
+.pg-cowpop.gold b{color:#8A6A1E}
+.pg-cowcombo{position:absolute;top:58px;left:50%;transform:translateX(-50%);z-index:8;
+  font-family:var(--mono);font-size:38px;font-weight:700;color:#FBFCF7;pointer-events:none;
+  text-shadow:0 3px 0 rgba(0,0,0,.35);animation:pgcombopop .45s ease-out}
+@keyframes pgcombopop{from{transform:translateX(-50%) scale(.4);opacity:0}
+  60%{transform:translateX(-50%) scale(1.35);opacity:1}
+  to{transform:translateX(-50%) scale(1);opacity:1}}
+.pg-confetti{position:absolute;inset:0;pointer-events:none}
+.pg-confetti i{position:absolute;left:50%;top:50%;width:12px;height:16px;border-radius:2px;
+  background:hsl(calc(var(--n) * 41), 88%, 62%);
+  animation:pgconfetti 1.5s ease-out forwards;
+  animation-delay:calc(var(--n) * 18ms)}
+@keyframes pgconfetti{
+  from{transform:translate(-50%,-50%) rotate(0deg) scale(.4);opacity:1}
+  to{transform:translate(calc(-50% + (var(--n) - 8.5) * 26px),
+       calc(-50% + (var(--n) - 8.5) * (var(--n) - 8.5) * 3px - 220px)) rotate(540deg) scale(1);
+     opacity:0}}
 @keyframes pgcowtrip{0%{filter:hue-rotate(0deg) saturate(1.1)}
   50%{filter:hue-rotate(28deg) saturate(1.5)}100%{filter:hue-rotate(0deg) saturate(1.1)}}
 .pg-cowsky{position:absolute;inset:-20%;
@@ -2646,7 +2671,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 128";
+const BUILD = "build 129";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -5248,7 +5273,11 @@ function CowLevel({ data, onDone }) {
   const [pops, setPops] = useState([]);
   const [stage, setStage] = useState("run");     // run -> prize -> open -> done
   const [result, setResult] = useState(null);
+  const [combo, setCombo] = useState(0);
+  const [shake, setShake] = useState(0);
   const settling = useRef(false);
+  const comboRef = useRef(0);
+  const lastTap = useRef(0);
   const hitRef = useRef([]);      // taps land faster than React re-renders; state alone drops them
   const herd = useRef(null);
   const junk = useRef(null);
@@ -5270,29 +5299,38 @@ function CowLevel({ data, onDone }) {
       dx: (rnd(i * 5 + 4) * 2 - 1) * 26,
       dy: (rnd(i * 5 + 5) * 2 - 1) * 16,
       f: rnd(i * 9 + 7) > 0.5 ? 1 : -1,
+      runner: rnd(i * 17 + 11) > 0.82,          // a few bolt about and are harder to hit
     }));
+    herd.current.forEach((c) => { if (c.runner) { c.dur = 1.1 + c.dur * 0.22; c.dx *= 2.4; } });
     junk.current = ["MOO", "SYNERGY", "MOO", "PATRON STANDARD TIME", "MOO",
-                    "PLEASE HOLD", "CIRCLE BACK", "MOO"].map((t, i) => ({
+                    "PLEASE HOLD", "CIRCLE BACK", "MOO", "LET'S TAKE THIS OFFLINE",
+                    "MOO", "PER MY LAST EMAIL", "SUPER WEIRD", "MOO", "IDEALLY",
+                    "YOU'RE ON MUTE", "MOO", "SI SENOR", "THE REALITY IS"].map((t, i) => ({
       id: i, t, top: 8 + rnd(i * 11 + 3) * 78, dur: 7 + rnd(i * 11 + 4) * 8,
       delay: rnd(i * 11 + 5) * 9,
     }));
   }
 
-  /* the music. Stops itself on unmount. */
+  /* the music. Gets faster and higher as the field empties. Stops itself on unmount. */
+  const gone = hit.length;
+  const step = Math.min(4, Math.floor(gone / 5));         // 0..4, restarts the loop
   useEffect(() => {
+    if (stage !== "run") return;
     wakeAudio();
     const BASS = [55, 55, 82, 73, 55, 55, 65, 73];
     const LEAD = [330, 392, 440, 392, 330, 294, 262, 294, 330, 440, 523, 440];
+    const lift = 1 + step * 0.09;
     let i = 0;
     const id = setInterval(() => {
-      tone({ freq: BASS[i % BASS.length], dur: 0.24, type: "sawtooth", vol: 0.05 });
-      tone({ freq: LEAD[i % LEAD.length], dur: 0.16, type: "square", vol: 0.028, delay: 0.05 });
+      tone({ freq: BASS[i % BASS.length] * lift, dur: 0.24, type: "sawtooth", vol: 0.05 });
+      tone({ freq: LEAD[i % LEAD.length] * lift, dur: 0.16, type: "square", vol: 0.028, delay: 0.05 });
       if (i % 2 === 0) noise({ dur: 0.04, vol: 0.022, hp: 1400 });
-      if (i % 8 === 0) tone({ freq: 1046, to: 1568, dur: 0.3, type: "triangle", vol: 0.02 });
+      if (i % 8 === 0) tone({ freq: 1046 * lift, to: 1568 * lift, dur: 0.3, type: "triangle", vol: 0.02 });
+      if (step >= 3 && i % 4 === 2) tone({ freq: 82 * lift, dur: 0.1, type: "square", vol: 0.035 });
       i++;
-    }, 250);
+    }, 250 - step * 26);
     return () => clearInterval(id);
-  }, []);
+  }, [step, stage]);
 
   /* the clock */
   useEffect(() => {
@@ -5318,9 +5356,23 @@ function CowLevel({ data, onDone }) {
   const tap = (c) => {
     if (stage !== "run" || hitRef.current.includes(c.id)) return;
     hitRef.current = hitRef.current.concat(c.id);   // authoritative; state is for rendering
-    sfx("moo");
+
+    const t = Date.now();
+    const run = t - lastTap.current < 1300 ? comboRef.current + 1 : 1;
+    comboRef.current = run; lastTap.current = t;
+    setCombo(run);
+
+    // the moo climbs with the combo instead of being one flat sample
+    const up = Math.pow(1.055, Math.min(run, 16));
+    wakeAudio();
+    tone({ freq: 196 * up, to: 147 * up, dur: 0.34, type: "sawtooth", vol: 0.07 });
+    tone({ freq: 98 * up, to: 74 * up, dur: 0.42, type: "triangle", vol: 0.05, delay: 0.02 });
+    if (c.runner) tone({ freq: 880 * up, to: 1760, dur: 0.18, type: "square", vol: 0.04 });
+
     setHit(hitRef.current);
-    setPops((p) => p.concat({ id: c.id, x: c.x, y: c.y }));
+    setShake(t);
+    setTimeout(() => setShake((v) => (v === t ? 0 : v)), 200);
+    setPops((p) => p.concat({ id: c.id, x: c.x, y: c.y, run, gold: c.runner }));
     setTimeout(() => setPops((p) => p.filter((q) => q.id !== c.id)), 620);
     if (hitRef.current.length >= data.orbs) settle(hitRef.current.length);
   };
@@ -5335,8 +5387,9 @@ function CowLevel({ data, onDone }) {
   const pet = CRITTERS[result?.loot] || null;
 
   return (
-    <div className={"pg-cowlevel" + (stage === "run" ? " live" : "")}>
-      <div className="pg-cowsky" />
+    <div className={"pg-cowlevel" + (stage === "run" ? " live" : "") +
+                    (shake ? " shaking" : "") + (step >= 3 ? " frantic" : "")}>
+      <div className="pg-cowsky" style={{ animationDuration: (1.6 - step * 0.26) + "s" }} />
       <div className="pg-cowhaze" />
 
       {stage === "run" && junk.current.map((j) => (
@@ -5346,9 +5399,10 @@ function CowLevel({ data, onDone }) {
       ))}
 
       {pops.map((p) => (
-        <div key={"pop" + p.id} className="pg-cowpop" style={{ left: p.x + "%", top: p.y + "%" }}>
+        <div key={"pop" + p.id} className={"pg-cowpop" + (p.gold ? " gold" : "")}
+             style={{ left: p.x + "%", top: p.y + "%" }}>
           <i /><i /><i /><i /><i /><i />
-          <b>MOO</b>
+          <b>{p.run >= 3 ? "MOO x" + p.run : "MOO"}</b>
         </div>
       ))}
 
@@ -5358,8 +5412,9 @@ function CowLevel({ data, onDone }) {
             <b>{hit.length} / {data.orbs}</b>
             <span>{left}s</span>
           </div>
+          {combo >= 3 && <div key={combo} className="pg-cowcombo">x{combo}</div>}
           {herd.current.map((c) => hit.includes(c.id) ? null : (
-            <button key={c.id} className="pg-cow"
+            <button key={c.id} className={"pg-cow" + (c.runner ? " runner" : "")}
                     style={{ left: c.x + "%", top: c.y + "%",
                              "--dx": c.dx + "vw", "--dy": c.dy + "vh",
                              "--f": c.f, animationDuration: c.dur + "s" }}
@@ -5393,6 +5448,9 @@ function CowLevel({ data, onDone }) {
 
       {stage === "open" && (
         <div className="pg-cowopen">
+          <div className="pg-confetti">
+            {Array.from({ length: 18 }, (_, i) => <i key={i} style={{ "--n": i }} />)}
+          </div>
           <svg viewBox="0 0 34 34" className="pg-petart big">{pet?.art}</svg>
         </div>
       )}
