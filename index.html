@@ -2747,7 +2747,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 137";
+const BUILD = "build 138";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4979,7 +4979,11 @@ function Owner({ me, board, lifetime, pp, cool, cat, prices, onMeeting, onRaise,
   // the server prices these off current output; lifetime never resets
   const meetingCost = prices?.meeting ?? Math.max(500, lifetime * 0.05);
   const raiseCost   = prices?.raise   ?? Math.max(1000, lifetime * 0.12);
-  const blameCost = Math.max(60, lifetime * (cat.deeds?.blame?.cost || 0.015));
+  // build guard 7: never price from lifetime without a server quote behind it.
+  // all_prices() publishes deed_blame from deed_price(), which is seconds of CURRENT
+  // output and therefore resets on restructure. lifetime never resets.
+  const blameCost = prices?.deed_blame
+    ?? (cat.deeds?.blame ? null : null);   // no local fallback: there is no safe one
   return (
     <div>
       <div className="pg-boss-hero">
@@ -5029,13 +5033,15 @@ function Owner({ me, board, lifetime, pp, cool, cat, prices, onMeeting, onRaise,
 
       {target && (
         <div className="pg-list">
-          <button className={"pg-row" + (pp < blameCost || cool > 0 || heat <= 0 ? " poor" : "")}
-                  disabled={pp < blameCost || cool > 0 || heat <= 0}
+          <button className={"pg-row" +
+                    ((blameCost != null && pp < blameCost) || cool > 0 || heat <= 0 ? " poor" : "")}
+                  disabled={blameCost == null || pp < blameCost || cool > 0 || heat <= 0}
                   onClick={() => onBlame(target, "blame")}>
             <span className="pg-dot bad" />
             <span className="pg-main"><b>Pin it on {target.name}</b>
               <span>Your heat goes to zero. Three points land on theirs. The wire names you.</span></span>
-            <span className="pg-right"><b>{fmt(blameCost)}</b><span>PP</span></span>
+            <span className="pg-right"><b>{blameCost == null ? "\u2026" : fmt(blameCost)}</b>
+              <span>PP</span></span>
           </button>
         </div>
       )}
