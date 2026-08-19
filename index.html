@@ -400,35 +400,98 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   color:var(--soft)}
 
 .pg-cowlevel{position:fixed;inset:0;z-index:9000;overflow:hidden;
-  background:linear-gradient(160deg,#6FD36F 0%,#37B24D 40%,#F2C744 70%,#EE7BD0 100%)}
-.pg-cowsky{position:absolute;inset:0;
+  background:linear-gradient(160deg,#6FD36F 0%,#37B24D 34%,#F2C744 62%,#EE7BD0 100%)}
+.pg-cowlevel.live{animation:pgcowtrip 5s linear infinite}
+@keyframes pgcowtrip{0%{filter:hue-rotate(0deg) saturate(1.1)}
+  50%{filter:hue-rotate(28deg) saturate(1.5)}100%{filter:hue-rotate(0deg) saturate(1.1)}}
+.pg-cowsky{position:absolute;inset:-20%;
   background:repeating-linear-gradient(115deg,rgba(255,255,255,.20) 0 26px,rgba(0,0,0,0) 26px 60px);
-  animation:pgcowdrift 2.4s linear infinite}
+  animation:pgcowdrift 1.6s linear infinite}
 @keyframes pgcowdrift{from{background-position:0 0}to{background-position:120px 0}}
+.pg-cowhaze{position:absolute;inset:-30%;pointer-events:none;opacity:.5;
+  background:radial-gradient(circle at 30% 40%,rgba(255,255,255,.5) 0%,rgba(255,255,255,0) 45%),
+             radial-gradient(circle at 72% 66%,rgba(120,255,220,.45) 0%,rgba(0,0,0,0) 50%);
+  animation:pgcowswell 7s ease-in-out infinite alternate}
+@keyframes pgcowswell{from{transform:scale(1) rotate(0deg)}to{transform:scale(1.25) rotate(12deg)}}
+.pg-cowjunk{position:absolute;left:-30%;font-family:var(--mono);font-size:26px;font-weight:700;
+  color:rgba(255,255,255,.42);letter-spacing:.2em;white-space:nowrap;pointer-events:none;
+  animation:pgcowfloat linear infinite}
+@keyframes pgcowfloat{from{transform:translateX(0) rotate(-4deg)}
+  to{transform:translateX(160vw) rotate(4deg)}}
 .pg-cow{position:absolute;width:74px;height:52px;border:0;background:none;padding:0;
-  cursor:pointer;animation:pgcowbob ease-in-out infinite alternate;filter:drop-shadow(0 3px 0 rgba(0,0,0,.28))}
-.pg-cow svg{width:100%;height:100%;display:block}
-@keyframes pgcowbob{from{margin-top:-10px}to{margin-top:10px}}
-.pg-cowhud{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:5;
+  cursor:pointer;animation:pgcowwalk ease-in-out infinite alternate;
+  filter:drop-shadow(0 3px 0 rgba(0,0,0,.28));z-index:3}
+.pg-cow svg{width:100%;height:100%;display:block;pointer-events:none}
+@keyframes pgcowwalk{
+  from{transform:translate(0,0) scaleX(var(--f))}
+  to{transform:translate(var(--dx),var(--dy)) scaleX(var(--f))}}
+.pg-cowpop{position:absolute;width:0;height:0;pointer-events:none;z-index:6}
+.pg-cowpop i{position:absolute;width:11px;height:11px;border-radius:50%;background:#FBFCF7;
+  border:2px solid #2C2622;animation:pgcowpop .6s ease-out forwards}
+.pg-cowpop i:nth-child(1){--px:-46px;--py:-34px}
+.pg-cowpop i:nth-child(2){--px:44px;--py:-30px}
+.pg-cowpop i:nth-child(3){--px:-52px;--py:22px}
+.pg-cowpop i:nth-child(4){--px:50px;--py:26px}
+.pg-cowpop i:nth-child(5){--px:0px;--py:-54px}
+.pg-cowpop i:nth-child(6){--px:6px;--py:48px}
+@keyframes pgcowpop{from{transform:translate(0,0) scale(1);opacity:1}
+  to{transform:translate(var(--px),var(--py)) scale(.2);opacity:0}}
+.pg-cowpop b{position:absolute;transform:translate(-50%,-50%);font-family:var(--mono);
+  font-size:22px;font-weight:700;color:#2C2622;animation:pgcowmoo .6s ease-out forwards}
+@keyframes pgcowmoo{from{transform:translate(-50%,-50%) scale(.6);opacity:1}
+  to{transform:translate(-50%,-160%) scale(1.5);opacity:0}}
+.pg-cowhud{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:8;
   display:flex;gap:16px;align-items:baseline;background:var(--ink);color:var(--paper);
   border-radius:14px;padding:7px 18px;font-family:var(--mono);letter-spacing:.1em}
 .pg-cowhud b{font-size:19px}
 .pg-cowfoot{position:absolute;bottom:16px;left:0;right:0;text-align:center;color:rgba(0,0,0,.5);
   font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.pg-cowprize{position:absolute;inset:0;display:flex;flex-direction:column;gap:16px;
+  align-items:center;justify-content:center;border:0;background:none;cursor:pointer;z-index:9}
+.pg-cowprizebox{width:96px;height:96px;border-radius:20px;background:#FBFCF7;border:4px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:52px;font-family:var(--mono);
+  box-shadow:0 0 0 10px rgba(255,255,255,.4),0 0 46px 18px rgba(255,255,190,.85);
+  animation:pgprizefloat 1.5s ease-in-out infinite alternate}
+@keyframes pgprizefloat{from{transform:translateY(-12px) rotate(-5deg)}
+  to{transform:translateY(12px) rotate(5deg)}}
+.pg-cowprize em{font-style:normal;font-family:var(--mono);font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(0,0,0,.6)}
+.pg-cowopen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:9}
+.pg-petart{width:34px;height:34px;display:block}
+.pg-petart.big{width:150px;height:150px;animation:pgpetreveal 1.5s ease-out forwards;
+  filter:drop-shadow(0 0 30px rgba(255,255,200,.95))}
+@keyframes pgpetreveal{
+  0%{transform:scale(.2) rotate(0deg);opacity:0}
+  30%{transform:scale(1.5) rotate(-9deg);opacity:1}
+  40%{transform:scale(1.5) rotate(9deg)}
+  50%{transform:scale(1.5) rotate(-7deg)}
+  60%{transform:scale(1.5) rotate(7deg)}
+  70%{transform:scale(1.5) rotate(-4deg)}
+  100%{transform:scale(1.9) rotate(0deg);opacity:1}}
+.pg-petart.huge{width:104px;height:104px;margin:2px auto}
 .pg-cowdone{position:absolute;inset:0;display:flex;flex-direction:column;gap:9px;
-  align-items:center;justify-content:center;text-align:center;padding:26px;
+  align-items:center;justify-content:center;text-align:center;padding:26px;z-index:10;
   background:rgba(251,252,247,.94)}
 .pg-cowdone b{font-size:34px;font-family:var(--mono)}
 .pg-cowloot{font-size:19px;font-weight:700;margin-top:4px}
 .pg-cowsmall{font-size:12px;color:var(--soft);max-width:280px}
-/* cow loot, worn on the floor. Its own marks so it never collides with a bought slot. */
-.pg-cowmark{position:absolute;pointer-events:none}
-.pg-cowmark.cow-cowbell{left:calc(50% + 15px);bottom:16px;width:11px;height:13px;
-  background:#C2A24E;border:2px solid var(--ink);border-radius:3px 3px 6px 6px}
-.pg-cowmark.cow-pasture{left:50%;bottom:-8px;transform:translateX(-50%);width:74px;height:34px;
-  border-radius:50%;background:radial-gradient(circle,rgba(90,220,110,.6) 0%,rgba(60,190,80,.2) 50%,rgba(0,0,0,0) 74%)}
-.pg-cowmark.cow-milk{left:50%;top:-6px;transform:translateX(-50%);width:46px;height:46px;
-  border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.75) 0%,rgba(255,255,255,0) 70%)}
+/* the pet itself, out on the floor beside you */
+.pg-petcell{flex:none;width:34px;height:34px}
+.pg-petcell.unknown{filter:brightness(0) opacity(.16)}
+.pg-row.locked{opacity:.55;cursor:default}
+.pg-mount{position:absolute;left:calc(50% - 4px);bottom:-2px;transform:translateX(-50%);
+  width:86px;height:72px;pointer-events:none;z-index:1;
+  animation:pgmountbob 1.9s ease-in-out infinite alternate}
+.pg-mount svg{width:100%;height:100%;display:block}
+@keyframes pgmountbob{from{margin-bottom:0}to{margin-bottom:5px}}
+.pg-body.riding .pg-rig{margin-top:-30px}
+.pg-body.riding .pg-leg{opacity:0}
+.pg-body.riding .pg-shadow{width:66px}
+.pg-petcell svg{width:100%;height:100%;display:block}
+.pg-pet{position:absolute;left:calc(50% + 26px);top:-14px;width:34px;height:34px;
+  pointer-events:none;animation:pgpetbob 2.6s ease-in-out infinite alternate;z-index:4}
+.pg-pet svg{width:100%;height:100%;display:block}
+@keyframes pgpetbob{from{transform:translate(-2px,-4px)}to{transform:translate(4px,5px)}}
 
 /* ---------------- Chance ---------------- */
 .pg-body.chance{width:74px;height:92px}
@@ -1370,6 +1433,8 @@ const ACHV = [
   { id: "a30c", name: "Do Not Delete", note: "Try Conference Room B five times.",
     test: (s) => (s.knocks?.confb || 0) >= 5 },
   { id: "a31", name: "Please Hold", note: "Come back after a full 8 hours away.", test: (s) => s.longAway >= 1 },
+  { id: "a32", name: "There Is No Cow Level", note: "There is no cow level.",
+    test: (s) => !!s.extras?.cow_seen },
 ];
 
 const MEMOS = [
@@ -1689,11 +1754,80 @@ const DAVE = {
 
 /* Cow level loot. Cannot be bought. Kept in players.extras.cow so it never
    overwrites a purchased vanity slot — vanity doubles as ownership. */
-const COW_LOOT = {
-  cowbell:  { name: "A Cowbell", note: "It is on your desk now. Nobody has asked about it." },
-  pasture:  { name: "Faint Pasture", note: "The light around you is slightly too green." },
-  milk:     { name: "Whole Milk", note: "You are very slightly luminous. It fades on nobody." },
+/* Cow level loot: a floating pet. Cannot be bought, only cleared for.
+   Kept in players.extras.cow (owned) and extras.pet (out right now) so it never
+   overwrites a purchased vanity slot — vanity doubles as ownership. */
+const PETS = {
+  calf:    { name: "A Small Cow", note: "It followed you back. Nobody has mentioned it.",
+             art: <><ellipse cx="17" cy="17" rx="12" ry="8.5" fill="#FBFCF7" />
+                    <ellipse cx="12" cy="14" rx="4" ry="3" fill="#2C2622" />
+                    <ellipse cx="21" cy="19" rx="3" ry="2.4" fill="#2C2622" />
+                    <ellipse cx="27" cy="11" rx="6" ry="5.5" fill="#FBFCF7" />
+                    <path d="M22 6c-2-2.4-1.2-4.2.6-3.6 1.2.6 1.8 1.8 1.8 3Zm10 0c2-2.4 1.2-4.2-.6-3.6-1.2.6-1.8 1.8-1.8 3Z" fill="#C9B79A" />
+                    <ellipse cx="25" cy="10" rx="1" ry="1.2" fill="#2C2622" />
+                    <ellipse cx="29.5" cy="10" rx="1" ry="1.2" fill="#2C2622" />
+                    <ellipse cx="27.5" cy="14" rx="3" ry="2" fill="#E8A9A9" /></> },
+  moth:    { name: "The Office Moth", note: "It has lived by the ceiling light for years. It has chosen you.",
+             art: <><ellipse cx="17" cy="17" rx="4" ry="7" fill="#8A7F6C" />
+                    <path d="M17 12c-7-7-14-5-13 2s8 10 13 5Z" fill="#C9BCA2" />
+                    <path d="M17 12c7-7 14-5 13 2s-8 10-13 5Z" fill="#C9BCA2" />
+                    <path d="M17 17c-5 5-9 5-9 1s5-6 9-4Zm0 0c5 5 9 5 9 1s-5-6-9-4Z" fill="#B0A184" />
+                    <path d="M15 10l-3-5M19 10l3-5" stroke="#6E6455" strokeWidth="1.2" strokeLinecap="round" /></> },
+  pigeon:  { name: "The Pigeon That Got In", note: "It came through the loading door in spring. It stayed.",
+             art: <><ellipse cx="16" cy="19" rx="11" ry="8" fill="#8F98A6" />
+                    <ellipse cx="26" cy="12" rx="5.5" ry="5" fill="#9FA8B6" />
+                    <path d="M30 12l5 1-5 2Z" fill="#D8A24E" />
+                    <circle cx="27" cy="11" r="1.1" fill="#2C2622" />
+                    <path d="M9 17c4-4 11-3 13 2-4 4-11 3-13-2Z" fill="#77808E" />
+                    <path d="M14 26l-1 5M20 26l1 5" stroke="#D8A24E" strokeWidth="1.4" strokeLinecap="round" />
+                    <ellipse cx="24" cy="16" rx="3" ry="2" fill="#6FA98C" opacity=".7" /></> },
+  balloon: { name: "A Birthday Balloon", note: "From a birthday nobody can name. It has never come down.",
+             art: <><ellipse cx="17" cy="13" rx="9" ry="11" fill="#C4536B" />
+                    <ellipse cx="13.5" cy="9" rx="2.6" ry="3.4" fill="rgba(255,255,255,.5)" />
+                    <path d="M17 24l-2 3h4Z" fill="#9E3F55" />
+                    <path d="M17 27c2 4-2 6 0 9" stroke="#6E6455" strokeWidth="1.1" fill="none" /></> },
+  dragon:  { name: "A Very Small Dragon", note: "Fits in a drawer. Has opinions about the thermostat.",
+             art: <><path d="M15 14c-6-6-12-4-11 2s6 9 11 5Z" fill="#4E8B5A" />
+                    <path d="M17 15c6-6 13-4 12 2s-7 9-12 5Z" fill="#3F7449" />
+                    <ellipse cx="16" cy="19" rx="8" ry="6.5" fill="#5C9E68" />
+                    <path d="M8 19c-4 1-6 4-5 7 2 1 4-1 5-3Z" fill="#4E8B5A" />
+                    <ellipse cx="24" cy="14" rx="5.5" ry="4.5" fill="#5C9E68" />
+                    <path d="M21 9c-1-3 0-4 1.6-2.6.8.8 1.2 1.8 1.2 2.6Zm5 0c1-3 0-4-1.6-2.6-.8.8-1.2 1.8-1.2 2.6Z" fill="#E4D08A" />
+                    <circle cx="25.5" cy="13" r="1.1" fill="#2C2622" />
+                    <path d="M28.5 15.5c2 .4 3.4 0 4.4-1" stroke="#D4663C" strokeWidth="1.3"
+                          fill="none" strokeLinecap="round" /></> },
+  pig:     { name: "A Pig, Apparently", note: "It was not there this morning. It is here now.",
+             art: <><ellipse cx="16" cy="19" rx="11" ry="8" fill="#E7A6B0" />
+                    <ellipse cx="26" cy="14" rx="6" ry="5.5" fill="#EFB4BD" />
+                    <path d="M22 9c-1.6-2.6-.6-4 1.2-2.8.9.7 1.4 1.8 1.5 2.8Zm7.6 0c1.6-2.6.6-4-1.2-2.8-.9.7-1.4 1.8-1.5 2.8Z" fill="#DE97A3" />
+                    <circle cx="25" cy="13.5" r="1" fill="#2C2622" />
+                    <ellipse cx="30" cy="15.5" rx="3" ry="2.4" fill="#D98A98" />
+                    <circle cx="29" cy="15.5" r=".7" fill="#8E5560" />
+                    <circle cx="31" cy="15.5" r=".7" fill="#8E5560" />
+                    <rect x="10" y="25" width="3.4" height="6" rx="1.4" fill="#DE97A3" />
+                    <rect x="18" y="25" width="3.4" height="6" rx="1.4" fill="#DE97A3" />
+                    <path d="M5 18c-3-1-4 1-2 2.4" stroke="#DE97A3" strokeWidth="1.6"
+                          fill="none" strokeLinecap="round" /></> },
 };
+
+/* Rare. Not a pet — you sit on it. */
+const MOUNTS = {
+  bull: { name: "The Bull", note: "You are riding it through the office. Nobody has raised it with HR.",
+          art: <><ellipse cx="34" cy="34" rx="27" ry="16.5" fill="#3B332C" />
+                 <path d="M12 28c8-6 34-6 44 0-10-4-34-4-44 0Z" fill="#57493D" />
+                 <rect x="13" y="46" width="8" height="16" rx="2" fill="#2C2622" />
+                 <rect x="46" y="46" width="8" height="16" rx="2" fill="#2C2622" />
+                 <ellipse cx="58" cy="21" rx="12" ry="11" fill="#463C33" />
+                 <path d="M46 13c-7-4-7-10-1.6-8.6 3.4.9 6 4.4 6.8 7.2Zm24 0c7-4 7-10 1.6-8.6-3.4.9-6 4.4-6.8 7.2Z" fill="#E4DAC4" stroke="#C7BBA0" strokeWidth="1" />
+                 <circle cx="54" cy="19" r="1.6" fill="#E8C24A" />
+                 <circle cx="62" cy="19" r="1.6" fill="#E8C24A" />
+                 <ellipse cx="59" cy="26" rx="6" ry="4" fill="#5E5147" />
+                 <circle cx="56.5" cy="26" r="1" fill="#2C2622" />
+                 <circle cx="61.5" cy="26" r="1" fill="#2C2622" />
+                 <path d="M8 30c-5 2-6 7-3 10" stroke="#2C2622" strokeWidth="2.4"
+                       fill="none" strokeLinecap="round" /></> },
+};
+const CRITTERS = { ...PETS, ...MOUNTS };
 
 /* Scenery. Purely decorative — click nothing, mean nothing, look like an office. */
 const DECOR = [
@@ -2403,6 +2537,7 @@ const api = {
   fixPrinter: () => rpc("fix_printer"),
   cowTry: () => rpc("cow_try"),
   cowFinish: (got) => rpc("cow_finish", { p_got: got }),
+  setPet: (id) => rpc("set_pet", { p_id: id }),
   suggestMemo: (text) => rpc("suggest_memo", { p_text: text }),
   approveSuggestion: (id, ok) => rpc("approve_suggestion", { p_id: id, p_ok: ok }),
   setLook: (look) => rpc("set_look", { p_look: look }),
@@ -2510,7 +2645,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 122";
+const BUILD = "build 127";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3682,6 +3817,13 @@ function PatronFloor() {
                 try { applyServer(await api.setPin(id)); setFloor(await loadFloor()); }
                 catch (e) { flash(prettyError(e)); }
               }}
+              onPet={async (id) => {
+                try {
+                  applyServer(await api.setPet(id));
+                  setFloor(await loadFloor());
+                  flash(id ? (CRITTERS[id]?.name || "Out") + " \u2014 toggled." : "Put away.");
+                } catch (e) { flash(prettyError(e)); }
+              }}
               onDept={async (id) => {
                 const r = await guard(() => api.setDept(id));
                 if (r) { sfx("badge"); flash("Department updated."); }
@@ -4023,6 +4165,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
     "bt-" + bottom,
     v.glow ? "glow-" + v.glow : "", v.size ? "size-" + v.size : "",
     v.aura ? "aura-" + v.aura : "",
+    MOUNTS[p?.extras?.mount] ? "riding" : "",
   ].filter(Boolean).join(" ");
 
   return (
@@ -4066,7 +4209,12 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       <span className="pg-shadow" />
       {v.aura && <i className={"pg-aura aura-" + v.aura} />}
       {v.held && <i className={"pg-held held-" + v.held} />}
-      {(p?.extras?.cow || []).map((id) => <i key={id} className={"pg-cowmark cow-" + id} />)}
+      {PETS[p?.extras?.pet] && (
+        <span className="pg-pet"><svg viewBox="0 0 34 34">{PETS[p.extras.pet].art}</svg></span>
+      )}
+      {MOUNTS[p?.extras?.mount] && (
+        <span className="pg-mount"><svg viewBox="0 0 74 62">{MOUNTS[p.extras.mount].art}</svg></span>
+      )}
       {nick && <div className="pg-nick">"{nick}"</div>}
       {c && <div className="pg-worn">{c.name}</div>}
     </div>
@@ -4766,7 +4914,7 @@ function Wire({ wire, feed, lifetime, onPineapple, testers, prices }) {
 }
 
 /** What you've poured into things that do nothing, and who has poured more. */
-function SpendFile({ me, spend, pins, onWear }) {
+function SpendFile({ me, spend, pins, onWear, onPet }) {
   const mine = spend?.mine;
   const owned = me?.extras || [];
   const all = Object.values(PIN_INDEX);
@@ -4776,6 +4924,44 @@ function SpendFile({ me, spend, pins, onWear }) {
         Nothing in here earns a single point. That is the entire appeal, and the
         ledger keeps score anyway.
       </div>
+
+      {me?.extras?.cow_seen && (() => {
+        const owned = me?.extras?.cow || [];
+        const ids = Object.keys(CRITTERS);
+        return (
+          <>
+            <h4 className="pg-h4">Brought Back <span className="pg-got">{owned.length}/{ids.length}</span></h4>
+            <div className="pg-earnbar">
+              Nobody sold you these. They only come back with you, and only if you
+              clear the whole field.
+            </div>
+            <div className="pg-list">
+              {ids.map((id, i) => {
+                const has = owned.includes(id);
+                const slot = MOUNTS[id] ? "mount" : "pet";
+                const out = me?.extras?.[slot] === id;
+                return (
+                  <button key={id} disabled={!has}
+                          className={"pg-row" + (i % 2 ? " alt" : "") + (out ? " mine" : "") +
+                                     (has ? "" : " locked")}
+                          onClick={() => has && onPet(id)}>
+                    <span className="pg-ct">{out ? "\u2713" : has ? "\u00B7" : "?"}</span>
+                    <span className={"pg-petcell" + (has ? "" : " unknown")}>
+                      <svg viewBox="0 0 34 34">{CRITTERS[id].art}</svg></span>
+                    <span className="pg-main">
+                      <b>{has ? CRITTERS[id].name : "\u2014"}</b>
+                      <span>{has ? CRITTERS[id].note
+                                 : (MOUNTS[id] ? "Something you can sit on." : "Not brought back yet.")}</span>
+                    </span>
+                    <span className="pg-right">
+                      <b className="pg-got">{has ? (out ? "Out" : "Away") : "\u2014"}</b></span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        );
+      })()}
 
       <h4 className="pg-h4">Your Collection</h4>
       <div className="pg-spendrow"><b>Spent on the catalogue</b><span>{fmt(mine?.spent || 0)} PP</span></div>
@@ -4819,7 +5005,7 @@ function SpendFile({ me, spend, pins, onWear }) {
   );
 }
 
-function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear }) {
+function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear, onPet }) {
   const have = me?.achievements || [];
   const depts = cat?.depts || [];
   const got = ACHV.filter((a) => have.includes(a.id)).length;
@@ -4853,7 +5039,7 @@ function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear }) {
           </div>
         </>
       ) : t === "spend" ? (
-        <SpendFile me={me} spend={spend} pins={pins} onWear={onWear} />
+        <SpendFile me={me} spend={spend} pins={pins} onWear={onWear} onPet={onPet} />
       ) : t === "file" ? (
         <>
           <div className="pg-stats">
@@ -5058,9 +5244,14 @@ function DaveBody({ facing = 1 }) {
 function CowLevel({ data, onDone }) {
   const [left, setLeft] = useState(45);
   const [hit, setHit] = useState([]);
-  const [done, setDone] = useState(null);
-  const [busy, setBusy] = useState(false);
+  const [pops, setPops] = useState([]);
+  const [stage, setStage] = useState("run");     // run -> prize -> open -> done
+  const [result, setResult] = useState(null);
+  const settling = useRef(false);
+  const hitRef = useRef([]);      // taps land faster than React re-renders; state alone drops them
   const herd = useRef(null);
+  const junk = useRef(null);
+
   if (!herd.current) {
     // integer hash, not (i * k) % n — a linear formula lays the herd out on a
     // diagonal lattice, which is exactly what it looked like the first time.
@@ -5072,38 +5263,95 @@ function CowLevel({ data, onDone }) {
     };
     herd.current = Array.from({ length: data.orbs }, (_, i) => ({
       id: i,
-      x: 3 + rnd(i * 3 + 1) * 82,
-      y: 9 + rnd(i * 3 + 2) * 74,
-      d: 5 + rnd(i * 3 + 3) * 6,
-      f: rnd(i * 7 + 5) > 0.5 ? 1 : -1,
+      x: 4 + rnd(i * 5 + 1) * 78,
+      y: 10 + rnd(i * 5 + 2) * 70,
+      dur: 3.2 + rnd(i * 5 + 3) * 3.4,
+      dx: (rnd(i * 5 + 4) * 2 - 1) * 26,
+      dy: (rnd(i * 5 + 5) * 2 - 1) * 16,
+      f: rnd(i * 9 + 7) > 0.5 ? 1 : -1,
+    }));
+    junk.current = ["MOO", "SYNERGY", "MOO", "PATRON STANDARD TIME", "MOO",
+                    "PLEASE HOLD", "CIRCLE BACK", "MOO"].map((t, i) => ({
+      id: i, t, top: 8 + rnd(i * 11 + 3) * 78, dur: 7 + rnd(i * 11 + 4) * 8,
+      delay: rnd(i * 11 + 5) * 9,
     }));
   }
+
+  /* the music. Stops itself on unmount. */
   useEffect(() => {
-    if (done) return;
-    if (left <= 0) { finish(); return; }
+    wakeAudio();
+    const BASS = [55, 55, 82, 73, 55, 55, 65, 73];
+    const LEAD = [330, 392, 440, 392, 330, 294, 262, 294, 330, 440, 523, 440];
+    let i = 0;
+    const id = setInterval(() => {
+      tone({ freq: BASS[i % BASS.length], dur: 0.24, type: "sawtooth", vol: 0.05 });
+      tone({ freq: LEAD[i % LEAD.length], dur: 0.16, type: "square", vol: 0.028, delay: 0.05 });
+      if (i % 2 === 0) noise({ dur: 0.04, vol: 0.022, hp: 1400 });
+      if (i % 8 === 0) tone({ freq: 1046, to: 1568, dur: 0.3, type: "triangle", vol: 0.02 });
+      i++;
+    }, 250);
+    return () => clearInterval(id);
+  }, []);
+
+  /* the clock */
+  useEffect(() => {
+    if (stage !== "run") return;
+    if (left <= 0) { settle(hitRef.current.length); return; }
     const t = setTimeout(() => setLeft((v) => v - 1), 1000);
     return () => clearTimeout(t);
-  }, [left, done]);
+  }, [left, stage]);
 
-  const finish = async () => {
-    if (busy) return;
-    setBusy(true);
+  const settle = async (n) => {
+    if (settling.current) return;
+    settling.current = true;
+    const full = n >= data.orbs;
     try {
-      await api.cowFinish(hit.length);
-      setDone({ got: hit.length, loot: data.loot });
-    } catch { setDone({ got: hit.length, loot: data.loot, err: true }); }
+      await api.cowFinish(n);
+      setResult({ got: n, full, loot: data.loot });
+    } catch {
+      setResult({ got: n, full, loot: data.loot, err: true });
+    }
+    setStage(full ? "prize" : "done");
   };
 
-  const tap = (id) => {
-    if (hit.includes(id) || done) return;
+  const tap = (c) => {
+    if (stage !== "run" || hitRef.current.includes(c.id)) return;
+    hitRef.current = hitRef.current.concat(c.id);   // authoritative; state is for rendering
     sfx("moo");
-    setHit((h) => h.concat(id));
+    setHit(hitRef.current);
+    setPops((p) => p.concat({ id: c.id, x: c.x, y: c.y }));
+    setTimeout(() => setPops((p) => p.filter((q) => q.id !== c.id)), 620);
+    if (hitRef.current.length >= data.orbs) settle(hitRef.current.length);
   };
+
+  const openPrize = () => {
+    if (stage !== "prize") return;
+    sfx("cowin");
+    setStage("open");
+    setTimeout(() => setStage("done"), 1500);
+  };
+
+  const pet = CRITTERS[result?.loot] || null;
 
   return (
-    <div className="pg-cowlevel">
+    <div className={"pg-cowlevel" + (stage === "run" ? " live" : "")}>
       <div className="pg-cowsky" />
-      {!done && (
+      <div className="pg-cowhaze" />
+
+      {stage === "run" && junk.current.map((j) => (
+        <div key={j.id} className="pg-cowjunk"
+             style={{ top: j.top + "%", animationDuration: j.dur + "s",
+                      animationDelay: "-" + j.delay + "s" }}>{j.t}</div>
+      ))}
+
+      {pops.map((p) => (
+        <div key={"pop" + p.id} className="pg-cowpop" style={{ left: p.x + "%", top: p.y + "%" }}>
+          <i /><i /><i /><i /><i /><i />
+          <b>MOO</b>
+        </div>
+      ))}
+
+      {stage === "run" && (
         <>
           <div className="pg-cowhud">
             <b>{hit.length} / {data.orbs}</b>
@@ -5112,9 +5360,9 @@ function CowLevel({ data, onDone }) {
           {herd.current.map((c) => hit.includes(c.id) ? null : (
             <button key={c.id} className="pg-cow"
                     style={{ left: c.x + "%", top: c.y + "%",
-                             animationDuration: c.d + "s",
-                             transform: `scaleX(${c.f})` }}
-                    onClick={() => tap(c.id)}>
+                             "--dx": c.dx + "vw", "--dy": c.dy + "vh",
+                             "--f": c.f, animationDuration: c.dur + "s" }}
+                    onClick={() => tap(c)}>
               <svg viewBox="0 0 64 44" aria-hidden="true">
                 <ellipse cx="32" cy="26" rx="21" ry="13" fill="#FBFCF7" />
                 <ellipse cx="24" cy="22" rx="7" ry="5" fill="#2C2622" />
@@ -5134,13 +5382,40 @@ function CowLevel({ data, onDone }) {
           <div className="pg-cowfoot">There is no cow level.</div>
         </>
       )}
-      {done && (
+
+      {stage === "prize" && (
+        <button className="pg-cowprize" onClick={openPrize}>
+          <span className="pg-cowprizebox">?</span>
+          <em>Something is standing in the field.</em>
+        </button>
+      )}
+
+      {stage === "open" && (
+        <div className="pg-cowopen">
+          <svg viewBox="0 0 34 34" className="pg-petart big">{pet?.art}</svg>
+        </div>
+      )}
+
+      {stage === "done" && (
         <div className="pg-cowdone">
-          <b>{done.got} of {data.orbs}</b>
-          <p>You are back at your desk. Nobody saw you leave.</p>
-          <p className="pg-cowloot">{COW_LOOT[done.loot]?.name || done.loot}</p>
-          <p className="pg-cowsmall">{COW_LOOT[done.loot]?.note || ""}</p>
-          {done.err && <p className="pg-cowsmall">The paperwork did not go through. Tell Nick.</p>}
+          <b>{result?.got} of {data.orbs}</b>
+          {result?.full ? (
+            <>
+              <svg viewBox="0 0 34 34" className="pg-petart huge">{pet?.art}</svg>
+              <p className="pg-cowloot">{pet?.name || result?.loot}</p>
+              <p className="pg-cowsmall">{pet?.note || ""}</p>
+              <p className="pg-cowsmall">It is following you. You can put it away in the HR cabinet.</p>
+            </>
+          ) : (
+            <>
+              <p>You are back at your desk. Nobody saw you leave.</p>
+              <p className="pg-cowsmall">
+                Something was standing at the far end of the field. You did not clear
+                the herd in time to find out what it was.
+              </p>
+            </>
+          )}
+          {result?.err && <p className="pg-cowsmall">The paperwork did not go through. Tell Nick.</p>}
           <button className="pg-btn" onClick={onDone}>Back to the floor</button>
         </div>
       )}
