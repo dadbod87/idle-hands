@@ -31,6 +31,20 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-tag{display:inline-block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;
   padding:1px 4px;margin-left:4px;border:1px solid}
 .pg-tag.good{color:#2C6B45;border-color:#2C6B45}
+.pg-tag.plain{border:0;padding:0;text-transform:none;letter-spacing:0;font-size:inherit;color:inherit}
+/* hover detail. Pointer devices only — nothing changes on a phone. */
+@media (hover:hover){
+  .pg-tag[data-tip]{position:relative}
+  .pg-tag[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:50%;
+    bottom:calc(100% + 7px);transform:translateX(-50%);background:var(--ink);color:var(--paper);
+    font-family:var(--sans);font-size:11px;line-height:1.35;letter-spacing:.01em;
+    text-transform:none;padding:7px 10px;border-radius:7px;width:max-content;max-width:260px;
+    white-space:normal;text-align:center;z-index:9999;pointer-events:none;
+    box-shadow:0 4px 14px rgba(0,0,0,.32)}
+  .pg-tag[data-tip]:hover::before{content:"";position:absolute;left:50%;bottom:calc(100% + 2px);
+    transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--ink);
+    z-index:9999;pointer-events:none}
+}
 .pg-tag.bad{color:var(--stamp);border-color:var(--stamp)}
 .pg-tag.warn{color:var(--warn);border-color:var(--warn)}
 .pg-hudbtns{display:flex;gap:6px;flex:none;margin-left:auto}
@@ -1912,6 +1926,15 @@ const MOUNTS = {
 };
 const CRITTERS = { ...PETS, ...MOUNTS };
 
+/* Turns a multiplier into the thing people actually want to read: 2 -> "+100%",
+   0.75 -> "-25%". Used for the hover detail on the HUD chips. */
+function pctOf(mult) {
+  const n = Number(mult);
+  if (!Number.isFinite(n)) return "";
+  const p = Math.round((n - 1) * 1000) / 10;
+  return (p > 0 ? "+" : "") + p + "%";
+}
+
 /* Scenery. Purely decorative — click nothing, mean nothing, look like an office. */
 const DECOR = [
   { t: "kitchenfloor", x: 320, y: 540 },
@@ -2749,7 +2772,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 139";
+const BUILD = "build 140";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3621,15 +3644,43 @@ function PatronFloor() {
           <div className="pg-ppnum">{fmt(pp)}</div>
           <div className="pg-pplabel">Patron Points</div>
           <div className="pg-ppsub">
-            earning {fmt(rate)} PP every second
+            <span className="pg-tag plain"
+                  data-tip={`Everything on your file combined: ×${(liveMult(me, rateCtx) * evMult).toFixed(2)} of a base ${fmt(calcRate(me, cat))}/s`}>
+              earning {fmt(rate)} PP every second
+            </span>
             {(me?.buffs || []).filter((b) => new Date(b.until) > new Date()).map((b, i) => (
-              <span key={i} className={"pg-tag " + (b.mult > 1 ? "good" : "bad")}>
+              <span key={i} className={"pg-tag " + (b.mult > 1 ? "good" : "bad")}
+                    data-tip={`${pctOf(b.mult)} output (×${b.mult})`
+                              + ` · ${countdown(new Date(b.until) - Date.now())} left`
+                              + (b.from_name ? ` · from ${b.from_name}` : "")}>
                 {b.mult > 1 ? "▲" : "▼"} {b.from_name || b.from || b.kind}
               </span>
             ))}
-            {me?.raises > 0 && <span className="pg-tag good">+{me.raises * 2}% raises</span>}
-            {heat > 0 && !underReview && <span className="pg-tag warn">heat {heat}/{HEAT_LIMIT}</span>}
-            {underReview && <span className="pg-tag bad">under review −25%</span>}
+            {me?.raises > 0 && (
+              <span className="pg-tag good"
+                    data-tip={`+${me.raises * 2}% output, permanent. ${me.raises} raise${
+                      me.raises === 1 ? "" : "s"} on your file.`}>
+                +{me.raises * 2}% raises
+              </span>
+            )}
+            {me?.equity > 0 && (
+              <span className="pg-tag good"
+                    data-tip={`+${(me.equity * 3).toFixed(0)}% output from ${me.equity} equity (3% each). Resets at the end of the week.`}>
+                ▲ {me.equity} equity
+              </span>
+            )}
+            {heat > 0 && !underReview && (
+              <span className="pg-tag warn"
+                    data-tip={`No penalty yet. At ${HEAT_LIMIT} heat Dave calls you in and output drops 25% until you settle.`}>
+                heat {heat}/{HEAT_LIMIT}
+              </span>
+            )}
+            {underReview && (
+              <span className="pg-tag bad"
+                    data-tip="−25% output until you settle with Dave. Take the meeting, or pin it on someone.">
+                under review −25%
+              </span>
+            )}
           </div>
         </div>
         <div className="pg-hudbtns">
