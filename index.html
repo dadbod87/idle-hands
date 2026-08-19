@@ -1825,7 +1825,7 @@ function liveMult(p, ctx = {}) {
     const started = !raw || Date.parse(raw) <= now;
     if (started && new Date(b.until).getTime() > now) m *= b.mult;
   }
-  if (p.frenzy_until && new Date(p.frenzy_until).getTime() > now) m *= 5;
+  if (p.frenzy_until && new Date(p.frenzy_until).getTime() > now) m *= 7;
   m *= 1 + 0.03 * (ctx.tiers || 0);
   m *= 1 + 0.02 * Math.min(ctx.streak || 0, 10);
   const h = officeHour(ctx.tz);
@@ -2400,7 +2400,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 113";
+const BUILD = "build 114";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
