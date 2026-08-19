@@ -399,6 +399,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-week{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--soft)}
 
+.pg-jam.meet{background:#2E5C6E}
 .pg-cowlevel{position:fixed;inset:0;z-index:9000;overflow:hidden;
   background:linear-gradient(160deg,#6FD36F 0%,#37B24D 34%,#F2C744 62%,#EE7BD0 100%)}
 .pg-cowlevel.live{animation:pgcowtrip 5s linear infinite}
@@ -2205,6 +2206,26 @@ function printerJam(t = Date.now()) {
   return { window: bucket, endsIn: (240 - into) * 1000 };
 }
 
+/** Mirrors meeting_window() in Postgres: one meeting an hour in Conference Room B,
+    a two minute window, offset drifting across the hour. Integer maths only on both
+    sides so the two agree exactly. Change one, change both. */
+const MEET_EVERY = 3600, MEET_LEN = 120, MEET_SPREAD = 3480;
+function meetingOffset(bucket) { return (bucket * 1237) % MEET_SPREAD; }
+function meetingAt(t = Date.now()) {
+  const sec = Math.floor(t / 1000);
+  const bucket = Math.floor(sec / MEET_EVERY);
+  const into = sec % MEET_EVERY;
+  const off = meetingOffset(bucket);
+  if (into >= off && into < off + MEET_LEN) {
+    return { window: bucket, endsIn: (off + MEET_LEN - into) * 1000 };
+  }
+  // otherwise say when the next one starts
+  let nb = bucket, ns = off;
+  if (into >= off + MEET_LEN) { nb = bucket + 1; ns = meetingOffset(nb); }
+  const at = nb * MEET_EVERY + ns;
+  return { window: null, startsIn: (at - sec) * 1000 };
+}
+
 /** Mirrors chair_window() in Postgres: one chair every 7 minutes, 40 seconds
     on the floor, in the same spot for everybody. Change one, change both. */
 function chairAt(t = Date.now()) {
@@ -2615,6 +2636,7 @@ const api = {
   markRecap: (week) => rpc("mark_recap", { p_week: week }),
   checkIn: () => rpc("check_in"),
   fixPrinter: () => rpc("fix_printer"),
+  joinMeeting: () => rpc("join_meeting"),
   cowTry: () => rpc("cow_try"),
   cowFinish: (got) => rpc("cow_finish", { p_got: got }),
   setPet: (id) => rpc("set_pet", { p_id: id }),
@@ -2725,7 +2747,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 135";
+const BUILD = "build 137";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2773,6 +2795,8 @@ function PatronFloor() {
   const [chance, setChance] = useState(null);
   const [dave, setDave] = useState(null);
   const [cow, setCow] = useState(null);   // the secret cow level, when it happens
+  const [meet, setMeet] = useState(null);
+  const meetSeen = useRef(null);
   const [chatter, setChatter] = useState(null);
   const [knocks, setKnocks] = useState({});      // per door, times you've tried it anyway
   const [beers, setBeers] = useState(0);   // {id, text} — somebody said a thing
@@ -3089,6 +3113,22 @@ function PatronFloor() {
         sfx("jam");
         loadOffice().then(setOffice).catch(() => {});
       }
+      const mt = meetingAt(now);
+      setMeet(mt);
+      if (mt.window != null && meetSeen.current !== mt.window) {
+        meetSeen.current = mt.window;
+        const cfg = catRef.current.meeting || {};
+        say(cfg.called || "A meeting has been called in Conference Room B.", "sys");
+        flash("A meeting has been called");
+        sfx("jam");
+        loadOffice().then(setOffice).catch(() => {});
+        if (notify && typeof Notification !== "undefined" && Notification.permission === "granted") {
+          new Notification("Patron Group — a meeting has been called",
+            { body: "Conference Room B. Two minutes.", tag: "patron-meeting" });
+        }
+      }
+      if (mt.window == null && meetSeen.current !== null) meetSeen.current = null;
+
       const ch = chanceAt(now, catRef.current.chance_extra || []);
       const dv = daveAt(now, catRef.current.dave_extra || []);
 
@@ -3440,6 +3480,13 @@ function PatronFloor() {
     y: printerBox.y + printerBox.h / 2 + 40,
   }) < REACH;
   const jamMine = !!(jamClaim && jamClaim.mine);
+  const confbBox = FIXTURES.find((x) => x.id === "confb");
+  const atConfb = !!confbBox && dist(pos, {
+    x: confbBox.x + confbBox.w / 2,
+    y: confbBox.y + confbBox.h / 2 + 40,
+  }) < REACH;
+  const meetWho = office?.meeting?.who || [];
+  const meetMine = !!office?.meeting?.mine;
   const chairClaim = office?.chair || null;
   const chairTakenBy = chair && chairClaim && chairClaim.window === chair.window
     ? chairClaim.by : null;
@@ -3494,6 +3541,9 @@ function PatronFloor() {
         return;
       }
     }
+    // Conference Room B is booked through 2031 — except for the one hour a week
+    // somebody actually books it.
+    if (f.id === "confb" && meetingAt().window != null) { setPanel("meetingroom"); return; }
     if (f.deny) {                       // some doors don't open
       setKnocks((k) => ({ ...k, [f.id]: (k[f.id] || 0) + 1 }));
       // Once a week, across the whole office, one of these doors opens onto
@@ -3618,6 +3668,25 @@ function PatronFloor() {
                   }}>
             The printer has jammed. <em>{Math.ceil(jam.endsIn / 1000)}s — {atPrinter
               ? "you're there, open it" : "get to the printer"}</em>
+          </button>
+        )
+      )}
+
+      {meet?.window != null && (
+        meetMine ? (
+          <div className="pg-jam done">
+            You are in the meeting. {meetWho.length > 1
+              ? `${meetWho.length} of you are in there.`
+              : "You are the only one in there."}
+            <em>{Math.ceil(meet.endsIn / 1000)}s</em>
+          </div>
+        ) : (
+          <button className="pg-jam meet" onClick={() => {
+                    const f = FIXTURES.find((x) => x.id === "confb");
+                    if (f) walkTo(f);
+                  }}>
+            A meeting has been called. <em>{Math.ceil(meet.endsIn / 1000)}s — {atConfb
+              ? "you're there, go in" : "Conference Room B"}</em>
           </button>
         )
       )}
@@ -3909,6 +3978,21 @@ function PatronFloor() {
                 if (r) { sfx("badge"); flash("Department updated."); }
               }} />
           )}
+          {panel === "meetingroom" && (
+            <MeetingRoom cfg={cat.meeting || {}} meet={meet} who={meetWho} mine={meetMine}
+              near={atConfb}
+              onJoin={async () => {
+                if (!atConfb) { flash("You have to be at the door."); return; }
+                try {
+                  const r = await api.joinMeeting();
+                  sfx("door");
+                  say(`You are in the meeting. ${r?.attendees > 1
+                        ? `So are ${r.attendees - 1} other people.`
+                        : "So far it is just you."}`, "good");
+                  setOffice(await loadOffice());
+                } catch (e) { flash(prettyError(e)); }
+              }} />
+          )}
           {panel === "account" && <Account user={user} onLinked={() => setPanel(null)} />}
           {panel === "mirror" && (
             <Mirror me={me} user={user}
@@ -4141,6 +4225,7 @@ const PANEL_TITLES = {
   fund: "Office fund", owner: "Dave's office", account: "Your account",
   wardrobe: "Supply closet", coffee: "The coffee bar", fridge: "The fridge",
   suggest: "Suggestion box", printer: "The printer", mirror: "The mirror",
+  meetingroom: "Conference Room B",
   cooler: "The Merican cooler",
 };
 
@@ -5967,6 +6052,45 @@ function SuggestionBox({ sugg, me, admin, onSend, onJudge }) {
         </div>
       )}
       <div className="pg-note">{live.length} suggestion(s) currently in the wire.</div>
+    </div>
+  );
+}
+
+function MeetingRoom({ cfg, meet, who = [], mine, near, onJoin }) {
+  const per = cfg.per_pair_secs || 600;
+  const n = who.length;
+  const now = n * (n - 1) / 2 * per;
+  const next = (n + 1) * n / 2 * per;
+  return (
+    <div className="pg-pad">
+      <div className="pg-stamp">In session</div>
+      <p>{cfg.blurb || "No agenda. No materials. Attendance is the entire deliverable."}</p>
+      <p className="pg-small">
+        Everyone who attends is paid the same, and the amount goes up sharply with the
+        number of people in the room. One more person is worth{" "}
+        <b>{Math.round((next - now) / 60)} more minutes of output</b> to everybody here.
+      </p>
+      <div className="pg-list">
+        {who.map((nm, i) => (
+          <div key={nm + i} className={"pg-row static" + (i % 2 ? " alt" : "")}>
+            <span className="pg-ct">{i + 1}</span>
+            <span className="pg-main"><b>{nm}</b><span>present</span></span>
+          </div>
+        ))}
+        {n === 0 && <div className="pg-note">Nobody is in there yet.</div>}
+      </div>
+      <p className="pg-small">
+        {n === 0 ? "Attending alone pays nothing at all."
+                 : `Currently worth ${Math.round(now / 60)} minutes of output each.`}
+      </p>
+      {mine ? (
+        <p className="pg-small">You are in the room. It ends in{" "}
+          {Math.ceil((meet?.endsIn || 0) / 1000)}s.</p>
+      ) : (
+        <button className="pg-btn" onClick={onJoin} disabled={!near}>
+          {near ? "Take a seat" : "You are not at the door"}
+        </button>
+      )}
     </div>
   );
 }
