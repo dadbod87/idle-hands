@@ -450,7 +450,27 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 @keyframes pgcowwalk{
   from{transform:translate(0,0) scaleX(var(--f))}
   to{transform:translate(var(--dx),var(--dy)) scaleX(var(--f))}}
+.pg-splat{position:absolute;width:132px;height:132px;pointer-events:none;z-index:2;
+  animation:pgsplatland .32s cubic-bezier(.2,1.6,.4,1)}
+.pg-splat svg{width:100%;height:100%;display:block}
+.pg-splat.gold svg path,.pg-splat.gold svg circle{fill:rgba(255,233,168,.9)}
+@keyframes pgsplatland{from{opacity:0;transform:translate(-50%,-50%) scale(.2)}
+  to{opacity:1}}
 .pg-cowpop{position:absolute;width:0;height:0;pointer-events:none;z-index:6}
+.pg-cowpop u{position:absolute;width:16px;height:11px;border-radius:50%;
+  background:#2C2622;animation:pgcowchunk .62s ease-out forwards}
+.pg-cowpop u:nth-of-type(1){--px:-70px;--py:-52px}
+.pg-cowpop u:nth-of-type(2){--px:66px;--py:-46px}
+.pg-cowpop u:nth-of-type(3){--px:-58px;--py:56px}
+.pg-cowpop u:nth-of-type(4){--px:74px;--py:44px}
+@keyframes pgcowchunk{from{transform:translate(0,0) rotate(0deg);opacity:1}
+  to{transform:translate(var(--px),var(--py)) rotate(540deg);opacity:0}}
+.pg-cowpop i:nth-child(7){--px:-84px;--py:-8px}
+.pg-cowpop i:nth-child(8){--px:82px;--py:6px}
+.pg-cowpop i:nth-child(9){--px:-30px;--py:-72px}
+.pg-cowpop i:nth-child(10){--px:34px;--py:70px}
+.pg-cowpop i:nth-child(11){--px:-66px;--py:-62px}
+.pg-cowpop i:nth-child(12){--px:62px;--py:66px}
 .pg-cowpop i{position:absolute;width:11px;height:11px;border-radius:50%;background:#FBFCF7;
   border:2px solid #2C2622;animation:pgcowpop .6s ease-out forwards}
 .pg-cowpop i:nth-child(1){--px:-46px;--py:-34px}
@@ -2671,7 +2691,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 129";
+const BUILD = "build 130";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -5262,6 +5282,11 @@ function DaveBody({ facing = 1 }) {
   );
 }
 
+/* What a cow says when it goes. Mostly MOO. Occasionally not. */
+const LAST_WORDS = ["MOO", "MOO", "MOO", "MOO!", "MOO?", "OW", "RUDE", "WHY",
+                    "NOTED", "UNSUBSCRIBE", "PER MY LAST MOO", "OK", "SUPER WEIRD",
+                    "CIRCLE BACK", "HR", "I QUIT"];
+
 /* ------------------------------------------------------------------
    THE COW LEVEL
    Forty five seconds. Twenty four cows. Tap them. The reward is settled
@@ -5271,6 +5296,7 @@ function CowLevel({ data, onDone }) {
   const [left, setLeft] = useState(45);
   const [hit, setHit] = useState([]);
   const [pops, setPops] = useState([]);
+  const [splats, setSplats] = useState([]);   // these never clear — the mess builds up
   const [stage, setStage] = useState("run");     // run -> prize -> open -> done
   const [result, setResult] = useState(null);
   const [combo, setCombo] = useState(0);
@@ -5372,8 +5398,16 @@ function CowLevel({ data, onDone }) {
     setHit(hitRef.current);
     setShake(t);
     setTimeout(() => setShake((v) => (v === t ? 0 : v)), 200);
-    setPops((p) => p.concat({ id: c.id, x: c.x, y: c.y, run, gold: c.runner }));
+    const say = c.runner ? "MOO!!" : LAST_WORDS[(c.id * 7 + run) % LAST_WORDS.length];
+    setPops((p) => p.concat({ id: c.id, x: c.x, y: c.y, run, gold: c.runner, say }));
     setTimeout(() => setPops((p) => p.filter((q) => q.id !== c.id)), 620);
+    // the splat stays for the rest of the run
+    setSplats((v) => v.concat({
+      id: c.id, x: c.x, y: c.y,
+      rot: (c.id * 47) % 360,
+      scale: 0.85 + ((c.id * 13) % 60) / 100,
+      gold: c.runner,
+    }));
     if (hitRef.current.length >= data.orbs) settle(hitRef.current.length);
   };
 
@@ -5392,6 +5426,25 @@ function CowLevel({ data, onDone }) {
       <div className="pg-cowsky" style={{ animationDuration: (1.6 - step * 0.26) + "s" }} />
       <div className="pg-cowhaze" />
 
+      {splats.map((sp) => (
+        <div key={"splat" + sp.id} className={"pg-splat" + (sp.gold ? " gold" : "")}
+             style={{ left: sp.x + "%", top: sp.y + "%",
+                      transform: `translate(-50%,-50%) rotate(${sp.rot}deg) scale(${sp.scale})` }}>
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <path d="M60 12c13 0 17 14 27 17s21-6 27 4-8 18-8 27 12 15 7 25-19 3-27 9-9 20-20 22
+                     -17-10-27-11-19 9-27 2-1-19-5-27-17-11-16-22 14-13 18-22 1-20 12-23 26 6 39-1Z"
+                  fill="rgba(251,252,247,.9)" />
+            <circle cx="16" cy="30" r="7" fill="rgba(251,252,247,.75)" />
+            <circle cx="104" cy="88" r="9" fill="rgba(251,252,247,.75)" />
+            <circle cx="30" cy="104" r="5" fill="rgba(251,252,247,.7)" />
+            <circle cx="96" cy="20" r="4" fill="rgba(251,252,247,.7)" />
+            <ellipse cx="46" cy="52" rx="9" ry="6" fill="rgba(44,38,34,.85)" />
+            <ellipse cx="76" cy="70" rx="7" ry="5" fill="rgba(44,38,34,.8)" />
+            <ellipse cx="62" cy="38" rx="5" ry="4" fill="rgba(44,38,34,.7)" />
+          </svg>
+        </div>
+      ))}
+
       {stage === "run" && junk.current.map((j) => (
         <div key={j.id} className="pg-cowjunk"
              style={{ top: j.top + "%", animationDuration: j.dur + "s",
@@ -5401,8 +5454,9 @@ function CowLevel({ data, onDone }) {
       {pops.map((p) => (
         <div key={"pop" + p.id} className={"pg-cowpop" + (p.gold ? " gold" : "")}
              style={{ left: p.x + "%", top: p.y + "%" }}>
-          <i /><i /><i /><i /><i /><i />
-          <b>{p.run >= 3 ? "MOO x" + p.run : "MOO"}</b>
+          <i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i />
+          <u /><u /><u /><u />
+          <b>{p.run >= 3 ? p.say + " x" + p.run : p.say}</b>
         </div>
       ))}
 
