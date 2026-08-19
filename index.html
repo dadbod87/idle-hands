@@ -1107,7 +1107,9 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   text-shadow:0 1px 2px rgba(0,0,0,.9)}
 .pg-ooo{display:block;font-family:var(--mono);font-size:7.5px;letter-spacing:.06em;
   text-transform:uppercase;color:#C9A253;margin-top:1px}
-.pg-mascotframe{cursor:pointer}
+/* the one piece of scenery that is not scenery: .pg-decor sets pointer-events:none
+   for everything on the walls, which silently ate this frame's onClick */
+.pg-mascotframe{cursor:pointer;pointer-events:auto}
 .pg-mascotframe.real{background-image:url("./logo.png");background-size:contain;
   background-repeat:no-repeat;background-position:center;background-color:#14140F;
   box-shadow:0 0 26px rgba(201,162,83,.55)}
@@ -2747,7 +2749,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 138";
+const BUILD = "build 139";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
