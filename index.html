@@ -2400,7 +2400,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 111";
+const BUILD = "build 113";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2657,9 +2657,10 @@ function PatronFloor() {
     tz: office?.tz || "America/New_York",
   };
   const rate = me ? calcRate(me, cat) * liveMult(me, rateCtx) * evMult : 0;
-  const clickPow = (1 + rate * 0.1) *
-    (cat.upgrades || []).filter((u) => u.t === "click" && (me?.upgrades || []).includes(u.id))
-      .reduce((m, u) => m * u.mult, 1);
+  const clickCm = (cat.upgrades || [])
+    .filter((u) => u.t === "click" && (me?.upgrades || []).includes(u.id))
+    .reduce((m, u) => m * u.mult, 1) * (me?.dept === "development" ? 3 : 1);
+  const clickPow = Math.min((1 + rate * 0.003) * clickCm, clickCm + rate * 2.0 / 60);
   const pp = (me?.pp || 0) + drift;
   const lifetime = (me?.lifetime || 0) + drift;
   const heat = me?.heat || 0;
@@ -3088,8 +3089,10 @@ function PatronFloor() {
   const jamClaim = office?.printer || null;
   const jamFixedBy = jam && jamClaim && jamClaim.window === jam.window ? jamClaim.by : null;
   const printerBox = FIXTURES.find((x) => x.id === "printer");
-  const atPrinter = !!printerBox && dist(pos.x, pos.y,
-    printerBox.x + printerBox.w / 2, printerBox.y + printerBox.h + 40) < REACH;
+  const atPrinter = !!printerBox && dist(pos, {
+    x: printerBox.x + printerBox.w / 2,
+    y: printerBox.y + printerBox.h / 2 + 40,
+  }) < REACH;
   const jamMine = !!(jamClaim && jamClaim.mine);
   const chairClaim = office?.chair || null;
   const chairTakenBy = chair && chairClaim && chairClaim.window === chair.window
