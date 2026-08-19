@@ -1619,6 +1619,43 @@ const CHANCE = {
   ],
 };
 
+/* ------------------------------------------------------------------
+   DAVE
+   The opposite of Chance. Chance quit and will not leave; Dave is
+   here and will not come out. Every 41 minutes he opens his door,
+   stands in the hall for three quarters of a minute, says one thing,
+   and goes back in. He sees everything. He mentions almost none of it.
+   ------------------------------------------------------------------ */
+const DAVE = {
+  everyMs: 41 * 60000,
+  offsetMs: 19 * 60000,
+  stayMs: 46000,
+  path: [
+    { x: 2075, y: 150 },   // his door
+    { x: 2075, y: 330 },   // as far as the hall
+    { x: 2180, y: 380 },   // a look down the row
+    { x: 2075, y: 330 },
+    { x: 2075, y: 150 },   // and back in
+  ],
+  lines: [
+    "Morning.",
+    "Don't let me interrupt.",
+    "I saw that.",
+    "Everything alright?",
+    "Good. Good.",
+    "Carry on.",
+    "I read the suggestion box. All of it.",
+    "Somebody's been in the cigar lounge.",
+    "Who keeps moving the good chair?",
+    "Long week.",
+    "That's fine. That's fine.",
+    "I know about the printer.",
+    "Nobody tell Chance I was out here.",
+    "The numbers are the numbers.",
+    "Keep going.",
+  ],
+};
+
 /* Scenery. Purely decorative — click nothing, mean nothing, look like an office. */
 const DECOR = [
   { t: "kitchenfloor", x: 320, y: 540 },
@@ -1878,6 +1915,30 @@ function chanceAt(t = Date.now(), extra = []) {
     facing: b.x >= a.x ? 1 : -1,
     line,
     leaving: into > CHANCE.stayMs - 12000,
+  };
+}
+
+/** Where Dave is right now, or null. Same clock-derived scheme as chanceAt,
+    so the whole office sees him step out at the same moment. Deliberately a
+    separate function rather than a refactor of chanceAt — Chance's timing is
+    load-bearing and already correct. */
+function daveAt(t = Date.now(), extra = []) {
+  const bucket = Math.floor((t - DAVE.offsetMs) / DAVE.everyMs);
+  const start = bucket * DAVE.everyMs + DAVE.offsetMs;
+  const into = t - start;
+  if (into < 0 || into > DAVE.stayMs) return null;
+  const legs = DAVE.path.length - 1;
+  const per = DAVE.stayMs / legs;
+  const leg = Math.min(legs - 1, Math.floor(into / per));
+  const f = (into - leg * per) / per;
+  const a = DAVE.path[leg], b = DAVE.path[leg + 1];
+  const pool = DAVE.lines.concat(extra || []);
+  return {
+    x: a.x + (b.x - a.x) * f,
+    y: a.y + (b.y - a.y) * f,
+    facing: b.x >= a.x ? 1 : -1,
+    line: pool[Math.abs(bucket) % pool.length],   // one line per visit, not per leg
+    leaving: into > DAVE.stayMs - 10000,
   };
 }
 
@@ -2402,7 +2463,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 115";
+const BUILD = "build 117";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2443,10 +2504,12 @@ function PatronFloor() {
   const [notify, setNotify] = useState(false);
   const lastEvId = useRef(null);
   const chanceSeen = useRef(false);
+  const daveSeen = useRef(false);
   const [emote, setEmote] = useState(null);        // {id, until}
   const [peers, setPeers] = useState({});          // live positions of everyone else
   const [moving, setMoving] = useState(false);
   const [chance, setChance] = useState(null);
+  const [dave, setDave] = useState(null);
   const [chatter, setChatter] = useState(null);
   const [knocks, setKnocks] = useState({});      // per door, times you've tried it anyway
   const [beers, setBeers] = useState(0);   // {id, text} — somebody said a thing
@@ -2764,12 +2827,30 @@ function PatronFloor() {
         loadOffice().then(setOffice).catch(() => {});
       }
       const ch = chanceAt(now, catRef.current.chance_extra || []);
+      const dv = daveAt(now, catRef.current.dave_extra || []);
+
+      // Their schedules collide for about forty seconds in a twelve hour day.
+      // When they do, they get their own exchange. Mutate before setState so
+      // both render on the same frame.
+      if (ch && dv) {
+        dv.line = "Chance.";
+        ch.line = "I don't work here.";
+      }
+
       setChance(ch);
       if (ch && !chanceSeen.current) {
         chanceSeen.current = true;
         say("Chance is on the floor. Chance does not work here.", "sys");
       }
       if (!ch) chanceSeen.current = false;
+
+      setDave(dv);
+      if (dv && !daveSeen.current) {
+        daveSeen.current = true;
+        say(ch ? "Dave has come out of his office. Chance is still on the floor."
+               : "Dave has come out of his office.", "sys");
+      }
+      if (!dv) daveSeen.current = false;
     };
     beat();
     const t = setInterval(beat, 1000);
@@ -3417,6 +3498,15 @@ function PatronFloor() {
               <div className="pg-mumble">{chance.line}</div>
               <ChanceBody facing={chance.facing} />
               <div className="pg-peername">Chance <em>former employee</em></div>
+            </div>
+          )}
+
+          {dave && (
+            <div className={"pg-me pg-chance" + (dave.leaving ? " leaving" : "")}
+                 style={{ left: dave.x, top: dave.y, zIndex: 5000 + Math.round(dave.y) }}>
+              <div className="pg-mumble">{dave.line}</div>
+              <DaveBody facing={dave.facing} />
+              <div className="pg-peername">Dave <em>owner</em></div>
             </div>
           )}
 
@@ -4854,6 +4944,29 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
   );
 }
 
+
+function DaveBody({ facing = 1 }) {
+  return (
+    <div className="pg-body chance" style={{ transform: `scaleX(${facing})` }}>
+      <div className="pg-rig">
+        <svg viewBox="0 0 74 92" className="pg-chancesvg" aria-hidden="true">
+          <ellipse cx="37" cy="20" rx="17" ry="16" fill="#E3BE9C" />
+          <path d="M20 16c3-8 10-12 17-12s14 4 17 12c-7-3-11-4-17-4s-10 1-17 4Z" fill="#9E9C97" />
+          <ellipse cx="30" cy="20" rx="1.8" ry="2.2" fill="#2C2622" />
+          <ellipse cx="44" cy="20" rx="1.8" ry="2.2" fill="#2C2622" />
+          <path d="M31 29c4 1 8 1 12 0" stroke="#8A6A55" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+          <path d="M37 36c-14 0-22 6-24 30h48c-2-24-10-30-24-30Z" fill="#F0F2E8" />
+          <path d="M37 36l-6 4 6 8 6-8-6-4Z" fill="#C9CEBF" />
+          <rect x="34" y="44" width="6" height="22" rx="1" fill="#7C3B33" />
+          <rect x="17" y="66" width="40" height="9" fill="#4A4F58" />
+          <rect x="21" y="74" width="14" height="16" rx="2" fill="#4A4F58" />
+          <rect x="39" y="74" width="14" height="16" rx="2" fill="#4A4F58" />
+        </svg>
+      </div>
+      <span className="pg-shadow wide" />
+    </div>
+  );
+}
 
 function ChanceBody({ facing = 1 }) {
   return (
