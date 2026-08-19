@@ -1434,7 +1434,7 @@ const ACHV = [
     test: (s) => (s.knocks?.confb || 0) >= 5 },
   { id: "a31", name: "Please Hold", note: "Come back after a full 8 hours away.", test: (s) => s.longAway >= 1 },
   { id: "a32", name: "There Is No Cow Level", note: "There is no cow level.",
-    test: (s) => !!s.extras?.cow_seen },
+    test: (s) => !!s.cow_seen },
 ];
 
 const MEMOS = [
@@ -1752,11 +1752,12 @@ const DAVE = {
   ],
 };
 
-/* Cow level loot. Cannot be bought. Kept in players.extras.cow so it never
+/* Cow level loot. Cannot be bought. Kept in its own players columns so it never
    overwrites a purchased vanity slot — vanity doubles as ownership. */
 /* Cow level loot: a floating pet. Cannot be bought, only cleared for.
-   Kept in players.extras.cow (owned) and extras.pet (out right now) so it never
-   overwrites a purchased vanity slot — vanity doubles as ownership. */
+   players.cow (owned) / players.pet / players.mount. NOT in players.extras —
+   that column is a jsonb ARRAY of pin flags like ["beta"], and jsonb_set with a
+   text key against an array raises and aborts the whole claim. */
 const PETS = {
   calf:    { name: "A Small Cow", note: "It followed you back. Nobody has mentioned it.",
              art: <><ellipse cx="17" cy="17" rx="12" ry="8.5" fill="#FBFCF7" />
@@ -2645,7 +2646,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 127";
+const BUILD = "build 128";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4165,7 +4166,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
     "bt-" + bottom,
     v.glow ? "glow-" + v.glow : "", v.size ? "size-" + v.size : "",
     v.aura ? "aura-" + v.aura : "",
-    MOUNTS[p?.extras?.mount] ? "riding" : "",
+    MOUNTS[p?.mount] ? "riding" : "",
   ].filter(Boolean).join(" ");
 
   return (
@@ -4209,11 +4210,11 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       <span className="pg-shadow" />
       {v.aura && <i className={"pg-aura aura-" + v.aura} />}
       {v.held && <i className={"pg-held held-" + v.held} />}
-      {PETS[p?.extras?.pet] && (
-        <span className="pg-pet"><svg viewBox="0 0 34 34">{PETS[p.extras.pet].art}</svg></span>
+      {PETS[p?.pet] && (
+        <span className="pg-pet"><svg viewBox="0 0 34 34">{PETS[p.pet].art}</svg></span>
       )}
-      {MOUNTS[p?.extras?.mount] && (
-        <span className="pg-mount"><svg viewBox="0 0 74 62">{MOUNTS[p.extras.mount].art}</svg></span>
+      {MOUNTS[p?.mount] && (
+        <span className="pg-mount"><svg viewBox="0 0 74 62">{MOUNTS[p.mount].art}</svg></span>
       )}
       {nick && <div className="pg-nick">"{nick}"</div>}
       {c && <div className="pg-worn">{c.name}</div>}
@@ -4925,8 +4926,8 @@ function SpendFile({ me, spend, pins, onWear, onPet }) {
         ledger keeps score anyway.
       </div>
 
-      {me?.extras?.cow_seen && (() => {
-        const owned = me?.extras?.cow || [];
+      {me?.cow_seen && (() => {
+        const owned = me?.cow || [];
         const ids = Object.keys(CRITTERS);
         return (
           <>
@@ -4939,7 +4940,7 @@ function SpendFile({ me, spend, pins, onWear, onPet }) {
               {ids.map((id, i) => {
                 const has = owned.includes(id);
                 const slot = MOUNTS[id] ? "mount" : "pet";
-                const out = me?.extras?.[slot] === id;
+                const out = me?.[slot] === id;
                 return (
                   <button key={id} disabled={!has}
                           className={"pg-row" + (i % 2 ? " alt" : "") + (out ? " mine" : "") +
