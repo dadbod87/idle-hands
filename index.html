@@ -524,14 +524,23 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-petcell{flex:none;width:34px;height:34px}
 .pg-petcell.unknown{filter:brightness(0) opacity(.16)}
 .pg-row.locked{opacity:.55;cursor:default}
-.pg-mount{position:absolute;left:calc(50% - 4px);bottom:-2px;transform:translateX(-50%);
-  width:86px;height:72px;pointer-events:none;z-index:1;
+.pg-mount{position:absolute;left:calc(50% + 7px);bottom:-2px;transform:translateX(-50%);
+  width:86px;height:72px;pointer-events:none;z-index:0;
   animation:pgmountbob 1.9s ease-in-out infinite alternate}
+.pg-body.walking .pg-mount{animation:pgmountbob .5s ease-in-out infinite alternate}
 .pg-mount svg{width:100%;height:100%;display:block}
 @keyframes pgmountbob{from{margin-bottom:0}to{margin-bottom:5px}}
 .pg-body.riding .pg-rig{margin-top:-30px}
-.pg-body.riding .pg-leg{opacity:0}
 .pg-body.riding .pg-shadow{width:66px}
+/* far leg is behind the bull; near leg hangs over the flank, into the stirrup */
+.pg-body.riding .pg-leg.left{opacity:0}
+.pg-body.riding .pg-leg.right{z-index:5;top:73px;height:27px;right:22px;border-radius:3px 3px 5px 5px;
+  transform:rotate(6deg);animation:none}
+.pg-body.riding.walking .pg-leg.right{animation:pgridebounce .5s ease-in-out infinite alternate}
+@keyframes pgridebounce{from{transform:rotate(7deg) translateY(0)}
+  to{transform:rotate(10deg) translateY(2px)}}
+.pg-body.riding .pg-arm{animation:none}
+.pg-body.riding.walking .pg-arm.left{animation:pgridebounce .5s ease-in-out infinite alternate}
 .pg-petcell svg{width:100%;height:100%;display:block}
 .pg-pet{position:absolute;left:calc(50% + 26px);top:-14px;width:34px;height:34px;
   pointer-events:none;animation:pgpetbob 2.6s ease-in-out infinite alternate;z-index:4}
@@ -1875,15 +1884,26 @@ const MOUNTS = {
   bull: { name: "The Bull", note: "You are riding it through the office. Nobody has raised it with HR.",
           art: <><ellipse cx="34" cy="34" rx="27" ry="16.5" fill="#3B332C" />
                  <path d="M12 28c8-6 34-6 44 0-10-4-34-4-44 0Z" fill="#57493D" />
+                 <path d="M18 21c9-3.6 20-3.6 29 0l-2.2 11.4c-8-2.6-17-2.6-24.6 0Z" fill="#7C3B33" />
+                 <path d="M18 21c9-3.6 20-3.6 29 0l-.7 3.4c-8.6-3-19-3-27.6 0Z" fill="#9E4B41" />
+                 <path d="M23 19.6c6.4-2.2 13-2.2 19.4 0 1.1 3.2 1.1 6.4 0 8.6
+                          -6.4-2.2-13-2.2-19.4 0-1.1-2.2-1.1-5.4 0-8.6Z" fill="#5A4634" />
+                 <path d="M22.6 20.4c-2-.8-2.4-3-.8-4 1.2-.7 2.7-.2 3.2 1Z" fill="#46362A" />
+                 <path d="M42.6 19.8c1.8-.6 3 .6 2.6 2-.3 1-1.4 1.5-2.4 1.2Z" fill="#46362A" />
+                 <path d="M38 28.8v8" stroke="#46362A" strokeWidth="2.2" fill="none" />
+                 <ellipse cx="38" cy="39.2" rx="3.6" ry="2.8" fill="none"
+                          stroke="#C2A24E" strokeWidth="1.9" />
                  <rect x="13" y="46" width="8" height="16" rx="2" fill="#2C2622" />
                  <rect x="46" y="46" width="8" height="16" rx="2" fill="#2C2622" />
-                 <ellipse cx="58" cy="21" rx="12" ry="11" fill="#463C33" />
-                 <path d="M46 13c-7-4-7-10-1.6-8.6 3.4.9 6 4.4 6.8 7.2Zm24 0c7-4 7-10 1.6-8.6-3.4.9-6 4.4-6.8 7.2Z" fill="#E4DAC4" stroke="#C7BBA0" strokeWidth="1" />
-                 <circle cx="54" cy="19" r="1.6" fill="#E8C24A" />
-                 <circle cx="62" cy="19" r="1.6" fill="#E8C24A" />
-                 <ellipse cx="59" cy="26" rx="6" ry="4" fill="#5E5147" />
-                 <circle cx="56.5" cy="26" r="1" fill="#2C2622" />
-                 <circle cx="61.5" cy="26" r="1" fill="#2C2622" />
+                 <g transform="translate(3,6)">
+                   <ellipse cx="58" cy="21" rx="12" ry="11" fill="#463C33" />
+                   <path d="M46 13c-7-4-7-10-1.6-8.6 3.4.9 6 4.4 6.8 7.2Zm24 0c7-4 7-10 1.6-8.6-3.4.9-6 4.4-6.8 7.2Z" fill="#E4DAC4" stroke="#C7BBA0" strokeWidth="1" />
+                   <circle cx="54" cy="19" r="1.6" fill="#E8C24A" />
+                   <circle cx="62" cy="19" r="1.6" fill="#E8C24A" />
+                   <ellipse cx="59" cy="26" rx="6" ry="4" fill="#5E5147" />
+                   <circle cx="56.5" cy="26" r="1" fill="#2C2622" />
+                   <circle cx="61.5" cy="26" r="1" fill="#2C2622" />
+                 </g>
                  <path d="M8 30c-5 2-6 7-3 10" stroke="#2C2622" strokeWidth="2.4"
                        fill="none" strokeLinecap="round" /></> },
 };
@@ -2705,7 +2725,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 131";
+const BUILD = "build 135";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4232,6 +4252,11 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
     <div className={cls}>
       {emote && <div className="pg-bubble">{EMOTE_ICON[emote] || "!"}</div>}
       <div className="pg-flip" style={{ transform: `scaleX(${facing})` }}>
+      {/* inside the flip wrapper so the bull turns with you, and behind the rig so
+          the near leg can hang over its flank */}
+      {MOUNTS[p?.mount] && (
+        <span className="pg-mount"><svg viewBox="0 0 74 62">{MOUNTS[p.mount].art}</svg></span>
+      )}
       <div className="pg-rig">
         {c?.art && <CostumeSuit art={c.art} layer="back" />}
         {c && <Hat kind={c.hat} />}
@@ -4271,9 +4296,6 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       {v.held && <i className={"pg-held held-" + v.held} />}
       {PETS[p?.pet] && (
         <span className="pg-pet"><svg viewBox="0 0 34 34">{PETS[p.pet].art}</svg></span>
-      )}
-      {MOUNTS[p?.mount] && (
-        <span className="pg-mount"><svg viewBox="0 0 74 62">{MOUNTS[p.mount].art}</svg></span>
       )}
       {nick && <div className="pg-nick">"{nick}"</div>}
       {c && <div className="pg-worn">{c.name}</div>}
@@ -5335,13 +5357,18 @@ function CowLevel({ data, onDone }) {
       id: i,
       x: 4 + rnd(i * 5 + 1) * 78,
       y: 10 + rnd(i * 5 + 2) * 70,
-      dur: 3.2 + rnd(i * 5 + 3) * 3.4,
-      dx: (rnd(i * 5 + 4) * 2 - 1) * 26,
-      dy: (rnd(i * 5 + 5) * 2 - 1) * 16,
+      // three speeds: a lazy few, a brisk middle, and the bolters
+      dur: 1.9 + rnd(i * 5 + 3) * 2.6,
+      dx: (rnd(i * 5 + 4) * 2 - 1) * 42,
+      dy: (rnd(i * 5 + 5) * 2 - 1) * 26,
       f: rnd(i * 9 + 7) > 0.5 ? 1 : -1,
-      runner: rnd(i * 17 + 11) > 0.82,          // a few bolt about and are harder to hit
+      runner: rnd(i * 17 + 11) > 0.74,          // a few bolt about and are harder to hit
+      lazy: rnd(i * 23 + 3) > 0.68,             // and a few barely move, so it is not uniform
     }));
-    herd.current.forEach((c) => { if (c.runner) { c.dur = 1.1 + c.dur * 0.22; c.dx *= 2.4; } });
+    herd.current.forEach((c) => {
+      if (c.runner) { c.dur = 0.75 + c.dur * 0.16; c.dx *= 2.6; c.dy *= 1.8; c.lazy = false; }
+      else if (c.lazy) { c.dur = c.dur * 2.1; c.dx *= 0.45; c.dy *= 0.5; }
+    });
     junk.current = ["MOO", "SYNERGY", "MOO", "PATRON STANDARD TIME", "MOO",
                     "PLEASE HOLD", "CIRCLE BACK", "MOO", "LET'S TAKE THIS OFFLINE",
                     "MOO", "PER MY LAST EMAIL", "SUPER WEIRD", "MOO", "IDEALLY",
