@@ -424,7 +424,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   50%{transform:translate(5px,-4px)}75%{transform:translate(-3px,-2px)}
   100%{transform:translate(0,0)}}
 .pg-cow.runner{filter:drop-shadow(0 0 10px rgba(255,220,90,.95)) saturate(1.5)}
-.pg-cowpop.gold i{background:#FFE9A8;border-color:#8A6A1E}
+.pg-cowpop.gold i{background:#FBFCF7;border-color:#3F7449}
 .pg-cowpop.gold b{color:#8A6A1E}
 .pg-cowcombo{position:absolute;top:58px;left:50%;transform:translateX(-50%);z-index:8;
   font-family:var(--mono);font-size:38px;font-weight:700;color:#FBFCF7;pointer-events:none;
@@ -458,7 +458,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   animation:pgcowfloat linear infinite}
 @keyframes pgcowfloat{from{transform:translateX(0) rotate(-4deg)}
   to{transform:translateX(160vw) rotate(4deg)}}
-.pg-cow{position:absolute;width:74px;height:52px;border:0;background:none;padding:0;
+.pg-cow{position:absolute;width:54px;height:76px;border:0;background:none;padding:0;
   cursor:pointer;animation:pgcowwalk ease-in-out infinite alternate;
   filter:drop-shadow(0 3px 0 rgba(0,0,0,.28));z-index:3}
 .pg-cow svg{width:100%;height:100%;display:block;pointer-events:none}
@@ -472,8 +472,9 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 @keyframes pgsplatland{from{opacity:0;transform:translate(-50%,-50%) scale(.2)}
   to{opacity:1}}
 .pg-cowpop{position:absolute;width:0;height:0;pointer-events:none;z-index:6}
-.pg-cowpop u{position:absolute;width:16px;height:11px;border-radius:50%;
-  background:#2C2622;animation:pgcowchunk .62s ease-out forwards}
+.pg-cowpop u{position:absolute;width:15px;height:12px;border-radius:4px 4px 50% 50%;
+  background:#E0A82E;box-shadow:inset 0 0 0 1.5px #B07E1C;
+  animation:pgcowchunk .62s ease-out forwards}
 .pg-cowpop u:nth-of-type(1){--px:-70px;--py:-52px}
 .pg-cowpop u:nth-of-type(2){--px:66px;--py:-46px}
 .pg-cowpop u:nth-of-type(3){--px:-58px;--py:56px}
@@ -486,8 +487,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-cowpop i:nth-child(10){--px:34px;--py:70px}
 .pg-cowpop i:nth-child(11){--px:-66px;--py:-62px}
 .pg-cowpop i:nth-child(12){--px:62px;--py:66px}
-.pg-cowpop i{position:absolute;width:11px;height:11px;border-radius:50%;background:#FBFCF7;
-  border:2px solid #2C2622;animation:pgcowpop .6s ease-out forwards}
+.pg-cowpop i{position:absolute;width:11px;height:11px;border-radius:50%;background:#F2CE63;
+  border:2px solid #8A5F12;animation:pgcowpop .6s ease-out forwards}
 .pg-cowpop i:nth-child(1){--px:-46px;--py:-34px}
 .pg-cowpop i:nth-child(2){--px:44px;--py:-30px}
 .pg-cowpop i:nth-child(3){--px:-52px;--py:22px}
@@ -1504,7 +1505,7 @@ const ACHV = [
   { id: "a30c", name: "Do Not Delete", note: "Try Conference Room B five times.",
     test: (s) => (s.knocks?.confb || 0) >= 5 },
   { id: "a31", name: "Please Hold", note: "Come back after a full 8 hours away.", test: (s) => s.longAway >= 1 },
-  { id: "a32", name: "There Is No Cow Level", note: "There is no cow level.",
+  { id: "a32", name: "There Is No Pineapple Level", note: "There is no pineapple level.",
     test: (s) => !!s.cow_seen },
 ];
 
@@ -2530,8 +2531,8 @@ const SOUNDS = {
                    tone({ freq: 147, dur: 0.5, type: "sawtooth", vol: 0.05 }); },
   deny:    () => { tone({ freq: 300, dur: 0.06, type: "square", vol: 0.05 });
                    tone({ freq: 240, dur: 0.09, type: "square", vol: 0.05, delay: 0.08 }); },
-  moo:     () => { tone({ freq: 196, to: 147, dur: 0.42, type: "sawtooth", vol: 0.07 });
-                   tone({ freq: 98,  to: 74,  dur: 0.5,  type: "triangle", vol: 0.05, delay: 0.03 }); },
+  moo:     () => { tone({ freq: 520, to: 180, dur: 0.16, type: "triangle", vol: 0.07 });
+                   noise({ dur: 0.1, vol: 0.04, hp: 900 }); },
   cowin:   () => { [110, 147, 165, 220, 294, 330].forEach((f, i) =>
                      tone({ freq: f, to: f * 2, dur: 0.5, type: "sawtooth",
                             vol: 0.06, delay: i * 0.05 }));
@@ -2772,7 +2773,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 140";
+const BUILD = "build 141";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2819,7 +2820,7 @@ function PatronFloor() {
   const [moving, setMoving] = useState(false);
   const [chance, setChance] = useState(null);
   const [dave, setDave] = useState(null);
-  const [cow, setCow] = useState(null);   // the secret cow level, when it happens
+  const [cow, setCow] = useState(null);   // the secret pineapple level, when it happens
   const [meet, setMeet] = useState(null);
   const meetSeen = useRef(null);
   const [chatter, setChatter] = useState(null);
@@ -4145,7 +4146,7 @@ function PatronFloor() {
         <CowLevel data={cow} onDone={async () => {
           setCow(null);
           try { applyServer(await api.getMe()); setFloor(await loadFloor()); } catch { /* back anyway */ }
-          say("You are back on the floor. There is no cow level.", "sys");
+          say("You are back on the floor. There is no pineapple level.", "sys");
         }} />
       )}
 
@@ -5462,14 +5463,16 @@ function DaveBody({ facing = 1 }) {
   );
 }
 
-/* What a cow says when it goes. Mostly MOO. Occasionally not. */
-const LAST_WORDS = ["MOO", "MOO", "MOO", "MOO!", "MOO?", "OW", "RUDE", "WHY",
-                    "NOTED", "UNSUBSCRIBE", "PER MY LAST MOO", "OK", "SUPER WEIRD",
-                    "CIRCLE BACK", "HR", "I QUIT"];
+/* What a pineapple says when it goes. Mostly PINEAPPLE. Occasionally not.
+   Pineapple is already the word you say in this office when something needs to
+   not have happened, which is why it gets its own level. */
+const LAST_WORDS = ["PINEAPPLE", "PINEAPPLE", "PINEAPPLE", "PINEAPPLE!", "PINEAPPLE?",
+                    "OW", "RUDE", "WHY", "NOTED", "UNSUBSCRIBE", "PER MY LAST PINEAPPLE",
+                    "OK", "SUPER WEIRD", "CIRCLE BACK", "HR", "I QUIT"];
 
 /* ------------------------------------------------------------------
-   THE COW LEVEL
-   Forty five seconds. Twenty four cows. Tap them. The reward is settled
+   THE PINEAPPLE LEVEL
+   Forty five seconds. Twenty four pineapples. Tap them. The reward is settled
    on the server — this is where you find out what it was.
    ------------------------------------------------------------------ */
 function CowLevel({ data, onDone }) {
@@ -5513,10 +5516,10 @@ function CowLevel({ data, onDone }) {
       if (c.runner) { c.dur = 0.75 + c.dur * 0.16; c.dx *= 2.6; c.dy *= 1.8; c.lazy = false; }
       else if (c.lazy) { c.dur = c.dur * 2.1; c.dx *= 0.45; c.dy *= 0.5; }
     });
-    junk.current = ["MOO", "SYNERGY", "MOO", "PATRON STANDARD TIME", "MOO",
-                    "PLEASE HOLD", "CIRCLE BACK", "MOO", "LET'S TAKE THIS OFFLINE",
-                    "MOO", "PER MY LAST EMAIL", "SUPER WEIRD", "MOO", "IDEALLY",
-                    "YOU'RE ON MUTE", "MOO", "SI SENOR", "THE REALITY IS"].map((t, i) => ({
+    junk.current = ["PINEAPPLE", "SYNERGY", "PINEAPPLE", "PATRON STANDARD TIME", "PINEAPPLE",
+                    "PLEASE HOLD", "CIRCLE BACK", "PINEAPPLE", "LET'S TAKE THIS OFFLINE",
+                    "PINEAPPLE", "PER MY LAST EMAIL", "SUPER WEIRD", "PINEAPPLE", "IDEALLY",
+                    "YOU'RE ON MUTE", "PINEAPPLE", "SI SENOR", "THE REALITY IS"].map((t, i) => ({
       id: i, t, top: 8 + rnd(i * 11 + 3) * 78, dur: 7 + rnd(i * 11 + 4) * 8,
       delay: rnd(i * 11 + 5) * 9,
     }));
@@ -5576,14 +5579,16 @@ function CowLevel({ data, onDone }) {
     // the moo climbs with the combo instead of being one flat sample
     const up = Math.pow(1.055, Math.min(run, 16));
     wakeAudio();
-    tone({ freq: 196 * up, to: 147 * up, dur: 0.34, type: "sawtooth", vol: 0.07 });
-    tone({ freq: 98 * up, to: 74 * up, dur: 0.42, type: "triangle", vol: 0.05, delay: 0.02 });
-    if (c.runner) tone({ freq: 880 * up, to: 1760, dur: 0.18, type: "square", vol: 0.04 });
+    // a wet burst rather than a lowing: short, bright, falling
+    tone({ freq: 560 * up, to: 190 * up, dur: 0.15, type: "triangle", vol: 0.075 });
+    tone({ freq: 240 * up, to: 90 * up, dur: 0.22, type: "sine", vol: 0.05, delay: 0.02 });
+    noise({ dur: 0.09, vol: 0.035, hp: 1100 });
+    if (c.runner) tone({ freq: 1040 * up, to: 2080, dur: 0.16, type: "square", vol: 0.04 });
 
     setHit(hitRef.current);
     setShake(t);
     setTimeout(() => setShake((v) => (v === t ? 0 : v)), 200);
-    const say = c.runner ? "MOO!!" : LAST_WORDS[(c.id * 7 + run) % LAST_WORDS.length];
+    const say = c.runner ? "PINEAPPLE!!" : LAST_WORDS[(c.id * 7 + run) % LAST_WORDS.length];
     setPops((p) => p.concat({ id: c.id, x: c.x, y: c.y, run, gold: c.runner, say }));
     setTimeout(() => setPops((p) => p.filter((q) => q.id !== c.id)), 620);
     // the splat stays for the rest of the run
@@ -5618,14 +5623,14 @@ function CowLevel({ data, onDone }) {
           <svg viewBox="0 0 120 120" aria-hidden="true">
             <path d="M60 12c13 0 17 14 27 17s21-6 27 4-8 18-8 27 12 15 7 25-19 3-27 9-9 20-20 22
                      -17-10-27-11-19 9-27 2-1-19-5-27-17-11-16-22 14-13 18-22 1-20 12-23 26 6 39-1Z"
-                  fill="rgba(251,252,247,.9)" />
-            <circle cx="16" cy="30" r="7" fill="rgba(251,252,247,.75)" />
-            <circle cx="104" cy="88" r="9" fill="rgba(251,252,247,.75)" />
-            <circle cx="30" cy="104" r="5" fill="rgba(251,252,247,.7)" />
-            <circle cx="96" cy="20" r="4" fill="rgba(251,252,247,.7)" />
-            <ellipse cx="46" cy="52" rx="9" ry="6" fill="rgba(44,38,34,.85)" />
-            <ellipse cx="76" cy="70" rx="7" ry="5" fill="rgba(44,38,34,.8)" />
-            <ellipse cx="62" cy="38" rx="5" ry="4" fill="rgba(44,38,34,.7)" />
+                  fill="rgba(240,190,70,.88)" />
+            <circle cx="16" cy="30" r="7" fill="rgba(240,190,70,.72)" />
+            <circle cx="104" cy="88" r="9" fill="rgba(240,190,70,.72)" />
+            <circle cx="30" cy="104" r="5" fill="rgba(240,190,70,.68)" />
+            <circle cx="96" cy="20" r="4" fill="rgba(240,190,70,.68)" />
+            <ellipse cx="46" cy="52" rx="9" ry="6" fill="rgba(176,126,28,.85)" />
+            <ellipse cx="76" cy="70" rx="7" ry="5" fill="rgba(176,126,28,.8)" />
+            <ellipse cx="62" cy="38" rx="5" ry="4" fill="rgba(94,140,80,.75)" />
           </svg>
         </div>
       ))}
@@ -5658,30 +5663,34 @@ function CowLevel({ data, onDone }) {
                              "--dx": c.dx + "vw", "--dy": c.dy + "vh",
                              "--f": c.f, animationDuration: c.dur + "s" }}
                     onClick={() => tap(c)}>
-              <svg viewBox="0 0 64 44" aria-hidden="true">
-                <ellipse cx="32" cy="26" rx="21" ry="13" fill="#FBFCF7" />
-                <ellipse cx="24" cy="22" rx="7" ry="5" fill="#2C2622" />
-                <ellipse cx="40" cy="30" rx="5" ry="4" fill="#2C2622" />
-                <rect x="16" y="36" width="5" height="8" fill="#2C2622" />
-                <rect x="43" y="36" width="5" height="8" fill="#2C2622" />
-                <ellipse cx="53" cy="17" rx="10" ry="9" fill="#FBFCF7" />
-                <path d="M45 10c-3-4-2-7 1-6 2 1 3 3 3 5Zm16 0c3-4 2-7-1-6-2 1-3 3-3 5Z" fill="#C9B79A" />
-                <ellipse cx="50" cy="16" rx="1.6" ry="2" fill="#2C2622" />
-                <ellipse cx="57" cy="16" rx="1.6" ry="2" fill="#2C2622" />
-                <ellipse cx="54" cy="22" rx="5" ry="3.5" fill="#E8A9A9" />
-                <circle cx="52" cy="22" r="0.9" fill="#2C2622" />
-                <circle cx="56" cy="22" r="0.9" fill="#2C2622" />
+              <svg viewBox="0 0 52 74" aria-hidden="true">
+                <path d="M26 22c-2-9-7-14-12-15 3 5 4 10 4 15Zm0 0c2-9 7-14 12-15-3 5-4 10-4 15Z"
+                      fill="#3F7449" />
+                <path d="M26 22c-4-10-4-17-2-21 3 4 4 11 4 21Zm0 0c4-10 4-17 2-21-3 4-4 11-4 21Z"
+                      fill="#4E8B5A" />
+                <path d="M26 21c-3-6-8-9-13-8 4 3 7 6 9 9Zm0 0c3-6 8-9 13-8-4 3-7 6-9 9Z"
+                      fill="#5C9E68" />
+                <ellipse cx="26" cy="46" rx="19" ry="25" fill="#E0A82E" />
+                <ellipse cx="20" cy="40" rx="9" ry="13" fill="#EDBE4C" opacity=".55" />
+                <path d="M8 34l18 12M26 22l18 12M8 46l18 12M26 34l18 12M8 58l18 12M26 46l18 12"
+                      stroke="#B07E1C" strokeWidth="1.5" fill="none" opacity=".8" />
+                <path d="M44 34L26 46M26 34 8 46M44 46 26 58M26 46 8 58M44 58 26 70M26 58 8 70"
+                      stroke="#B07E1C" strokeWidth="1.5" fill="none" opacity=".8" />
+                <circle cx="17" cy="40" r="1.4" fill="#8A5F12" />
+                <circle cx="26" cy="46" r="1.4" fill="#8A5F12" />
+                <circle cx="35" cy="52" r="1.4" fill="#8A5F12" />
+                <circle cx="17" cy="58" r="1.4" fill="#8A5F12" />
               </svg>
             </button>
           ))}
-          <div className="pg-cowfoot">There is no cow level.</div>
+          <div className="pg-cowfoot">There is no pineapple level.</div>
         </>
       )}
 
       {stage === "prize" && (
         <button className="pg-cowprize" onClick={openPrize}>
           <span className="pg-cowprizebox">?</span>
-          <em>Something is standing in the field.</em>
+          <em>Something is growing in the field.</em>
         </button>
       )}
 
@@ -5708,8 +5717,8 @@ function CowLevel({ data, onDone }) {
             <>
               <p>You are back at your desk. Nobody saw you leave.</p>
               <p className="pg-cowsmall">
-                Something was standing at the far end of the field. You did not clear
-                the herd in time to find out what it was.
+                Something was growing at the far end of the field. You did not clear
+                the crop in time to find out what it was.
               </p>
             </>
           )}
