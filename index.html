@@ -1664,7 +1664,7 @@ const FUND_TIERS = [
 const FIXTURES = [
   { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 760, y: 22, w: 216, h: 86 },
   { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Patron Points leaderboard", x: 1040, y: 14, w: 330, h: 100 },
-  { id: "portrait", panel: "standings", label: "Employee Of The Month", sub: "Currently in the lead", x: 1430, y: 12, w: 158, h: 108 },
+  { id: "portrait", panel: "standings", label: "Employee Of The Week", sub: "Whoever is winning right now", x: 1430, y: 12, w: 158, h: 108 },
   { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1640, y: 16, w: 150, h: 96 },
   { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 1990, y: 8, w: 170, h: 114 },
   { id: "coffee", panel: "kindness", label: "The Break Table", sub: "Be nice to someone", x: 560, y: 830, w: 112, h: 132 },
@@ -2773,7 +2773,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 141";
+const BUILD = "build 142";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4573,28 +4573,35 @@ function MiniMap({ pos, board, meId, cam, view, chair }) {
 }
 
 function FixtureArt({ id, board, tierPct }) {
-  if (id === "whiteboard") return (
-    <div className="pg-wb">
-      <div className="pg-wbtitle">Patron Points</div>
-      {board.slice(0, 3).map((p, i) => (
-        <div key={p.id} className="pg-wbrow">
-          <b>{i + 1}</b><Face src={p.avatar_url} name={p.name} size={16} />
-          <span>{p.name}</span><em>{fmt(p.lifetime || 0)}</em>
-        </div>
-      ))}
-      <div className="pg-wbtray" />
-    </div>
-  );
+  if (id === "whiteboard") {
+    // this week, matching the panel behind it. lifetime survives the wipe on purpose,
+    // so using it here left the wall showing last season forever.
+    const week = [...(board || [])].sort((a, b) => (b.week_pp || 0) - (a.week_pp || 0));
+    return (
+      <div className="pg-wb">
+        <div className="pg-wbtitle">This week</div>
+        {week.slice(0, 3).map((p, i) => (
+          <div key={p.id} className="pg-wbrow">
+            <b>{i + 1}</b><Face src={p.avatar_url} name={p.name} size={16} />
+            <span>{p.name}</span><em>{fmt(p.week_pp || 0)}</em>
+          </div>
+        ))}
+        <div className="pg-wbtray" />
+      </div>
+    );
+  }
   if (id === "portrait") {
-    const top = board && board[0];
+    // whoever is winning the CURRENT week — the frame is a live race, not a record
+    const top = [...(board || [])].sort((a, b) => (b.week_pp || 0) - (a.week_pp || 0))[0];
+    const anyone = top && (top.week_pp || 0) > 0;
     return (
       <div className="pg-portrait">
-        <div className="pg-portraittop">Employee of the Month</div>
+        <div className="pg-portraittop">Employee of the Week</div>
         <div className="pg-portraitframe">
-          <Face src={top?.avatar_url} name={top?.name} size={54} />
+          <Face src={anyone ? top.avatar_url : null} name={anyone ? top.name : "?"} size={54} />
         </div>
-        <div className="pg-portraitplate">{top?.name || "VACANT"}</div>
-        {top && <div className="pg-portraitpp">{fmt(top.lifetime || 0)} PP</div>}
+        <div className="pg-portraitplate">{anyone ? top.name : "VACANT"}</div>
+        {anyone && <div className="pg-portraitpp">{fmt(top.week_pp)} PP</div>}
       </div>
     );
   }
