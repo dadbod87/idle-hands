@@ -2773,7 +2773,7 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 142";
+const BUILD = "build 144";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3639,7 +3639,7 @@ function PatronFloor() {
         <Face src={me?.avatar_url} name={me?.name} size={40} />
         <div className="pg-hudid">
           <div className="pg-hudname">{me?.name}</div>
-          <div className="pg-hudrole">{roleFor(lifetime)}{me?.equity ? ` · ${me.equity} equity` : ""}</div>
+          <div className="pg-hudrole">{roleFor(me?.week_pp || 0)}{me?.equity ? ` · ${me.equity} equity` : ""}</div>
         </div>
         <div className="pg-hudpp">
           <div className="pg-ppnum">{fmt(pp)}</div>
@@ -3853,7 +3853,7 @@ function PatronFloor() {
                             {p.ooo && <span className="pg-ooo">{p.ooo}</span>}
                             {(deptName(cat, p.dept) || jobFor(p.name)) &&
                               <span className="pg-job">{deptName(cat, p.dept) || jobFor(p.name)}</span>}
-                            <span>{fmt(p.lifetime || 0)} PP</span></>
+                            <span>{fmt(p.week_pp || 0)} PP</span></>
                         : <b className="pg-vacant">Vacant</b>}
                 </div>
                 <div className={"pg-officedesk" + (mine ? " mine" : "") + (chances ? " ghost" : "")}
@@ -4738,7 +4738,7 @@ function Help({ onClose, rate }) {
 
       <div className="pg-helpsub">The floor</div>
       <ul className="pg-helplist">
-        <li><b>Whiteboard</b> — the leaderboard. Ranked by lifetime PP, nothing else.</li>
+        <li><b>Whiteboard</b> — the leaderboard. This week by default; all time is a tab.</li>
         <li><b>Break room / Meeting room</b> — do something nice, or something awful, to a coworker.</li>
         <li><b>Supply closet</b> — costumes. Yours or theirs, 45 minutes.</li>
         <li><b>Bulletin board</b> — everything anyone did, with names attached.</li>
@@ -4945,7 +4945,7 @@ function Standings({ board, me, fund, feuds = [] }) {
                      style={{ background: PIN_INDEX[p.pin].hue }}>{PIN_INDEX[p.pin].glyph}</i>
                 )}
                 {p.trophies > 0 && <span className="pg-trophy">{"\u25C6".repeat(Math.min(p.trophies, 5))}</span>}</b>
-              <span>{roleFor(p.lifetime || 0)}{p.equity ? ` · ${p.equity} equity` : ""}
+              <span>{roleFor(p.week_pp || 0)}{p.equity ? ` · ${p.equity} equity` : ""}
                 {(p.heat || 0) >= HEAT_LIMIT ? " · under review" : ""}</span>
             </span>
             <span className="pg-right">
@@ -5278,7 +5278,7 @@ function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear, onPet }) {
         <>
           <div className="pg-stats">
             <div><b>{fmt(lifetime)}</b><span>lifetime PP</span></div>
-            <div><b>{roleFor(lifetime)}</b><span>current title</span></div>
+            <div><b>{roleFor(me?.week_pp || 0)}</b><span>title this week</span></div>
             <div><b>{me?.equity || 0}</b><span>equity · +{(me?.equity || 0) * 3}%</span></div>
             <div><b>{me?.raises || 0}</b><span>raises · +{(me?.raises || 0) * 2}%</span></div>
             <div><b>{me?.goodwill || 0}</b><span>goodwill · +{Math.min(me?.goodwill || 0, 30)}%</span></div>
