@@ -2,6 +2,12 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-21: Build 163 — the coffee has a subplot (candidate)
+- Implemented the four requested polish stages: lived-in office zones, confirmed action reactions and office sound cues, compact measured mobile controls, opt-in coffee breaks and recurring social/prop humor.
+- Volume/mute persist locally; hidden tabs and rapid repeats stay quiet. Existing sound control preserved; new Sound & feel auditions added. No voice service credits used or new third-party assets imported.
+- Kindness notes use existing server deeds; live invitations/waves are transient cosmetics. Existing office status gets an initial/visible refresh. No database migration, balance change or player reset.
+- Stage tests: environment desktop/phone; sound graph and purchase failure/success; seven mobile/dialog/scroll checks; two-player isolated broadcast/deed flow. Exact full regression, screenshots and live deployment in release PR. Physical-phone and authenticated production E2E remain unverified.
+
 ## 2026-10-21: Build 162 — find your people (candidate)
 - Reviewed original concept direction, actual gameplay and read-only server contracts; prioritized environment composition, outcome feedback, mobile hierarchy and social comedy in `POLISH_REVIEW_2026-10-21.md`.
 - Illustrated/labeled emotes, labeled utility controls and ten-stop walking directory. Existing movement, economy and social actions retained; fictional-office changes preserved.

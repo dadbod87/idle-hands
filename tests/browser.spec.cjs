@@ -32,7 +32,7 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
   await expect(page.getByTestId('onboard-qa').locator('.pg-avatar-head')).toHaveCount(1);
   const onboardingWidth=await page.getByTestId('onboard-qa').evaluate(el=>({client:el.clientWidth,scroll:el.scrollWidth}));
   expect(onboardingWidth.scroll).toBeLessThanOrEqual(onboardingWidth.client+2);
-  await page.screenshot({path:'test-results/'+viewport.name+'-real-onboarding.png',fullPage:true});
+  await page.getByTestId('onboard-qa').screenshot({path:'test-results/'+viewport.name+'-real-onboarding.png',animations:'disabled'});
 
   await expect(page.getByTestId('avatar-qa').locator('.pg-avatar-head')).toHaveCount(1);
   await expect(page.getByTestId('avatar-qa').locator('.pg-avatar-head .pg-face')).toHaveCount(0);
@@ -47,7 +47,7 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
   await page.getByTestId('avatar-qa').getByLabel('Hair', {exact:true}).selectOption('long');
   await page.getByTestId('avatar-qa').getByLabel('Expression').selectOption('happy');
   await expect(page.getByTestId('avatar-qa').getByLabel('Hair', {exact:true})).toHaveValue('long');
-  await page.screenshot({path:'test-results/'+viewport.name+'-avatar-creator.png',fullPage:true});
+  await page.getByTestId('avatar-qa').screenshot({path:'test-results/'+viewport.name+'-avatar-creator.png',animations:'disabled'});
 
   await expect(page.locator('.ar-icons .pg-iconart').first()).toBeVisible();
   await expect(page.getByTestId('art-shop-preview')).toBeVisible();
@@ -58,12 +58,13 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
     expect(shop.scroll).toBeLessThanOrEqual(shop.client+2);
   }
   await page.getByTestId('art-shop-preview').getByRole('button',{name:'Wardrobe',exact:true}).click();
-  await page.screenshot({path:'test-results/'+viewport.name+'-wardrobe-gallery.png',fullPage:true});
+  await page.getByTestId('art-shop-preview').screenshot({path:'test-results/'+viewport.name+'-wardrobe-gallery.png',animations:'disabled'});
 
   const widths=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:window.innerWidth}));
   expect(widths.scroll).toBeLessThanOrEqual(widths.viewport+2);
   expect(exceptions).toEqual([]);
-  await page.screenshot({path:'test-results/'+viewport.name+'-art-gallery.png',fullPage:true});
+  // Capture each surface at its actual layout, avoiding five redundant very tall page bitmaps.
+  await page.locator('.ar-npc').first().locator('..').screenshot({path:'test-results/'+viewport.name+'-cast-gallery.png',animations:'disabled'});
   await context.close();
  });
 }

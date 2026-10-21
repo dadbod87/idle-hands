@@ -33,6 +33,7 @@ for(const mode of ['desktop','mobile']){
   await page.getByRole('button',{name:/Do actual work/}).click();
   await expect.poll(()=>fixture.calls.some(x=>x.rpc==='do_work')).toBe(true);
   await page.screenshot({path:'test-results/'+mode+'-game-desk.png',fullPage:true});
+  if(mode==='mobile')await page.getByRole('button',{name:'More',exact:true}).click();
   await page.getByRole('button',{name:/Office Nonsense/}).click();
   await page.getByRole('button',{name:'bingo',exact:true}).click();
   await expect(page.locator('.pg-bingosquare')).toHaveCount(9);
