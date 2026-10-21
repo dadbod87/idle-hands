@@ -67,3 +67,9 @@ An original cutout SVG/CSS system adds 30px classed purchase icons across hire, 
 - Mirror allows existing players to update for free, preserving their prior BW, Seniority, vanity and office kit.
 - Six permanent, cosmetic-only `wardrobe_owned` purchases paid in Busywork; separate from temporary coworker prank costumes. Purchase validations and outfit authorization are server-side. No player-account resets.
 - Character rendering uses same cutout `AvatarHead` in onboarding, floor and player UI. Runtime backend migration `sql/character_wardrobe.sql` must be applied before production merge.
+
+## Employee Creator & Persistent Clothing (PR #5)
+- First login builds a cartoon employee, including body, hair style/color, skin, eyes, expression, glasses, shirt, pants; no photo required.
+- Profile appearance persists through Supabase `set_look`; multiplayer `Body` uses the same data and `AvatarHead` artwork.
+- A separate, permanent six-piece wardrobe is bought with BW through `buy_wardrobe`; the `wardrobe_owned` JSONB field is not reset by Seniority. Bought outfits must be equipped and profile saved.
+- Existing social costume pranks remain temporary and separate. Full authenticated sign-in/purchase/reset E2E pending an isolated test account.
