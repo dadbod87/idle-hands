@@ -41,3 +41,8 @@ Read **this file first**, followed by `docs/CURRENT_STATE.md`, `docs/CHANGELOG.m
 
 ## Approved art direction
 Read `docs/ART_DIRECTION.md` before creating/editing characters, office furniture, wardrobe, cosmetics, props or icons. Avah MUST have blonde hair and Rilie brunette. Art QA must render `?art-preview=1` at phone/desktop and test every affected category; never change player inventory IDs/prices to achieve visual effects.
+
+## New canonical avatar/wardrobe system
+- `AvatarHead`, `AvatarControls`, `normalizedAvatar`, `WARDROBE` in `index.html` determine shared onboarding, mirror, in-world appearance and outfit prices.
+- Database migration `sql/character_wardrobe.sql` adds permanent `players.wardrobe_owned`, extends `set_look` validation and adds `buy_wardrobe`. Never ship frontend purchase UI until migration is applied and read-only verified.
+- `tests/wardrobe-rpc-contract.sql` exercises *actual migration RPC bodies* in isolated PostgreSQL. Avatar creator gallery and mobile checks run in Chromium. Do not reset wardrobe on Seniority.
