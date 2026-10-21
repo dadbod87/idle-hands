@@ -12,9 +12,9 @@ for(const mode of ['desktop','mobile']){
   await expect(timer).not.toHaveText(initial,{timeout:4000});
   expect(await wall.evaluate(el=>el.getBoundingClientRect().bottom<=el.closest('.pg-wb').getBoundingClientRect().bottom)).toBe(true);
   await page.keyboard.down('ArrowUp');
-  await expect.poll(()=>page.locator('.pg-me:not(.pg-chance)').evaluate(el=>parseFloat(el.style.top)),{timeout:10000,intervals:[30]}).toBeLessThan(205);
+  await expect.poll(()=>page.locator('.pg-me:not(.pg-wes)').evaluate(el=>parseFloat(el.style.top)),{timeout:10000,intervals:[30]}).toBeLessThan(205);
   await page.keyboard.up('ArrowUp');await page.keyboard.down('ArrowLeft');
-  await expect.poll(()=>page.locator('.pg-me:not(.pg-chance)').evaluate(el=>parseFloat(el.style.left)),{timeout:10000,intervals:[30]}).toBeLessThan(1210);
+  await expect.poll(()=>page.locator('.pg-me:not(.pg-wes)').evaluate(el=>parseFloat(el.style.left)),{timeout:10000,intervals:[30]}).toBeLessThan(1210);
   await page.keyboard.up('ArrowLeft');
   await expect(page.locator('.pg-prompt')).toContainText('Whiteboard');await page.locator('.pg-prompt .pg-open').click();
   const panel=page.locator('.pg-panel'),deadline=panel.getByTestId('week-deadline');

@@ -5,12 +5,12 @@ Approved direction: **original, flat 2D cutout-cartoon office satire**. Inspired
 ## Five design families
 1. **Art direction / palette:** warm paper `#F8F1E3`, ink `#2B2B2B`, sage `#8FA67A`, cubicle blue `#7B9CC4`, sticky note `#FFD36B`, orange `#F78B6B`. Minimal shading, bold outline, clear silhouettes, readable at phone size.
 2. **Modular character bodies:** preserve existing player's custom photo/profile and wardrobe logic, animate existing arms, legs, faces and rig. Add cutout strokes and coherent footwear/hand shapes without changing hitboxes or status effects.
-3. **Cast:** eight shuffled NPCs Jess, John, Kyle, Matt, Avah, Nick, Rilie, Joey plus independent Chance and Dave. Everyone uses the same reusable cutout visual language, with role-specific prop, hair and clothes. **Avah is BLONDE; Rilie is BRUNETTE.** Dialogue and schedule are separate from visual rendering.
+3. **Cast:** eight shuffled NPCs Nora, Gus, Rory, Theo, Iris, Bramblewick, Pip, Wren plus independent Wes and Hal. Everyone uses the same reusable cutout visual language, with role-specific prop, hair and clothes. **Iris is BLONDE; Pip is BRUNETTE.** Dialogue and schedule are separate from visual rendering.
 4. **Props, office kit and cosmetics:** original SVG art in `OfficeIcon` for purchase/menu rows, plus inked office furniture tiers, colored office rugs and fixtures. Keep existing purchased items, tier IDs, costs, server quotes and character costume effects. Do not reset player inventory.
 5. **UI icons:** SVG components rather than third-party image URLs. Maintain the catalog name-based semantic classification; fallback is the paperwork icon. Icons at 30–36px, mobile 25–29px, accessible labels remain real DOM text adjacent to the icons.
 
 ## Implementation
-- `index.html`: `OfficeIcon`, `OfficeVisitorBody`, `ChanceBody`, `DaveBody`, `Body` rig styles and CSS for office art.
+- `index.html`: `OfficeIcon`, `OfficeVisitorBody`, `WesBody`, `HalBody`, `Body` rig styles and CSS for office art.
 - `?art-preview=1`: read-only QA gallery with all ten NPCs, icons, office fixtures, five furniture tiers, shop navigation examples, desktop/mobile; does not touch player data.
 - `tests/browser.spec.cjs`: launches Chromium at desktop (1440px) and phone (390px), renders gallery, checks responsive width, tabs and JavaScript errors. Screenshots uploaded as GitHub Actions artifact.
 - `tests/economy-and-office.test.cjs`: syntax/logic assertions plus permanent hair requirements, original NPC rotation, cutout art placement.

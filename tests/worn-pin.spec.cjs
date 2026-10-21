@@ -2,9 +2,9 @@ const {test,expect,devices}=require('@playwright/test');
 const {installGameFixture}=require('./game-fixture.cjs');
 async function openCollection(page){
  await page.keyboard.down('ArrowUp');
- await expect.poll(()=>page.locator('.pg-me:not(.pg-chance)').evaluate(el=>parseFloat(el.style.top)),{timeout:10000,intervals:[30]}).toBeLessThan(205);
+ await expect.poll(()=>page.locator('.pg-me:not(.pg-wes)').evaluate(el=>parseFloat(el.style.top)),{timeout:10000,intervals:[30]}).toBeLessThan(205);
  await page.keyboard.up('ArrowUp');await page.keyboard.down('ArrowRight');
- await expect.poll(()=>page.locator('.pg-me:not(.pg-chance)').evaluate(el=>parseFloat(el.style.left)),{timeout:10000,intervals:[30]}).toBeGreaterThan(1690);
+ await expect.poll(()=>page.locator('.pg-me:not(.pg-wes)').evaluate(el=>parseFloat(el.style.left)),{timeout:10000,intervals:[30]}).toBeGreaterThan(1690);
  await page.keyboard.up('ArrowRight');await expect(page.locator('.pg-prompt')).toContainText('HR Cabinet');
  await page.locator('.pg-prompt .pg-open').click();await page.locator('.pg-panel').getByRole('button',{name:'Collection',exact:true}).click();
 }

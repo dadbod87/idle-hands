@@ -1,6 +1,6 @@
 const {test,expect,devices}=require('@playwright/test');
 const {installGameFixture}=require('./game-fixture.cjs');
-const costumes=[['cone','Traffic Cone'],['party','Party Hat'],['hardhat','Hard Hat'],['visor','Accounting Visor'],['kilt','Business Kilt'],['robe','Bathrobe'],['hawaii','Hawaiian Shirt'],['suit','Interview Suit'],['trex','Inflatable T-Rex'],['mascot','Patron the Ledger Lynx'],['board','Sandwich Board']].map(([id,name])=>({id,name,cost:.0001}));
+const costumes=[['cone','Traffic Cone'],['party','Party Hat'],['hardhat','Hard Hat'],['visor','Accounting Visor'],['kilt','Business Kilt'],['robe','Bathrobe'],['hawaii','Hawaiian Shirt'],['suit','Interview Suit'],['trex','Inflatable T-Rex'],['mascot','Ledger the Lynx'],['board','Sandwich Board']].map(([id,name])=>({id,name,cost:.0001}));
 for(const mode of ['desktop','mobile']){
  test(mode+': actual supply closet previews every costume for free and purchase still equips selected costume',async({browser})=>{
   const context=await browser.newContext(mode==='mobile'?{...devices['Pixel 7']}:{viewport:{width:1440,height:900}});

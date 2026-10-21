@@ -19,7 +19,7 @@ The sheets show flat cutout forms, angular faces, oversized half-lidded eyes, lo
 
 ## Art system implemented
 
-- Players, onboarding, HUD faces, mirror and all ten NPCs share `AvatarHead` and the `Body` rig. NPC identity comes from hair, clothing, cap, glasses, facial hair and role props. Avah blonde; Rilie brunette.
+- Players, onboarding, HUD faces, mirror and all ten NPCs share `AvatarHead` and the `Body` rig. NPC identity comes from hair, clothing, cap, glasses, facial hair and role props. Iris blonde; Pip brunette.
 - The custom face bypasses every legacy circular photo mask, including HUD/list contexts. Skin tone also applies to hands and short-pants legs. Emotes change the shared face while using the existing skeletal animations.
 - Five front-facing desk tiers use the same frame, cabinets, monitor, mug and paperwork vocabulary. Four illustrated chairs, inked companions/mount, plants, boxes and eight major fixtures share ink and palette.
 - Warm plank office floors, sage corridor tiles, blue cubicle edges, readable paper nameplates and a matching HUD. Phone zoom is at least 0.7 for legible sprites. Phone controls have larger targets and the minimap is smaller.

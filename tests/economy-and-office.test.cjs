@@ -12,7 +12,7 @@ const has = t => assert(src.includes(t), 'Required feature missing: '+t);
  'const costOf =','function officeVisitorNow','function officeFunAt',
  'funTab==="incidents"','funTab==="rumors"','funTab==="bingo"',
  'funTab==="daily"','funTab==="lounge"','funTab==="awards"',
- 'While you were out','Incident report','function jessDrinksAt',
+ 'While you were out','Incident report','function noraDrinksAt',
  'api.restructure()','setPrices(null); api.allPrices().then(setPrices)',
  'Math.ceil(costOf(it, have) * (me?.dept === "resale" ? 0.9 : 1))'
 ].forEach(has);
@@ -44,9 +44,9 @@ const cast=JSON.parse(src.slice(castStart+'const OFFICE_CAST='.length,castEnd));
 assert.equal(cast.length,8,'All eight shuffled visitors');
 assert.equal(new Set(cast.map(x=>x.id)).size,8,'Unique cast IDs');
 assert(cast.every(c=>c.lines.length && c.path.length>=2),'Each visitor has dialogue and walking path');
-assert(cast.find(c=>c.id==='matt').lines.some(line=>line.includes('operating agreement')),'Matt gag');
-assert.equal(cast.find(c=>c.id==='avah').hair,'#D5AB62','Avah must be blonde');
-assert.equal(cast.find(c=>c.id==='rilie').hair,'#51382E','Rilie must be brunette');
+assert(cast.find(c=>c.id==='theo').lines.some(line=>line.includes('operating agreement')),'Theo gag');
+assert.equal(cast.find(c=>c.id==='iris').hair,'#D5AB62','Iris must be blonde');
+assert.equal(cast.find(c=>c.id==='pip').hair,'#51382E','Pip must be brunette');
 assert(src.includes('function OfficeIcon('),'Cutout vector icon system');
 assert(src.includes('<OfficeIcon kind={it.name} />'),'Hiring art integrated');
 assert(src.includes('<OfficeIcon kind={u.name+" upgrade"} />'),'Upgrades art integrated');
@@ -57,8 +57,8 @@ assert(src.includes('<OfficeIcon kind={d.name+" coffee mug"} compact/>'),'Coffee
 assert(src.includes('<OfficeIcon kind={d.name+" slush drinks"} compact/>'),'Slush beverage item art integrated');
 assert(src.includes('<OfficeIcon kind={d.name+" personnel"} compact/>'),'Personnel art integrated');
 assert(src.includes('function ArtPreview()'),'Visual QA gallery exists');
-assert(src.includes('function DaveBody({ facing = 1 }) {'),'Dave wrapper preserved');
-assert(src.includes('function ChanceBody({ facing = 1 }) {'),'Chance wrapper preserved');
+assert(src.includes('function HalBody({ facing = 1 }) {'),'Hal wrapper preserved');
+assert(src.includes('function WesBody({ facing = 1 }) {'),'Wes wrapper preserved');
 
 assert(src.includes('await onLook(next);'),'Outfit equip must persist through server, not only preview');
 assert(src.includes('const next={...look,clothing:it.id};'),'Purchased wardrobe equip prepares appearance');
