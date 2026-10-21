@@ -26,6 +26,7 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
   await expect(page.getByTestId('art-preview')).toBeVisible({timeout:15000});
   await expect(page.locator('.ar-npc')).toHaveCount(10);
   await expect(page.locator('.ar-palette span')).toHaveCount(6);
+  await expect(page.locator('.ar-fixture')).toHaveCount(7);
   await expect(page.locator('.ar-icons .pg-iconart').first()).toBeVisible();
   const widths=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:window.innerWidth}));
   expect(widths.scroll).toBeLessThanOrEqual(widths.viewport+2);
