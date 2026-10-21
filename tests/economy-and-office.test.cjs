@@ -60,6 +60,8 @@ assert(src.includes('function ArtPreview()'),'Visual QA gallery exists');
 assert(src.includes('function DaveBody({ facing = 1 }) {'),'Dave wrapper preserved');
 assert(src.includes('function ChanceBody({ facing = 1 }) {'),'Chance wrapper preserved');
 
+assert(src.includes('await onLook(next);'),'Outfit equip must persist through server, not only preview');
+assert(src.includes('const next={...look,clothing:it.id};'),'Purchased wardrobe equip prepares appearance');
 const bagForRound = round => {
  const o=cast.map((_,i)=>i);
  for(let i=o.length-1;i>0;i--){
