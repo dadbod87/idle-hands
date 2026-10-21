@@ -41,3 +41,7 @@ Nine head silhouettes share the existing ink, palette and expression rig. Classi
 ## Build 157 supply-closet previews
 
 Costume thumbnails and expanded try-ons must use `CostumePreview` → `Body` → `Hat` / `CostumeSuit`, with the selected recipient's normalized look. Use category icons only for unknown catalog IDs. The try-on is presentation-only: never mutate the selected player or send a purchase RPC until the player activates the existing purchase row. Keep preview controls enabled when funds/cooldown prevent purchase. Hide duplicate costume-name labels and pause animation only inside preview containers; retain equipped-world layering and animation. Verify all 11 costumes in the actual Wardrobe at phone/desktop sizes and in the read-only gallery.
+
+## Build 158 desk catalog and shared objects
+
+`FittingPreview` selects by stable slot/item ID. Furniture uses `OfficeDeskArt`, `OfficeChairArt`, `OfficeRugArt`, `OfficeWallArt`; carried objects use `HeldItemArt`, atmosphere uses `AuraArt`, and glow/presence use the actual Body styles. Catalog and office must show the same item. Keep surfaces faithful to item names; no tier/price/ownership changes. Pause motion in catalog previews only. The break table should read as shared food and coffee, with no ambiguous grey bowl. Personnel commendations display both humorous notes and concrete server-qualified goals, with no gameplay bonus.

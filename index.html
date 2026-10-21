@@ -1491,6 +1491,23 @@ body{background:#D9CDC0}
 .pg-costume-detail p{line-height:1.4}
 .pg-costume-entry .pg-right{min-width:45px}
 @media(max-width:440px){.pg-costume-preview{flex-basis:58px;width:58px}.pg-costume-detail{gap:12px;padding:12px}.pg-costume-preview.large{flex-basis:112px;width:112px}.pg-costume-entry .pg-main>b{font-size:13px}}
+
+.pg-fitting-preview{position:relative;flex:0 0 84px;width:84px;height:96px;display:flex;align-items:center;justify-content:center;background:#EEE6D5;border:1.5px solid #B6AA96;border-radius:8px;pointer-events:none;isolation:isolate}
+.pg-fitting-preview>svg{width:92%;height:86%;overflow:visible}
+.pg-fitting-avatar{position:absolute;left:50%;top:28px;width:60px;height:88px;transform:translateX(-50%) scale(.60);transform-origin:50% 0;isolation:isolate}
+.pg-fitting-preview.large{flex-basis:156px;width:156px;height:180px}
+.pg-fitting-preview.large .pg-fitting-avatar{top:46px;transform:translateX(-50%) scale(1.15)}
+.pg-fitting-preview *{animation:none!important}
+.pg-held:is(.held-h1,.held-h2,.held-h3,.held-h4,.held-h5){width:30px;height:30px;background:none;border:0;box-shadow:none;right:-18px;top:55px;border-radius:0}
+.pg-held svg,.pg-aura svg{display:block;width:100%;height:100%;overflow:visible}
+.pg-aura:is(.aura-a1,.aura-a2,.aura-a3){background:none}
+.pg-officefloor.has-rug::after{display:none}
+.pg-officefloor>.pg-rug-art{position:absolute;left:22%;top:33%;width:56%;height:58%;opacity:.82}
+.pg-officeart:is(.art-w1,.art-w2,.art-w3,.art-w4){background:none;border:0;box-shadow:none}
+.pg-officeart::before{display:none}
+.pg-officeart>.pg-wall-art{width:100%;height:100%;display:block}
+@media(max-width:440px){.pg-fitting-preview{flex-basis:68px;width:68px}.pg-fitting-preview.large{flex-basis:122px;width:122px}.pg-costume-detail .pg-fitting-preview.large{height:160px}}
+.pg-award-goal{display:block;margin-top:6px;color:#5E584D;font:11px var(--mono);line-height:1.4}.pg-office-award .pg-right{min-width:48px}
 </style>
 </head>
 <body>
@@ -1733,7 +1750,27 @@ const ACHV = [
     test: (s) => !!s.cow_seen },
 ];
 
+// These IDs are awarded by claim_office_awards(), never by client predicates.
+const PERSONNEL_COMMENDATIONS=[
+ {id:"oa_welcome",name:"Welcome Committee",goal:"Build 3 goodwill through kind gestures.",note:"You made the place slightly less weird. That is leadership."},
+ {id:"oa_glue",name:"Office Glue",goal:"Build 15 goodwill.",note:"The org chart is held together with coffee and you."},
+ {id:"oa_reciprocity",name:"What Goes Around",goal:"Build 5 goodwill and receive 5 kind gestures.",note:"You helped them. They helped you. HR is calling it a framework."},
+ {id:"oa_collaboration",name:"Cross-Department Collaboration",goal:"Leave a coffee, give a shout-out and cover a coworker's shift.",note:"Three kinds of teamwork. Somehow, no meeting."},
+ {id:"oa_wardrobe",name:"Dress for the Job You Invented",goal:"Own 3 different permanent wardrobe pieces.",note:"Three outfits. One suspiciously unchanged job description."},
+ {id:"oa_facilities",name:"Facilities Have Questions",goal:"Own a desk, chair, rug and wall-art upgrade.",note:"Your cubicle now needs its own budget code."},
+ {id:"oa_streak",name:"Recurring Calendar Invite",goal:"Reach a 7-day check-in streak.",note:"At this point, the calendar invites itself."},
+ {id:"oa_menagerie",name:"HR-Approved Menagerie",goal:"Bring back 3 different critters.",note:"Facilities have withdrawn their earlier question."}
+];
+
 const MEMOS = [
+  "A donut was cut into quarters so nobody had to be the person who took the last donut. Four people are now negotiating.",
+  "A meeting was replaced by a note. A meeting has been scheduled to discuss the note.",
+  "The break table has two mugs and one working pen. Please form a coalition.",
+  "Somebody put 'team player' on the coffee pot. It has carried this department for years.",
+  "A sticky note says THANK YOU. No action items. People are checking the back.",
+  "HR's new team-building exercise is helping somebody without turning it into a project.",
+  "The office has agreed to stop saying 'quick question'. The questions remain the same length.",
+  "The donut box is communal. The tiny pink lid is not an organizational chart.",
   "The thermostat is now a locked, load-bearing part of company culture.",
   "Reply-all thread on parking has reached 214 messages. Legal is monitoring.",
   "Someone's yogurt has achieved sentience in the break room fridge.",
@@ -3042,6 +3079,7 @@ const api = {
   restructure: () => rpc("restructure"),
   grabChair: () => rpc("grab_chair"),
   saveAchievements: (list) => rpc("save_achievements", { p_list: list }),
+  claimOfficeAwards: () => rpc("claim_office_awards"),
   dress: (target, outfit) => rpc("dress", { p_target: target, p_outfit: outfit }),
   changeClothes: () => rpc("change_clothes"),
   commitToBit: () => rpc("commit_to_bit"),
@@ -3187,7 +3225,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 157 · costume previews";
+const BUILD = "build 158 · office personality";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4318,8 +4356,8 @@ function PatronFloor() {
               <React.Fragment key={"o"+o.i}><div className={"pg-office " + o.door + (mine ? " mine" : "")}
                    style={{ left: o.x, top: o.y, width: o.w, height: o.h,
                             zIndex: Math.round(o.y) }}>
-                <div className={"pg-officefloor" + (p?.kit?.rug ? " rug-" + p.kit.rug : "")} />
-                {p?.kit?.art && <div className={"pg-officeart art-" + p.kit.art} />}
+                <div className={"pg-officefloor" + (p?.kit?.rug ? " has-rug rug-" + p.kit.rug : "")}>{p?.kit?.rug&&<OfficeRugArt tier={p.kit.rug}/>}</div>
+                {p?.kit?.art && <div className={"pg-officeart art-" + p.kit.art}><OfficeWallArt tier={p.kit.art}/></div>}
 
                 <div className="pg-officedoor"
                      style={{ left: o.doorX - o.x, width: DOOR_W }}><i /><span /><i /></div>
@@ -4534,6 +4572,7 @@ function PatronFloor() {
           )}
           {panel === "personnel" && (
             <Personnel me={me} lifetime={lifetime} cat={cat}
+              onClaimAwards={async()=>{try{const row=await api.claimOfficeAwards();if(Array.isArray(row?.achievements))setMe(current=>current?.id===row.id?{...current,achievements:row.achievements}:current);}catch(e){flash(prettyError(e));}}}
               spend={spend} pins={pins}
               onWear={async (id) => {
                 try { applyServer(await api.setPin(id)); setFloor(await loadFloor()); }
@@ -5027,8 +5066,8 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       </div>
       </div>
       <span className="pg-shadow" />
-      {v.aura && <i className={"pg-aura aura-" + v.aura} />}
-      {v.held && <i className={"pg-held held-" + v.held} />}
+      {v.aura && <i className={"pg-aura aura-" + v.aura}><AuraArt id={v.aura}/></i>}
+      {v.held && <i className={"pg-held held-" + v.held}><HeldItemArt id={v.held}/></i>}
       {PETS[p?.pet] && (
         <span className="pg-pet"><svg viewBox="0 0 34 34">{PETS[p.pet].art}</svg></span>
       )}
@@ -5187,11 +5226,17 @@ function FixtureIllustration({kind,tierPct=0}){
   <rect x="43" y="9" width="53" height="11" fill="#FFE3A0" strokeWidth="1.2"/><path d="M52 14h35" strokeWidth="1.3"/>
   {kind==="vending"&&<rect x="43" y={111-tierPct*.75} width="7" height={Math.max(1,tierPct*.75)} fill="#E48768" stroke="none" opacity=".7"/>}
  </>}
- {kind==="coffee"&&<>
-  <path d="M18 77h124v43H18Z" fill="#A77A4F"/><path d="M11 72h138v9H11Z" fill="#CEA068"/>
-  <ellipse cx="80" cy="58" rx="44" ry="13" fill="#6D8BA3"/><path d="M39 58v9q40 19 82 0v-9" fill="#66849C"/>
-  {mug(65,37)}<path d="M88 35l17 4-5 8-17-4Z" fill="#F8F1E3"/><path d="M27 82v35m106-35v35" strokeWidth="3"/>
- </>}
+ {kind==="coffee"&&<g data-testid="break-table-art">
+  <path d="M23 42V21h26v25m61 0V21h26v24" fill="#7B9CC4"/>
+  <path d="M23 45v25m26-25v25m61-25v25m26-25v25" stroke="#536575" strokeWidth="3"/>
+  <path d="M17 70h126v13H17Z" fill="#A8784E"/><path d="M24 82v39m112-39v39" stroke="#755237" strokeWidth="7"/>
+  <path d="M10 52h140l6 21H4Z" fill="#D5AF77"/><path d="M15 61h130" stroke="#BC935F" strokeWidth="1.3"/>
+  <path d="M56 35h49v27H56Z" fill="#E79B9B"/><path d="M56 35l6-14h42l1 14Z" fill="#F3C5AE"/>
+  <path d="M61 40h39v16H61Z" fill="#FFF2D6"/>
+  {[68,80,92].map((x,i)=><g key={x}><circle cx={x} cy={46+i%2*3} r="5" fill={i===1?"#A47152":"#E7BC74"} strokeWidth="1"/><circle cx={x} cy={46+i%2*3} r="1.5" fill="#FFF2D6" stroke="none"/></g>)}
+  {mug(26,43)}{mug(123,44)}<path d="M109 49l10 2-3 7-10-2Z" fill="#FFF8E8" strokeWidth="1.3"/>
+  <ellipse cx="46" cy="63" rx="6" ry="2" stroke="#9E754A" strokeWidth="1.2"/>
+ </g>}
  {kind==="printer"&&<>
   <path d="M20 55h121v61H20Z" fill="#8FA3AF"/><path d="M37 55V35h93v20" fill="#3B444E"/><path d="M47 52V8h72v44" fill="#FFF7E5"/><path d="M57 19h52M57 26h44M57 33h49" stroke="#A59B87" strokeWidth="1.4"/>
   <path d="M31 70h100v24H31Z" fill="#39434B"/><path d="M49 84h64v35H49Z" fill="#FFF7E5"/><path d="M57 94h46m-46 7h35" stroke="#A59B87" strokeWidth="1.4"/><circle cx="128" cy="64" r="3" fill="#FFD36B"/>
@@ -5386,18 +5431,62 @@ function Help({ onClose, rate }) {
 }
 
 /** Mail order. None of it earns you anything. That is the entire appeal. */
-function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear }) {
+function HeldItemArt({id}){
+ return <svg viewBox="0 0 64 64" data-held-item={id} aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.8" strokeLinejoin="round" strokeLinecap="round">
+ {id==="h1"&&<><path d="M12 19h32v31q-16 9-32 0Z" fill="#FFF6DE"/><path d="M44 25h7q12 10-7 17"/><ellipse cx="28" cy="19" rx="16" ry="5" fill="#79523C"/><path d="M19 42q9 5 17-1" stroke="#B59A72"/><path d="M23 10q-5-5 0-9m10 10q5-5 0-9" stroke="#9C9280"/></>}
+ {id==="h2"&&<><rect x="13" y="9" width="39" height="51" rx="3" fill="#BD9661"/><path d="M19 15h27v38H19Z" fill="#FFF6E3"/><path d="M25 4h16v13H25Z" fill="#8D9695"/><path d="M24 25h17m-17 8h17m-17 8h11" stroke="#7D8B98"/></>}
+ {id==="h3"&&<><path d="M24 20V9h18v11"/><rect x="7" y="20" width="51" height="35" rx="4" fill="#805E44"/><path d="M8 30q25 12 49 0"/><rect x="28" y="31" width="10" height="11" rx="1" fill="#D8BD70"/></>}
+ {id==="h4"&&<><path d="M19 8h27v15q0 17-13 17T19 23Z" fill="#E2B94D"/><path d="M19 12H8q-3 20 17 21m21-21h10q3 20-17 21M33 39v12"/><path d="M21 50h24v10H21Z" fill="#75533D"/><path d="M29 18l4-5 4 5-2 6h-4Z" fill="#FFF2AD"/></>}
+ {id==="h5"&&<><path d="M8 39h49v15H8Z" fill="#AC873D"/><path d="M10 35l39-19 9 11-44 19Z" fill="#EAC65B"/><path d="M15 34l32-14" stroke="#FFF0AE"/><path d="M18 50h27" stroke="#5C4D34"/></>}
+ </svg>;
+}
+function AuraArt({id}){
+ return <svg viewBox="0 0 100 100" data-aura-item={id} aria-hidden="true" fill="none" strokeLinecap="round">
+ {id==="a1"&&[[12,30,2],[30,13,3],[75,20,2],[88,46,3],[16,70,3],[77,81,2],[43,90,2]].map(([x,y,r],i)=><circle key={i} cx={x} cy={y} r={r} fill="#E6BF64"/>)}
+ {id==="a2"&&[[14,27],[79,18],[85,70],[25,83]].map(([x,y],i)=><path key={i} d={`M${x} ${y-8}q0 8 8 8-8 0-8 8 0-8-8-8 8 0 8-8Z`} fill="#D9F2F3" stroke="#7B9CC4" strokeWidth="1.3"/>)}
+ {id==="a3"&&[15,35,60,81].map((x,i)=><path key={x} d={`M${x} 90q-13-10 1-27-2 12 6 15 4-5 2-10 14 19-1 24Z`} fill="#F78B6B" stroke="#B4583F" strokeWidth="1.2"/>)}
+ </svg>;
+}
+function OfficeRugArt({tier="r1"}){
+ const n=Number(tier.slice(1))||1,fill=["#B1A080","#AA99B7","#C37C6B","#8FA67A"][n-1]||"#B1A080";
+ return <svg viewBox="0 0 140 90" data-rug-tier={tier} className="pg-rug-art" aria-hidden="true" fill="none" stroke="#4C5145" strokeWidth="2.4">
+ <path d="M7 12h126v66H7Z" fill={fill}/><path d="M13 18h114v54H13Z" stroke="#F4E8CD"/>
+ {n===2&&[23,48,73,98].map(x=><path key={x} d={`M${x} 24l16 21-16 21-16-21Z`} stroke="#716081" strokeWidth="3"/>)}
+ {n===3&&<><path d="M36 45l34-24 34 24-34 24Z" fill="#E2BC86" stroke="#87514B"/><path d="M52 45l18-13 18 13-18 13Z" fill="#87514B"/></>}
+ {n===4&&[18,30,42,54,66,78,90,102,114].map(x=><path key={x} d={`M${x} 20v50`} stroke="#4C684D"/>)}
+ {[18,29,40,51,62,73,84,95,106,117].map(x=><path key={x} d={`M${x} 6v6m0 66v6`} stroke="#C7B48D" strokeWidth="3"/>)}</svg>;
+}
+function OfficeWallArt({tier="w1"}){
+ const n=Number(tier.slice(1))||1;
+ return <svg viewBox="0 0 120 90" data-art-tier={tier} className="pg-wall-art" aria-hidden="true" stroke="#2B2B2B" strokeWidth="2" strokeLinejoin="round">
+ <path d="M3 3h114v84H3Z" fill={n===4?"#C9A253":"#805E44"}/><path d="M10 10h100v70H10Z" fill="#F8F1E3"/>
+ {n===1&&<><path d="M15 15h90v47H15Z" fill="#A7C0CC"/><path d="M15 46h90v16H15Z" fill="#7B9C91"/><path d="M38 46h42l-9 9H49Z" fill="#BA8153"/><path d="M59 27l12 20" fill="none"/><text x="60" y="73" textAnchor="middle" fontSize="7" fill="#2B2B2B" stroke="none">PERSEVERANCE</text></>}
+ {n===2&&<><text x="60" y="27" textAnchor="middle" fontSize="8" fill="#2B2B2B" stroke="none">COMPLETED</text><path d="M28 35h64m-64 7h64m-64 7h39" stroke="#A09376"/><circle cx="78" cy="62" r="9" fill="#D9B654"/><path d="M73 69l-3 10 8-4 7 4-3-10" fill="#AA6654"/></>}
+ {n===3&&<><path d="M16 16h88v58H16Z" fill="#7B9CC4"/><circle cx="78" cy="33" r="11" fill="#FFD36B"/><path d="M16 59l29-26 25 25 19-14 15 19v11H16Z" fill="#8FA67A"/><path d="M16 71l44-19 44 22" fill="#A86D57"/></>}
+ {n===4&&<><path d="M16 16h88v58H16Z" fill="#596B6C"/><path d="M35 73q1-29 25-29t25 29" fill="#343A42"/><path d="M47 22h26v29H47Z" fill="#E0B78E"/><path d="M43 25l6-10 25 2 4 10-13-6Z" fill="#60534A"/><path d="M51 35h3m11 0h3m-14 9h12" fill="none"/><text x="60" y="84" textAnchor="middle" fontSize="6" fill="#2B2B2B" stroke="none">FOUNDER (ALLEGED)</text></>}
+ </svg>;
+}
+function FittingPreview({item,kind,player,large=false}){
+ const office=kind==="office_kit";
+ return <div className={"pg-fitting-preview"+(large?" large":"")} data-fitting-preview={item.id} role="img" aria-label={item.name+" preview"}>
+ {office?(item.slot==="desk"?<OfficeDeskArt tier={item.id}/>:item.slot==="chair"?<OfficeChairArt tier={item.id}/>:item.slot==="rug"?<OfficeRugArt tier={item.id}/>:<OfficeWallArt tier={item.id}/>):item.slot==="held"?<HeldItemArt id={item.id}/>:<div className="pg-fitting-avatar"><Body p={{name:player?.name||"Employee",look:normalizedAvatar(lookFor(player)),vanity:{[item.slot]:item.id}}}/></div>}
+ </div>;
+}
+
+function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear, preview=false }) {
+  const [inspected,setInspected]=useState(null);
   const [which, setWhich] = useState("vanity");
   // The server quotes the price; quotes refresh on changing rates or on reopen.
   const [quote, setQuote] = useState(null);
   useEffect(() => {
+    if(preview)return;
     let live = true;
     api.fittingPrices().then((q) => { if (live) setQuote(q); }).catch(() => {});
     const t = setInterval(() => {
       api.fittingPrices().then((q) => { if (live) setQuote(q); }).catch(() => {});
     }, 20000);
     return () => { live = false; clearInterval(t); };
-  }, [me?.id, me?.owned, me?.upgrades, me?.buffs, me?.equity, me?.heat, me?.frenzy_until]);
+  }, [preview, me?.id, me?.owned, me?.upgrades, me?.buffs, me?.equity, me?.heat, me?.frenzy_until]);
   const list = (which === "vanity" ? cat.vanity : cat.office_kit) || [];
   const have = which === "vanity" ? (me?.vanity || {}) : (me?.kit || {});
   const slots = [...new Set(list.map((x) => x.slot))];
@@ -5434,18 +5523,22 @@ function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear }) {
                 const price = priceOf(x);
                 const afford = pp >= price;
                 return (
-                  <button key={x.id}
+                  <div key={x.id} data-fitting-entry={x.id}>
+                  <button
                           className={"pg-row" + (i % 2 ? " alt" : "") + (mine ? " done" : "")
                                      + (next && !afford ? " poor" : "")}
                           disabled={!next || !afford}
                           onClick={() => onFitting(which, x)}>
-                    <OfficeIcon kind={x.name+" "+slot} cosmetic /><span className="pg-main"><b>{x.name}</b><span>{x.note}</span></span>
+                    <FittingPreview item={x} kind={which} player={me}/><span className="pg-main"><b>{x.name}</b><span>{x.note}</span></span>
                     <span className="pg-right">
                       {mine ? <b>owned</b>
                             : <><b>{fmt(price)}</b>
                                 <span>{next ? spell(x.secs) : "locked"}</span></>}
                     </span>
                   </button>
+                  <button type="button" className="pg-costume-inspect" aria-label={"Preview "+x.name} aria-expanded={inspected===x.id} onClick={()=>setInspected(inspected===x.id?null:x.id)}>{inspected===x.id?"Hide preview":"Preview item"}<span aria-hidden="true">{inspected===x.id?"−":"+"}</span></button>
+                  {inspected===x.id&&<div className="pg-costume-detail" data-testid="fitting-detail"><FittingPreview item={x} kind={which} player={me} large/><div><b>{x.name}</b><p>{x.note}</p><p className="pg-fine">Preview only · no Busywork spent. Purchases still unlock in order.</p></div></div>}
+                  </div>
                 );
               })}
             </div>
@@ -5878,15 +5971,16 @@ function SpendFile({ me, spend, pins, onWear, onPet }) {
   );
 }
 
-function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear, onPet }) {
+function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear, onPet, onClaimAwards }) {
+  useEffect(()=>{if(me?.id&&onClaimAwards)onClaimAwards();},[me?.id]);
   const have = me?.achievements || [];
   const depts = cat?.depts || [];
-  const got = ACHV.filter((a) => have.includes(a.id)).length;
+  const got = [...ACHV,...PERSONNEL_COMMENDATIONS].filter((a) => have.includes(a.id)).length;
 
   return (
     <Tabsy tabs={[["dept", "Department"], ["spend", "Collection"],
                   ["file", "Your File"],
-                  ["achv", `Awards ${got}/${ACHV.length}`]]}>
+                  ["achv", `Awards ${got}/${ACHV.length+PERSONNEL_COMMENDATIONS.length}`]]}>
       {(t) => t === "dept" ? (
         <>
           <div className="pg-earnbar">
@@ -5934,6 +6028,13 @@ function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear, onPet }) {
         </>
       ) : (
         <div className="pg-list">
+          <div className="pg-earnbar">Office commendations · stories for your personnel file. Cosmetic awards; no Busywork bonuses.</div>
+          <h4 className="pg-h4">Office legends · new commendations</h4>
+          {PERSONNEL_COMMENDATIONS.map((a,i)=><div key={a.id} data-office-award={a.id} className={"pg-row static pg-office-award"+(i%2?" alt":"")}>
+            <OfficeIcon kind="star senior badge"/><span className="pg-main"><b>{a.name}</b><span>{a.note}</span><em className="pg-award-goal">{a.goal}</em></span>
+            <span className="pg-right"><b className={have.includes(a.id)?"pg-got":""}>{have.includes(a.id)?"Earned":"To earn"}</b></span>
+          </div>)}
+          <h4 className="pg-h4">The original personnel file</h4>
           {ACHV.map((a, i) => (
             <div key={a.id} className={"pg-row static" + (i % 2 ? " alt" : "") + (have.includes(a.id) ? "" : " poor")}>
               <span className="pg-ct">{have.includes(a.id) ? "✓" : "·"}</span>
@@ -6072,7 +6173,7 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
 /** Actual player-office illustrations: inked desk objects that grow with purchased kit. */
 function OfficeDeskArt({tier="d1"}){
  const n=Math.max(1,Math.min(5,Number(String(tier).replace("d",""))||1));
- const wood=["#ACA89B","#C38F58","#A96E43","#D5B483","#B97D47"][n-1];
+ const wood=["#BEA17B","#C8E3E7","#865436","#F0EDE1","#343A40"][n-1];
  const cabinet=n===5?"#597B9D":n===4?"#D4D3C9":"#777E80";
  const screen=(x,w,kind)=><g key={x}>
   <path d={`M${x+w/2} 39v9m-11 0h22`} strokeWidth="3"/>
@@ -6083,12 +6184,15 @@ function OfficeDeskArt({tier="d1"}){
  </g>;
  return <svg className="pg-desk-svg" viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round">
   <ellipse cx="101" cy="95" rx="96" ry="4" fill="#504435" stroke="none" opacity=".17"/>
+  {n===5?<path d="M10 54h24v42H10Zm156 0h24v42h-24Z" fill="#343A40"/>:<>
   <path d="M9 54h39v39H9ZM150 54h39v39h-39Z" fill={cabinet}/>
   <path d="M15 62h27m-27 13h27m-27 10h27M156 62h27m-27 13h27m-27 10h27" strokeWidth="1.2"/>
   <path d="M27 65h6m-6 13h6m131-13h6m-6 13h6" strokeWidth="2"/>
-  <path d="M12 92v5m32-5v5m111-5v5m31-5v5" strokeWidth="3"/>
+  <path d="M12 92v5m32-5v5m111-5v5m31-5v5" strokeWidth="3"/></>}
   <path d="M3 47l7-6h180l7 6v8H3Z" fill={wood}/>
-  <path d="M4 48h192" stroke="#F6D0A1" strokeWidth="1.6"/>
+  <path d="M4 48h192" stroke={n===2?"#FFFFFF":n===5?"#6B747B":"#F6D0A1"} strokeWidth="1.6"/>
+  {n===2&&<path d="M24 43l20 9m5-9 20 9m85-9 20 9" stroke="white" strokeWidth="2" opacity=".7"/>}
+  {n===4&&<path d="M15 44l20 3 12-4m13 9 17-6 10 3m45-5 19 5 18-5" fill="none" stroke="#9D9992" strokeWidth="1.1"/>}
   {n===1?<><path d="M66 12h45l4 28H69Z" fill="#42464C"/><path d="M68 40h49l7 7H61Z" fill="#8B9298"/><circle cx="91" cy="27" r="3" fill="#B8BEBD" stroke="none"/></>:n===2?screen(64,56,0):n<5?<>{screen(45,53,0)}{screen(101,53,1)}</>:<>{screen(30,47,1)}{screen(80,47,0)}{screen(130,47,1)}</>}
   <path d="M77 50h49l4 5H74Z" fill="#B8BCB7" strokeWidth="1.2"/>
   <path d="M82 52h37" strokeWidth="1"/>
@@ -6101,13 +6205,15 @@ function OfficeDeskArt({tier="d1"}){
  </svg>;
 }
 function OfficeChairArt({tier="c1"}){
- const n=Number(tier.slice(1))||1,c=["#718BAD","#6F7B83","#A46B47","#343C4D"][n-1]||"#718BAD";
+ const n=Number(tier.slice(1))||1,c=["#718BAD","#6F7B83","#77857B","#343C4D"][n-1]||"#718BAD";
  return <svg viewBox="0 0 60 80" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.3" strokeLinejoin="round">
   <path d="M30 57v15m-21 4 21-7 21 7M30 69v8"/><circle cx="9" cy="76" r="2" fill="#2B2B2B"/><circle cx="51" cy="76" r="2" fill="#2B2B2B"/>
   <rect x="13" y="3" width="34" height="43" rx={n===3?10:6} fill={c}/>
   <path d="M18 8q12-4 24 0v28H18Z" stroke="#F8F1E3" strokeOpacity=".2" strokeWidth="1.2"/>
   <path d="M8 42h44l-4 14H12Z" fill={c}/><path d="M8 42v-9H4m48 9v-9h4" strokeWidth="4"/>
-  {n===4&&<><path d="M18 5l6 16M42 5l-6 16" stroke="#D46F5D" strokeWidth="3"/><circle cx="30" cy="29" r="7" fill="#FFD36B"/><path d="M27 30q3 4 6 0" strokeWidth="1.4"/></>}
+  {n===2&&<path d="M17 30q13-7 26 0v8H17Z" fill="#52646E"/>}
+  {n===3&&<g stroke="#D2D8CB" strokeWidth="1">{[20,26,32,38].map(x=><path key={x} d={`M${x} 10v26`}/>)}{[13,19,25,31].map(y=><path key={y} d={`M18 ${y}h24`}/>)}</g>}
+  {n===4&&<><rect x="16" y="1" width="28" height="12" rx="4" fill="#343C4D"/><path d="M19 20l22 19m0-19L19 39" stroke="#66717D" strokeWidth="1"/></>}
  </svg>;
 }
 function DecorArt({kind}){
@@ -7313,6 +7419,8 @@ function Onboard({ user, code, onDone, preview=false }) {
   );
 }
 
+const ART_FITTINGS={"office_kit":[{"id":"d1","name":"A Desk Without A Wobble","note":"Four legs, all touching the floor. This was not always true.","secs":400,"slot":"desk","tier":1},{"id":"d2","name":"Glass Top","note":"Shows every fingerprint. Worth it.","secs":2400,"slot":"desk","tier":2},{"id":"d3","name":"Walnut, Or Close Enough","note":"Veneer. Convincing veneer. Nobody is going to check.","secs":14400,"slot":"desk","tier":3},{"id":"d4","name":"Actual Marble","note":"The floor beneath it has been surveyed. It was fine. Probably.","secs":86400,"slot":"desk","tier":4},{"id":"d5","name":"Something Black And Seamless","note":"No drawers. No edges. No explanation.","secs":518400,"slot":"desk","tier":5},{"id":"c1","name":"A Chair That Goes Up","note":"The lever works. It has never worked before.","secs":700,"slot":"chair","tier":1},{"id":"c2","name":"Lumbar Support","note":"You have opinions about it now. You share them.","secs":4900,"slot":"chair","tier":2},{"id":"c3","name":"The Mesh One From The Catalogue","note":"The one everybody looked at and nobody ordered.","secs":34300,"slot":"chair","tier":3},{"id":"c4","name":"Leather. Reclining. Silent.","note":"It makes no sound at all. This unsettles visitors.","secs":240000,"slot":"chair","tier":4},{"id":"r1","name":"A Rug, Finally","note":"Covers the stain. Everyone knows about the stain.","secs":500,"slot":"rug","tier":1},{"id":"r2","name":"Something With A Pattern","note":"Geometric. Inoffensive. Chosen by committee.","secs":3500,"slot":"rug","tier":2},{"id":"r3","name":"A Rug People Comment On","note":"Two people have asked where it is from. You have not told them.","secs":24500,"slot":"rug","tier":3},{"id":"r4","name":"Handwoven, Allegedly","note":"The invoice said handwoven. The invoice said a lot of things.","secs":171500,"slot":"rug","tier":4},{"id":"w1","name":"A Motivational Print","note":"PERSEVERANCE. A canoe. Nobody has looked at it twice.","secs":1200,"slot":"art","tier":1},{"id":"w2","name":"A Framed Certificate","note":"Completion, not achievement. The distinction is not visible from the door.","secs":8400,"slot":"art","tier":2},{"id":"w3","name":"An Actual Painting","note":"Nobody knows who chose it. It has grown on everybody.","secs":58800,"slot":"art","tier":3},{"id":"w4","name":"The Founder Portrait","note":"It is not Dave. Nobody will say who it is.","secs":411600,"slot":"art","tier":4}],"vanity":[{"id":"g1","name":"A Faint Warmth","note":"Barely there. You know it is there.","secs":300,"slot":"glow","tier":1},{"id":"g2","name":"Employee Of The Month Sheen","note":"The particular gold of a laminated certificate.","secs":1500,"slot":"glow","tier":2},{"id":"g3","name":"Executive Blue","note":"The colour of a screensaver in a room nobody books.","secs":7500,"slot":"glow","tier":3},{"id":"g4","name":"Fire Drill Red","note":"People instinctively file toward the exit when you walk past.","secs":37500,"slot":"glow","tier":4},{"id":"g5","name":"Server Room Green","note":"You hum slightly. Nobody has mentioned it.","secs":187500,"slot":"glow","tier":5},{"id":"g6","name":"Unapproved Purple","note":"Not in the brand guidelines. Not addressed by the brand guidelines.","secs":937500,"slot":"glow","tier":6},{"id":"s1","name":"Good Posture","note":"You are not taller. You simply take up more of the room.","secs":900,"slot":"size","tier":1},{"id":"s2","name":"Presence","note":"People stop talking slightly before you arrive.","secs":6000,"slot":"size","tier":2},{"id":"s3","name":"Corner Office Energy","note":"Doorways are now a consideration.","secs":40000,"slot":"size","tier":3},{"id":"h1","name":"A Mug You Never Wash","note":"It has a ring in it older than most of the staff.","secs":450,"slot":"held","tier":1},{"id":"h2","name":"A Clipboard","note":"You carry it everywhere. Nobody asks what is on it. That is the trick.","secs":2700,"slot":"held","tier":2},{"id":"h3","name":"A Briefcase With Nothing In It","note":"Weightless. Convincing.","secs":16000,"slot":"held","tier":3},{"id":"h4","name":"A Trophy For Something","note":"The plaque has been buffed smooth. Nobody remembers the category.","secs":96000,"slot":"held","tier":4},{"id":"h5","name":"The Golden Stapler","note":"It does not staple. It has not stapled in years. It is beyond stapling.","secs":576000,"slot":"held","tier":5},{"id":"a1","name":"Perpetual Dust Motes","note":"Lit from somewhere. There is no window on that side.","secs":1800,"slot":"aura","tier":1},{"id":"a2","name":"A Faint Shimmer","note":"Facilities have inspected it twice and filed nothing.","secs":12000,"slot":"aura","tier":2},{"id":"a3","name":"Small Contained Flames","note":"Signed off by nobody. Questioned by nobody.","secs":80000,"slot":"aura","tier":3}]};
+
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
 function ArtPreview(){
  const [helpOpen,setHelpOpen]=useState(false);
@@ -7372,6 +7480,14 @@ function ArtPreview(){
     <Wardrobe me={{id:"closet-qa",name:"Preview Employee",look:demoAvatar}} board={[{id:"closet-qa",name:"Preview Employee",look:demoAvatar}]} lifetime={0} pp={5000} cool={0}
       cat={{costumes:Object.entries(COSTUMES).map(([id,c])=>({id,name:c.name,cost:.01}))}} prices={{}} onDress={()=>{}} onChange={()=>{}} onCommit={()=>{}} onNickname={()=>{}}/>
   </section>
+  <h2>5c. Actual desk catalog · read-only fitting previews</h2>
+  <section data-testid="fittings-qa" style={{maxWidth:760,margin:"0 auto 18px",border:"2px solid #2B2B2B"}}>
+    <Catalogue cat={ART_FITTINGS} me={{id:"fittings-qa",name:"Preview Employee",look:demoAvatar}} pp={0} rate={0} preview onFitting={()=>{}}/>
+  </section>
+  <h2>5d. Shared break table · donuts for everyone</h2>
+  <div data-testid="break-table-qa" style={{width:240,height:195,margin:"0 auto"}}><FixtureIllustration kind="coffee"/></div>
+  <h2>5e. Actual personnel file · cosmetic commendations</h2>
+  <section data-testid="personnel-qa" style={{maxWidth:760,margin:"0 auto 18px",border:"2px solid #2B2B2B"}}><Personnel me={{id:"personnel-qa",achievements:["oa_welcome","oa_glue"],look:demoAvatar}} lifetime={0} cat={{depts:[]}}/></section>
   <h2>6. Onboarding help · small-screen scroll QA</h2>
   <button className="pg-btn" data-testid="help-preview-open" onClick={()=>setHelpOpen(true)}>Open onboarding help</button>
   {helpOpen&&<Help rate={0} onClose={()=>setHelpOpen(false)}/>}

@@ -50,7 +50,7 @@ assert.equal(cast.find(c=>c.id==='rilie').hair,'#51382E','Rilie must be brunette
 assert(src.includes('function OfficeIcon('),'Cutout vector icon system');
 assert(src.includes('<OfficeIcon kind={it.name} />'),'Hiring art integrated');
 assert(src.includes('<OfficeIcon kind={u.name+" upgrade"} />'),'Upgrades art integrated');
-assert(src.includes('<OfficeIcon kind={x.name+" "+slot} cosmetic />'),'Catalogue art integrated');
+assert(src.includes('<FittingPreview item={x} kind={which} player={me}/>'),'Catalog previews use real item graphics');
 assert(src.includes('<CostumePreview id={c.id} player={target}/>'),'Supply closet previews use actual equipped renderer');
 assert(src.includes('<OfficeIcon kind={k.name+" senior badge"} compact/>'),'Seniority perks art integrated');
 assert(src.includes('<OfficeIcon kind={d.name+" coffee mug"} compact/>'),'Coffee/beverage item art integrated');
