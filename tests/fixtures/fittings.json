@@ -1,0 +1,312 @@
+{
+  "office_kit": [
+    {
+      "id": "d1",
+      "cost": 8e+23,
+      "name": "A Desk Without A Wobble",
+      "note": "Four legs, all touching the floor. This was not always true.",
+      "secs": 400,
+      "slot": "desk",
+      "tier": 1
+    },
+    {
+      "id": "d2",
+      "cost": 9.6e+24,
+      "name": "Glass Top",
+      "note": "Shows every fingerprint. Worth it.",
+      "secs": 2400,
+      "slot": "desk",
+      "tier": 2
+    },
+    {
+      "id": "d3",
+      "cost": 1.1e+26,
+      "name": "Walnut, Or Close Enough",
+      "note": "Veneer. Convincing veneer. Nobody is going to check.",
+      "secs": 14400,
+      "slot": "desk",
+      "tier": 3
+    },
+    {
+      "id": "d4",
+      "cost": 1.4e+27,
+      "name": "Actual Marble",
+      "note": "The floor beneath it has been surveyed. It was fine. Probably.",
+      "secs": 86400,
+      "slot": "desk",
+      "tier": 4
+    },
+    {
+      "id": "d5",
+      "cost": 1.7e+28,
+      "name": "Something Black And Seamless",
+      "note": "No drawers. No edges. No explanation.",
+      "secs": 518400,
+      "slot": "desk",
+      "tier": 5
+    },
+    {
+      "id": "c1",
+      "cost": 2e+24,
+      "name": "A Chair That Goes Up",
+      "note": "The lever works. It has never worked before.",
+      "secs": 700,
+      "slot": "chair",
+      "tier": 1
+    },
+    {
+      "id": "c2",
+      "cost": 2.4e+25,
+      "name": "Lumbar Support",
+      "note": "You have opinions about it now. You share them.",
+      "secs": 4900,
+      "slot": "chair",
+      "tier": 2
+    },
+    {
+      "id": "c3",
+      "cost": 2.9e+26,
+      "name": "The Mesh One From The Catalogue",
+      "note": "The one everybody looked at and nobody ordered.",
+      "secs": 34300,
+      "slot": "chair",
+      "tier": 3
+    },
+    {
+      "id": "c4",
+      "cost": 3.5e+27,
+      "name": "Leather. Reclining. Silent.",
+      "note": "It makes no sound at all. This unsettles visitors.",
+      "secs": 240000,
+      "slot": "chair",
+      "tier": 4
+    },
+    {
+      "id": "r1",
+      "cost": 1.5e+24,
+      "name": "A Rug, Finally",
+      "note": "Covers the stain. Everyone knows about the stain.",
+      "secs": 500,
+      "slot": "rug",
+      "tier": 1
+    },
+    {
+      "id": "r2",
+      "cost": 1.8e+25,
+      "name": "Something With A Pattern",
+      "note": "Geometric. Inoffensive. Chosen by committee.",
+      "secs": 3500,
+      "slot": "rug",
+      "tier": 2
+    },
+    {
+      "id": "r3",
+      "cost": 2.2e+26,
+      "name": "A Rug People Comment On",
+      "note": "Two people have asked where it is from. You have not told them.",
+      "secs": 24500,
+      "slot": "rug",
+      "tier": 3
+    },
+    {
+      "id": "r4",
+      "cost": 2.6e+27,
+      "name": "Handwoven, Allegedly",
+      "note": "The invoice said handwoven. The invoice said a lot of things.",
+      "secs": 171500,
+      "slot": "rug",
+      "tier": 4
+    },
+    {
+      "id": "w1",
+      "cost": 3e+24,
+      "name": "A Motivational Print",
+      "note": "PERSEVERANCE. A canoe. Nobody has looked at it twice.",
+      "secs": 1200,
+      "slot": "art",
+      "tier": 1
+    },
+    {
+      "id": "w2",
+      "cost": 3.6e+25,
+      "name": "A Framed Certificate",
+      "note": "Completion, not achievement. The distinction is not visible from the door.",
+      "secs": 8400,
+      "slot": "art",
+      "tier": 2
+    },
+    {
+      "id": "w3",
+      "cost": 4.3e+26,
+      "name": "An Actual Painting",
+      "note": "Nobody knows who chose it. It has grown on everybody.",
+      "secs": 58800,
+      "slot": "art",
+      "tier": 3
+    },
+    {
+      "id": "w4",
+      "cost": 5.2e+27,
+      "name": "The Founder Portrait",
+      "note": "It is not Dave. Nobody will say who it is.",
+      "secs": 411600,
+      "slot": "art",
+      "tier": 4
+    }
+  ],
+  "vanity": [
+    {
+      "id": "g1",
+      "cost": 6e+23,
+      "name": "A Faint Warmth",
+      "note": "Barely there. You know it is there.",
+      "secs": 300,
+      "slot": "glow",
+      "tier": 1
+    },
+    {
+      "id": "g2",
+      "cost": 7.2e+24,
+      "name": "Employee Of The Month Sheen",
+      "note": "The particular gold of a laminated certificate.",
+      "secs": 1500,
+      "slot": "glow",
+      "tier": 2
+    },
+    {
+      "id": "g3",
+      "cost": 8.6e+25,
+      "name": "Executive Blue",
+      "note": "The colour of a screensaver in a room nobody books.",
+      "secs": 7500,
+      "slot": "glow",
+      "tier": 3
+    },
+    {
+      "id": "g4",
+      "cost": 1e+27,
+      "name": "Fire Drill Red",
+      "note": "People instinctively file toward the exit when you walk past.",
+      "secs": 37500,
+      "slot": "glow",
+      "tier": 4
+    },
+    {
+      "id": "g5",
+      "cost": 1.2e+28,
+      "name": "Server Room Green",
+      "note": "You hum slightly. Nobody has mentioned it.",
+      "secs": 187500,
+      "slot": "glow",
+      "tier": 5
+    },
+    {
+      "id": "g6",
+      "cost": 1.5e+29,
+      "name": "Unapproved Purple",
+      "note": "Not in the brand guidelines. Not addressed by the brand guidelines.",
+      "secs": 937500,
+      "slot": "glow",
+      "tier": 6
+    },
+    {
+      "id": "s1",
+      "cost": 3e+24,
+      "name": "Good Posture",
+      "note": "You are not taller. You simply take up more of the room.",
+      "secs": 900,
+      "slot": "size",
+      "tier": 1
+    },
+    {
+      "id": "s2",
+      "cost": 3.6e+25,
+      "name": "Presence",
+      "note": "People stop talking slightly before you arrive.",
+      "secs": 6000,
+      "slot": "size",
+      "tier": 2
+    },
+    {
+      "id": "s3",
+      "cost": 4.3e+26,
+      "name": "Corner Office Energy",
+      "note": "Doorways are now a consideration.",
+      "secs": 40000,
+      "slot": "size",
+      "tier": 3
+    },
+    {
+      "id": "h1",
+      "cost": 9e+23,
+      "name": "A Mug You Never Wash",
+      "note": "It has a ring in it older than most of the staff.",
+      "secs": 450,
+      "slot": "held",
+      "tier": 1
+    },
+    {
+      "id": "h2",
+      "cost": 1.1e+25,
+      "name": "A Clipboard",
+      "note": "You carry it everywhere. Nobody asks what is on it. That is the trick.",
+      "secs": 2700,
+      "slot": "held",
+      "tier": 2
+    },
+    {
+      "id": "h3",
+      "cost": 1.3e+26,
+      "name": "A Briefcase With Nothing In It",
+      "note": "Weightless. Convincing.",
+      "secs": 16000,
+      "slot": "held",
+      "tier": 3
+    },
+    {
+      "id": "h4",
+      "cost": 1.6e+27,
+      "name": "A Trophy For Something",
+      "note": "The plaque has been buffed smooth. Nobody remembers the category.",
+      "secs": 96000,
+      "slot": "held",
+      "tier": 4
+    },
+    {
+      "id": "h5",
+      "cost": 1.9e+28,
+      "name": "The Golden Stapler",
+      "note": "It does not staple. It has not stapled in years. It is beyond stapling.",
+      "secs": 576000,
+      "slot": "held",
+      "tier": 5
+    },
+    {
+      "id": "a1",
+      "cost": 4e+25,
+      "name": "Perpetual Dust Motes",
+      "note": "Lit from somewhere. There is no window on that side.",
+      "secs": 1800,
+      "slot": "aura",
+      "tier": 1
+    },
+    {
+      "id": "a2",
+      "cost": 4.8e+26,
+      "name": "A Faint Shimmer",
+      "note": "Facilities have inspected it twice and filed nothing.",
+      "secs": 12000,
+      "slot": "aura",
+      "tier": 2
+    },
+    {
+      "id": "a3",
+      "cost": 5.8e+27,
+      "name": "Small Contained Flames",
+      "note": "Signed off by nobody. Questioned by nobody.",
+      "secs": 80000,
+      "slot": "aura",
+      "tier": 3
+    }
+  ]
+}

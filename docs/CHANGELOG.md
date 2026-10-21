@@ -76,3 +76,11 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Adds free, expandable previews on the selected person's appearance, with an explicit purchase hint on the existing buy row.
 - Uses shared Body/Hat/CostumeSuit rendering so the preview and equipped floor appearance stay consistent; pauses animation within the preview only.
 - Adds actual Wardrobe gallery and desktop/phone fixture tests for every costume, recipient changes, preview without spending and purchase/equip continuity. No economy, inventory, SQL or production-player changes.
+
+## 2026-10-21: Build 158 office personality
+
+- All 34 catalog items get specific previews, with shared equipped artwork for furniture, held items, rugs, wall art and personal effects. Free expanded previews work before an item unlocks.
+- Corrects desk material finishes and adds chair mesh/lumbar/leather details. Replaces break table's ambiguous tray with donuts, mugs, chairs and a napkin.
+- Adds eight goal-based cosmetic Personnel commendations emphasizing kindness, reciprocity and collaboration alongside collection and streak milestones, plus eight light office memos.
+- New award claims derive from stored server stats; new IDs cannot be asserted by a client. Existing awards/progress are merged and retained. No currency or productivity reward changes.
+- Adds isolated PostgreSQL eligibility/auth/retention tests and phone/desktop actual UI/catalog/awards verification. Deployment and exact test evidence are recorded in the PR.
