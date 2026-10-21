@@ -45,3 +45,7 @@ Costume thumbnails and expanded try-ons must use `CostumePreview` → `Body` →
 ## Build 158 desk catalog and shared objects
 
 `FittingPreview` selects by stable slot/item ID. Furniture uses `OfficeDeskArt`, `OfficeChairArt`, `OfficeRugArt`, `OfficeWallArt`; carried objects use `HeldItemArt`, atmosphere uses `AuraArt`, and glow/presence use the actual Body styles. Catalog and office must show the same item. Keep surfaces faithful to item names; no tier/price/ownership changes. Pause motion in catalog previews only. The break table should read as shared food and coffee, with no ambiguous grey bowl. Personnel commendations display both humorous notes and concrete server-qualified goals, with no gameplay bonus.
+
+## Build 161 worn pins
+
+WornPin uses PIN_INDEX color/glyph and a bold outlined circular badge on the chest. Keep it inside pg-rig/pg-flip so motion and facing follow the character, above garment/costume art without covering the face or changing hitboxes. Beta metadata fallback describes the existing pin only; ownership remains server-controlled. Use accessible HR Wear/Remove controls and preserve leaderboard identity.
