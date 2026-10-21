@@ -40,7 +40,8 @@ for(const mode of ['desktop','mobile']){
   // Walk north until the wall cabinet is in the actual camera view.
   await page.keyboard.down('ArrowUp');await page.waitForTimeout(2100);await page.keyboard.up('ArrowUp');
   await page.keyboard.down('ArrowRight');await page.waitForTimeout(450);await page.keyboard.up('ArrowRight');
-  await page.getByText('HR Cabinet',{exact:true}).click();
+  await expect(page.locator('.pg-prompt')).toContainText('HR Cabinet');
+  await page.locator('.pg-prompt .pg-open').click();
   const panel=page.locator('.pg-panel');await expect(panel).toBeVisible({timeout:20000});
   await panel.getByRole('button',{name:/^Awards /}).click();
   await expect(panel.locator('[data-office-award]')).toHaveCount(8);
