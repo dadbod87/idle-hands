@@ -11,8 +11,8 @@ for(const size of [{width:390,height:640},{width:393,height:851},{width:844,heig
  expect(await dialog.evaluate(el=>el.contains(document.activeElement))).toBe(true);
  const before=await page.locator('.pg-room>.pg-me').last().evaluate(el=>({x:el.style.left,y:el.style.top}));await page.keyboard.down('ArrowUp');await page.waitForTimeout(150);await page.keyboard.up('ArrowUp');
  expect(await page.locator('.pg-room>.pg-me').last().evaluate(el=>({x:el.style.left,y:el.style.top}))).toEqual(before);
- await page.keyboard.press('Tab');await expect(page.locator('.pg-panel .pg-x')).toBeFocused();await page.keyboard.press('Shift+Tab');await expect(dialog.getByRole('button',{name:'Sound & feel',exact:true})).toBeFocused();
+ await page.keyboard.press('Tab');await expect(page.locator('.pg-panel .pg-x')).toBeFocused();await page.keyboard.press('Shift+Tab');await expect(dialog.getByRole('button',{name:"Walk to Dave's Office",exact:true})).toBeFocused();
  await page.keyboard.press('Tab');await expect(page.locator('.pg-panel .pg-x')).toBeFocused();await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(page.getByRole('button',{name:'Office directory',exact:true})).toBeFocused();
- if(size.width<540){await page.getByRole('button',{name:'More',exact:true}).click();await expect(page.getByRole('button',{name:'Office Nonsense',exact:true})).toBeVisible();await page.getByRole('button',{name:'Sound & feel',exact:true}).click();await expect(page.locator('.pg-panelhead')).toContainText('Sound & feel');await page.keyboard.press('Escape');}
+ if(size.width<540){await page.getByRole('button',{name:'More',exact:true}).click();await expect(page.getByRole('button',{name:'Office Nonsense',exact:true})).toBeVisible();await page.locator('.pg-bar').getByRole('button',{name:'Sound & feel',exact:true}).click();await expect(page.locator('.pg-panelhead')).toContainText('Sound & feel');await page.keyboard.press('Escape');}
  await page.screenshot({path:`test-results/mobile-hierarchy-${size.width}x${size.height}.png`,fullPage:true});await context.close();
 });
