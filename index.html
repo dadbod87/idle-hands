@@ -1413,7 +1413,7 @@ const DEED_TEXT = {
     hit: (n) => `${n} shouted you out at the all-hands. Output up 20% for an hour.` },
   cover: { label: "Cover their shift", eff: "they receive 150% of what you pay", good: true,
     mine: (n) => `You covered ${n}'s shift. They will never know what it cost.`,
-    wire: (a, b, amt) => `${a} quietly covered ${b}'s shift${amt ? ` (${fmt(amt)} PP)` : ""}.`,
+    wire: (a, b, amt) => `${a} quietly covered ${b}'s shift${amt ? ` (${fmt(amt)} BW)` : ""}.`,
     hit: (n) => `${n} covered your shift. That is real money.` },
   meeting: { label: "Book a recurring meeting", eff: "−35% output for 20 min", good: false,
     mine: (n) => `You booked ${n} into a recurring meeting. This is who you are now.`,
@@ -1427,9 +1427,9 @@ const DEED_TEXT = {
     mine: (n) => `You took ${n}'s chair. You are sitting in it right now.`,
     wire: (a, b) => `${a} took ${b}'s good chair.`,
     hit: (n) => `${n} took your good chair. Output down 20% for 45 minutes.` },
-  credit: { label: "Take credit for their work", eff: "steal 12% of their loose PP", good: false,
+  credit: { label: "Take credit for their work", eff: "steal 12% of their loose BW", good: false,
     mine: (n) => `You presented ${n}'s work as your own. Leadership was impressed.`,
-    wire: (a, b, amt) => `${a} took credit for ${b}'s work. ${fmt(amt)} PP changed hands.`,
+    wire: (a, b, amt) => `${a} took credit for ${b}'s work. ${fmt(amt)} BW changed hands.`,
     hit: (n) => `${n} took credit for your work and walked off with the points.` },
   dress: { label: "Put a costume on them", eff: "45 minutes, publicly", good: false, elsewhere: true,
     mine: (n, c) => `You put ${c || "something"} on ${n}. They have not noticed yet.`,
@@ -1465,8 +1465,8 @@ const COSTUMES = {
 const ACHV = [
   { id: "a1", name: "Badged In", note: "Show up at all.", test: (s) => s.lifetime > 0 },
   { id: "a2", name: "First Hire", note: "Requisition anything.", test: (s) => Object.keys(s.owned || {}).length > 0 },
-  { id: "a3", name: "Thousandaire", note: "10K lifetime Patron Points.", test: (s) => s.lifetime >= 1e4 },
-  { id: "a4", name: "Six Figures Of Nothing", note: "10M lifetime PP.", test: (s) => s.lifetime >= 1e7 },
+  { id: "a3", name: "Thousandaire", note: "10K lifetime Busywork.", test: (s) => s.lifetime >= 1e4 },
+  { id: "a4", name: "Six Figures Of Nothing", note: "10M lifetime BW.", test: (s) => s.lifetime >= 1e7 },
   { id: "a5", name: "Middle Management", note: "Employ 10 managers.", test: (s) => (s.owned?.manager || 0) >= 10 },
   { id: "a6", name: "Caffeine Dependent", note: "Own 15 coffee machines.", test: (s) => (s.owned?.coffee || 0) >= 15 },
   { id: "a7", name: "Good Egg", note: "Do 5 kind things.", test: (s) => s.goodwill >= 5 },
@@ -1475,8 +1475,8 @@ const ACHV = [
   { id: "a10", name: "Chair Custodian", note: "Have 3 chairs stolen from you.", test: (s) => (s.hits?.chair || 0) >= 3 },
   { id: "a11", name: "Quick Hands", note: "Catch the good chair 5 times.", test: (s) => s.grabs >= 5 },
   { id: "a12", name: "Restructured", note: "Restructure once.", test: (s) => s.equity > 0 },
-  { id: "a13", name: "Vested", note: "Hold 25 equity.", test: (s) => s.equity >= 25 },
-  { id: "a14", name: "Billion With A B", note: "1Qa lifetime PP.", test: (s) => s.lifetime >= 1e15 },
+  { id: "a13", name: "Tenured", note: "Hold 25 Seniority.", test: (s) => s.equity >= 25 },
+  { id: "a14", name: "Billion With A B", note: "1Qa lifetime BW.", test: (s) => s.lifetime >= 1e15 },
   { id: "a15", name: "Beloved", note: "Receive 10 kind things.", test: (s) => s.kind_received >= 10 },
   { id: "a16", name: "Fired Guy", note: "Have 10 unkind things done to you.",
     test: (s) => Object.keys(s.hits || {}).filter((k) => DEED_TEXT[k] && !DEED_TEXT[k].good)
@@ -1493,7 +1493,7 @@ const ACHV = [
   { id: "a26", name: "Three-Peat", note: "Win three weeks.", test: (s) => s.trophies >= 3 },
   { id: "a27", name: "I Don't Hate It", note: "Own 25 of any one thing.",
     test: (s) => Object.values(s.owned || {}).some((v) => v >= 25) },
-  { id: "a28", name: "Theoretically", note: "A sextillion lifetime PP.", test: (s) => s.lifetime >= 1e21 },
+  { id: "a28", name: "Theoretically", note: "A sextillion lifetime BW.", test: (s) => s.lifetime >= 1e21 },
   { id: "a29", name: "Say More Words", note: "Do 25 things to other people.",
     test: (s) => Object.values(s.tally || {}).reduce((a, b) => a + b, 0) >= 25 },
   { id: "a29b", name: "Merican Made", note: "Have a work beer.", test: (s) => (s.beers || 0) >= 1 },
@@ -1663,7 +1663,7 @@ const FUND_TIERS = [
 
 const FIXTURES = [
   { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 760, y: 22, w: 216, h: 86 },
-  { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Patron Points leaderboard", x: 1040, y: 14, w: 330, h: 100 },
+  { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Busywork leaderboard", x: 1040, y: 14, w: 330, h: 100 },
   { id: "portrait", panel: "standings", label: "Employee Of The Week", sub: "Whoever is winning right now", x: 1430, y: 12, w: 158, h: 108 },
   { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1640, y: 16, w: 150, h: 96 },
   { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 1990, y: 8, w: 170, h: 114 },
@@ -2099,7 +2099,7 @@ function roleFor(lt) {
   if (lt < 5e18) return "VP, Special Projects";
   if (lt < 1e21) return "Chief Officer of Officers";
   if (lt < 1e24) return "Founder, retroactively";
-  return "Majority Shareholder, allegedly";
+  return "Senior Meeting Attendee, allegedly";
 }
 function ago(t) {
   const s = Math.max(1, Math.round((Date.now() - new Date(t).getTime()) / 1000));
@@ -2356,91 +2356,48 @@ function countdown(ms) {
    not be the only thing standing between a coworker and confusion.
    ================================================================== */
 
-const AGREEMENT_VERSION = "PP-AWARD-1.0";
+const AGREEMENT_VERSION = "BW-ORIENTATION-1.0";
 
 const PAPERS = [
   {
-    id: "award",
-    title: "Patron Point Award Agreement",
-    subtitle: "Non-qualified · Non-transferable · Non-existent",
+    id: "busywork",
+    title: "Certificate of Occupational Busyness",
+    subtitle: "Form BW-001 · Department of Unnecessary Productivity",
     body: [
-      ["1. Grant",
-        "The Patron Group (the \u201cCompany\u201d) hereby awards to the undersigned (the \u201cHolder,\u201d " +
-        "\u201cParticipant,\u201d or \u201cyou,\u201d though the Company will more likely just use your first name) " +
-        "an unlimited number of Patron Points (\u201cPP\u201d), subject to the terms below and to the mood " +
-        "of the Company generally."],
-      ["2. Nature of the Award",
-        "PP constitute a beneficial interest in the ongoing enterprise of the Company. PP are widely " +
-        "understood by holders to be \u201cbasically stock.\u201d The Company has never confirmed this and " +
-        "has never especially denied it either."],
-      ["3. Distributions",
-        "Distributions are made monthly, in an amount determined by how well the Company performed " +
-        "that month, as measured by the Company, using methodology maintained by the Company, in a " +
-        "spreadsheet nobody has ever been shown."],
-      ["4. Vesting",
-        "PP vest continuously, including while you are asleep, at lunch, in a meeting you did not " +
-        "need to attend, or standing in the parking lot deciding whether to come back inside."],
-      ["5. Accrual During Absence",
-        "The Holder shall continue to accrue PP for a period not exceeding eight (8) consecutive " +
-        "hours away from the Floor. Beyond eight hours the Company will assume you have gone home, " +
-        "and accrual shall cease, as a matter of dignity."],
-      ["6. Dilution",
-        "The Company reserves the right to award PP to additional persons, thereby diluting your " +
-        "holding. The Company further reserves the right to describe this dilution as \u201cgrowth.\u201d"],
-      ["7. Transfer Restrictions",
-        "PP may not be sold, pledged, gifted, bequeathed, or wagered. PP may, however, be taken " +
-        "from you by a coworker who presents your work as their own, which the Company considers " +
-        "an entirely different thing and declines to characterize as theft."],
-      ["8. Forfeiture Events",
-        "Your award may be reduced upon: (a) accumulation of five (5) or more points of Heat on " +
-        "your file; (b) removal of a chair identified as The Good Chair; (c) initiation of a " +
-        "reply-all thread exceeding forty (40) participants; or (d) any conduct the Owner describes " +
-        "aloud as \u201chuh.\u201d"],
-      ["9. Clawback",
-        "In the event a distribution is later determined to have been made in error, the Company " +
-        "will not seek recovery, and will instead mention it at a quarterly all-hands in a way that " +
-        "makes everyone uncomfortable."],
-      ["10. Restructuring",
-        "The Holder may elect at any time to restructure their department, surrendering all " +
-        "accumulated PP in exchange for Equity, which is like PP but permanent and smugger. " +
-        "Restructuring does not affect your standing on the Whiteboard and shall not be described " +
-        "in exit paperwork as \u201cquitting.\u201d"],
-    ],
+      ["1. Assignment of Busywork",
+        "The undersigned is authorized to generate unlimited Busywork (BW), whether or not any actual work has occurred. Busywork is a fictional game score, not compensation."],
+      ["2. Measurement of Productivity",
+        "Busywork accumulates during meetings, coffee breaks, and periods of intense contemplation. No independent observer has managed to measure its usefulness."],
+      ["3. Delegation",
+        "Additional staff and office equipment may be acquired to generate even more Busywork. Their effectiveness shall be reported in impressively formatted charts."],
+      ["4. Allocation",
+        "Busywork can be spent on upgrades, office favors, and other questionable productivity initiatives. Nobody is required to explain the purchase order."],
+      ["5. Reorganization",
+        "A player may restructure, exchanging their current Busywork for Seniority. Seniority is a permanent game bonus. The paperwork for this process is longer than the process."],
+      ["6. Acknowledgment",
+        "Busywork and Seniority exist only inside Idle Hands. They have no cash value, employment status, ownership rights, or connection to the company's actual operations."]
+    ]
   },
   {
-    id: "nda",
-    title: "Mutual Non-Disclosure Agreement",
-    subtitle: "Confidentiality · Discretion · Pineapple",
+    id: "office",
+    title: "Office Handbook Addendum",
+    subtitle: "Coffee · Chairs · Pineapple",
     body: [
-      ["11. Confidential Information",
-        "\u201cConfidential Information\u201d includes but is not limited to: the contents of the fridge " +
-        "and their rightful ownership; the identity of whoever fixed the printer; the whereabouts " +
-        "of The Good Chair; and anything said in the eleven seconds after somebody says " +
-        "\u201cdon't hate me, but\u2014\u201d"],
-      ["12. The Pineapple Protocol",
-        "Upon any party's utterance of the word \u201cpineapple,\u201d all parties shall immediately " +
-        "cease the current conversation and commence an unrelated one, preferably about the " +
-        "weather. Continuing the original conversation after a pineapple is a material breach. " +
-        "Saying \u201cwhat?\u201d after a pineapple is a material breach and also rude."],
-      ["13. Non-Disparagement",
-        "The Holder agrees not to disparage the Company, the Owner, the second coffee machine, or " +
-        "the plastic plant by reception, which is doing its best."],
-      ["14. Acknowledgement of Unreality",
-        "The Holder acknowledges that Patron Points are a fictional currency in an office game; " +
-        "that this document is a joke and is not a contract; that it grants no equity, ownership, " +
-        "compensation, or claim of any kind; and that nothing herein has any effect whatsoever on " +
-        "the Holder's actual employment, actual pay, or actual standing at The Patron Group. " +
-        "Nobody owes you money. Please do not print this and take it to a lawyer, or to Dave."],
-      ["15. Entire Agreement",
-        "This document constitutes the entire agreement between the parties, supersedes all prior " +
-        "understandings, and is governed by the laws of the break room."],
-    ],
-  },
+      ["7. Confidential Information",
+        "The identity of whoever fixed the printer, the whereabouts of The Good Chair, and the last person to refill the coffee machine are classified as office mysteries."],
+      ["8. The Pineapple Protocol",
+        "Upon hearing the word pineapple, participants may change the subject to the weather. Nobody is required to explain why."],
+      ["9. Workplace Etiquette",
+        "Players may exchange virtual office favors and harmless pranks. A coffee offered in-game does not guarantee coffee in real life."],
+      ["10. Entirely Fictional",
+        "This is a comedy game, not an employment document or legal agreement. The signature below is only part of the game's onboarding and has no effect on real-world employment, pay, or company policies."]
+    ]
+  }
 ];
 
 const CLOSING_LINE =
-  "By typing your name below you acknowledge that you have read the foregoing, or have scrolled " +
-  "past it convincingly, and that you intend to begin earning immediately.";
+  "By typing your name below, you acknowledge that this is fictional game paperwork, " +
+  "and that you are ready to begin generating an entirely unnecessary amount of Busywork.";
 
 
 /* ===== lib/sound.js ===== */
@@ -3639,15 +3596,15 @@ function PatronFloor() {
         <Face src={me?.avatar_url} name={me?.name} size={40} />
         <div className="pg-hudid">
           <div className="pg-hudname">{me?.name}</div>
-          <div className="pg-hudrole">{roleFor(me?.week_pp || 0)}{me?.equity ? ` · ${me.equity} equity` : ""}</div>
+          <div className="pg-hudrole">{roleFor(me?.week_pp || 0)}{me?.equity ? ` · ${me.equity} Seniority` : ""}</div>
         </div>
         <div className="pg-hudpp">
           <div className="pg-ppnum">{fmt(pp)}</div>
-          <div className="pg-pplabel">Patron Points</div>
+          <div className="pg-pplabel">Busywork</div>
           <div className="pg-ppsub">
             <span className="pg-tag plain"
                   data-tip={`Everything on your file combined: ×${(liveMult(me, rateCtx) * evMult).toFixed(2)} of a base ${fmt(calcRate(me, cat))}/s`}>
-              earning {fmt(rate)} PP every second
+              earning {fmt(rate)} BW every second
             </span>
             {(me?.buffs || []).filter((b) => new Date(b.until) > new Date()).map((b, i) => (
               <span key={i} className={"pg-tag " + (b.mult > 1 ? "good" : "bad")}
@@ -3666,7 +3623,7 @@ function PatronFloor() {
             )}
             {me?.equity > 0 && (
               <span className="pg-tag good"
-                    data-tip={`+${(me.equity * 3).toFixed(0)}% output from ${me.equity} equity (3% each). Resets at the end of the week.`}>
+                    data-tip={`+${(me.equity * 3).toFixed(0)}% output from ${me.equity} Seniority (3% each). Resets at the end of the week.`}>
                 ▲ {me.equity} equity
               </span>
             )}
@@ -3853,7 +3810,7 @@ function PatronFloor() {
                             {p.ooo && <span className="pg-ooo">{p.ooo}</span>}
                             {(deptName(cat, p.dept) || jobFor(p.name)) &&
                               <span className="pg-job">{deptName(cat, p.dept) || jobFor(p.name)}</span>}
-                            <span>{fmt(p.week_pp || 0)} PP</span></>
+                            <span>{fmt(p.week_pp || 0)} BW</span></>
                         : <b className="pg-vacant">Vacant</b>}
                 </div>
                 <div className={"pg-officedesk" + (mine ? " mine" : "") + (chances ? " ghost" : "")}
@@ -3941,7 +3898,7 @@ function PatronFloor() {
 
       <div className="pg-bar">
         <button className={"pg-work" + (atDesk ? "" : " away")} onClick={doWork}>
-          {atDesk ? <>Do actual work <em>+{fmt(clickPow)} PP</em></>
+          {atDesk ? <>Do actual work <em>+{fmt(clickPow)} BW</em></>
                   : <>Go to your desk <em>work happens there</em></>}
         </button>
         <div className="pg-emotes">
@@ -4166,7 +4123,7 @@ function PatronFloor() {
           <p>{streakCard.streak === 1
             ? "You badged in. The record now exists."
             : `${streakCard.streak} days running. HR has noticed, in the way HR notices things.`}</p>
-          <p className="pg-small">+{fmt(streakCard.gained)} PP. Three days of grace, so a weekend
+          <p className="pg-small">+{fmt(streakCard.gained)} BW. Three days of grace, so a weekend
             won't cost you the streak.</p>
           <button className="pg-btn" onClick={() => setStreakCard(null)}>Get to work</button>
         </Modal>
@@ -4176,7 +4133,7 @@ function PatronFloor() {
         <Modal onClose={() => setReport(null)}>
           <div className="pg-stamp">While you were out</div>
           <p>Away about {report.mins} minutes. Your desk kept working.</p>
-          <p className="pg-big">+{fmt(report.earned)} PP</p>
+          <p className="pg-big">+{fmt(report.earned)} BW</p>
           <p className="pg-small">That is the whole idea of this game: you earn while you're gone.</p>
           <button className="pg-btn" onClick={() => setReport(null)}>Back to it</button>
         </Modal>
@@ -4192,7 +4149,7 @@ function PatronFloor() {
                 <Face name={g.from} size={38} />
                 <div>
                   <b>{g.from}</b>
-                  <span className={T.good ? "good" : "bad"}>{T.eff}{g.amount ? ` · ${fmt(g.amount)} PP` : ""}</span>
+                  <span className={T.good ? "good" : "bad"}>{T.eff}{g.amount ? ` · ${fmt(g.amount)} BW` : ""}</span>
                   <em>{T.hit(g.from, COSTUMES[g.detail]?.name)}</em>
                 </div>
               </div>
@@ -4251,7 +4208,7 @@ function blocked(x, y) {
 function prettyError(e) {
   const raw = e?.message || e?.error_description || e?.details || String(e || "");
   const m = raw.toLowerCase();
-  if (m.includes("afford")) return "Not enough Patron Points.";
+  if (m.includes("afford")) return "Not enough Busywork.";
   if (m.includes("cooling")) return "Cooling off. One office favor at a time.";
   if (m.includes("goodwill")) return "Dave asks what you've done for anyone lately.";
   if (m.includes("clear your file")) return "Clear your file first. Read the room.";
@@ -4263,7 +4220,7 @@ function prettyError(e) {
   if (m.includes("unlocked")) return "Not unlocked yet — hire more of that first.";
   if (m.includes("already owned")) return "You already have that one.";
   if (m.includes("maxed")) return "That's maxed out.";
-  if (m.includes("equity")) return "Not enough equity.";
+  if (m.includes("equity")) return "Not enough Seniority.";
   if (m.includes("closed")) return "The office is closed to new staff.";
   if (m.includes("full")) return "The office is full.";
   if (m.includes("fetch") || m.includes("network") || m.includes("failed to"))
@@ -4601,7 +4558,7 @@ function FixtureArt({ id, board, tierPct }) {
           <Face src={anyone ? top.avatar_url : null} name={anyone ? top.name : "?"} size={54} />
         </div>
         <div className="pg-portraitplate">{anyone ? top.name : "VACANT"}</div>
-        {anyone && <div className="pg-portraitpp">{fmt(top.week_pp)} PP</div>}
+        {anyone && <div className="pg-portraitpp">{fmt(top.week_pp)} BW</div>}
       </div>
     );
   }
@@ -4723,7 +4680,7 @@ function Help({ onClose, rate }) {
     <Modal onClose={onClose}>
       <div className="pg-stamp">Idle Hands</div>
       <h3 className="pg-helph">The points come to you. That's the idle part.</h3>
-      <p className="pg-small">You're earning <b>{fmt(rate)} PP per second</b> right now, and you'll
+      <p className="pg-small">You're earning <b>{fmt(rate)} BW per second</b> right now, and you'll
         keep earning it with this tab closed, for up to 8 hours away.</p>
 
       <div className="pg-helpsub">Your first five minutes</div>
@@ -4834,11 +4791,11 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
   return (
     <>
       <div className="pg-earnbar">
-        Your desk earns <b>{fmt(rate)} PP/sec</b> — that's <b>{fmt(rate * 3600)} PP</b> an hour,
+        Your desk earns <b>{fmt(rate)} BW/sec</b> — that's <b>{fmt(rate * 3600)} BW</b> an hour,
         whether this tab is open or not. Buy more staff to raise it.
       </div>
       <Tabsy tabs={[["hire", "Requisitions"], ["ups", "Approvals"],
-                    ["today", "Today"], ["restr", "Equity"], ["cat", "Catalogue"]]}>
+                    ["today", "Today"], ["restr", "Seniority"], ["cat", "Catalogue"]]}>
         {(t) => t === "cat" ? (
           <Catalogue cat={cat} me={me} pp={pp} rate={rate} onFitting={onFitting}
                      pins={pins} onPin={onPin} onWear={onWear} />
@@ -4856,7 +4813,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
                     <span>{hidden ? "Keep earning." : it.note}</span>
                   </span>
                   <span className="pg-right">
-                    <b>{fmt(c)} PP</b>
+                    <b>{fmt(c)} BW</b>
                     <span>+{fmt(it.rate * itemMult(ups, cat.upgrades, it.id))}/sec</span>
                   </span>
                 </button>
@@ -4890,11 +4847,11 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
             }} />
         ) : (
           <div className="pg-pad">
-            <p>Restructuring wipes your desk: points, hires and approvals all go. Your lifetime PP
+            <p>Restructuring wipes your desk: points, hires and approvals all go. Your lifetime BW
               and your place on the whiteboard stay exactly where they are.</p>
-            <p>You keep <b>equity</b> — a permanent <b>+3%</b> to everything, per point, forever.</p>
-            <p className="pg-big">{avail} equity available</p>
-            <p className="pg-small">You hold {me?.equity || 0}. Next point at {fmt(Math.pow(10, (avail + 1) / 1.6) * 1e9)} PP this cycle.</p>
+            <p>You keep <b>Seniority</b> — a permanent <b>+3%</b> to everything, per point, forever.</p>
+            <p className="pg-big">{avail} Seniority available</p>
+            <p className="pg-small">You hold {me?.equity || 0} Seniority. Next point at {fmt(Math.pow(10, (avail + 1) / 1.6) * 1e9)} BW this cycle.</p>
             <button className="pg-btn danger" disabled={avail < 1} onClick={onRestructure}>
               Restructure the department
             </button>
@@ -4906,7 +4863,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
           </div>
         )}
       </Tabsy>
-      <div className="pg-note">Clicking "Do actual work" gives {fmt(clickPow)} PP. Useful early,
+      <div className="pg-note">Clicking "Do actual work" gives {fmt(clickPow)} BW. Useful early,
         irrelevant later — the staff are the point.</div>
     </>
   );
@@ -4949,7 +4906,7 @@ function Standings({ board, me, fund, feuds = [] }) {
                 {(p.heat || 0) >= HEAT_LIMIT ? " · under review" : ""}</span>
             </span>
             <span className="pg-right">
-              <b>{fmt((tab === "week" ? p.week_pp : p.lifetime) || 0)} PP</b>
+              <b>{fmt((tab === "week" ? p.week_pp : p.lifetime) || 0)} BW</b>
               <span>{tab === "week" ? "this week" : "lifetime"}</span>
             </span>
           </div>
@@ -5017,7 +4974,7 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit, prices })
                 <span className={"pg-dot " + (good ? "good" : "bad")} />
                 <span className="pg-main"><b>{DEED_TEXT[k].label}</b><span>{DEED_TEXT[k].eff}</span></span>
                 <span className="pg-right"><b>{fmt(price)}</b>
-                  <span>{cool > 0 ? "cooling off" : pp < price ? "can't afford" : "PP"}</span></span>
+                  <span>{cool > 0 ? "cooling off" : pp < price ? "can't afford" : "BW"}</span></span>
               </button>
             );
           })}
@@ -5067,14 +5024,14 @@ function Owner({ me, board, lifetime, pp, cool, cat, prices, onMeeting, onRaise,
                 disabled={heat <= 0 || pp < meetingCost} onClick={onMeeting}>
           <span className="pg-dot good" />
           <span className="pg-main"><b>Take the meeting</b><span>Own it. Clears every point of heat.</span></span>
-          <span className="pg-right"><b>{fmt(meetingCost)}</b><span>PP</span></span>
+          <span className="pg-right"><b>{fmt(meetingCost)}</b><span>BW</span></span>
         </button>
         <button className={"pg-row alt" + (heat > 0 || (me?.goodwill || 0) < 3 || pp < raiseCost ? " poor" : "")}
                 disabled={heat > 0 || (me?.goodwill || 0) < 3 || pp < raiseCost} onClick={onRaise}>
           <span className="pg-dot good" />
           <span className="pg-main"><b>Ask for a raise</b>
             <span>+2% output permanently. Needs a clean file and 3 goodwill.</span></span>
-          <span className="pg-right"><b>{fmt(raiseCost)}</b><span>PP</span></span>
+          <span className="pg-right"><b>{fmt(raiseCost)}</b><span>BW</span></span>
         </button>
       </div>
       <div className="pg-note">Or don't own it at all:</div>
@@ -5102,7 +5059,7 @@ function Owner({ me, board, lifetime, pp, cool, cat, prices, onMeeting, onRaise,
             <span className="pg-main"><b>Pin it on {target.name}</b>
               <span>Your heat goes to zero. Three points land on theirs. The wire names you.</span></span>
             <span className="pg-right"><b>{blameCost == null ? "\u2026" : fmt(blameCost)}</b>
-              <span>PP</span></span>
+              <span>BW</span></span>
           </button>
         </div>
       )}
@@ -5134,7 +5091,7 @@ function Wire({ wire, feed, lifetime, onPineapple, testers, prices }) {
       <div className="pg-note">Everything anyone does to anyone lands here, with names attached.</div>
       <div className="pg-pad">
         <button className="pg-btn danger" onClick={onPineapple}>
-          Say pineapple <em>{fmt(prices?.pineapple ?? Math.max(200, lifetime * 0.08))} PP</em>
+          Say pineapple <em>{fmt(prices?.pineapple ?? Math.max(200, lifetime * 0.08))} BW</em>
         </button>
         <div className="pg-fine">Scrubs your name off your most recent entry. The deed still
           happened — the wire just says "Someone".</div>
@@ -5198,7 +5155,7 @@ function SpendFile({ me, spend, pins, onWear, onPet }) {
       })()}
 
       <h4 className="pg-h4">Your Collection</h4>
-      <div className="pg-spendrow"><b>Spent on the catalogue</b><span>{fmt(mine?.spent || 0)} PP</span></div>
+      <div className="pg-spendrow"><b>Spent on the catalogue</b><span>{fmt(mine?.spent || 0)} BW</span></div>
       <div className="pg-spendrow"><b>Personal effects</b><span>{mine?.vanity || 0} of 4 slots</span></div>
       <div className="pg-spendrow"><b>Office fittings</b><span>{mine?.kit || 0} of 4 slots</span></div>
       <div className="pg-spendrow"><b>Pins collected</b>
@@ -5231,7 +5188,7 @@ function SpendFile({ me, spend, pins, onWear, onPet }) {
           <div key={r.name} className={"pg-row" + (i % 2 ? " alt" : "")}>
             <span className="pg-main"><b>{i + 1}. {r.name}</b>
               <span>{r.pieces} piece{r.pieces === 1 ? "" : "s"}</span></span>
-            <span className="pg-right"><b>{fmt(r.spent)}</b><span>PP spent</span></span>
+            <span className="pg-right"><b>{fmt(r.spent)}</b><span>BW spent</span></span>
           </div>
         ))}
       </div>
@@ -5277,9 +5234,9 @@ function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear, onPet }) {
       ) : t === "file" ? (
         <>
           <div className="pg-stats">
-            <div><b>{fmt(lifetime)}</b><span>lifetime PP</span></div>
+            <div><b>{fmt(lifetime)}</b><span>lifetime BW</span></div>
             <div><b>{roleFor(me?.week_pp || 0)}</b><span>title this week</span></div>
-            <div><b>{me?.equity || 0}</b><span>equity · +{(me?.equity || 0) * 3}%</span></div>
+            <div><b>{me?.equity || 0}</b><span>Seniority · +{(me?.equity || 0) * 3}%</span></div>
             <div><b>{me?.raises || 0}</b><span>raises · +{(me?.raises || 0) * 2}%</span></div>
             <div><b>{me?.goodwill || 0}</b><span>goodwill · +{Math.min(me?.goodwill || 0, 30)}%</span></div>
             <div><b>{me?.notoriety || 0}</b><span>notoriety</span></div>
@@ -5327,7 +5284,7 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
         <p className="pg-small">{g.blurb}</p>
         <div className="pg-progress"><i style={{ width: pct + "%" }} /></div>
         <p className="pg-small">
-          <b>{fmt(office?.total || 0)}</b> of {fmt(office?.target || 0)} PP earned by the office
+          <b>{fmt(office?.total || 0)}</b> of {fmt(office?.target || 0)} BW earned by the office
           this week. Individual scores don't matter here — only the pile.
         </p>
         {office?.hit
@@ -5340,7 +5297,7 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
         </div>
       </div>
       <div className="pg-earnbar">
-        Everyone's lifetime Patron Points, pooled. Nobody spends it — it decides what the office
+        Everyone's lifetime Busywork, pooled. Nobody spends it — it decides what the office
         gets. <b>Every tier the office passes gives every single person a permanent +3% to
         output.</b> Nine people earning slowly beats one person earning fast.
       </div>
@@ -5352,7 +5309,7 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
         <div className="pg-progress">
           <i style={{ width: Math.min(100, (fund / nextTier.at) * 100) + "%" }} />
         </div>
-        <p className="pg-small"><b>{fmt(fund)}</b> of {fmt(nextTier.at)} PP toward
+        <p className="pg-small"><b>{fmt(fund)}</b> of {fmt(nextTier.at)} BW toward
           <b> {nextTier.label}</b></p>
       </div>
       <div className="pg-list">
@@ -5363,7 +5320,7 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
               <span className="pg-ct">{got ? "✓" : "·"}</span>
               <span className="pg-main">
                 <b>{t.label}</b>
-                <span>{fmt(t.at)} PP pooled</span>
+                <span>{fmt(t.at)} BW pooled</span>
               </span>
               <span className="pg-right">
                 <b className={got ? "pg-got" : ""}>+3%</b>
@@ -5401,7 +5358,7 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
                   setVending(false);
                 }, 1100);
               }}>
-        {vending ? "..." : pp < vendPrice ? "Not enough for a pull" : "Pull — " + fmt(vendPrice) + " PP"}
+        {vending ? "..." : pp < vendPrice ? "Not enough for a pull" : "Pull — " + fmt(vendPrice) + " BW"}
       </button>
       <div className="pg-fine">One pull every ten minutes. Nine things can come out and one of
         them is nothing at all. The machine does not negotiate.</div>
@@ -5774,12 +5731,12 @@ function Recap({ season }) {
           : <>Nobody earned anything. Bleak.</>}
       </h3>
       {season.winner_name && (
-        <p className="pg-small">{fmt(season.top)} Patron Points in one week. That's a trophy, permanently.</p>
+        <p className="pg-small">{fmt(season.top)} Busywork in one week. That's a trophy, permanently.</p>
       )}
       <div className="pg-recap">
         {row("Incidents logged", st.total ? `${st.total} things happened to somebody` : null)}
         {row("Biggest heist", st.heist
-          ? `${st.heist.actor} took credit for ${st.heist.target}'s work — ${fmt(st.heist.amount)} PP` : null)}
+          ? `${st.heist.actor} took credit for ${st.heist.target}'s work — ${fmt(st.heist.amount)} BW` : null)}
         {row("Ongoing situation", st.feud && st.feud.n >= 3
           ? `${st.feud.a} and ${st.feud.b} exchanged ${st.feud.n} hostilities` : null)}
         {row("Wardrobe department", st.stylist
@@ -5897,7 +5854,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
               {committed ? "Committed" : "Commit to the bit"} <em>+25% output</em>
             </button>
             <button className="pg-btn danger" onClick={onChange}>
-              Change clothes <em>{fmt(prices?.change ?? Math.max(200, lifetime * 0.03))} PP</em>
+              Change clothes <em>{fmt(prices?.change ?? Math.max(200, lifetime * 0.03))} BW</em>
             </button>
           </div>
           <div className="pg-fine">
@@ -5934,7 +5891,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
           </div>
           <button className="pg-btn pg-wide" disabled={nick.trim().length < 2}
                   onClick={() => { onNickname(target, nick.trim()); setNick(""); }}>
-            Make it stick — {fmt(prices?.nickname ?? Math.max(100, lifetime * 0.012))} PP
+            Make it stick — {fmt(prices?.nickname ?? Math.max(100, lifetime * 0.012))} BW
           </button>
           <div className="pg-fine">Hangs under their name for an hour, for everybody. They
             can't take it off, but somebody else can replace it. Keep it office-safe.</div>
@@ -5965,7 +5922,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
                   {!COSTUMES[c.id]?.hat && <i style={{ background: COSTUMES[c.id]?.shirt }} />}</span>
                 <span className="pg-main"><b>{c.name}</b><span>{COSTUMES[c.id]?.note}</span></span>
                 <span className="pg-right"><b>{fmt(price)}</b>
-                  <span>{cool > 0 ? "cooling off" : pp < price ? "can't afford" : "PP"}</span></span>
+                  <span>{cool > 0 ? "cooling off" : pp < price ? "can't afford" : "BW"}</span></span>
               </button>
             );
           })}
@@ -6230,8 +6187,8 @@ function SignPapers({ name, onSigned }) {
       <div className="pg-papershead">
         <PatronMark size={30} wordmark={false} />
         <div>
-          <b>Before you can earn</b>
-          <span>Two documents. Standard. Everyone signs them.</span>
+          <b>Before you generate Busywork</b>
+          <span>Two fictional office forms. No legal paperwork involved.</span>
         </div>
       </div>
 
@@ -6271,7 +6228,7 @@ function SignPapers({ name, onSigned }) {
       <p className="pg-closing">{CLOSING_LINE}</p>
       {err && <div className="pg-fine pg-err">{err}</div>}
       <button className="pg-work big" disabled={!ack || sig.trim().length < 2 || busy} onClick={sign}>
-        {busy ? "Filing…" : "Sign and start earning"}
+        {busy ? "Filing…" : "Sign and start generating Busywork"}
       </button>
     </div>
   );
@@ -6379,8 +6336,8 @@ function EquityShop({ me, cat, onBuy }) {
   const have = (id) => Number((me?.perks || {})[id] || 0);
   return (
     <div className="pg-equity">
-      <div className="pg-mailhead">Spend equity</div>
-      <p className="pg-small">Equity is the only thing that survives a restructure. You can hold it
+      <div className="pg-mailhead">Spend Seniority</div>
+      <p className="pg-small">Seniority is the only thing that survives a restructure. You can hold it
         for the multiplier, or spend it here on things that change how the job works.</p>
       <div className="pg-list">
         {perks.map((k, i) => {
@@ -6426,7 +6383,7 @@ function Gate({ onNew }) {
       <h1 className="pg-h1">Idle Hands</h1>
       <p className="pg-tagline">An idle office game. It plays while you work.</p>
       <ul className="pg-pitch">
-        <li><b>Patron Points pile up every second</b> — at your desk, at lunch, overnight,
+        <li><b>Busywork pile up every second</b> — at your desk, at lunch, overnight,
           tab closed. Come back and collect.</li>
         <li><b>Spend them on staff who earn faster.</b> Interns, then managers, then an
           offshore office you never visit.</li>
