@@ -1850,11 +1850,20 @@ function chanceNickname(guest){
  if(!pool)return null;
  return pool[Math.abs(guest.bucket)%pool.length];
 }
+// Equal-probability visitor lottery every 4 minutes. A shared deterministic
+// hash makes all clients pick the same visitor; no alphabetical priority.
 function officeVisitorNow(t,ch,dv){
  if(ch&&dv)return null;
- const active=OFFICE_CAST.map(c=>officeVisitorAt(c,t)).filter(Boolean);
- active.sort((a,b)=>a.id.localeCompare(b.id));
- const v=active[0]||null;
+ const period=4*60000,slot=Math.floor(t/period),into=t-slot*period;
+ const duration=46000;
+ if(into>=duration)return null;
+ const hash=(n)=>{let x=n|0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);return (x^(x>>>16))>>>0;};
+ const pick=hash(slot)%OFFICE_CAST.length;
+ const c=OFFICE_CAST[pick];
+ const legs=c.path.length-1,leg=Math.min(legs-1,Math.floor(into/(duration/legs)));
+ const a=c.path[leg],b=c.path[leg+1],pct=(into-leg*duration/legs)/(duration/legs);
+ const v={...c,bucket:slot,x:a[0]+(b[0]-a[0])*pct,y:a[1]+(b[1]-a[1])*pct,
+   facing:b[0]>=a[0]?1:-1,line:c.lines[hash(slot+31)%c.lines.length],leaving:into>duration-8000};
  if(v&&v.id==="jess"&&ch)v.line=(Math.abs(v.bucket)%2===0 ? "Lenny! I guessed your middle name once and I am keeping it." : "Chancellor! We need to talk.");
  if(v&&v.id==="john"&&ch)v.line="Chance! Have you seen your life partner Matt around? I started that joke.";
  if(v&&v.id==="matt"&&ch)v.line=(Math.abs(v.bucket)%2===0 ? "There is my life partner Chance. Our coffee agreement remains binding." : "Chance, as your life partner, I must refer you to section four.");
