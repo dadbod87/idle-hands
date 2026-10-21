@@ -2,6 +2,11 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-21: Build 165 — familiar faces
+- Owner explicitly reversed anonymization: original first-name cast, roles, lounge, brand/mascot, catalog, memo and raise-message names restored. Internal IDs and all player data remain intact. Active agent rule and CI guard now protect approved original names; historical records remain unchanged.
+- Calendar/plant rotas/printer apology open accessible, free illustrated readings. Apology moved beside printer and explained. Printer joins walking directory; decorative scenery still passes movement clicks.
+- Node regression passes; focused and full desktop/mobile browser, isolated SQL and deployment evidence recorded in release PR. No physical-phone or authenticated production writes claimed.
+
 ## 2026-10-21: Build 164 — sound on
 - Sound defaults to enabled at 100%, as requested. Saved mute/volume choices still apply.
 - Existing sound contract covers fresh defaults and preference reload; no data or economy changes. CI/deployment evidence in release PR.
