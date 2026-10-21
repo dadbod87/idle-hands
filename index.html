@@ -677,6 +677,8 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-rig .pg-avatar-head svg{display:block;width:100%;height:auto;overflow:visible}
 .pg-body.me .pg-avatar-head{box-shadow:none}
 .pg-avatar-preview .pg-body{margin:12px 24px 16px 16px}
+.pg-officedesk .pg-desk-svg{width:100%;height:100%;display:block;pointer-events:none;overflow:hidden}
+.pg-artreview .pg-officedesk .pg-desk-svg{width:100%;height:100%}
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -4167,7 +4169,7 @@ function PatronFloor() {
                        if (mine) routeTo(o.cx, o.cy + 40, "desk", o);
                        else if (chances) sayAt(o.cx, o.deskY - 6, pick(GHOST_DESK.lines));
                      }}>
-                  <span /><b />
+                  <OfficeDeskArt tier={p?.kit?.desk || "d1"}/>
                   {mine && <div className="pg-fxlabel">Your Desk</div>}
                 </div>
               </div>
@@ -5838,6 +5840,31 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
 }
 
 
+
+/** Actual player-office illustrations: inked desk objects that grow with purchased kit. */
+function OfficeDeskArt({tier="d1"}){
+ const n=Math.max(1,Math.min(5,Number(String(tier).replace("d",""))||1));
+ const mug=<g><path d="M157 52h16v15q-8 7-16 0z" fill="#F8F1E3" stroke="#292827" strokeWidth="2.3"/><path d="M173 56h6q4 8-6 9" fill="none" stroke="#292827" strokeWidth="2.3"/><circle cx="165" cy="59" r="3.7" fill="#FFD36B"/></g>;
+ return <svg className="pg-desk-svg" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
+  <rect x="2" y="3" width="196" height="94" rx="3" fill={n===5?"#454549":n===4?"#E2DFD5":n===3?"#A77750":n===2?"#BFAB88":"#A89C87"} stroke="#292827" strokeWidth="3"/>
+  <path d="M5 88h189" stroke="#292827" strokeWidth="3" opacity=".7"/>
+  <rect x="19" y="12" width={n>=3?69:58} height="43" rx="3" fill="#2F3640" stroke="#202427" strokeWidth="3"/>
+  <rect x="24" y="17" width={n>=3?59:48} height="32" rx="1" fill={n>=4?"#81B9D4":"#829FB0"} stroke="#202427" strokeWidth="1.6"/>
+  <path d="M30 24h26M30 31h37M30 38h17" stroke="#EDF4F0" strokeWidth="2.5" opacity=".9"/>
+  <path d="M45 55v7M34 62h24" stroke="#202427" strokeWidth="3.2"/>
+  {n>=3&&<g><rect x="91" y="12" width="53" height="42" rx="2" fill="#2F3640" stroke="#202427" strokeWidth="3"/><rect x="96" y="17" width="43" height="31" fill="#648FAF"/><path d="M101 25h26M101 31h33M101 37h16" stroke="#FFF8E6" strokeWidth="2"/><path d="M114 54v8M103 62h24" stroke="#202427" strokeWidth="3"/></g>}
+  {n>=5&&<g><rect x="149" y="13" width="41" height="33" rx="2" fill="#2F3640" stroke="#202427" strokeWidth="2.4"/><rect x="153" y="17" width="33" height="24" fill="#7B9CC4"/><path d="M158 23h19M158 29h16" stroke="#FFF8E6" strokeWidth="2"/></g>}
+  <path d="M72 72h51l6 8H68Z" fill="#DDDAD2" stroke="#292827" strokeWidth="2.3"/>
+  {Array.from({length:8},(_,i)=><path key={i} d={`M${74+i*6} 75v3`} stroke="#6E777F" strokeWidth="2"/>)}
+  {n>=2&&<g><rect x="135" y="68" width="24" height="14" rx="2" fill="#D8A657" stroke="#292827" strokeWidth="2"/><path d="M141 73h12M141 77h8" stroke="#FFF3D9" strokeWidth="1.7"/></g>}
+  {n>=4&&<g><path d="M178 88V65" stroke="#5E8558" strokeWidth="2.5"/><path d="M178 76Q160 67 165 61q15 0 13 15M178 73q18-18 18-7q-3 9-18 7" fill="#8FA67A" stroke="#292827" strokeWidth="1.8"/><path d="M169 82h19l-4 13h-11z" fill="#D99566" stroke="#292827" strokeWidth="2"/></g>}
+  {n<5&&mug}
+  {n>=3&&<g><rect x="10" y="66" width="33" height="6" fill="#F8F1E3" stroke="#292827" strokeWidth="1.6"/><rect x="12" y="73" width="34" height="6" fill="#FFF1C2" stroke="#292827" strokeWidth="1.6"/><rect x="9" y="80" width="38" height="6" fill="#F8F1E3" stroke="#292827" strokeWidth="1.6"/></g>}
+  <rect x="5" y="5" width="27" height="11" transform="rotate(-5 5 5)" fill="#FFD36B" stroke="#292827" strokeWidth="1.4"/>
+  <circle cx="16" cy="11" r="2" fill="#292827"/><circle cx="23" cy="11" r="2" fill="#292827"/>
+ </svg>;
+}
+
 function OfficeVisitorBody({visitor:v}){
  const id=v.id||"";
  const color=id==="jess"?"#343B43":id==="dave"?"#CEBD7F":id==="chance"?"#617750":id==="john"?"#F8F1E3":id==="matt"?"#E8E7E0":id==="joey"?"#4B5A63":id==="nick"?"#303C4B":id==="avah"?"#7B9CC4":id==="rilie"?"#836F90":v.color;
@@ -7068,7 +7095,7 @@ function ArtPreview(){
   </div>
   <h2>4d. Owned office upgrade silhouettes — five tier samples</h2>
   <div className="ar-grid">{["d1","d2","d3","d4","d5"].map((d,i)=><div className="ar-cell" key={d}><div className="ar-fixture" style={{height:102}}>
-    <div className="pg-officedesk" data-desk={d} style={{position:"relative",width:"100%",height:75,top:0,left:0}}><span/><b/></div>
+    <div className="pg-officedesk" data-desk={d} style={{position:"relative",width:"100%",height:75,top:0,left:0}}><OfficeDeskArt tier={d}/></div>
     <div className={"pg-officechair chair-c"+Math.min(4,i+1)} style={{top:40}}/>
     </div><strong>{"Desk upgrade "+(i+1)}</strong></div>)}</div>
   <h2>5. Small icon readability</h2>
