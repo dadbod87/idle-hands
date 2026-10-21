@@ -70,3 +70,9 @@ An original cutout SVG/CSS system adds 30px classed purchase icons across hire, 
 
 ## 2026-10-20: Avatar and office art polish (PR #8)
 The newer shared player avatar is rendered inside `.pg-avatar-head` rather than the legacy circular `.pg-face`, eliminating the duplicated oval behind hair. Eyes, facial expression and hair silhouettes are redrawn and the onboarding preview is enlarged. Actual `pg-officedesk` tiers now use the `OfficeDeskArt` SVG with tier-specific screens and clutter; all six permanently purchasable outfits use individual `WardrobeIcon` illustrations. The read-only art gallery includes an actual Onboard component for responsive tests. These production vector components approximate the original concept-art styling but are not literal raster sprites extracted from those boards. Authenticated full-office visual walkthrough remains outstanding.
+
+## Build 154 candidate: unified world (feature branch)
+
+See `docs/VISUAL_REDESIGN.md` for recovered concept sheets, acceptance status, limits and rollback. Shared player/NPC rig; angular heads and unmasked custom profile faces; tiered SVG furniture, illustrated kitchen fixtures, outlined companions, floor/cubicle/HUD materials; corrected actor/desk depth. Local versioned browser libraries remove the reproduced CDN boot failure. No database mutations, economy changes or inventory resets.
+
+`tests/gameplay.spec.cjs` exercises the actual game with desktop and Pixel 7 touch emulation against intercepted Supabase HTTP/WebSocket responses. Walk, six emotes, desk/work, bingo, mirror equip/save/reload and retained fixture progress covered. This is not live Supabase E2E or physical-phone evidence. Vercel team access returned 403 and CLI has no credentials; Git integration release must be independently verified. Overall exact-art redesign is not complete.

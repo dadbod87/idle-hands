@@ -27,3 +27,9 @@ Approved direction: **original, flat 2D cutout-cartoon office satire**. Inspired
 - `AvatarHead` must visually match the layered office cutout theme rather than use photo uploads. `AvatarControls` in onboarding and mirror must share `normalizedAvatar` exactly; hairstyle, hair color, skin, eyes, expression, glasses, body build, pants and shirt are free.
 - Clothing upgrades are permanent visual-only pieces in `WARDROBE`, applied behind prank-costume overlays. Keep outfit palette consistent with the approved boards.
 - New illustrations must be evaluated at actual game character scale, 390px viewport and 1440px viewport. The art preview is an integration test, not a substitute for player sign-in QA.
+
+## Build 154 unified world
+
+Recovered concept identities and full acceptance record are in `VISUAL_REDESIGN.md`. All cast now uses the player rig and head; the game adds front-facing desk/chair silhouettes, eight illustrated fixtures, inked companions, warm plank floors, sage tiles and blue cubicle edges. Actors and desks share depth ordering. The final CSS contract is intentionally after legacy rules so earlier gradients and masks cannot override it. `Face` uses an unmasked custom head when a stored look exists; legacy photo rendering remains available. No inventory IDs or persistence schema changed.
+
+Art QA includes actual-game fixture walkthroughs with touch emulation. Do not confuse these with authenticated production or physical-device tests. Concept fidelity remains an adaptation, not a completed literal match.

@@ -1370,6 +1370,97 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 @keyframes pgReel{0%{transform:translateY(-6px);opacity:.35}100%{transform:translateY(6px);opacity:1}}
 .pg-slotout{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:#E9E4D6}
 
+
+/* Canonical world art. Last in the cascade: legacy scenery must not override it. */
+:root{--paper:#F8F1E3;--bar:#E8DFC9;--ink:#2B2B2B;--soft:#665F54;--rule:#B6AA96;--edge:#B5A88E;--carpet:#A3AE95;--carpet2:#98A58B;--wall:#D9CDC0}
+.pg-face.pg-face-custom{background:transparent;border:0;border-radius:0;overflow:visible;box-shadow:none}
+.pg-body.cutout .pg-avatar-head{width:39px!important;height:42px!important;top:-10px}
+.pg-body.cutout .pg-torso{top:26px;width:41px}
+.pg-body.cutout .pg-arm{top:30px;height:26px;z-index:1;border-width:1.5px;border-radius:5px 5px 3px 3px}
+.pg-body.cutout .pg-arm::after{background:var(--skin,#E6B596);height:9px;bottom:-7px;border:1.4px solid #2B2B2B;border-radius:3px 3px 5px 5px;left:-1px;width:calc(100% + 2px)}
+.pg-body.cutout .pg-leg{top:51px;height:32px;border-width:1.5px;border-radius:1px;min-width:9px}
+.pg-body.cutout .pg-leg::after{height:7px;width:calc(100% + 6px);left:-3px;background:#353A40;border-radius:5px 3px 2px 2px;border-width:1.4px}
+.pg-body.cutout .pg-skirt{top:46px;width:43px;z-index:2}
+.pg-body.cutout.bt-shorts .pg-leg{background:var(--skin,#E6B596)!important}
+.pg-cast-prop{position:absolute;inset:0;width:60px;height:88px;overflow:visible;z-index:6;pointer-events:none}
+.pg-visitor-cutout{width:60px;height:88px;filter:none}
+.pg-body.cutout .pg-torso>path:not(:first-child){stroke-linejoin:round}
+.pg-pet{top:58px;left:calc(50% + 22px);width:37px;height:37px;transform-origin:50% 100%}
+.pg-body.walking .pg-pet{animation:pgpetwalk .42s ease-in-out infinite alternate}
+@keyframes pgpetwalk{from{transform:translate(-2px,0) rotate(-5deg)}to{transform:translate(3px,-4px) rotate(5deg)}}
+.pg-pet svg,.pg-petart,.pg-petcell svg,.pg-mount svg{overflow:visible}
+.pg-pet svg :is(path,ellipse,rect,circle),.pg-petart :is(path,ellipse,rect,circle),.pg-petcell svg :is(path,ellipse,rect,circle),.pg-mount svg :is(path,ellipse,rect,circle){stroke:#2B2B2B;stroke-width:1.1;stroke-linejoin:round;paint-order:stroke fill}
+.pg-pet svg :is(circle,ellipse)[fill="#2C2622"],.pg-petart :is(circle,ellipse)[fill="#2C2622"]{stroke:none}
+.pg-avatar-swatches button{min-width:30px;min-height:30px}
+@media(prefers-reduced-motion:reduce){.pg-body,.pg-body *,.pg-pet,.pg-mount{animation:none!important}}
+
+
+/* Office materials: matte cubicle blue, sage tile, warm wood and paper. */
+body{background:#D9CDC0}
+.pg-wall{background:linear-gradient(90deg,transparent 97%,#C1B19B 97%) 0 0/140px 100%,#E5D8C1;border-bottom:7px solid #786D60;box-shadow:inset 0 -3px 0 #F8F1E3}
+.pg-carpet{background:linear-gradient(90deg,#60735D22 1px,transparent 1px) 0 0/88px 88px,linear-gradient(#60735D22 1px,transparent 1px) 0 0/88px 88px,conic-gradient(from 90deg,#A7B398 25%,#9FAB91 0 50%,#A7B398 0 75%,#9FAB91 0) 0 0/176px 176px}
+.pg-officefloor,.pg-office.mine .pg-officefloor{background:repeating-linear-gradient(0deg,#CDB997 0 43px,#B09C7D 43px 45px);border:7px solid #455566;border-top:0;box-shadow:inset 0 5px 0 #748DA4,inset 6px 0 0 #748DA4,inset -5px 0 0 #748DA4}
+.pg-office::before,.pg-office::after,.pg-office.mine::before,.pg-office.mine::after{height:9px;background:#455566;box-shadow:inset 0 3px 0 #8FA5B8}
+.pg-office.mine .pg-officefloor{border-color:#596F77;box-shadow:inset 0 0 0 3px #E8C870}
+.pg-officeplate,.pg-office.mine .pg-officeplate{background:#F8F1E3;border:2px solid #2B2B2B;box-shadow:3px 3px 0 #2B2B2B44;transform:translateX(-50%) rotate(-1deg)}
+.pg-officeplate b,.pg-office.mine .pg-officeplate b{color:#2B2B2B}.pg-officeplate span,.pg-officeplate .pg-job{color:#665F54}
+.pg-officedesk,.pg-officedesk.mine,.pg-officedesk[data-desk]{background:transparent;border:0;box-shadow:none;overflow:visible}
+.pg-officedesk .pg-desk-svg{overflow:visible}
+.pg-officechair[class]{background:transparent;border:0;box-shadow:none;width:43px;height:58px;border-radius:0;top:42%;z-index:2}
+.pg-officechair svg{display:block;width:100%;height:100%;overflow:visible}
+.pg-plant{width:45px;height:64px;background:none;border:0;box-shadow:none}
+.pg-plant::before,.pg-plant::after{display:none}
+.pg-plant svg,.pg-boxes svg{display:block;width:100%;height:100%;overflow:visible}
+.pg-boxes{width:80px;height:62px;background:none;border:0;box-shadow:none}
+.pg-boxes::before,.pg-boxes::after{display:none}
+.pg-window{background:linear-gradient(115deg,#FFF2C577 0 18%,transparent 18% 58%,#FFF2C566 58% 67%,transparent 67%),#9DB4BF;border:4px solid #5F6D76;box-shadow:3px 4px 0 #A99880}
+.pg-window::before{background:#5F6D76}.pg-window::after{background:#F4DFB1}
+.pg-wb{border:4px solid #455566;background:#FFFCF3;box-shadow:3px 4px 0 #2B2B2B33}
+.pg-printerfx,.pg-cab,.pg-wcooler,.pg-closet,.pg-sink,.pg-mericancooler,.pg-vm{border-color:#2B2B2B;box-shadow:3px 4px 0 #2B2B2B33}
+.pg-fxlabel{background:#343C43;border:1px solid #F8F1E3;color:#FFF6DF;border-radius:3px;letter-spacing:.06em}
+.pg-fx.near .pg-fxlabel{background:#A74135}
+.pg-hud{border-radius:9px 9px 0 0;border-bottom-width:2px}
+.pg-hudpp{background:#FFE6A2;border:2px solid #2B2B2B;border-radius:7px;padding:6px 9px}
+.pg-ppnum{color:#544229}.pg-ppsub{color:#544E43}
+.pg-btn,.pg-work{border-radius:7px;border-color:#2B2B2B;box-shadow:3px 3px 0 #2B2B2B44}
+.pg-btn{background:#FFF7E5}.pg-btn.primary,.pg-work{background:#8FA67A;color:#1F3025}
+.pg-panel,.pg-card{border-radius:10px;background:#F8F1E3;overflow:hidden}.pg-tabs button{border-radius:5px 5px 0 0}
+.pg-face-custom{isolation:isolate}
+.pg-avatar-field select{min-height:40px}
+@media(max-width:540px){.pg-emote,.pg-help,.pg-open{min-width:40px;min-height:40px}.pg-btn{min-height:44px}.pg-hudpp{padding:5px 7px}.pg-hudrole{font-size:9px}.pg-stage{touch-action:manipulation}.pg-avatar-swatches button{min-width:34px;min-height:34px}}
+
+
+.pg-body.cutout .pg-arm.left{margin-left:3px}.pg-body.cutout .pg-arm.right{margin-right:3px}
+.pg-body.cutout .pg-torso>path:first-child{stroke-width:2.5}
+.pg-hudid::before{content:"IDLE HANDS";display:block;font:900 10px var(--sans);letter-spacing:.12em;color:#8F4235;margin-bottom:3px}
+.pg-work.away{background:#D9CDC0;color:#342F29}
+.pg-bar>.pg-btn{display:flex;align-items:center;gap:7px}
+.pg-bar>.pg-btn .pg-iconart{border:0;box-shadow:none;background:none}
+.pg-panel,.pg-card{border-radius:8px}.pg-panelhead{background:#343C43}
+.pg-x{min-height:34px;min-width:50px}
+@media(max-width:540px){
+ .pg-hud{display:grid;grid-template-columns:36px minmax(0,1fr) auto;padding:8px;gap:5px 7px}
+ .pg-hud>.pg-face{width:36px!important;height:36px!important}
+ .pg-hudpp{grid-column:3;grid-row:1/3;align-self:stretch;display:flex;flex-direction:column;justify-content:center;max-width:175px}
+ .pg-hudpp .pg-ppsub{font-size:8.5px;line-height:1.3;max-width:150px}.pg-ppnum{font-size:26px}
+ .pg-hudname{font-size:12px}.pg-hudbtns{grid-column:1/3;grid-row:2;margin-left:0;gap:6px}
+ .pg-help{min-width:34px;min-height:32px;align-self:center}
+ .pg-hudid::before{font-size:8px}.pg-map{transform:scale(.72);transform-origin:top right}
+ .pg-bar{gap:7px}.pg-emotes{gap:5px;flex-wrap:wrap}.pg-emote{min-width:38px;min-height:38px}
+ .pg-prompt{font-size:11px;line-height:1.4}.pg-wirestrip .pg-wl:nth-child(n+2){display:none}
+ .pg-wirestrip{padding:5px 8px}.pg-build{font-size:7.5px}
+}
+
+
+.pg-fixture-illustration{display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
+.pg-kitchenfloor{background:repeating-conic-gradient(#E4D1AB 0 25%,#C8B590 0 50%) 0 0/88px 88px;border:4px solid #99886E}
+.pg-door .frame{background:#465A6D;border-color:#2B2B2B}.pg-door .panel{background:#B08E65;box-shadow:inset 0 0 0 3px #D9BA8E}
+.pg-door .knob{background:#E3C06D;box-shadow:0 0 0 2px #2B2B2B}.pg-mirrorfx{border-color:#2B2B2B;box-shadow:3px 4px 0 #2B2B2B44}
+.pg-closet{background:#637F98;border-color:#2B2B2B}.pg-closet i{background:#7B9CC4;border-color:#455566}.pg-closet span{background:#FFD36B}
+.pg-officefloor.rug-r1::after{background:#B1A080;border:3px solid #6F6959}
+.pg-officefloor.rug-r2::after{background:repeating-linear-gradient(45deg,#AA99B7 0 12px,#9A89A8 12px 24px);border:3px solid #776687;box-shadow:none}
+.pg-officefloor.rug-r3::after{background:#C37C6B;border:3px solid #87514B;box-shadow:none}
+.pg-officefloor.rug-r4::after{background:repeating-linear-gradient(90deg,#8FA67A 0 8px,#7D9667 8px 16px);border:3px solid #4C684D;box-shadow:none}
 </style>
 </head>
 <body>
@@ -1394,18 +1485,18 @@ window.addEventListener("error", function (e) {
 });
 </script>
 
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="/vendor/react-18.3.1.min.js" crossorigin></script>
+<script src="/vendor/react-dom-18.3.1.min.js" crossorigin></script>
 <!-- explicit UMD build: the bare package path serves CommonJS and sets no global -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
-<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<script src="/vendor/supabase-2.45.0.js"></script>
+<script src="/vendor/babel-7.28.5.min.js"></script>
 
 <script>
 window.SB = window.supabase || window.Supabase || null;
 if (!window.SB || !window.SB.createClient) {
-  window.__boot("Supabase library did not load. Check the network tab for a blocked CDN request.");
+  window.__boot("Supabase library did not load. Refresh the page to retry.");
 } else if (!window.React || !window.Babel) {
-  window.__boot("React or Babel did not load from the CDN.");
+  window.__boot("The game libraries did not load. Refresh the page to retry.");
 }
 </script>
 
@@ -2266,8 +2357,9 @@ function AvatarHead({look={},size=40}){
  return <svg viewBox="0 0 64 67" width={size} height={size} role="img" aria-label="Custom cartoon face" style={{display:"block",overflow:"visible",filter:"drop-shadow(1px 2px 0 rgba(43,43,43,.22))"}}>
  {/* Rear hair is cutout-paper shaped, not the former circular badge. */}
  {(a.hair==="long"||a.hair==="bun"||a.hair==="curly"||a.hair==="bob")&&<path d="M12 21Q8 3 29 2Q54 0 53 25L58 62L41 60L35 45L19 60L4 62Z" fill={hair} stroke="#292827" strokeWidth="3.3" strokeLinejoin="round"/>}
- <path d="M18 14Q30 6 44 13Q52 19 49 38Q48 53 32 57Q16 55 14 39Q12 22 18 14Z" fill={skin} stroke="#292827" strokeWidth="3.1"/>
- <path d="M15 31Q10 28 9 35Q9 41 16 43M49 31Q55 29 55 36Q55 42 48 43" fill={skin} stroke="#292827" strokeWidth="2.3"/>
+ <path d="M18 14Q32 4 47 15L49 34L53 41L48 44L48 55L32 58L24 53L23 61L17 59L17 45Q9 45 9 36Q8 28 16 29Z" fill={skin} stroke="#292827" strokeWidth="2.7" strokeLinejoin="round"/>
+ <path d="M12 35q4-4 7 2" fill="none" stroke="#BC805D" strokeWidth="1.8"/>
+
  {/* Distinct expressive front hair silhouettes inspired by the approved concept sheets. */}
  {a.hair==="messy"&&<path d="M12 27L7 15L18 18L21 3L29 13L37 2L39 13L54 8L49 23L56 25L47 27Q41 18 33 19Q25 14 18 24Z" fill={hair} stroke="#292827" strokeWidth="3.4" strokeLinejoin="round"/>}
  {a.hair==="short"&&<path d="M14 27Q11 5 31 6Q51 5 50 27L44 19L32 17L20 21Z" fill={hair} stroke="#292827" strokeWidth="3.2"/>}
@@ -2275,12 +2367,14 @@ function AvatarHead({look={},size=40}){
  {a.hair==="bob"&&<path d="M12 34Q5 6 30 4Q53 4 52 34L48 42L44 19Q33 13 19 22L18 42Z" fill={hair} stroke="#292827" strokeWidth="3.3"/>}
  {a.hair==="bun"&&<><circle cx="46" cy="8" r="9" fill={hair} stroke="#292827" strokeWidth="3"/><path d="M13 28Q11 6 30 6Q51 6 49 27Q43 16 32 17Q23 14 13 28Z" fill={hair} stroke="#292827" strokeWidth="3.3"/></>}
  {a.hair==="curly"&&[15,23,32,41,49].map((x,i)=><circle key={x} cx={x} cy={13+(i%2)*3} r="8" fill={hair} stroke="#292827" strokeWidth="2.6"/>)}
- {/* Brows and big white half-lidded eyes give the trademark deadpan office expression. */}
- <path d={a.expression==="skeptical"?"M16 31l12 1M36 31l11-5":"M17 30q6-3 11 0M36 30q6-3 11 0"} stroke="#302521" strokeWidth="2.8" fill="none" strokeLinecap="round"/>
- <ellipse cx="23" cy="37" rx={a.eyes==="wide"?7:6} ry={a.eyes==="wide"?6:4.5} fill="#FFF9EC" stroke="#302521" strokeWidth="1.9"/>
- <ellipse cx="42" cy="37" rx={a.eyes==="wide"?7:6} ry={a.eyes==="wide"?6:4.5} fill="#FFF9EC" stroke="#302521" strokeWidth="1.9"/>
- {(a.eyes==="sleepy"||a.eyes==="tired")&&<path d="M17 36q6 2 12 0M36 36q6 2 12 0" stroke="#302521" strokeWidth="2.4" fill="none"/>}
- <ellipse cx="24" cy="38" rx="2.1" ry="2.9" fill="#282626"/><ellipse cx="43" cy="38" rx="2.1" ry="2.9" fill="#282626"/>
+ {/* Oversized white eyes and a single opaque lid, shared at every scale. */}
+ <path d={a.expression==="skeptical"?"M19 27l12 2M36 26l12-6":"M19 26l12-2M36 24l12 1"} stroke="#302521" strokeWidth="3.4" fill="none" strokeLinecap="round"/>
+ {[26,42].map((x,i)=><g key={x}>
+  <ellipse cx={x} cy="35" rx="8.5" ry={a.eyes==="wide"||expressive?9:7.5} fill="#FFFCF4" stroke="#292827" strokeWidth="2"/>
+  <ellipse cx={x+2} cy="36" rx="2" ry="3" fill="#292827"/>
+  {(a.eyes==="sleepy"||a.eyes==="tired")&&!expressive&&<path d={`M${x-8} 32q8-8 16 0l-16 2Z`} fill={skin} stroke="#292827" strokeWidth="1.8"/>}
+ </g>)}
+ <path d="M45 42l4 1" stroke="#BC805D" strokeWidth="1.8" strokeLinecap="round"/>
  {a.glasses&&<><rect x="14" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><rect x="34" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><path d="M31 34h3" stroke="#20242C" strokeWidth="2.5"/></>}
  <path d={a.expression==="happy"?"M25 49Q33 61 41 48Z":a.expression==="smile"?"M25 49Q32 55 40 49":a.expression==="skeptical"?"M26 51l13-3":a.expression==="surprised"?"M29 48q5-4 7 1q1 8-5 7q-4-2-2-8Z":"M26 50h12"} fill={expressive?"#A95759":"none"} stroke="#7B5044" strokeWidth="2.2" strokeLinecap="round"/>
  </svg>;
@@ -3018,7 +3112,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 153 · character creator";
+const BUILD = "build 154 · cutout world";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3074,7 +3168,7 @@ function PatronFloor() {
   const [stage, setStage] = useState({ w: 900, h: 560 });
   // A phone is ~400 CSS px wide against a 3400px floor. Without a zoom you see
   // a tenth of the room and every object looks enormous.
-  const zoom = clamp(stage.w / 820, 0.5, 1);
+  const zoom = clamp(stage.w / 820, 0.7, 1);
   const view = { w: stage.w / zoom, h: stage.h / zoom };
   const [showHelp, setShowHelp] = useState(false);
   const [ev, setEv] = useState(null);
@@ -4126,7 +4220,7 @@ function PatronFloor() {
             </div>
           ) : (
             <div key={"d" + i} className={"pg-decor pg-" + d.t}
-                 style={{ left: d.x, top: d.y, zIndex: d.t === "rug" ? 0 : Math.round(d.y) - 1 }} />
+                 style={{ left: d.x, top: d.y, zIndex: d.t === "rug" ? 0 : Math.round(d.y) - 1 }}>{["plant","boxes"].includes(d.t)&&<DecorArt kind={d.t}/>}</div>
           ))}
 
           {FIXTURES.map((f) => (
@@ -4146,12 +4240,12 @@ function PatronFloor() {
             const p = chances ? null : order[o.i];
             const mine = me && p && p.id === me.id;
             return (
-              <div key={"o" + o.i} className={"pg-office " + o.door + (mine ? " mine" : "")}
+              <React.Fragment key={"o"+o.i}><div className={"pg-office " + o.door + (mine ? " mine" : "")}
                    style={{ left: o.x, top: o.y, width: o.w, height: o.h,
                             zIndex: Math.round(o.y) }}>
                 <div className={"pg-officefloor" + (p?.kit?.rug ? " rug-" + p.kit.rug : "")} />
                 {p?.kit?.art && <div className={"pg-officeart art-" + p.kit.art} />}
-                {p?.kit?.chair && <div className={"pg-officechair chair-" + p.kit.chair} />}
+
                 <div className="pg-officedoor"
                      style={{ left: o.doorX - o.x, width: DOOR_W }}><i /><span /><i /></div>
                 <div className={"pg-officeplate " + o.door + (chances ? " ghost" : "")}>
@@ -4164,8 +4258,10 @@ function PatronFloor() {
                             <span>{fmt(p.week_pp || 0)} BW</span></>
                         : <b className="pg-vacant">Vacant</b>}
                 </div>
+              </div>
+              <div className={"pg-officechair chair-"+(p?.kit?.chair||"c1")} style={{position:"absolute",left:o.cx,top:o.y+o.h*.42,zIndex:Math.round(o.y+o.h*.42+58)}}><OfficeChairArt tier={p?.kit?.chair||"c1"}/></div>
                 <div className={"pg-officedesk" + (mine ? " mine" : "") + (chances ? " ghost" : "")}
-                     style={{ left: o.deskX - o.x, top: o.deskY - o.y,
+                     style={{ left:o.deskX,top:o.deskY,zIndex:Math.round(o.deskY+o.deskH*.7),
                               width: o.deskW, height: o.deskH }}
                    data-desk={p?.kit?.desk || ""}
                      onClick={(e) => {
@@ -4176,7 +4272,7 @@ function PatronFloor() {
                   <OfficeDeskArt tier={p?.kit?.desk || "d1"}/>
                   {mine && <div className="pg-fxlabel">Your Desk</div>}
                 </div>
-              </div>
+              </React.Fragment>
             );
           })}
 
@@ -4185,7 +4281,7 @@ function PatronFloor() {
             if (!live || (me && p.id === me.id)) return null;
             return (
               <div key={"live" + p.id} className="pg-me"
-                   style={{ left: live.x, top: live.y, zIndex: 5000 + Math.round(live.y) }}>
+                   style={{ left: live.x, top: live.y, zIndex: Math.round(live.y) }}>
                 {chatter?.id === p.id && <div className="pg-mumble said">{chatter.text}</div>}
                 <Body p={p} src={p.avatar_url} moving={live.m} facing={live.f || 1} emote={live.e} />
                 <div className="pg-peername">{p.name}</div>
@@ -4195,7 +4291,7 @@ function PatronFloor() {
 
           {chance && (
             <div className={"pg-me pg-chance" + (chance.leaving ? " leaving" : "")}
-                 style={{ left: chance.x, top: chance.y, zIndex: 5000 + Math.round(chance.y) }}>
+                 style={{ left: chance.x, top: chance.y, zIndex: Math.round(chance.y) }}>
               <div className="pg-mumble">{chance.line}</div>
               <ChanceBody facing={chance.facing} />
               <div className="pg-peername">Chance <em>former employee</em></div>
@@ -4204,7 +4300,7 @@ function PatronFloor() {
 
           {dave && (
             <div className={"pg-me pg-chance" + (dave.leaving ? " leaving" : "")}
-                 style={{ left: dave.x, top: dave.y, zIndex: 5000 + Math.round(dave.y) }}>
+                 style={{ left: dave.x, top: dave.y, zIndex: Math.round(dave.y) }}>
               <div className="pg-mumble">{dave.line}</div>
               <DaveBody facing={dave.facing} />
               <div className="pg-peername">Dave <em>owner</em></div>
@@ -4213,7 +4309,7 @@ function PatronFloor() {
 
 
           {visitor && (
-            <div className={"pg-me pg-chance"+(visitor.leaving?" leaving":"")} style={{left:visitor.x,top:visitor.y,zIndex:5000+Math.round(visitor.y)}}>
+            <div className={"pg-me pg-chance"+(visitor.leaving?" leaving":"")} style={{left:visitor.x,top:visitor.y,zIndex:Math.round(visitor.y)}}>
               <div className="pg-mumble">{visitor.line}</div><OfficeVisitorBody visitor={visitor}/>
               <div className="pg-peername">{visitor.name} <em>{visitor.role}</em></div>
             </div>
@@ -4234,7 +4330,7 @@ function PatronFloor() {
           ))}
           {visitor2 && (
             <div className={"pg-me pg-chance"+(visitor2.leaving?" leaving":"")}
-                 style={{left:visitor2.x,top:visitor2.y,zIndex:5000+Math.round(visitor2.y)}}>
+                 style={{left:visitor2.x,top:visitor2.y,zIndex:Math.round(visitor2.y)}}>
               <div className="pg-mumble">{visitor2.line}</div>
               <OfficeVisitorBody visitor={visitor2}/>
               <div className="pg-peername">{visitor2.name} <em>{visitor2.role}</em></div>
@@ -4259,7 +4355,7 @@ function PatronFloor() {
             </div>
           )}
 
-          <div className="pg-me" style={{ left: pos.x, top: pos.y, zIndex: 5000 + Math.round(pos.y) }}>
+          <div className="pg-me" style={{ left: pos.x, top: pos.y, zIndex: Math.round(pos.y) }}>
             <Body p={me || { name: me?.name }} src={me?.avatar_url} me
                   moving={moving} facing={facing}
                   emote={emote && emote.until > Date.now() ? emote.id : null} />
@@ -4287,7 +4383,7 @@ function PatronFloor() {
             {b.mult<1?"☁":"✦"} {b.mult<1?"Debuff":"Boost"} {Math.round((b.mult-1)*100)}% · {Math.max(1,Math.ceil((Date.parse(b.until)-Date.now())/60000))}m
           </span>
         ))}
-        <button className="pg-btn" title="Office rumors, bingo, assignments, the cigar lounge and awards" onClick={()=>setFunOpen(true)}>📋 Office Nonsense</button>
+        <button className="pg-btn" title="Office rumors, bingo, assignments, the cigar lounge and awards" onClick={()=>setFunOpen(true)}><OfficeIcon kind="paper" compact/> Office Nonsense</button>
         <div className="pg-emotes">
           {EMOTES.map((e) => (
             <button key={e.id} className="pg-emote" onClick={() => doEmote(e.id)} title={e.label}>
@@ -4777,7 +4873,7 @@ function OfficeIcon({kind="paper",compact=false,cosmetic=false}){
 function Face({ src, name, size = 40, look }) {
   const ini = (name || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return (
-    <span className="pg-face" style={{ width: size, height: size, fontSize: size * 0.36 }}>
+    <span className={look ? "pg-face pg-face-custom" : "pg-face"} style={{ width: size, height: size, fontSize: size * 0.36 }}>
       {look ? <AvatarHead look={look} size={size}/> : src ? <img src={src} alt="" /> : <b>{ini}</b>}
     </span>
   );
@@ -4792,11 +4888,11 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const nick = nickOn ? p.nickname.text : null;
   const B = BUILDS[L.build] || BUILDS.regular;
   const wardrobeItem=WARDROBE.find(x=>x.id===L.clothing);
-  const shirt = c?.shirt || wardrobeItem?.shirt || TOPS[L.top % TOPS.length];
+  const shirt = c?.shirt || ({jess:"#343B43",john:"#F8F1E3",matt:"#F8F1E3",avah:"#AD9AC1",joey:"#4A5260",dave:"#E3C878"}[p?.cast]) || wardrobeItem?.shirt || TOPS[L.top % TOPS.length];
   const pants = LEGS[L.legs % LEGS.length];
   const bottom = c ? "trousers" : L.bottom;      // costumes override the outfit
   const cls = [
-    "pg-body", me ? "me" : "", c?.big ? "big" : "",
+    "pg-body", c ? "costumed" : "cutout", me ? "me" : "", c?.big ? "big" : "",
     moving ? "walking" : "idling", emote ? "em-" + emote : "",
     "bt-" + bottom, "garment-" + (L.clothing || "starter"),
     v.glow ? "glow-" + v.glow : "", v.size ? "size-" + v.size : "",
@@ -4805,7 +4901,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   ].filter(Boolean).join(" ");
 
   return (
-    <div className={cls}>
+    <div className={cls} style={{"--skin":AVATAR_SKIN[normalizedAvatar(L).skin]}}>
       {emote && <div className="pg-bubble">{EMOTE_ICON[emote] || "!"}</div>}
       <div className="pg-flip" style={{ transform: `scaleX(${facing})` }}>
       {/* inside the flip wrapper so the bull turns with you, and behind the rig so
@@ -4816,7 +4912,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       <div className="pg-rig">
         {c?.art && <CostumeSuit art={c.art} layer="back" />}
         {c && <Hat kind={c.hat} />}
-        <span className="pg-avatar-head" style={{width:48,height:52}}><AvatarHead look={L} size={48}/></span>
+        <span className="pg-avatar-head" style={{width:48,height:52}}><AvatarHead look={{...L,expression:emote==="panic"?"surprised":emote==="dance"?"happy":L.expression}} size={48}/></span>
         {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
           <path d={B.torso} fill={shirt} />
@@ -4843,10 +4939,11 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
             <path d="M14 0h32l7 24H7Z" fill={pants} />
           </svg>
         )}
-        <span className="pg-arm left"  style={{ background: shirt, width: B.arm, left: 30 - B.legX - 4 }} />
-        <span className="pg-arm right" style={{ background: shirt, width: B.arm, right: 30 - B.legX - 4 }} />
+        <span className="pg-arm left"  style={{ background: shirt, "--skin":AVATAR_SKIN[normalizedAvatar(L).skin], width: B.arm, left: 30 - B.legX - 4 }} />
+        <span className="pg-arm right" style={{ background: shirt, "--skin":AVATAR_SKIN[normalizedAvatar(L).skin], width: B.arm, right: 30 - B.legX - 4 }} />
         <span className="pg-leg left"  style={{ background: pants, width: B.legW, left: B.legX }} />
         <span className="pg-leg right" style={{ background: pants, width: B.legW, right: B.legX }} />
+        {p?.cast&&<CastAccessory id={p.cast}/>}
         {c?.sign && (
           <div className="pg-sign" style={{
             transform: facing < 0 ? "translateX(-50%) scaleX(-1)" : "translateX(-50%)",
@@ -4996,7 +5093,45 @@ function MiniMap({ pos, board, meId, cam, view, chair }) {
   );
 }
 
+/* Front-facing fixture silhouettes share the same cabinet, paper and mug vocabulary. */
+function FixtureIllustration({kind,tierPct=0}){
+ const mug=(x,y)=><g key={x}><path d={`M${x} ${y}h12v13q-6 4-12 0Z`} fill="#FFF8E8"/><path d={`M${x+12} ${y+3}q9-1 0 7`} fill="none"/><circle cx={x+6} cy={y+7} r="4" fill="#FFD36B" stroke="none"/><path d={`M${x+4} ${y+8}q2 2 4 0`} strokeWidth="1"/></g>;
+ return <svg className="pg-fixture-illustration" viewBox="0 0 160 130" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.6" strokeLinejoin="round" strokeLinecap="round">
+ <ellipse cx="80" cy="125" rx="73" ry="4" fill="#544638" opacity=".2" stroke="none"/>
+ {kind==="coffeebar"&&<>
+  <path d="M8 81h144v40H8Z" fill="#A77A4F"/><path d="M5 76h150v9H5Z" fill="#CC9D63"/><path d="M52 85v34m54-34v34M15 92h28m21 0h31m20 0h28" strokeWidth="1.5"/>
+  <rect x="12" y="17" width="59" height="59" rx="3" fill="#444C53"/><rect x="19" y="23" width="45" height="16" rx="2" fill="#5B7784"/><circle cx="56" cy="29" r="3" fill="#E9AF59"/><path d="M23 45h36v28H23Z" fill="#272B2F"/><path d="M37 43v8"/>{mug(34,54)}
+  <path d="M87 72V27M87 52Q64 36 73 25q16 4 14 27M88 51q20-33 29-19-2 14-29 19" fill="#799B57" strokeWidth="2"/><path d="M77 60h25l-5 17H81Z" fill="#C78A61"/>
+  {mug(119,61)}<path d="M125 53q-5-6 0-12" stroke="#A6937B" strokeWidth="2"/>
+  <path d="M90 5h63v20H90Z" fill="#FFE3A0"/><text x="121" y="18" textAnchor="middle" fill="#2B2B2B" stroke="none" fontSize="8" fontFamily="monospace">COFFEE (ish)</text>
+ </>}
+ {(kind==="fridge"||kind==="vending"||kind==="cooler")&&<>
+  <rect x="35" y="4" width="91" height="119" rx="4" fill={kind==="fridge"?"#B8C6CD":"#536D84"}/><rect x="42" y="25" width="63" height="81" fill="#8FA8B8"/>
+  <path d="M113 48v28" strokeWidth="4"/><path d="M42 53h63M42 79h63M42 105h63" strokeWidth="2"/>
+  {[0,1,2].map(row=>[0,1,2].map(col=><g key={row+"-"+col}><rect x={48+col*19} y={32+row*26} width="11" height="18" rx="2" fill={["#D87962","#8FA67A","#FFD36B"][(row+col)%3]} strokeWidth="1.3"/><path d={`M${50+col*19} ${37+row*26}h7`} stroke="#F8F1E3" strokeWidth="2"/></g>))}
+  <rect x="43" y="9" width="53" height="11" fill="#FFE3A0" strokeWidth="1.2"/><path d="M52 14h35" strokeWidth="1.3"/>
+  {kind==="vending"&&<rect x="43" y={111-tierPct*.75} width="7" height={Math.max(1,tierPct*.75)} fill="#E48768" stroke="none" opacity=".7"/>}
+ </>}
+ {kind==="coffee"&&<>
+  <path d="M18 77h124v43H18Z" fill="#A77A4F"/><path d="M11 72h138v9H11Z" fill="#CEA068"/>
+  <ellipse cx="80" cy="58" rx="44" ry="13" fill="#6D8BA3"/><path d="M39 58v9q40 19 82 0v-9" fill="#66849C"/>
+  {mug(65,37)}<path d="M88 35l17 4-5 8-17-4Z" fill="#F8F1E3"/><path d="M27 82v35m106-35v35" strokeWidth="3"/>
+ </>}
+ {kind==="printer"&&<>
+  <path d="M20 55h121v61H20Z" fill="#8FA3AF"/><path d="M37 55V35h93v20" fill="#3B444E"/><path d="M47 52V8h72v44" fill="#FFF7E5"/><path d="M57 19h52M57 26h44M57 33h49" stroke="#A59B87" strokeWidth="1.4"/>
+  <path d="M31 70h100v24H31Z" fill="#39434B"/><path d="M49 84h64v35H49Z" fill="#FFF7E5"/><path d="M57 94h46m-46 7h35" stroke="#A59B87" strokeWidth="1.4"/><circle cx="128" cy="64" r="3" fill="#FFD36B"/>
+ </>}
+ {kind==="watercooler"&&<>
+  <path d="M50 43h60v77H50Z" fill="#F8F1E3"/><path d="M58 7q22-8 44 0v36H58Z" fill="#88B8CC"/><path d="M63 13h34m-34 9h34m-34 9h34" stroke="#D0E5DF" strokeWidth="1.6"/><path d="M59 56h43v45H59Z" fill="#6D8390"/><path d="M68 59v9m24-9v9" stroke="#D87764" strokeWidth="4"/>{mug(75,78)}
+ </>}
+ {kind==="sink"&&<>
+  <path d="M19 65h122v55H19Z" fill="#AABAAB"/><path d="M12 56h136v13H12Z" fill="#D6D7CA"/><ellipse cx="80" cy="55" rx="43" ry="14" fill="#8A9FA5"/><path d="M80 51V20q0-16 16-8v13" stroke="#536D7D" strokeWidth="5"/><path d="M74 69v48m-46-35h34m24 0h44" strokeWidth="1.7"/>{mug(121,39)}
+ </>}
+ </svg>;
+}
+
 function FixtureArt({ id, board, tierPct }) {
+  if(["coffeebar","fridge","vending","cooler","coffee","printer","watercooler","sink"].includes(id))return <FixtureIllustration kind={id} tierPct={tierPct}/>;
   if (id === "whiteboard") {
     // this week, matching the panel behind it. lifetime survives the wipe on purpose,
     // so using it here left the wall showing last season forever.
@@ -5862,70 +5997,80 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
 /** Actual player-office illustrations: inked desk objects that grow with purchased kit. */
 function OfficeDeskArt({tier="d1"}){
  const n=Math.max(1,Math.min(5,Number(String(tier).replace("d",""))||1));
- const mug=<g><path d="M157 52h16v15q-8 7-16 0z" fill="#F8F1E3" stroke="#292827" strokeWidth="2.3"/><path d="M173 56h6q4 8-6 9" fill="none" stroke="#292827" strokeWidth="2.3"/><circle cx="165" cy="59" r="3.7" fill="#FFD36B"/></g>;
- return <svg className="pg-desk-svg" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
-  <rect x="2" y="3" width="196" height="94" rx="3" fill={n===5?"#454549":n===4?"#E2DFD5":n===3?"#A77750":n===2?"#BFAB88":"#A89C87"} stroke="#292827" strokeWidth="3"/>
-  <path d="M5 88h189" stroke="#292827" strokeWidth="3" opacity=".7"/>
-  <rect x="19" y="12" width={n>=3?69:58} height="43" rx="3" fill="#2F3640" stroke="#202427" strokeWidth="3"/>
-  <rect x="24" y="17" width={n>=3?59:48} height="32" rx="1" fill={n>=4?"#81B9D4":"#829FB0"} stroke="#202427" strokeWidth="1.6"/>
-  <path d="M30 24h26M30 31h37M30 38h17" stroke="#EDF4F0" strokeWidth="2.5" opacity=".9"/>
-  <path d="M45 55v7M34 62h24" stroke="#202427" strokeWidth="3.2"/>
-  {n>=3&&<g><rect x="91" y="12" width="53" height="42" rx="2" fill="#2F3640" stroke="#202427" strokeWidth="3"/><rect x="96" y="17" width="43" height="31" fill="#648FAF"/><path d="M101 25h26M101 31h33M101 37h16" stroke="#FFF8E6" strokeWidth="2"/><path d="M114 54v8M103 62h24" stroke="#202427" strokeWidth="3"/></g>}
-  {n>=5&&<g><rect x="149" y="13" width="41" height="33" rx="2" fill="#2F3640" stroke="#202427" strokeWidth="2.4"/><rect x="153" y="17" width="33" height="24" fill="#7B9CC4"/><path d="M158 23h19M158 29h16" stroke="#FFF8E6" strokeWidth="2"/></g>}
-  <path d="M72 72h51l6 8H68Z" fill="#DDDAD2" stroke="#292827" strokeWidth="2.3"/>
-  {Array.from({length:8},(_,i)=><path key={i} d={`M${74+i*6} 75v3`} stroke="#6E777F" strokeWidth="2"/>)}
-  {n>=2&&<g><rect x="135" y="68" width="24" height="14" rx="2" fill="#D8A657" stroke="#292827" strokeWidth="2"/><path d="M141 73h12M141 77h8" stroke="#FFF3D9" strokeWidth="1.7"/></g>}
-  {n>=4&&<g><path d="M178 88V65" stroke="#5E8558" strokeWidth="2.5"/><path d="M178 76Q160 67 165 61q15 0 13 15M178 73q18-18 18-7q-3 9-18 7" fill="#8FA67A" stroke="#292827" strokeWidth="1.8"/><path d="M169 82h19l-4 13h-11z" fill="#D99566" stroke="#292827" strokeWidth="2"/></g>}
-  {n<5&&mug}
-  {n>=3&&<g><rect x="10" y="66" width="33" height="6" fill="#F8F1E3" stroke="#292827" strokeWidth="1.6"/><rect x="12" y="73" width="34" height="6" fill="#FFF1C2" stroke="#292827" strokeWidth="1.6"/><rect x="9" y="80" width="38" height="6" fill="#F8F1E3" stroke="#292827" strokeWidth="1.6"/></g>}
-  <rect x="5" y="5" width="27" height="11" transform="rotate(-5 5 5)" fill="#FFD36B" stroke="#292827" strokeWidth="1.4"/>
-  <circle cx="16" cy="11" r="2" fill="#292827"/><circle cx="23" cy="11" r="2" fill="#292827"/>
+ const wood=["#ACA89B","#C38F58","#A96E43","#D5B483","#B97D47"][n-1];
+ const cabinet=n===5?"#597B9D":n===4?"#D4D3C9":"#777E80";
+ const screen=(x,w,kind)=><g key={x}>
+  <path d={`M${x+w/2} 39v9m-11 0h22`} strokeWidth="3"/>
+  <rect x={x} y="4" width={w} height="35" rx="2" fill="#343B44"/>
+  <rect x={x+4} y="8" width={w-8} height="26" fill="#567DA2" strokeWidth="1.3"/>
+  <path d={`M${x+8} 11h${w-16}`} stroke="#B2D1DE" strokeWidth="1"/>
+  {kind===0?<><path d={`M${x+11} 17h15v15h-15Z`} fill="#FFD36B" strokeWidth="1"/><path d={`M${x+15} 23h1m4 0h1m-7 4q4 4 7 0`} strokeWidth="1"/></>:<path d={`M${x+8} 17h${w-17}m-${w-17} 5h${w-22}m-${w-22} 5h${w-14}`} stroke="#CDE2CF" strokeWidth="1.3"/>}
+ </g>;
+ return <svg className="pg-desk-svg" viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round">
+  <ellipse cx="101" cy="95" rx="96" ry="4" fill="#504435" stroke="none" opacity=".17"/>
+  <path d="M9 54h39v39H9ZM150 54h39v39h-39Z" fill={cabinet}/>
+  <path d="M15 62h27m-27 13h27m-27 10h27M156 62h27m-27 13h27m-27 10h27" strokeWidth="1.2"/>
+  <path d="M27 65h6m-6 13h6m131-13h6m-6 13h6" strokeWidth="2"/>
+  <path d="M12 92v5m32-5v5m111-5v5m31-5v5" strokeWidth="3"/>
+  <path d="M3 47l7-6h180l7 6v8H3Z" fill={wood}/>
+  <path d="M4 48h192" stroke="#F6D0A1" strokeWidth="1.6"/>
+  {n===1?<><path d="M66 12h45l4 28H69Z" fill="#42464C"/><path d="M68 40h49l7 7H61Z" fill="#8B9298"/><circle cx="91" cy="27" r="3" fill="#B8BEBD" stroke="none"/></>:n===2?screen(64,56,0):n<5?<>{screen(45,53,0)}{screen(101,53,1)}</>:<>{screen(30,47,1)}{screen(80,47,0)}{screen(130,47,1)}</>}
+  <path d="M77 50h49l4 5H74Z" fill="#B8BCB7" strokeWidth="1.2"/>
+  <path d="M82 52h37" strokeWidth="1"/>
+  <path d="M137 49q9-3 12 3h-13Z" fill="#343B44" strokeWidth="1.3"/>
+  <path d="M165 34h10v12h-10Z" fill="#FFF8E8" strokeWidth="1.5"/><path d="M175 36q7 0 0 7" strokeWidth="1.5"/><circle cx="170" cy="40" r="3.2" fill="#FFD36B" stroke="none"/>
+  {n>=2&&<g><path d="M21 37V14" stroke="#476346"/><path d="M21 27Q4 26 8 15q11 1 13 12M21 25Q20 4 28 5q5 12-7 20M22 30q19-17 22-7-2 8-22 7" fill="#739750" strokeWidth="1.7"/><path d="M12 31h21l-4 15H16Z" fill="#C98758" strokeWidth="1.7"/></g>}
+  {n>=3&&<g><path d="M7 36h28v5H7Zm3-5h28v5H10Zm-2-5h26v5H8Z" fill="#F8F1E3" strokeWidth="1.2"/><path d="M11 28h17M10 38h19" stroke="#BAA789" strokeWidth=".8"/></g>}
+  {n>=4&&<g><path d="M155 39V13l-9-6" strokeWidth="2"/><path d="M139 4l14 6-7 10-13-6Z" fill="#3A4149" strokeWidth="1.5"/><path d="M138 14l8 4" stroke="#FFD36B" strokeWidth="2"/></g>}
+  {n===5&&<g><rect x="53" y="62" width="16" height="30" rx="2" fill="#3A4149" strokeWidth="1.5"/><path d="M57 67h8m-8 4h8" stroke="#A1AAA8" strokeWidth="1"/><circle cx="61" cy="85" r="2" fill="#FFD36B" strokeWidth="1"/></g>}
  </svg>;
 }
+function OfficeChairArt({tier="c1"}){
+ const n=Number(tier.slice(1))||1,c=["#718BAD","#6F7B83","#A46B47","#343C4D"][n-1]||"#718BAD";
+ return <svg viewBox="0 0 60 80" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.3" strokeLinejoin="round">
+  <path d="M30 57v15m-21 4 21-7 21 7M30 69v8"/><circle cx="9" cy="76" r="2" fill="#2B2B2B"/><circle cx="51" cy="76" r="2" fill="#2B2B2B"/>
+  <rect x="13" y="3" width="34" height="43" rx={n===3?10:6} fill={c}/>
+  <path d="M18 8q12-4 24 0v28H18Z" stroke="#F8F1E3" strokeOpacity=".2" strokeWidth="1.2"/>
+  <path d="M8 42h44l-4 14H12Z" fill={c}/><path d="M8 42v-9H4m48 9v-9h4" strokeWidth="4"/>
+  {n===4&&<><path d="M18 5l6 16M42 5l-6 16" stroke="#D46F5D" strokeWidth="3"/><circle cx="30" cy="29" r="7" fill="#FFD36B"/><path d="M27 30q3 4 6 0" strokeWidth="1.4"/></>}
+ </svg>;
+}
+function DecorArt({kind}){
+ if(kind==="plant")return <svg viewBox="0 0 60 85" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.4" strokeLinejoin="round"><path d="M30 65V15" stroke="#476346"/><path d="M30 48Q1 42 4 24q21-1 26 24M30 41Q14 6 31 3q14 12-1 38M31 49Q54 12 58 28q4 17-27 21M29 58Q5 58 9 44q12-3 20 14" fill="#799B57"/><path d="M16 56h29l-5 26H21Z" fill="#C98D61"/><path d="M15 56h31v6H15Z" fill="#DFA67A"/><path d="M26 69h1m8 0h1m-10 5q5 5 10 0" strokeWidth="1.8"/></svg>;
+ if(kind==="boxes")return <svg viewBox="0 0 100 70" aria-hidden="true" fill="#C69B69" stroke="#2B2B2B" strokeWidth="2.4" strokeLinejoin="round"><path d="M3 25l39-8 18 12-37 10Z" fill="#DFB981"/><path d="M3 25v32l20 10V39Zm20 14 37-10v31l-37 7Z"/><path d="M42 8l37-5 17 11-37 7Z" fill="#DFB981"/><path d="M42 8v27l17 10V21Zm17 13 37-7v27l-37 4Z"/><path d="M65 5l13 10v13l8-1V14L75 4" fill="#F5DCA7" strokeWidth="1"/><path d="M30 46l18-3v11l-18 3Z" fill="#FFF5DC" strokeWidth="1.2"/></svg>;
+ return null;
+}
 
+function CastAccessory({id}){
+ return <svg className="pg-cast-prop" viewBox="0 0 60 88" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="1.7" strokeLinejoin="round">
+ {(id==="john"||id==="matt"||id==="dave")&&<path d="M28 28l4 3-3 17-4-4Z" fill={id==="john"?"#C9574B":"#526A85"}/>}
+ {(id==="chance"||id==="joey")&&<><path d="M16 0Q17-12 30-11Q44-10 44 1L15 3Z" fill={id==="chance"?"#6B8056":"#6E93B8"}/><path d="M28-10Q33-12 37-9L39 0H28Z" fill="#F8F1E3"/><path d="M31 1h21q-2 5-17 5" fill={id==="chance"?"#6B8056":"#6E93B8"}/></>}
+ {id==="dave"&&<path d="M27 20q4-4 8 0l7 1q-2 4-9 1-5 3-9 0Z" fill="#8C8880" strokeWidth="1"/>}
+ {id==="joey"&&<><path d="M17 49h28v6H17Z" fill="#AE7A45"/><path d="M37 51h6v12h-6Z" fill="#DCA553"/><path d="M3 39l26-4 1 6-26 4Z" fill="#C7935B"/></>}
+ {id==="matt"&&<><path d="M2 35h19v24H2Z" fill="#D5B580"/><path d="M5 41h13M5 45h11M5 49h13" strokeWidth="1"/></>}
+ {id==="nick"&&<><path d="M0 39h24l3 17H3Z" fill="#677F96"/><circle cx="13" cy="47" r="4" fill="#FFD36B"/><path d="M11 48q2 2 4 0" strokeWidth=".8"/></>}
+ {(id==="avah"||id==="john")&&<rect x="44" y="33" width="9" height="16" rx="2" fill="#536F8C"/>}
+ {id==="kyle"&&<><circle cx="45" cy="41" r="4" fill="#D2AD57"/><path d="M45 45v10l4-2"/></>}
+ {id==="rilie"&&<path d="M19 25q11 7 22 0l-4 7h-8v17h-6V31Z" fill="#BF6471"/>}
+ {(id==="jess"||id==="dave"||id==="chance")&&<><path d="M43 40h11v12H43Z" fill="#FFF8E8"/><path d="M54 42q8 0 0 7"/><circle cx="48.5" cy="46" r="3.3" fill="#FFD36B" stroke="none"/></>}
+ </svg>;
+}
+const CAST_LOOKS = {
+ jess:{hair:"long",hairColor:1,clothing:"blazer",gender:"feminine",glasses:false},
+ john:{hair:"messy",hairColor:1,clothing:"starter",top:0},
+ chance:{hair:"messy",hairColor:1,clothing:"cardigan",build:"slim"},
+ matt:{hair:"short",hairColor:0,clothing:"starter",top:0,glasses:true},
+ avah:{hair:"bun",hairColor:3,clothing:"cardigan",glasses:true,gender:"feminine"},
+ nick:{hair:"messy",hairColor:4,clothing:"hoodie",glasses:true},
+ joey:{hair:"short",hairColor:1,clothing:"hoodie",build:"broad"},
+ kyle:{hair:"messy",hairColor:2,clothing:"cardigan",build:"slim"},
+ rilie:{hair:"long",hairColor:1,clothing:"friday",gender:"feminine"},
+ dave:{hair:"short",hairColor:6,clothing:"starter",top:3,glasses:true,build:"broad"}
+};
 function OfficeVisitorBody({visitor:v}){
- const id=v.id||"";
- const color=id==="jess"?"#343B43":id==="dave"?"#CEBD7F":id==="chance"?"#617750":id==="john"?"#F8F1E3":id==="matt"?"#E8E7E0":id==="joey"?"#4B5A63":id==="nick"?"#303C4B":id==="avah"?"#7B9CC4":id==="rilie"?"#836F90":v.color;
- const hair=id==="avah"?"#D5AB62":id==="rilie"?"#51382E":v.hair;
- return <div className="pg-body chance pg-visitor-cutout" style={{transform:"scaleX("+v.facing+")"}}>
- <svg viewBox="0 0 74 92" className="pg-chancesvg" aria-label={v.name+" cutout cartoon character"} role="img">
- <ellipse cx="37" cy="90" rx="21" ry="2" fill="#202A21" opacity=".18"/>
- {/* Hands, shoes and tailored clothing keep the original NPC size/hitbox. */}
- <path d="M21 76h14v12q-2 3-15 3zM40 76h14v12q-2 3-15 3z" fill="#333943" stroke="#282828" strokeWidth="2.5"/>
- <path d="M18 50h38l3 31H15z" fill={color} stroke="#2B2B2B" strokeWidth="2.8" strokeLinejoin="round"/>
- <rect x="12" y="50" width="8" height="25" rx="4" fill="#DEAF90" stroke="#2B2B2B" strokeWidth="2"/>
- <rect x="54" y="50" width="8" height="25" rx="4" fill="#DEAF90" stroke="#2B2B2B" strokeWidth="2"/>
- <path d="M31 49l6 6 6-6" fill="none" stroke="#F8F1E3" strokeWidth="3"/>
- {(id==="john"||id==="matt")&&<path d="M37 54l4 4-4 16-4-16z" fill={id==="john"?"#E05B5B":"#516274"} stroke="#2B2B2B" strokeWidth="1.4"/>}
- {(id==="nick")&&<><path d="M20 51q17-13 34 0" fill="none" stroke="#657B97" strokeWidth="5"/><path d="M29 52l8 8 8-8" stroke="#172230" strokeWidth="2" fill="none"/></>}
- {(id==="joey")&&<><path d="M15 70h43v7H15z" fill="#BA965F" stroke="#2B2B2B" strokeWidth="2"/><rect x="44" y="72" width="7" height="10" rx="1" fill="#D6A552" stroke="#2B2B2B" strokeWidth="1.5"/></>}
- {id==="rilie"&&<path d="M19 44q18 11 37 0l-6 12-24 1z" fill="#D47779" stroke="#2B2B2B" strokeWidth="1.8"/>}
- {v.longHair&&<path d="M17 25Q14 5 37 4Q61 4 58 30L63 59Q57 64 51 51Q23 48 20 58Q12 59 11 53Z" fill={hair} stroke="#2B2B2B" strokeWidth="2.7"/>}
- <ellipse cx="37" cy="29" rx="17" ry="19" fill="#E6B596" stroke="#2B2B2B" strokeWidth="2.7"/>
- {id==="avah"&&<><ellipse cx="55" cy="10" rx="8" ry="8" fill={hair} stroke="#2B2B2B" strokeWidth="2"/><path d="M24 15Q37-2 55 17Q48 6 37 11z" fill={hair}/></>}
- {id==="rilie"&&<path d="M20 19Q17 7 31 6Q49 2 55 17Q45 6 37 12Q29 7 20 19" fill={hair} stroke="#2B2B2B" strokeWidth="2"/>}
- {(id==="joey"||id==="chance")?<><path d="M19 21Q22 7 38 9Q51 9 54 21L18 22Z" fill={id==="chance"?"#68754D":"#7B9CC4"} stroke="#2B2B2B" strokeWidth="2.6"/><path d="M36 20h29q-1 8-22 7" fill={id==="chance"?"#68754D":"#EBE3CE"} stroke="#2B2B2B" strokeWidth="2"/></>:
- <path d="M20 22Q20 7 37 8Q56 6 54 23Q48 14 39 15Q28 14 20 22z" fill={hair} stroke="#2B2B2B" strokeWidth="2.7"/>}
- {id==="john"&&<path d="M24 12l-5-9 13 5M41 11l7-8-1 9" fill={hair} stroke="#2B2B2B" strokeWidth="2"/>}
- {id==="nick"&&<path d="M25 12l-7-7 14 6m11 0 6-8 0 12" fill={hair} stroke="#2B2B2B" strokeWidth="2"/>}
- <path d="M25 28q5-3 11 0M39 28q5-3 10 0" fill="none" stroke="#41332B" strokeWidth="2"/>
- <path d="M25 31q5 2 11 0M39 31q5 2 10 0" fill="none" stroke="#2B2B2B" strokeWidth="2.2"/>
- <circle cx="30" cy="29" r="1.7" fill="#2B2B2B"/><circle cx="44" cy="29" r="1.7" fill="#2B2B2B"/>
- {(id==="matt"||id==="nick"||id==="avah"||id==="dave")&&<><rect x="24" y="24" width="13" height="11" rx="4" fill="none" stroke="#2B2B2B" strokeWidth="1.8"/><rect x="38" y="24" width="13" height="11" rx="4" fill="none" stroke="#2B2B2B" strokeWidth="1.8"/><path d="M37 28h2" stroke="#2B2B2B"/></>}
- <path d={id==="chance"?"M31 39Q38 43 44 38":"M32 40q5 2 10 0"} stroke="#7A5246" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
- {id==="dave"&&<><path d="M29 37q8 5 16 0" stroke="#817D78" strokeWidth="4" fill="none"/><path d="M20 20q8-9 17-7 10-2 17 7" stroke="#B6B0A8" strokeWidth="3" fill="none"/></>}
- {/* Story accessories make even the smallest office visitor distinguishable. */}
- {id==="chance"&&<><path d="M9 54h15v16H9z" fill="#FFF8E8" stroke="#2B2B2B" strokeWidth="2"/><path d="M24 57h4q4 4-4 8" stroke="#2B2B2B" strokeWidth="2" fill="none"/></>}
- {id==="dave"&&<><path d="M7 54h16v16H7z" fill="#FFF8E8" stroke="#2B2B2B" strokeWidth="2"/><circle cx="15" cy="62" r="5" fill="#FFD36B" stroke="#2B2B2B" strokeWidth="1"/></>}
- {id==="jess"&&<><rect x="1" y="57" width="18" height="7" rx="2" fill="#AC8760" stroke="#2B2B2B" strokeWidth="2"/><path d="M4 43h6l1 14H3z" fill="#F78B6B" stroke="#2B2B2B" strokeWidth="1.8"/><path d="M12 45h6l1 12h-8z" fill="#7B9CC4" stroke="#2B2B2B" strokeWidth="1.8"/></>}
- {id==="john"&&<><rect x="51" y="57" width="11" height="19" rx="2" fill="#353C48" stroke="#2B2B2B" strokeWidth="2"/><circle cx="56" cy="61" r="1" fill="#E05B5B"/></>}
- {id==="matt"&&<><path d="M2 53h26v26H2z" fill="#D8BF8C" stroke="#2B2B2B" strokeWidth="2.2"/><path d="M7 60h17M7 65h15M7 70h17" stroke="#7B603E" strokeWidth="1.7"/></>}
- {id==="avah"&&<><rect x="55" y="48" width="13" height="21" rx="2" fill="#4F6C8B" stroke="#2B2B2B" strokeWidth="2"/><rect x="58" y="52" width="7" height="10" rx="1" fill="#F8F1E3"/></>}
- {id==="joey"&&<><path d="M2 53H36v7H2z" fill="#BE8F5C" stroke="#2B2B2B" strokeWidth="2.2"/><path d="M12 54v6M28 54v6" stroke="#86603F" strokeWidth="1.4"/></>}
- {id==="nick"&&<><rect x="2" y="56" width="30" height="20" rx="2" fill="#637A92" stroke="#2B2B2B" strokeWidth="2"/><circle cx="17" cy="66" r="4" fill="#FFD36B" stroke="#2B2B2B" strokeWidth="1.2"/><path d="M14 67q3 3 6 0" stroke="#2B2B2B" fill="none" strokeWidth="1"/></>}
- {id==="kyle"&&<><circle cx="8" cy="64" r="4" fill="none" stroke="#2B2B2B" strokeWidth="2.2"/><path d="M12 64h9l3-3m-3 3 3 3" stroke="#D1A546" strokeWidth="3"/></>}
- {id==="rilie"&&<><path d="M16 47q-9 4-8 25" stroke="#CF8587" strokeWidth="8" fill="none"/><path d="M9 70l-3 7M9 70l3 7" stroke="#CF8587" strokeWidth="2"/></>}
- </svg>
+ const look=normalizedAvatar({build:"regular",bottom:"trousers",eyes:"tired",expression:"deadpan",...CAST_LOOKS[v.id]});
+ return <div className={"pg-visitor-cutout cast-"+v.id} role="img" aria-label={v.name+" cutout cartoon character"}>
+  <Body p={{name:v.name,look,cast:v.id}} facing={v.facing||1} moving={!!v.progress}/>
  </div>;
 }
 function DaveBody({ facing = 1 }) {
@@ -6975,7 +7120,7 @@ function Account({ user, onLinked }) {
   );
 }
 
-function Onboard({ user, code, onDone }) {
+function Onboard({ user, code, onDone, preview=false }) {
   const [name, setName] = useState("");
   const [img, setImg] = useState(null);
   const [look,setLook] = useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
@@ -7002,7 +7147,7 @@ function Onboard({ user, code, onDone }) {
   };
 
   const go = async () => {
-    if (!name.trim() || busy) return;
+    if (preview || !name.trim() || busy) return;
     setBusy(true);
     try {
       let url = null;
@@ -7063,7 +7208,7 @@ function Onboard({ user, code, onDone }) {
       <div className="pg-avatar-preview"><Body p={{name:name||"New Hire",look}}/><span>HR has approved your face. Qualifications remain unverified.</span></div>
       <AvatarControls value={look} onChange={setLook}/>
       {err && <div className="pg-fine pg-err">{err}</div>}
-      <button className="pg-work big" disabled={!name.trim() || busy} onClick={go}>
+      <button className="pg-work big" disabled={preview || !name.trim() || busy} onClick={go}>
         {busy ? "Processing paperwork…" : "Start the shift"}
       </button>
       <div className="pg-fine pg-center">You start earning the second you badge in.</div>
@@ -7087,7 +7232,7 @@ function ArtPreview(){
   </div>
   <h2>0b. Actual new-employee onboarding screen · read-only QA</h2>
   <section data-testid="onboard-qa" style={{border:"2px dashed #2B2B2B",maxWidth:760,margin:"0 auto 18px",padding:6}}>
-    <Onboard user={{id:"art-preview-only"}} code={null} onDone={()=>{}}/>
+    <Onboard user={{id:"art-preview-only"}} code={null} preview onDone={()=>{}}/>
   </section>
   <h2>1. Flat cutout color and shape system</h2>
   <div className="ar-palette">{colors.map(([name,color])=><span key={name} style={{background:color}}>{name}</span>)}</div>
@@ -7118,8 +7263,10 @@ function ArtPreview(){
   <h2>4d. Owned office upgrade silhouettes — five tier samples</h2>
   <div className="ar-grid">{["d1","d2","d3","d4","d5"].map((d,i)=><div className="ar-cell" key={d}><div className="ar-fixture" style={{height:102}}>
     <div className="pg-officedesk" data-desk={d} style={{position:"relative",width:"100%",height:75,top:0,left:0}}><OfficeDeskArt tier={d}/></div>
-    <div className={"pg-officechair chair-c"+Math.min(4,i+1)} style={{top:40}}/>
+    <div className={"pg-officechair chair-c"+Math.min(4,i+1)} style={{top:48}}><OfficeChairArt tier={"c"+Math.min(4,i+1)}/></div>
     </div><strong>{"Desk upgrade "+(i+1)}</strong></div>)}</div>
+  <h2>4e. Companions · same ink and palette at every scale</h2>
+  <div className="ar-grid" data-testid="pet-qa">{Object.entries(CRITTERS).map(([id,pet])=><div className="ar-cell" key={id}><svg viewBox={id==="bull"?"0 0 74 62":"0 0 34 34"} className="pg-petart" style={{width:68,height:68}} role="img" aria-label={pet.name}>{pet.art}</svg><strong>{pet.name}</strong></div>)}</div>
   <h2>5. Small icon readability</h2>
   <div className="ar-grid">{types.map(t=><div className="ar-cell" key={t}><div className="ar-icons"><OfficeIcon kind={t}/><OfficeIcon kind={t} compact/></div><strong>{t}</strong></div>)}</div>
  </main>;

@@ -45,3 +45,13 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Replaced flat rectangle desk props with illustrated tier-aware desk SVGs and differentiated permanent clothing thumbnails.
 - Added browser checks for old-mask regression and non-authenticated real onboarding layout, plus archived phone/desktop screenshots.
 - No economy RPCs, item ownership IDs or production player records changed.
+
+## Build 154 candidate: unified cutout world
+
+- Recovered and visually compared original/updated concept sheets, with source identities and acceptance gaps in `VISUAL_REDESIGN.md`.
+- Unified all ten NPCs with the player avatar rig; improved face, body proportions, clothing/role details, hand skin tones and emote expressions. Removed legacy head mask from custom HUD/list faces too.
+- Illustrated five desk/four chair tiers, kitchen and service fixtures, companions and scenery; unified floors/cubicle/nameplate/HUD surfaces and improved phone target sizes and sprite readability.
+- Corrected depth sorting so actors can stand behind their desks. Kept map geometry, collisions, paths, items, prices, timers and server API unchanged.
+- Self-hosted pinned browser dependencies after reproducing a CDN startup failure. Added full game UI tests with isolated HTTP fixtures and touch emulation; kept existing PostgreSQL contract jobs.
+- No production player data or SQL changed. Live authenticated and physical-device verification remain outstanding; exact concept-art fidelity not claimed.
+- CI follow-up: restricted Playwright discovery to browser spec files; kept the Node helper regression in its own dependency/job boundary. All six local browser tests passed after the correction.
