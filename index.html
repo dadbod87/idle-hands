@@ -1842,7 +1842,7 @@ function officeVisitorNow(t,ch,dv){
  const v=active[0]||null;
  if(v&&v.id==="jess"&&ch)v.line="Chance, are you quitting again?";
  if(v&&v.id==="jess"&&dv)v.line="Dave's out. Everybody act normal.";
- if(v&&v.id==="avah"&&ch)v.line="Chance, can you answer the phone? Actually, never mind.";
+ if(v&&v.id==="avah"&&ch)v.line=(Math.abs(v.bucket)%2===0 ? "Chance, did you get a code?" : "Chance, can you answer the phone? Actually, never mind.");
 
  if(v&&v.id==="nick"&&dv)v.line="Dave walked by. I opened the code editor immediately.";
  if(v&&v.id==="nick"&&ch)v.line="Chance asked what I do all day. I said software development.";
