@@ -4763,7 +4763,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const cls = [
     "pg-body", me ? "me" : "", c?.big ? "big" : "",
     moving ? "walking" : "idling", emote ? "em-" + emote : "",
-    "bt-" + bottom,
+    "bt-" + bottom, "garment-" + (L.clothing || "starter"),
     v.glow ? "glow-" + v.glow : "", v.size ? "size-" + v.size : "",
     v.aura ? "aura-" + v.aura : "",
     MOUNTS[p?.mount] ? "riding" : "",
@@ -4785,6 +4785,13 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
         {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
           <path d={B.torso} fill={shirt} />
+          {wardrobeItem&&<>
+            {(L.clothing==="hoodie"||L.clothing==="hoodie_gold")&&<><path d="M21 0Q30 13 39 0" stroke="#263446" strokeWidth="4" fill="none"/><path d="M30 15v23" stroke="#DCE7EA" strokeWidth="1.5"/><path d="M20 24q10 4 20 0v10H20Z" fill="rgba(0,0,0,.13)" stroke="#2B2B2B" strokeWidth="1.5"/><path d="M26 7v9M34 7v9" stroke="#F8F1E3" strokeWidth="1.5"/></>}
+            {(L.clothing==="cardigan")&&<><path d="M21 1l9 14 9-14M30 12v26" fill="none" stroke="#F4DFCE" strokeWidth="4"/><circle cx="30" cy="19" r="1.6" fill="#2B2B2B"/><circle cx="30" cy="29" r="1.6" fill="#2B2B2B"/></>}
+            {L.clothing==="blazer"&&<><path d="M17 2l10 14-7 8-8-17M43 2L33 16l7 8 8-17" fill="#E5E1D8" stroke="#2B2B2B" strokeWidth="1.4"/><path d="M30 10l4 5-4 14-4-14Z" fill="#D16E5F" stroke="#2B2B2B" strokeWidth="1.3"/></>}
+            {L.clothing==="hawaiian"&&<>{[[18,13],[38,19],[25,28],[42,35]].map(([x,y],i)=><g key={i}><circle cx={x} cy={y} r="4" fill="#FFDC8E"/><path d={`M${x-2} ${y}q2-4 4 0q-2 4-4 0`} fill="#45866F"/></g>)}</>}
+            {L.clothing==="friday"&&<><path d="M14 12h32M12 23h36M16 34h28" stroke="#FFD36B" strokeWidth="3" opacity=".65"/><circle cx="30" cy="14" r="5" fill="#FFF2C2" stroke="#2B2B2B" strokeWidth="1.5"/><path d="M28 14h4M28 16q2 2 4 0" stroke="#2B2B2B" strokeWidth="1"/></>}
+          </>}
           {c?.skirt && <path d="M12 30h36l5 15H7Z" fill={c.skirt} />}
           {c?.tie && <path d="M30 6l4 4-4 16-4-16Z" fill={c.tie} />}
           {c?.floral && <>
