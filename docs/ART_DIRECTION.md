@@ -37,3 +37,7 @@ Art QA includes actual-game fixture walkthroughs with touch emulation. Do not co
 ## Build 156 character personalities
 
 Nine head silhouettes share the existing ink, palette and expression rig. Classic is the backward-compatible default. Round, square and pear human faces retain all hairstyles; cyclops uses a single eye and a single glasses lens. Alien, robot, frog and paper-bag heads have intentional fixed silhouettes and explain that the human hair selection is retained. Body style controls torso shape, build controls width, and neither changes collision geometry or wardrobe ownership. Randomization changes free appearance only and retains the equipped garment. Test real creator and mirror controls at 390px and 1440px, all nine head outlines and nine style/build combinations, then verify saved appearance in the walking/emoting world rig.
+
+## Build 157 supply-closet previews
+
+Costume thumbnails and expanded try-ons must use `CostumePreview` → `Body` → `Hat` / `CostumeSuit`, with the selected recipient's normalized look. Use category icons only for unknown catalog IDs. The try-on is presentation-only: never mutate the selected player or send a purchase RPC until the player activates the existing purchase row. Keep preview controls enabled when funds/cooldown prevent purchase. Hide duplicate costume-name labels and pause animation only inside preview containers; retain equipped-world layering and animation. Verify all 11 costumes in the actual Wardrobe at phone/desktop sizes and in the read-only gallery.

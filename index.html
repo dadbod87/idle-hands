@@ -1473,6 +1473,24 @@ body{background:#D9CDC0}
 .pg-head-options button:focus-visible,.pg-avatar-swatches button:focus-visible{outline:3px solid #385D81;outline-offset:3px}
 .pg-avatar-swatches button[aria-pressed="true"]::after{content:"✓";color:white;text-shadow:0 1px 2px #000,1px 0 2px #000;font-size:18px}
 .pg-head-options button>span{max-width:100%;overflow-wrap:anywhere;line-height:1.2}
+
+/* Supply closet uses the actual equipped rig rather than category pictograms. */
+.pg-costume-preview{position:relative;flex:0 0 66px;width:66px;height:90px;background:#ECE4D2;border:1.5px solid #B6AA96;border-radius:8px;overflow:visible;pointer-events:none}
+.pg-costume-preview .pg-body{position:absolute;left:50%;top:21px;transform:translateX(-50%) scale(.68);transform-origin:50% 0}
+.pg-costume-preview *{animation:none!important}
+.pg-costume-preview .pg-worn{display:none}
+.pg-costume-preview.large{flex-basis:132px;width:132px;height:166px;background:#FFEFC5}
+.pg-costume-preview.large .pg-body{top:37px;transform:translateX(-50%) scale(1.25)}
+.pg-costume-preview .pg-sign{font-size:8px}
+.pg-costume-buyhint{display:block;margin-top:7px;font:10px var(--mono);color:var(--soft)}
+.pg-costume-inspect{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:9px 16px;background:#F8F1E3;border:0;border-bottom:2px solid #B6AA96;color:#364F62;text-align:left;cursor:pointer;font:700 11px var(--mono)}
+.pg-costume-inspect:hover,.pg-costume-inspect[aria-expanded="true"]{background:#FFE8AC}
+.pg-costume-inspect:focus-visible{outline:3px solid #385D81;outline-offset:-3px}
+.pg-costume-detail{display:flex;align-items:center;gap:18px;padding:16px;background:#F0E5CA;border-bottom:2px solid #B6AA96}
+.pg-costume-detail>div:last-child{min-width:0;font-size:13px}
+.pg-costume-detail p{line-height:1.4}
+.pg-costume-entry .pg-right{min-width:45px}
+@media(max-width:440px){.pg-costume-preview{flex-basis:58px;width:58px}.pg-costume-detail{gap:12px;padding:12px}.pg-costume-preview.large{flex-basis:112px;width:112px}.pg-costume-entry .pg-main>b{font-size:13px}}
 </style>
 </head>
 <body>
@@ -3169,7 +3187,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 156 · faces with personality";
+const BUILD = "build 157 · costume previews";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -6519,7 +6537,21 @@ function Cooler({ cat, me, onDrink }) {
   );
 }
 
+/** Read-only try-on: the exact world rig, using the chosen recipient's face/body.
+ * No player object is mutated and this component never calls an API. */
+function CostumePreview({id,player,large=false}){
+ const costume=COSTUMES[id];
+ if(!costume)return <OfficeIcon kind="shirt" cosmetic/>;
+ const mannequin={name:player?.name||"Employee",look:normalizedAvatar(lookFor(player)),
+  outfit:{id,until:"2999-01-01T00:00:00Z"}};
+ return <div className={"pg-costume-preview"+(large?" large":"")} data-costume={id}
+  role="img" aria-label={costume.name+" on "+mannequin.name}>
+  <Body p={mannequin}/>
+ </div>;
+}
+
 function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCommit, onNickname, prices }) {
+  const [preview,setPreview]=useState(null);
   const [nick, setNick] = useState("");
   const [sel, setSel] = useState(me?.id || null);
   const target = board.find((p) => p.id === sel);
@@ -6602,13 +6634,21 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
             const cooling = !mine && cool > 0;
             const disabled = broke || cooling;
             return (
-              <button key={c.id} className={"pg-row" + (i % 2 ? " alt" : "") + (disabled ? " poor" : "")}
-                      disabled={disabled} onClick={() => onDress(target, c.id)}>
-                <OfficeIcon kind={c.name+" costume"} cosmetic/>
-                <span className="pg-main"><b>{c.name}</b><span>{COSTUMES[c.id]?.note}</span></span>
-                <span className="pg-right"><b>{fmt(price)}</b>
-                  <span>{cool > 0 ? "cooling off" : pp < price ? "can't afford" : "BW"}</span></span>
-              </button>
+              <div key={c.id} className="pg-costume-entry" data-costume-entry={c.id}>
+                <button className={"pg-row" + (i % 2 ? " alt" : "") + (disabled ? " poor" : "")}
+                        disabled={disabled} onClick={() => onDress(target, c.id)} aria-label={(mine?"Wear ":"Dress "+target.name+" in ")+c.name+" — "+fmt(price)+" BW"}>
+                  <CostumePreview id={c.id} player={target}/>
+                  <span className="pg-main"><b>{c.name}</b><span>{COSTUMES[c.id]?.note}</span><em className="pg-costume-buyhint">{mine?"Tap to wear":"Tap to dress "+target.name} · 45 minutes</em></span>
+                  <span className="pg-right"><b>{fmt(price)}</b>
+                    <span>{cooling ? "cooling off" : broke ? "can't afford" : "BW"}</span></span>
+                </button>
+                <button type="button" className="pg-costume-inspect" aria-label={"Preview "+c.name} aria-expanded={preview===c.id} aria-controls={"costume-detail-"+c.id}
+                  onClick={()=>setPreview(preview===c.id?null:c.id)}>{preview===c.id?"Hide preview":"Preview on "+(mine?"your character":target.name)} <span aria-hidden="true">{preview===c.id?"−":"+"}</span></button>
+                {preview===c.id&&<div className="pg-costume-detail" id={"costume-detail-"+c.id} data-testid="costume-detail">
+                  <CostumePreview id={c.id} player={target} large/>
+                  <div><b>{c.name}</b><p>{COSTUMES[c.id]?.note}</p><p className="pg-fine">Preview only · no Busywork spent. Tap the item above when you're ready.</p></div>
+                </div>}
+              </div>
             );
           })}
           <div className="pg-note">
@@ -7327,6 +7367,11 @@ function ArtPreview(){
   <div className="ar-grid" data-testid="pet-qa">{Object.entries(CRITTERS).map(([id,pet])=><div className="ar-cell" key={id}><svg viewBox={id==="bull"?"0 0 74 62":"0 0 34 34"} className="pg-petart" style={{width:68,height:68}} role="img" aria-label={pet.name}>{pet.art}</svg><strong>{pet.name}</strong></div>)}</div>
   <h2>5. Small icon readability</h2>
   <div className="ar-grid">{types.map(t=><div className="ar-cell" key={t}><div className="ar-icons"><OfficeIcon kind={t}/><OfficeIcon kind={t} compact/></div><strong>{t}</strong></div>)}</div>
+  <h2>5b. Actual supply closet · read-only costume try-on</h2>
+  <section data-testid="closet-qa" style={{maxWidth:760,margin:"0 auto 18px",border:"2px solid #2B2B2B"}}>
+    <Wardrobe me={{id:"closet-qa",name:"Preview Employee",look:demoAvatar}} board={[{id:"closet-qa",name:"Preview Employee",look:demoAvatar}]} lifetime={0} pp={5000} cool={0}
+      cat={{costumes:Object.entries(COSTUMES).map(([id,c])=>({id,name:c.name,cost:.01}))}} prices={{}} onDress={()=>{}} onChange={()=>{}} onCommit={()=>{}} onNickname={()=>{}}/>
+  </section>
   <h2>6. Onboarding help · small-screen scroll QA</h2>
   <button className="pg-btn" data-testid="help-preview-open" onClick={()=>setHelpOpen(true)}>Open onboarding help</button>
   {helpOpen&&<Help rate={0} onClose={()=>setHelpOpen(false)}/>}

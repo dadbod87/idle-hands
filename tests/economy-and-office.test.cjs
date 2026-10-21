@@ -51,7 +51,7 @@ assert(src.includes('function OfficeIcon('),'Cutout vector icon system');
 assert(src.includes('<OfficeIcon kind={it.name} />'),'Hiring art integrated');
 assert(src.includes('<OfficeIcon kind={u.name+" upgrade"} />'),'Upgrades art integrated');
 assert(src.includes('<OfficeIcon kind={x.name+" "+slot} cosmetic />'),'Catalogue art integrated');
-assert(src.includes('<OfficeIcon kind={c.name+" costume"} cosmetic/>'),'Costume wardrobe art integrated');
+assert(src.includes('<CostumePreview id={c.id} player={target}/>'),'Supply closet previews use actual equipped renderer');
 assert(src.includes('<OfficeIcon kind={k.name+" senior badge"} compact/>'),'Seniority perks art integrated');
 assert(src.includes('<OfficeIcon kind={d.name+" coffee mug"} compact/>'),'Coffee/beverage item art integrated');
 assert(src.includes('<OfficeIcon kind={d.name+" slush drinks"} compact/>'),'Slush beverage item art integrated');

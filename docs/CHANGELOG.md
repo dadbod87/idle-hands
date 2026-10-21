@@ -69,3 +69,10 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Adds a visual head picker, Surprise me, pants colors and accessible selected swatches. Special heads explain their fixed silhouette; hidden hair choices are retained.
 - Extends the authenticated appearance RPC with a validated head field. Installation does not rewrite players, spend BW or reset inventory; older clients keep a stored head when omitted.
 - Expands desktop/phone browser playthrough and actual isolated Postgres RPC contracts. Release, migration and exact verification evidence are recorded in the PR; physical phone and authenticated production gameplay are not claimed.
+
+## 2026-10-21: Build 157 supply-closet try-on previews
+
+- Replaces repeated category icons with actual rendered costume/character miniatures for all 11 supply-closet items.
+- Adds free, expandable previews on the selected person's appearance, with an explicit purchase hint on the existing buy row.
+- Uses shared Body/Hat/CostumeSuit rendering so the preview and equipped floor appearance stay consistent; pauses animation within the preview only.
+- Adds actual Wardrobe gallery and desktop/phone fixture tests for every costume, recipient changes, preview without spending and purchase/equip continuity. No economy, inventory, SQL or production-player changes.
