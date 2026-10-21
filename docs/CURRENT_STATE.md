@@ -61,3 +61,9 @@ Render `?art-preview=1` on the game URL to see a read-only, non-authenticated ga
 
 ## Cutout-art implementation candidate (PR #4)
 An original cutout SVG/CSS system adds 30px classed purchase icons across hire, approvals, vanity, office_kit, costume, staff, drink and perk lists, and updates all 10 NPCs with unified expressive silhouettes and props. Paper-doll body strokes and five office-kit furniture tiers are refreshed without altering stored ownership. Full test evidence and exact release state in PR #4. Read `docs/ART_DIRECTION.md`. Authenticated gameplay visually unverified; do not call the redesign complete until verified.
+
+## Character creator / permanent wardrobe (PR #5)
+- New employees create a cartoon employee rather than uploading a head photo. Build, body style, hair style/color, eyes/expression, skin tone, glasses, shirt/pants selectable free. All values persist in existing `players.look` JSONB via extended authenticated `set_look` RPC.
+- Mirror allows existing players to update for free, preserving their prior BW, Seniority, vanity and office kit.
+- Six permanent, cosmetic-only `wardrobe_owned` purchases paid in Busywork; separate from temporary coworker prank costumes. Purchase validations and outfit authorization are server-side. No player-account resets.
+- Character rendering uses same cutout `AvatarHead` in onboarding, floor and player UI. Runtime backend migration `sql/character_wardrobe.sql` must be applied before production merge.
