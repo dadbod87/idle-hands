@@ -630,6 +630,25 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-artreview .ar-palette span{width:85px;height:62px;border:3px solid #2B2B2B;border-radius:8px;display:flex;align-items:end;justify-content:center;font-size:10px;font-weight:700;padding:2px}
 @media(max-width:430px){.pg-artreview{padding:10px}.pg-artreview .ar-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.pg-artreview .ar-cell{padding:6px}}
 
+
+/* Fifth-pass office scenery: inked, flat, paper-cutout workplace objects. */
+.pg-officefloor{background:repeating-linear-gradient(45deg,#B3B3A0 0 18px,#A3A692 18px 36px);border-color:#343B35;box-shadow:inset 0 0 0 3px #899780}
+.pg-bb{background:#B58A57;border:6px solid #60462D;gap:7px;box-shadow:3px 3px 0 rgba(20,20,20,.25)}
+.pg-bb i{background:#FFD36B;box-shadow:2px 2px 0 rgba(43,43,43,.22);transform:rotate(-3deg);border:1px solid #9B793B}
+.pg-bb i:nth-child(2n){background:#F8F1E3;transform:rotate(2deg)}
+.pg-bb i:nth-child(3n){background:#7B9CC4;transform:rotate(1deg)}
+.pg-cab{background:#8A9CAE;border-color:#2B2B2B;box-shadow:3px 4px 0 #575E60}
+.pg-cab i{background:#C9D3DC;border:2px solid #586B76;box-shadow:inset 0 -3px 0 #AAB9C4}
+.pg-boss{border-color:#2B2B2B;box-shadow:3px 4px 0 #433C34}
+.pg-bossplate{background:#FFD36B;border:2px solid #2B2B2B}
+.pg-wcooler{background:#F8F1E3;border:3px solid #2B2B2B;box-shadow:2px 3px 0 #8A9EA1}
+.pg-wcooler i{background:#91C1DA;border:2px solid #2B2B2B}
+.pg-officeart{box-shadow:4px 4px 0 #8C826D,inset 0 0 0 2px #CDBE93}
+.pg-portrait{box-shadow:3px 4px 0 #9A8A67}
+.pg-fx:focus-visible{outline:4px dashed #FFD36B;outline-offset:4px}
+.pg-artreview .ar-fixture{width:100%;height:110px;max-width:200px;margin:auto;position:relative}
+.pg-artreview .ar-fixture .pg-fx{width:100%;height:100%;position:relative;z-index:0;pointer-events:none}
+
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -2895,7 +2914,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 148 · cutout art";
+const BUILD = "build 149 · cutout art";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -6968,6 +6987,8 @@ function ArtPreview(){
   </div>
   <h2>4. Props, cosmetics, upgrades</h2>
   <div className="ar-grid">{["Monitor upgrade","Nicer chair","Snack stash","Coffee setup","Rumor board","Operating agreement binder","Slush drinks","Joey wood","Tenant phone","Office plant","Employee badge","Office hoodie","Senior staff","Restructure"].map(name=><div className="ar-cell" key={name}><div className="ar-icons"><OfficeIcon kind={name}/><strong>{name}</strong></div></div>)}</div>
+  <h2>4b. In-world fixture and office-object cutouts</h2>
+  <div className="ar-grid">{["bulletin","whiteboard","portrait","hr","owner","watercooler","printer"].map(id=><div className="ar-cell" key={id}><div className="ar-fixture"><div className="pg-fx"><FixtureArt id={id} board={[]} tierPct={20}/></div></div><strong>{id}</strong></div>)}</div>
   <h2>5. Small icon readability</h2>
   <div className="ar-grid">{types.map(t=><div className="ar-cell" key={t}><div className="ar-icons"><OfficeIcon kind={t}/><OfficeIcon kind={t} compact/></div><strong>{t}</strong></div>)}</div>
  </main>;
