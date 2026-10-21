@@ -19,3 +19,7 @@ This is a concise human-readable chronology, not a substitute for Git history or
 - Strengthens executable regression assertions for cost growth, reset-at-zero pricing, resale discount, NPC casts and 100 shuffle rounds, deterministic log and UTC daily rollover.
 - Makes agent-specific context documents and release checklist mandatory for next chats.
 - Follow-ups: add real browser/playwright visual smoke tests and a dedicated non-production Supabase economy fixture, then enforce required CI as GitHub branch protection. Do not claim these are implemented unless verified.
+
+## 2026-10-20: Browser and isolated Postgres regression gate
+- Added Chromium page-load tests at 1440px and 390px, and temporary PostgreSQL synthetic pricing/reset assertions in CI. No production player data accessed.
+- Mandatory status-check branch protection and an authenticated test Supabase project are still separate follow-ups until configured/verified.
