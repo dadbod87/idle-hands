@@ -672,6 +672,12 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officefloor.rug-r3::after{background:#D36C5C}
 
 .pg-avatar-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:15px 0}.pg-avatar-field{display:flex;flex-direction:column;gap:5px;background:#F8F1E3;border:2px solid #2B2B2B;border-radius:8px;padding:9px;font:700 11px var(--mono)}.pg-avatar-field select{width:100%;background:white;border:2px solid #2B2B2B;padding:7px;font:12px var(--sans)}.pg-avatar-swatches{display:flex;gap:4px;flex-wrap:wrap}.pg-avatar-swatches button{width:24px;height:24px;border:2px solid #2B2B2B;border-radius:6px;cursor:pointer}.pg-avatar-swatches button.chosen{outline:3px solid #D34B42;outline-offset:1px}.pg-avatar-preview{display:flex;align-items:center;gap:18px;background:#FFEDBC;border:2px dashed #2B2B2B;padding:18px;margin:12px 0;min-height:110px}.pg-avatar-preview .pg-body{flex:none}.pg-avatar-preview span{font-size:12px;max-width:220px}@media(max-width:440px){.pg-avatar-controls{grid-template-columns:1fr}}
+/* Character creator: eliminate old .pg-face oval/photo mask from vector heads. */
+.pg-rig .pg-avatar-head{position:absolute;left:50%;top:-9px;transform:translateX(-50%);z-index:5;display:block;overflow:visible;background:none;border:0;border-radius:0;box-shadow:none;pointer-events:none}
+.pg-rig .pg-avatar-head svg{display:block;width:100%;height:auto;overflow:visible}
+.pg-body.me .pg-avatar-head{box-shadow:none}
+.pg-avatar-preview .pg-body{margin:12px 24px 16px 16px}
+.pg-artreview .ar-npc .pg-avatar-head{border:0;border-radius:0;background:none}
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -4781,7 +4787,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       <div className="pg-rig">
         {c?.art && <CostumeSuit art={c.art} layer="back" />}
         {c && <Hat kind={c.hat} />}
-        <span className="pg-face" style={{width:40,height:40,display:"block"}}><AvatarHead look={L} size={40}/></span>
+        <span className="pg-avatar-head" style={{width:48,height:52}}><AvatarHead look={L} size={48}/></span>
         {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
           <path d={B.torso} fill={shirt} />
@@ -7014,7 +7020,7 @@ function ArtPreview(){
   <header><h1>IDLE HANDS · ART QA</h1><p>Original 2D cutout office satire · QA gallery only · Never touches game accounts or Busywork.</p></header>
   <h2>0. Shared character creator · free appearance choices</h2>
   <div data-testid="avatar-qa" style={{background:"#FFFDF5",padding:15,border:"2px solid #2B2B2B",maxWidth:760,margin:"0 auto"}}>
-    <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><AvatarHead look={demoAvatar} size={74}/><strong>First day: make your employee</strong></div>
+    <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><strong>First day: make your employee</strong></div>
     <AvatarControls value={demoAvatar} onChange={setDemoAvatar}/>
     <p>Clothing progression · {WARDROBE.length} server-backed permanent outfits</p>
     <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><OfficeIcon kind={it.name+" hoodie"} cosmetic/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
