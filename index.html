@@ -3172,6 +3172,7 @@ function PatronFloor() {
       if (!dv) daveSeen.current = false;
       const guest=officeVisitorNow(now,ch,dv);setVisitor(guest);
       if(ch&&guest&&guest.id==="matt")ch.line="Matt! My life partner! Did you bring coffee?";
+      if(ch&&guest&&guest.id==="avah")ch.line="There she is! My favorite McNeil.";
       if(ch&&guest&&guest.id==="jess"&&guest.line.startsWith("Chancellor")) { ch.line="Nope. I am out of here."; ch.leaving=true; ch.x=Math.min(ROOM.w-75,ch.x+180); }
       if(guest&&visitorSeen.current!==guest.id+":"+guest.bucket){
        visitorSeen.current=guest.id+":"+guest.bucket;say(guest.name+" is making the rounds.","sys");
