@@ -1463,6 +1463,16 @@ body{background:#D9CDC0}
 .pg-officefloor.rug-r2::after{background:repeating-linear-gradient(45deg,#AA99B7 0 12px,#9A89A8 12px 24px);border:3px solid #776687;box-shadow:none}
 .pg-officefloor.rug-r3::after{background:#C37C6B;border:3px solid #87514B;box-shadow:none}
 .pg-officefloor.rug-r4::after{background:repeating-linear-gradient(90deg,#8FA67A 0 8px,#7D9667 8px 16px);border:3px solid #4C684D;box-shadow:none}
+
+.pg-head-picker{grid-column:1/-1;min-width:0;margin:0;padding:12px;border:2px solid #2B2B2B;border-radius:8px;background:#EEE4D1}
+.pg-shuffle{margin:0 0 12px;min-height:40px}
+.pg-head-picker legend{font:700 12px var(--mono);padding:0 6px}
+.pg-head-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:8px}
+.pg-head-options button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:83px;background:#F8F1E3;border:2px solid #786F60;border-radius:6px;padding:8px 3px;color:#2B2B2B;font:700 11px var(--sans);cursor:pointer}
+.pg-head-options button.chosen{background:#FFE6A0;border:3px solid #A83F32;padding:7px 2px}
+.pg-head-options button:focus-visible,.pg-avatar-swatches button:focus-visible{outline:3px solid #385D81;outline-offset:3px}
+.pg-avatar-swatches button[aria-pressed="true"]::after{content:"✓";color:white;text-shadow:0 1px 2px #000,1px 0 2px #000;font-size:18px}
+.pg-head-options button>span{max-width:100%;overflow-wrap:anywhere;line-height:1.2}
 </style>
 </head>
 <body>
@@ -2306,15 +2316,23 @@ const DRINK_TEXT = {
 
 /* ------------------------------------------------------------------
    CHARACTER LOOKS
-   The head is a photo, so the body carries the rest of the identity.
-   Anyone can combine any build with any bottoms — no gender switch,
-   just parts.
+   Shared cutout head and body rig. Body style changes the silhouette;
+   build and clothing remain independent choices.
    ------------------------------------------------------------------ */
 const BUILDS = {
   slim:    { torso: "M30 0C21 0 15 8 13 38h34C45 8 39 0 30 0Z", arm: 6,  legX: 21, legW: 7 },
   regular: { torso: "M30 0C18 0 10 8 8 38h44C50 8 42 0 30 0Z",  arm: 7,  legX: 19, legW: 8 },
   broad:   { torso: "M30 0C15 0 6 9 4 38h52C54 9 45 0 30 0Z",   arm: 8,  legX: 17, legW: 10 },
 };
+// Style changes the cut of the torso; build independently controls its width.
+function avatarBody(look={}){
+ const b=BUILDS[look.build]||BUILDS.regular;
+ const width={slim:17,regular:22,broad:26}[look.build]||22;
+ const left=30-width,right=30+width;
+ if(look.gender==="masculine")return {...b,torso:`M${left+2} 1L24 -1H36L${right-2} 1L${right} 12L${right-3} 38H${left+3}L${left} 12Z`};
+ if(look.gender==="feminine")return {...b,torso:`M24 0Q${left} -1 ${left+2} 12L${left+7} 23L${left} 38H${right}L${right-7} 23L${right-2} 12Q${right} -1 36 0Z`};
+ return b;
+}
 const BUILD_LIST = ["slim", "regular", "broad"];
 const BOTTOM_LIST = ["trousers", "skirt", "shorts"];
 
@@ -2329,6 +2347,17 @@ const BUILD_LABEL = { slim: "Slim", regular: "Regular", broad: "Broad" };
 /** A stable look for anyone who hasn't chosen one, derived from their name. */
 
 /* Canonical paper-doll appearance shared by onboarding, mirror and world rendering. */
+const AVATAR_HEADS=[
+ {id:"classic",name:"Office original",note:"Already needs a holiday."},
+ {id:"round",name:"Round face",note:"Approachable. Allegedly."},
+ {id:"square",name:"Square jaw",note:"Built for firm handshakes."},
+ {id:"pear",name:"Big cheeks",note:"Keeping snacks for later."},
+ {id:"alien",name:"Alien intern",note:"Here to study your meetings."},
+ {id:"robot",name:"Auto employee",note:"Still cannot fix the printer."},
+ {id:"cyclops",name:"Cyclops",note:"One eye on the deadline."},
+ {id:"frog",name:"Frog accountant",note:"Excellent at liquid assets."},
+ {id:"bag",name:"Paper bag",note:"Camera off. In person."}
+];
 const AVATAR_HAIR=["short","messy","long","bun","bob","curly","bald"];
 const AVATAR_COLORS=["#302822","#61412F","#9A6239","#D5AB62","#191B24","#A54B35","#BBA7A2"];
 const AVATAR_SKIN=["#F1C5A5","#DCA581","#BD805F","#955E46","#68452F","#F9D9C5"];
@@ -2347,6 +2376,7 @@ function normalizedAvatar(look={}){
  const integer=(n,max,def=0)=>Number.isInteger(Number(n))&&Number(n)>=0&&Number(n)<max?Number(n):def;
  return {build:one(look.build,BUILD_LIST,"regular"),bottom:one(look.bottom,BOTTOM_LIST,"trousers"),
  top:integer(look.top,TOPS.length),legs:integer(look.legs,LEGS.length),
+ head:one(look.head,AVATAR_HEADS.map(x=>x.id),"classic"),
  gender:one(look.gender,["masculine","feminine","neutral"],"neutral"),
  hair:one(look.hair,AVATAR_HAIR,"messy"),hairColor:integer(look.hairColor,AVATAR_COLORS.length),
  skin:integer(look.skin,AVATAR_SKIN.length),eyes:one(look.eyes,AVATAR_EYES,"tired"),
@@ -2355,13 +2385,25 @@ function normalizedAvatar(look={}){
 }
 function AvatarHead({look={},size=40}){
  const a=normalizedAvatar(look),skin=AVATAR_SKIN[a.skin],hair=AVATAR_COLORS[a.hairColor];
+ const human=["classic","round","square","pear","cyclops"].includes(a.head);
+ const faceFill=a.head==="alien"?"#A8BE82":a.head==="robot"?"#B5C4CB":a.head==="frog"?"#8FA67A":a.head==="bag"?"#D7B77D":skin;
+ const outline={classic:"M18 14Q32 4 47 15L49 34L53 41L48 44L48 55L32 58L24 53L23 61L17 59L17 45Q9 45 9 36Q8 28 16 29Z",
+ round:"M12 24Q13 6 32 7Q54 7 54 30Q57 52 37 57L26 57L23 62L18 58L18 52Q5 46 9 31Z",
+ square:"M14 13L45 11L52 23L52 51L43 57L22 57L17 61L16 49L10 44L10 29L14 27Z",
+ pear:"M21 12Q33 6 43 16L46 30Q58 38 53 50Q48 60 31 58L22 63L18 56Q3 52 7 38L17 29Z",
+ alien:"M6 24Q3 4 31 4Q62 4 57 26Q53 42 36 57L28 60Q10 46 6 24Z",
+ robot:"M10 16L51 16L54 54L39 54L36 61L24 61L24 55L10 54Z",
+ cyclops:"M16 14Q32 5 48 16L51 46L44 57L26 57L21 62L17 54L10 43L11 29Z",
+ frog:"M9 25Q2 8 17 8Q29 7 31 20Q35 6 47 8Q61 10 54 29L59 40Q57 58 33 58Q9 59 5 44Z",
+ bag:"M9 10L52 13L56 58L47 55L40 60L31 56L23 61L15 56L8 59Z"}[a.head];
  const expressive=a.expression==="happy"||a.expression==="surprised";
- return <svg viewBox="0 0 64 67" width={size} height={size} role="img" aria-label="Custom cartoon face" style={{display:"block",overflow:"visible",filter:"drop-shadow(1px 2px 0 rgba(43,43,43,.22))"}}>
+ return <svg viewBox="0 0 64 67" width={size} height={size} role="img" aria-label={AVATAR_HEADS.find(x=>x.id===a.head).name+" cartoon face"} data-head={a.head} style={{display:"block",overflow:"visible",filter:"drop-shadow(1px 2px 0 rgba(43,43,43,.22))"}}>
  {/* Rear hair is cutout-paper shaped, not the former circular badge. */}
- {(a.hair==="long"||a.hair==="bun"||a.hair==="curly"||a.hair==="bob")&&<path d="M12 21Q8 3 29 2Q54 0 53 25L58 62L41 60L35 45L19 60L4 62Z" fill={hair} stroke="#292827" strokeWidth="3.3" strokeLinejoin="round"/>}
- <path d="M18 14Q32 4 47 15L49 34L53 41L48 44L48 55L32 58L24 53L23 61L17 59L17 45Q9 45 9 36Q8 28 16 29Z" fill={skin} stroke="#292827" strokeWidth="2.7" strokeLinejoin="round"/>
- <path d="M12 35q4-4 7 2" fill="none" stroke="#BC805D" strokeWidth="1.8"/>
+ {human&&(a.hair==="long"||a.hair==="bun"||a.hair==="curly"||a.hair==="bob")&&<path d="M12 21Q8 3 29 2Q54 0 53 25L58 62L41 60L35 45L19 60L4 62Z" fill={hair} stroke="#292827" strokeWidth="3.3" strokeLinejoin="round"/>}
+ <path className="pg-head-outline" d={outline} fill={faceFill} stroke="#292827" strokeWidth="2.7" strokeLinejoin="round"/>
+ {human&&<path d="M12 35q4-4 7 2" fill="none" stroke="#BC805D" strokeWidth="1.8"/>}
 
+ {human&&<g>
  {/* Distinct expressive front hair silhouettes inspired by the approved concept sheets. */}
  {a.hair==="messy"&&<path d="M12 27L7 15L18 18L21 3L29 13L37 2L39 13L54 8L49 23L56 25L47 27Q41 18 33 19Q25 14 18 24Z" fill={hair} stroke="#292827" strokeWidth="3.4" strokeLinejoin="round"/>}
  {a.hair==="short"&&<path d="M14 27Q11 5 31 6Q51 5 50 27L44 19L32 17L20 21Z" fill={hair} stroke="#292827" strokeWidth="3.2"/>}
@@ -2369,33 +2411,46 @@ function AvatarHead({look={},size=40}){
  {a.hair==="bob"&&<path d="M12 34Q5 6 30 4Q53 4 52 34L48 42L44 19Q33 13 19 22L18 42Z" fill={hair} stroke="#292827" strokeWidth="3.3"/>}
  {a.hair==="bun"&&<><circle cx="46" cy="8" r="9" fill={hair} stroke="#292827" strokeWidth="3"/><path d="M13 28Q11 6 30 6Q51 6 49 27Q43 16 32 17Q23 14 13 28Z" fill={hair} stroke="#292827" strokeWidth="3.3"/></>}
  {a.hair==="curly"&&[15,23,32,41,49].map((x,i)=><circle key={x} cx={x} cy={13+(i%2)*3} r="8" fill={hair} stroke="#292827" strokeWidth="2.6"/>)}
+ </g>}
+ {a.head==="robot"&&<g stroke="#292827" strokeWidth="2.2" fill="none"><path d="M32 16V7M7 29H3v14h7M53 29h6v14h-6M15 20h31"/><circle cx="32" cy="5" r="3" fill="#F78B6B"/></g>}
+ {a.head==="bag"&&<path d="M12 15l36 3M46 22l4 28" fill="none" stroke="#9B794C" strokeWidth="1.8"/>}
  {/* Oversized white eyes and a single opaque lid, shared at every scale. */}
  <path d={a.expression==="skeptical"?"M19 27l12 2M36 26l12-6":"M19 26l12-2M36 24l12 1"} stroke="#302521" strokeWidth="3.4" fill="none" strokeLinecap="round"/>
- {[26,42].map((x,i)=><g key={x}>
+ {a.head==="alien"?<g fill="#292827"><path d="M12 25Q29 24 28 40Q15 42 12 25ZM51 25Q34 24 35 40Q48 42 51 25Z"/><path d="M17 29l5 3M46 29l-5 3" stroke="#F8F1E3" strokeWidth="2.4"/></g>:a.head==="cyclops"?<g><ellipse cx="32" cy="34" rx="16" ry={a.eyes==="wide"||expressive?14:12} fill="#FFFCF4" stroke="#292827" strokeWidth="2.5"/><circle cx="34" cy="35" r="5" fill="#7B9CC4" stroke="#292827" strokeWidth="2"/><circle cx="34" cy="35" r="2" fill="#292827"/>{!expressive&&(a.eyes==="tired"||a.eyes==="sleepy")&&<path d="M17 30h30" stroke="#292827" strokeWidth="3"/>}</g>:(a.head==="frog"?[17,46]:[26,42]).map((x,i)=><g key={x} transform={a.head==="frog"?"translate(0 -13)":undefined}>
   <ellipse cx={x} cy="35" rx="8.5" ry={a.eyes==="wide"||expressive?9:7.5} fill="#FFFCF4" stroke="#292827" strokeWidth="2"/>
   <ellipse cx={x+2} cy="36" rx="2" ry="3" fill="#292827"/>
-  {(a.eyes==="sleepy"||a.eyes==="tired")&&!expressive&&<path d={`M${x-8} 32q8-8 16 0l-16 2Z`} fill={skin} stroke="#292827" strokeWidth="1.8"/>}
+  {(a.eyes==="sleepy"||a.eyes==="tired")&&!expressive&&<path d={`M${x-8} 32q8-8 16 0l-16 2Z`} fill={faceFill} stroke="#292827" strokeWidth="1.8"/>}
  </g>)}
- <path d="M45 42l4 1" stroke="#BC805D" strokeWidth="1.8" strokeLinecap="round"/>
- {a.glasses&&<><rect x="14" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><rect x="34" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><path d="M31 34h3" stroke="#20242C" strokeWidth="2.5"/></>}
- <path d={a.expression==="happy"?"M25 49Q33 61 41 48Z":a.expression==="smile"?"M25 49Q32 55 40 49":a.expression==="skeptical"?"M26 51l13-3":a.expression==="surprised"?"M29 48q5-4 7 1q1 8-5 7q-4-2-2-8Z":"M26 50h12"} fill={expressive?"#A95759":"none"} stroke="#7B5044" strokeWidth="2.2" strokeLinecap="round"/>
+ {a.head==="frog"&&<g fill="#617C51"><circle cx="14" cy="43" r="3"/><circle cx="50" cy="43" r="3"/></g>}
+ {a.head==="robot"&&<path d={a.expression==="surprised"?"M27 46h10v12H27Z":a.expression==="happy"?"M17 46h28l-5 11H22Z":a.expression==="smile"?"M18 48l6 7h16l5-7":a.expression==="skeptical"?"M18 53l27-6":"M17 48h28v7H17Zm6 0v7m8-7v7m7-7v7"} fill="#FFEDBC" stroke="#292827" strokeWidth="1.8"/>}
+ {a.glasses&&a.head!=="cyclops"&&<><rect x="14" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><rect x="34" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><path d="M31 34h3" stroke="#20242C" strokeWidth="2.5"/></>}
+ {a.head!=="robot"&&<path d={a.expression==="happy"?"M25 49Q33 61 41 48Z":a.expression==="smile"?"M25 49Q32 55 40 49":a.expression==="skeptical"?"M26 51l13-3":a.expression==="surprised"?"M29 48q5-4 7 1q1 8-5 7q-4-2-2-8Z":"M26 50h12"} fill={expressive?"#A95759":"none"} stroke="#7B5044" strokeWidth="2.2" strokeLinecap="round"/>}
+ {a.glasses&&a.head==="cyclops"&&<rect x="13" y="20" width="38" height="28" rx="9" fill="none" stroke="#20242C" strokeWidth="3"/>}
  </svg>;
 }
 function AvatarControls({value,onChange}){
  const a=normalizedAvatar(value),set=(key,v)=>onChange({...a,[key]:v});
+ const hasHair=["classic","round","square","pear","cyclops"].includes(a.head);
+ const shuffle=()=>{const choose=xs=>xs[Math.floor(Math.random()*xs.length)];onChange({...a,
+  head:choose(AVATAR_HEADS).id,gender:choose(["masculine","feminine","neutral"]),build:choose(BUILD_LIST),
+  hair:choose(AVATAR_HAIR),hairColor:Math.floor(Math.random()*AVATAR_COLORS.length),skin:Math.floor(Math.random()*AVATAR_SKIN.length),
+  eyes:choose(AVATAR_EYES),expression:choose(AVATAR_EXPRS),glasses:Math.random()<.35,
+  top:Math.floor(Math.random()*TOPS.length),legs:Math.floor(Math.random()*LEGS.length)});};
  const select=(title,key,opts)=> <label className="pg-avatar-field"><span>{title}</span><select aria-label={title} value={a[key]} onChange={e=>set(key,e.target.value)}>{opts.map(v=><option value={v} key={v}>{v}</option>)}</select></label>;
- const colors=(title,key,opts)=> <div className="pg-avatar-field"><span>{title}</span><div className="pg-avatar-swatches">{opts.map((color,i)=><button type="button" key={i} className={a[key]===i?"chosen":""} onClick={()=>set(key,i)} style={{background:color}} aria-label={title+" "+(i+1)} />)}</div></div>;
+ const colors=(title,key,opts)=> <div className="pg-avatar-field"><span>{title}</span><div className="pg-avatar-swatches">{opts.map((color,i)=><button type="button" key={i} className={a[key]===i?"chosen":""} aria-pressed={a[key]===i} onClick={()=>set(key,i)} style={{background:color}} aria-label={title+" "+(i+1)} />)}</div></div>;
  return <div className="pg-avatar-controls">
+ <fieldset className="pg-head-picker"><legend>Face & head · free to be weird</legend><button type="button" className="pg-btn pg-shuffle" onClick={shuffle}>Surprise me</button><div className="pg-head-options">{AVATAR_HEADS.map(h=><button type="button" key={h.id} aria-label={h.name} aria-pressed={a.head===h.id} className={a.head===h.id?"chosen":""} onClick={()=>set("head",h.id)}><AvatarHead look={{...a,head:h.id}} size={44}/><span>{h.name}</span></button>)}</div><p className="pg-fine" aria-live="polite">{AVATAR_HEADS.find(h=>h.id===a.head).note} All heads work with every outfit. {!hasHair&&"This head has its own silhouette; your hair choice is kept for human heads."}</p></fieldset>
  {select("Body style","gender",["masculine","feminine","neutral"])}
  {select("Build","build",BUILD_LIST)}
- {select("Hair","hair",AVATAR_HAIR)}
- {colors("Hair color","hairColor",AVATAR_COLORS)}
+ {hasHair&&select("Hair","hair",AVATAR_HAIR)}
+ {hasHair&&colors("Hair color","hairColor",AVATAR_COLORS)}
  {colors("Skin tone","skin",AVATAR_SKIN)}
- {select("Eyes","eyes",AVATAR_EYES)}
+ {a.head!=="alien"&&select("Eyes","eyes",AVATAR_EYES)}
  {select("Expression","expression",AVATAR_EXPRS)}
  {select("Pants","bottom",BOTTOM_LIST)}
+ {colors("Pants color","legs",LEGS)}
  <label className="pg-avatar-field"><span>Glasses</span><input type="checkbox" checked={a.glasses} onChange={e=>set("glasses",e.target.checked)}/></label>
- <div className="pg-avatar-field"><span>Starter shirt</span><div className="pg-avatar-swatches">{TOPS.map((color,i)=><button key={i} type="button" className={a.top===i?"chosen":""} style={{background:color}} aria-label={"Starter shirt "+(i+1)} onClick={()=>set("top",i)}/>)}</div></div>
+ <div className="pg-avatar-field"><span>Starter shirt</span><div className="pg-avatar-swatches">{TOPS.map((color,i)=><button key={i} type="button" className={a.top===i?"chosen":""} aria-pressed={a.top===i} style={{background:color}} aria-label={"Starter shirt "+(i+1)} onClick={()=>set("top",i)}/>)}</div></div>
  </div>;
 }
 
@@ -3114,7 +3169,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 155 · mobile dialog scroll";
+const BUILD = "build 156 · faces with personality";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4888,7 +4943,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const v = p?.vanity || {};
   const nickOn = p?.nickname && new Date(p.nickname.until) > new Date();
   const nick = nickOn ? p.nickname.text : null;
-  const B = BUILDS[L.build] || BUILDS.regular;
+  const B = avatarBody(L);
   const wardrobeItem=WARDROBE.find(x=>x.id===L.clothing);
   const shirt = c?.shirt || ({jess:"#343B43",john:"#F8F1E3",matt:"#F8F1E3",avah:"#AD9AC1",joey:"#4A5260",dave:"#E3C878"}[p?.cast]) || wardrobeItem?.shirt || TOPS[L.top % TOPS.length];
   const pants = LEGS[L.legs % LEGS.length];
@@ -4896,7 +4951,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const cls = [
     "pg-body", c ? "costumed" : "cutout", me ? "me" : "", c?.big ? "big" : "",
     moving ? "walking" : "idling", emote ? "em-" + emote : "",
-    "bt-" + bottom, "garment-" + (L.clothing || "starter"),
+    "style-"+(L.gender||"neutral"), "bt-" + bottom, "garment-" + (L.clothing || "starter"),
     v.glow ? "glow-" + v.glow : "", v.size ? "size-" + v.size : "",
     v.aura ? "aura-" + v.aura : "",
     MOUNTS[p?.mount] ? "riding" : "",
@@ -4917,7 +4972,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
         <span className="pg-avatar-head" style={{width:48,height:52}}><AvatarHead look={{...L,expression:emote==="panic"?"surprised":emote==="dance"?"happy":L.expression}} size={48}/></span>
         {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
-          <path d={B.torso} fill={shirt} />
+          <path className="pg-body-outline" d={B.torso} fill={shirt} />
           {wardrobeItem&&<>
             {(L.clothing==="hoodie"||L.clothing==="hoodie_gold")&&<><path d="M21 0Q30 13 39 0" stroke="#263446" strokeWidth="4" fill="none"/><path d="M30 15v23" stroke="#DCE7EA" strokeWidth="1.5"/><path d="M20 24q10 4 20 0v10H20Z" fill="rgba(0,0,0,.13)" stroke="#2B2B2B" strokeWidth="1.5"/><path d="M26 7v9M34 7v9" stroke="#F8F1E3" strokeWidth="1.5"/></>}
             {(L.clothing==="cardigan")&&<><path d="M21 1l9 14 9-14M30 12v26" fill="none" stroke="#F4DFCE" strokeWidth="4"/><circle cx="30" cy="19" r="1.6" fill="#2B2B2B"/><circle cx="30" cy="29" r="1.6" fill="#2B2B2B"/></>}
@@ -7175,7 +7230,7 @@ function Onboard({ user, code, onDone, preview=false }) {
     <div className="pg-hirepage pg-paper">
       <div className="pg-eyebrow">Idle Hands · new hire intake · {BUILD}</div>
       <h1 className="pg-h1">Badge in</h1>
-      <p className="pg-lede">Two things and you're on the floor. Everyone sees both.</p>
+      <p className="pg-lede">Pick a name. Build your employee. Change either later at the mirror.</p>
 
       <div className="pg-badge">
         <div className="pg-badgetop">
