@@ -22,3 +22,8 @@ Approved direction: **original, flat 2D cutout-cartoon office satire**. Inspired
 - Characters based on coworkers are fictionalized office caricatures, not faithful portraits.
 - Profile photos remain user-supplied; they are framed as part of the game's paper-doll body.
 - Before changing any SVG or wearable layer, confirm that it does not obscure clickable objects, alter earning formulas, or change player inventory IDs.
+
+## Character creator graphics contract
+- `AvatarHead` must visually match the layered office cutout theme rather than use photo uploads. `AvatarControls` in onboarding and mirror must share `normalizedAvatar` exactly; hairstyle, hair color, skin, eyes, expression, glasses, body build, pants and shirt are free.
+- Clothing upgrades are permanent visual-only pieces in `WARDROBE`, applied behind prank-costume overlays. Keep outfit palette consistent with the approved boards.
+- New illustrations must be evaluated at actual game character scale, 390px viewport and 1440px viewport. The art preview is an integration test, not a substitute for player sign-in QA.
