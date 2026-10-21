@@ -8,7 +8,7 @@
 
 ## Automated gate
 - [ ] Run `npm install --no-save --no-package-lock @babel/parser@7` then `node tests/economy-and-office.test.cjs`.
-- [ ] PR created to main, GitHub `Idle Hands regression gate` completed **success**, not just started.
+- [ ] PR created to main; GitHub `Idle Hands regression gate` jobs **economy-and-office**, **browser-smoke**, **isolated-postgres** all completed **success**, not just started.
 - [ ] Test any altered economy formula both client and server; SQL hypothetical samples must be read-only on prod.
 - [ ] Confirm NPC maximum, schedule determinism and no broken popup behavior for any NPC/office features.
 - [ ] Confirm desktop/mobile layout in browser if graphical browser available; if not, report as unverified.
