@@ -45,6 +45,12 @@ assert.equal(cast.length,8,'All eight shuffled visitors');
 assert.equal(new Set(cast.map(x=>x.id)).size,8,'Unique cast IDs');
 assert(cast.every(c=>c.lines.length && c.path.length>=2),'Each visitor has dialogue and walking path');
 assert(cast.find(c=>c.id==='matt').lines.some(line=>line.includes('operating agreement')),'Matt gag');
+assert.equal(cast.find(c=>c.id==='avah').hair,'#D5AB62','Avah must be blonde');
+assert.equal(cast.find(c=>c.id==='rilie').hair,'#51382E','Rilie must be brunette');
+assert(src.includes('function OfficeIcon('),'Cutout vector icon system');
+assert(src.includes('<OfficeIcon kind={it.name} />'),'Hiring art integrated');
+assert(src.includes('<OfficeIcon kind={u.name+" upgrade"} />'),'Upgrades art integrated');
+assert(src.includes('<OfficeIcon kind={x.name+" "+slot} cosmetic />'),'Catalogue art integrated');
 const bagForRound = round => {
  const o=cast.map((_,i)=>i);
  for(let i=o.length-1;i>0;i--){
