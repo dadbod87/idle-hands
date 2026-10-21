@@ -672,6 +672,11 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officefloor.rug-r3::after{background:#D36C5C}
 
 .pg-avatar-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:15px 0}.pg-avatar-field{display:flex;flex-direction:column;gap:5px;background:#F8F1E3;border:2px solid #2B2B2B;border-radius:8px;padding:9px;font:700 11px var(--mono)}.pg-avatar-field select{width:100%;background:white;border:2px solid #2B2B2B;padding:7px;font:12px var(--sans)}.pg-avatar-swatches{display:flex;gap:4px;flex-wrap:wrap}.pg-avatar-swatches button{width:24px;height:24px;border:2px solid #2B2B2B;border-radius:6px;cursor:pointer}.pg-avatar-swatches button.chosen{outline:3px solid #D34B42;outline-offset:1px}.pg-avatar-preview{display:flex;align-items:center;gap:18px;background:#FFEDBC;border:2px dashed #2B2B2B;padding:18px;margin:12px 0;min-height:110px}.pg-avatar-preview .pg-body{flex:none}.pg-avatar-preview span{font-size:12px;max-width:220px}@media(max-width:440px){.pg-avatar-controls{grid-template-columns:1fr}}
+/* No round photo-mask behind hand-drawn character heads. */
+.pg-rig .pg-avatar-head{position:absolute;left:50%;top:-9px;transform:translateX(-50%);z-index:5;display:block;overflow:visible;background:none;border:0;border-radius:0;box-shadow:none;pointer-events:none}
+.pg-rig .pg-avatar-head svg{display:block;width:100%;height:auto;overflow:visible}
+.pg-body.me .pg-avatar-head{box-shadow:none}
+.pg-avatar-preview .pg-body{margin:12px 24px 16px 16px}
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -2251,17 +2256,27 @@ function normalizedAvatar(look={}){
 }
 function AvatarHead({look={},size=40}){
  const a=normalizedAvatar(look),skin=AVATAR_SKIN[a.skin],hair=AVATAR_COLORS[a.hairColor];
- return <svg viewBox="0 0 52 56" width={size} height={size} aria-hidden="true" style={{display:"block",overflow:"visible",filter:"drop-shadow(1px 1px 0 #2B2B2B)"}}>
- {(a.hair==="long"||a.hair==="bun"||a.hair==="curly")&&<path d="M10 21Q7 0 26 1Q48 0 43 24L48 52H4z" fill={hair} stroke="#2B2B2B" strokeWidth="2.8"/>}
- <path d="M10 19Q10 5 26 5Q42 5 42 19V34Q41 51 26 51Q10 51 10 34Z" fill={skin} stroke="#2B2B2B" strokeWidth="2.8"/>
- {a.hair!=="bald"&&<path d={a.hair==="bob"?"M8 26Q2 1 26 2Q50 2 44 27L39 20Q26 12 12 20Z":a.hair==="messy"?"M9 23L4 12 14 14 15 1 23 9 31 0 32 11 44 5 41 21Q27 12 9 23Z":"M9 22Q7 3 26 3Q44 3 43 23Q37 12 26 14Q17 12 9 22Z"} fill={hair} stroke="#2B2B2B" strokeWidth="2.6" strokeLinejoin="round"/>}
- {a.hair==="bun"&&<circle cx="37" cy="6" r="8" fill={hair} stroke="#2B2B2B" strokeWidth="2.4"/>}
- {a.hair==="curly"&&[12,20,28,36,42].map((x,i)=><circle key={x} cx={x} cy={9+(i%2)*3} r="7" fill={hair} stroke="#2B2B2B" strokeWidth="1.8"/>)}
- <path d={a.expression==="skeptical"?"M14 26l12 3M30 27l10-4":"M14 26h12M30 26h10"} stroke="#2B2B2B" strokeWidth="2.2"/>
- {a.eyes==="wide"||a.expression==="surprised"?<><ellipse cx="20" cy="33" rx="4" ry="5" fill="#FFF"/><ellipse cx="34" cy="33" rx="4" ry="5" fill="#FFF"/></>:null}
- <circle cx="20" cy="33" r={a.eyes==="sleepy"?1.5:2.1} fill="#2B2B2B"/><circle cx="34" cy="33" r={a.eyes==="sleepy"?1.5:2.1} fill="#2B2B2B"/>
- {a.glasses&&<><rect x="12" y="27" width="15" height="14" rx="5" stroke="#2B2B2B" fill="none" strokeWidth="2.3"/><rect x="28" y="27" width="14" height="14" rx="5" stroke="#2B2B2B" fill="none" strokeWidth="2.3"/><path d="M27 32h2" stroke="#2B2B2B" strokeWidth="2.2"/></>}
- <path d={a.expression==="happy"?"M20 42Q26 52 33 42Z":a.expression==="smile"?"M19 43q7 6 14 0":a.expression==="skeptical"?"M21 46l10-2":a.expression==="surprised"?"M25 43q4-5 5 1q-1 6-5 1Z":"M21 44h10"} stroke="#70483D" fill={a.expression==="happy"?"#A75A60":"none"} strokeWidth="2" strokeLinecap="round"/>
+ const expressive=a.expression==="happy"||a.expression==="surprised";
+ return <svg viewBox="0 0 64 67" width={size} height={size} role="img" aria-label="Custom cartoon face" style={{display:"block",overflow:"visible",filter:"drop-shadow(1px 2px 0 rgba(43,43,43,.22))"}}>
+ {/* Rear hair is cutout-paper shaped, not the former circular badge. */}
+ {(a.hair==="long"||a.hair==="bun"||a.hair==="curly"||a.hair==="bob")&&<path d="M12 21Q8 3 29 2Q54 0 53 25L58 62L41 60L35 45L19 60L4 62Z" fill={hair} stroke="#292827" strokeWidth="3.3" strokeLinejoin="round"/>}
+ <path d="M18 14Q30 6 44 13Q52 19 49 38Q48 53 32 57Q16 55 14 39Q12 22 18 14Z" fill={skin} stroke="#292827" strokeWidth="3.1"/>
+ <path d="M15 31Q10 28 9 35Q9 41 16 43M49 31Q55 29 55 36Q55 42 48 43" fill={skin} stroke="#292827" strokeWidth="2.3"/>
+ {/* Distinct expressive front hair silhouettes inspired by the approved concept sheets. */}
+ {a.hair==="messy"&&<path d="M12 27L7 15L18 18L21 3L29 13L37 2L39 13L54 8L49 23L56 25L47 27Q41 18 33 19Q25 14 18 24Z" fill={hair} stroke="#292827" strokeWidth="3.4" strokeLinejoin="round"/>}
+ {a.hair==="short"&&<path d="M14 27Q11 5 31 6Q51 5 50 27L44 19L32 17L20 21Z" fill={hair} stroke="#292827" strokeWidth="3.2"/>}
+ {a.hair==="long"&&<path d="M14 28Q8 6 31 5Q55 4 49 29Q43 18 35 20L25 17Z" fill={hair} stroke="#292827" strokeWidth="3.2"/>}
+ {a.hair==="bob"&&<path d="M12 34Q5 6 30 4Q53 4 52 34L48 42L44 19Q33 13 19 22L18 42Z" fill={hair} stroke="#292827" strokeWidth="3.3"/>}
+ {a.hair==="bun"&&<><circle cx="46" cy="8" r="9" fill={hair} stroke="#292827" strokeWidth="3"/><path d="M13 28Q11 6 30 6Q51 6 49 27Q43 16 32 17Q23 14 13 28Z" fill={hair} stroke="#292827" strokeWidth="3.3"/></>}
+ {a.hair==="curly"&&[15,23,32,41,49].map((x,i)=><circle key={x} cx={x} cy={13+(i%2)*3} r="8" fill={hair} stroke="#292827" strokeWidth="2.6"/>)}
+ {/* Brows and big white half-lidded eyes give the trademark deadpan office expression. */}
+ <path d={a.expression==="skeptical"?"M16 31l12 1M36 31l11-5":"M17 30q6-3 11 0M36 30q6-3 11 0"} stroke="#302521" strokeWidth="2.8" fill="none" strokeLinecap="round"/>
+ <ellipse cx="23" cy="37" rx={a.eyes==="wide"?7:6} ry={a.eyes==="wide"?6:4.5} fill="#FFF9EC" stroke="#302521" strokeWidth="1.9"/>
+ <ellipse cx="42" cy="37" rx={a.eyes==="wide"?7:6} ry={a.eyes==="wide"?6:4.5} fill="#FFF9EC" stroke="#302521" strokeWidth="1.9"/>
+ {(a.eyes==="sleepy"||a.eyes==="tired")&&<path d="M17 36q6 2 12 0M36 36q6 2 12 0" stroke="#302521" strokeWidth="2.4" fill="none"/>}
+ <ellipse cx="24" cy="38" rx="2.1" ry="2.9" fill="#282626"/><ellipse cx="43" cy="38" rx="2.1" ry="2.9" fill="#282626"/>
+ {a.glasses&&<><rect x="14" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><rect x="34" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><path d="M31 34h3" stroke="#20242C" strokeWidth="2.5"/></>}
+ <path d={a.expression==="happy"?"M25 49Q33 61 41 48Z":a.expression==="smile"?"M25 49Q32 55 40 49":a.expression==="skeptical"?"M26 51l13-3":a.expression==="surprised"?"M29 48q5-4 7 1q1 8-5 7q-4-2-2-8Z":"M26 50h12"} fill={expressive?"#A95759":"none"} stroke="#7B5044" strokeWidth="2.2" strokeLinecap="round"/>
  </svg>;
 }
 function AvatarControls({value,onChange}){
@@ -4781,7 +4796,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       <div className="pg-rig">
         {c?.art && <CostumeSuit art={c.art} layer="back" />}
         {c && <Hat kind={c.hat} />}
-        <span className="pg-face" style={{width:40,height:40,display:"block"}}><AvatarHead look={L} size={40}/></span>
+        <span className="pg-avatar-head" style={{width:48,height:52}}><AvatarHead look={L} size={48}/></span>
         {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
           <path d={B.torso} fill={shirt} />
@@ -7020,7 +7035,7 @@ function ArtPreview(){
   <header><h1>IDLE HANDS · ART QA</h1><p>Original 2D cutout office satire · QA gallery only · Never touches game accounts or Busywork.</p></header>
   <h2>0. Shared character creator · free appearance choices</h2>
   <div data-testid="avatar-qa" style={{background:"#FFFDF5",padding:15,border:"2px solid #2B2B2B",maxWidth:760,margin:"0 auto"}}>
-    <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><AvatarHead look={demoAvatar} size={74}/><strong>First day: make your employee</strong></div>
+    <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><strong>First day: make your employee</strong></div>
     <AvatarControls value={demoAvatar} onChange={setDemoAvatar}/>
     <p>Clothing progression · {WARDROBE.length} server-backed permanent outfits</p>
     <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><OfficeIcon kind={it.name+" hoodie"} cosmetic/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
