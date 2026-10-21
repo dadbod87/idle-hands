@@ -26,7 +26,7 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
   await expect(page.getByTestId('art-preview')).toBeVisible({timeout:15000});
   await expect(page.locator('.ar-npc')).toHaveCount(10);
   await expect(page.locator('.ar-palette span')).toHaveCount(6);
-  await expect(page.locator('.ar-fixture')).toHaveCount(7);
+  await expect(page.locator('.ar-fixture')).toHaveCount(12);
   await expect(page.locator('.ar-icons .pg-iconart').first()).toBeVisible();
   await expect(page.getByTestId('art-shop-preview')).toBeVisible();
   for(const tab of ['Requisitions','Approvals','Wardrobe','Office upgrades']){
