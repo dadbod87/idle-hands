@@ -4,9 +4,12 @@ on:
     branches: [main]
   push:
     branches: [main]
+permissions:
+  contents: read
 jobs:
   economy-and-office:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -14,5 +17,5 @@ jobs:
           node-version: '22'
       - name: Install test-only parser
         run: npm install --no-save --no-package-lock @babel/parser@7
-      - name: Run source and economy regression checks
+      - name: Run regression checks
         run: node tests/economy-and-office.test.cjs
