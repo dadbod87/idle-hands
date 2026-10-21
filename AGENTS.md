@@ -23,11 +23,11 @@ Read **this file first**, followed by `docs/CURRENT_STATE.md`, `docs/CHANGELOG.m
 ## Strict game invariants
 - Busywork/earnings, purchases, account/auth, Seniority/restructure and achievements are server-authoritative (Supabase); front-end display must reflect backend, not invent awards.
 - Purchases: item price = ceil(base cost * growth^(owned units) * Resale discount [0.9 for resale]); default growth comes from catalog (currently 1.35; verify live). Ownership resets on restructuring, permanent Seniority does not.
-- Current server idle accrual integrates time-dependent bonuses; check events, buffs, Nora 20% window, chair frenzy 77 seconds, work-hour modifier and offline cap before modifying.
+- Current server idle accrual integrates time-dependent bonuses; check events, buffs, Jess 20% window, chair frenzy 77 seconds, work-hour modifier and offline cap before modifying.
 - Avoid duplicate or competing popups: `While you were out` shows offline BW, `Incident report` covers targeted player actions, `Recap` covers weekly summary. `Office Incident Log` is a separate optional simulated history.
-- Eight rotating office guests shuffle without replacement: Nora, Gus, Rory, Theo, Iris, Bramblewick, Pip, Wren; Wes and Hal are independent. Keep at most 3 NPC avatars, including paired Bramblewick/Theo gag.
+- Eight rotating office guests shuffle without replacement: Jess, John, Kyle, Matt, Avah, Nick, Rilie, Joey; Chance and Dave are independent. Keep at most 3 NPC avatars, including paired Nick/Matt gag.
 - Office Nonsense features use local browser state for bingo/tasks and deterministic simulated rumors/log. Do not claim cross-device persistence or server gameplay rewards for them.
-- The office, its brand (Example Property Co.) and every character are fictional. Never add real people's names, roles, companies, private information, credentials, secrets or work data; `tests/fictional-names.test.cjs` guards this (run it before every PR).
+- User directive (2026-10-21, build 165): preserve the original approved first-name cast, roles, Patron Group branding and Joey's Cigar Lounge. Do not anonymize them again. Do not add surnames, private employee details, credentials, secrets or work data. `tests/fictional-names.test.cjs` now guards the approved display names and stable internal IDs (run before every PR).
 
 ## Gaps and test honesty
 - The CI gate includes parser and deterministic/helper assertions; **not** authenticated browser tests, real Supabase purchasing, responsive screenshots or multi-client E2E.
@@ -40,7 +40,7 @@ Read **this file first**, followed by `docs/CURRENT_STATE.md`, `docs/CHANGELOG.m
 - Required GitHub branch protection must be separately configured via repository Settings; this connector does not expose branch protection editing. Never claim it's enforced without verification.
 
 ## Approved art direction
-Read `docs/ART_DIRECTION.md` before creating/editing characters, office furniture, wardrobe, cosmetics, props or icons. Iris MUST have blonde hair and Pip brunette. Art QA must render `?art-preview=1` at phone/desktop and test every affected category; never change player inventory IDs/prices to achieve visual effects.
+Read `docs/ART_DIRECTION.md` before creating/editing characters, office furniture, wardrobe, cosmetics, props or icons. Avah MUST have blonde hair and Rilie brunette. Art QA must render `?art-preview=1` at phone/desktop and test every affected category; never change player inventory IDs/prices to achieve visual effects.
 
 ## New canonical avatar/wardrobe system
 - `AvatarHead`, `AvatarControls`, `normalizedAvatar`, `WARDROBE` in `index.html` determine shared onboarding, mirror, in-world appearance and outfit prices.

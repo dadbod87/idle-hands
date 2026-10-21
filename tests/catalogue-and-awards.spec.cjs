@@ -39,7 +39,7 @@ for(const mode of ['desktop','mobile']){
   await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible();
   // Walk north until the wall cabinet is in the actual camera view.
   await page.keyboard.down('ArrowUp');
-  await expect.poll(()=>page.locator('.pg-me:not(.pg-wes)').evaluate(el=>parseFloat(el.style.top)),{timeout:10000,intervals:[30]}).toBeLessThan(205);
+  await expect.poll(async()=>{await page.keyboard.down('ArrowUp');return page.locator('.pg-me:not(.pg-wes)').evaluate(el=>parseFloat(el.style.top));},{timeout:10000,intervals:[30]}).toBeLessThan(205);
   await page.keyboard.up('ArrowUp');await page.keyboard.down('ArrowRight');
   await expect.poll(()=>page.locator('.pg-me:not(.pg-wes)').evaluate(el=>parseFloat(el.style.left)),{timeout:10000,intervals:[30]}).toBeGreaterThan(1690);
   await page.keyboard.up('ArrowRight');

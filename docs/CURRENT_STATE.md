@@ -1,9 +1,19 @@
+# Build 165 — approved original names and readable scenery (2026-10-21)
+
+This section supersedes earlier anonymization instructions below. The owner explicitly approved public use of the original first names and lounge/company names. Preserve these names; do not anonymize them again. Current display cast: Jess, John, Kyle, Matt, Avah, Nick, Rilie, Joey, plus Chance and owner Dave. Server memo resale references restore Angelica; Gwen was already unchanged. Internal cast aliases (nora/gus/etc.), player IDs, catalog IDs and storage keys intentionally stay stable. Original roles, first-name job plates, company branding/logo/background, mascot name, cigar lounge/humidor copy, notifications, achievements and server catalog text restored. Surnames stay omitted.
+
+Calendar, two plastic-plant rotas and the printer apology are labeled world buttons opening free, keyboard-accessible inspection dialogs. The apology moves beside the printer with explicit context. Other scenery stays pointer-transparent; collision walls are unchanged. Printer added to the walking directory.
+
+Migration `20261021203552_restore_original_names.sql` changes six exact-hash-guarded catalog text rows and only the existing ask_raise exception wording. No player table writes, reset, price, ownership, reward or schedule changes. Synthetic SQL checks actual migration, IDs/numbers and unchanged player snapshots. Local Node checks pass; full browser/SQL CI and production evidence belong in the release PR. Phone browser emulation is not a physical-phone test. Rollback frontend through Git; keep original-name catalog text unless the owner requests otherwise. Build 164 sound defaults remain on/100%, with saved preferences respected.
+
+---
+
 # Idle Hands — Current State / new-chat handoff
 
 Updated: 2026-10-20 (America/Los_Angeles). Recheck deployed SHA and live configuration at the beginning of every session.
 
 ## Mission and product
-A satirical multiplayer office idle game set in a fictional office (Example Property Co.). Users badge in, earn Busywork (BW), purchase staff, upgrades and cosmetics, interact and compete, then restructure for permanent Seniority. Intent: funny, approachable and rewarding to revisit; not demanding minute-by-minute attention.
+A satirical multiplayer office idle game with the user-approved original first-name cast and The Patron Group branding. Users badge in, earn Busywork (BW), purchase staff, upgrades and cosmetics, interact and compete, then restructure for permanent Seniority. Intent: funny, approachable and rewarding to revisit; not demanding minute-by-minute attention.
 
 ## Runtime & ownership
 - GitHub `dadbod87/idle-hands` / `main`; most application code in `index.html` (React 18 JSX transpiled by Babel at runtime).

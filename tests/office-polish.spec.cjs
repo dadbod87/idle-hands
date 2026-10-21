@@ -11,7 +11,7 @@ for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and dir
  }
  await page.screenshot({path:'test-results/'+mode+'-polish-controls.png',fullPage:true});
  await page.getByRole('button',{name:'Office directory',exact:true}).click();const directory=page.getByTestId('office-directory');
- await expect(directory.getByRole('button',{name:/^Walk to /})).toHaveCount(10);
+ await expect(directory.getByRole('button',{name:/^Walk to /})).toHaveCount(11);
  await page.screenshot({path:'test-results/'+mode+'-office-directory.png',fullPage:true});
  await directory.getByRole('button',{name:'Walk to HR Cabinet',exact:true}).click();
  await expect(page.locator('.pg-body.me')).toHaveClass(/walking/);
