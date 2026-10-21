@@ -585,6 +585,11 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-peername em{font-style:normal;display:block;font-family:var(--mono);font-size:8px;
   letter-spacing:.1em;text-transform:uppercase;opacity:.8}
 
+.pg-bingogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:12px 0}
+.pg-bingosquare{min-height:65px;display:flex;align-items:center;justify-content:center;text-align:center;padding:7px;border:2px solid var(--ink);font:700 10px var(--mono);background:#F1E8CE;overflow-wrap:anywhere}
+.pg-bingosquare.on{background:#BDD4AD;color:#20331E;border-color:#3B6D43}
+.pg-loungebar{height:16px;border:2px solid #4E3725;background:#D9CCAD}
+.pg-loungebar>div{height:100%;background:repeating-linear-gradient(45deg,#B78B59 0 8px,#916C41 8px 16px)}
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -2825,7 +2830,32 @@ function subscribeFloor(onChange) {
 
 /* ===== components/PatronFloor.jsx ===== */
 
-const BUILD = "build 144";
+/* Office comedy systems: deterministic shared events; no changes to the BW economy. */
+const OFFICE_GAGS=[
+ "Joey delivered more lumber. The cigar lounge remains theoretical.",
+ "Chance has been seen in the office. HR confirms he does not work here.",
+ "Matt has to update the operating agreement. Again.",
+ "John has scheduled a meeting in the calendar he forgot to check.",
+ "Jess brought snacks. The budget committee has questions.",
+ "Kyle has driven Dave somewhere. Location undisclosed.",
+ "Avah received four calls about the same lightbulb.",
+ "Rilie stopped by to keep everything fluid.",
+ "Nick moved a button two pixels. Leadership calls it innovation."
+];
+const BINGO_WORDS=["circle back","synergies","low-hanging fruit","operating agreement","in theory","please hold","question for you","bingo","life partner"];
+const OFFICE_AWARDS=["Outstanding Achievement in Looking Busy","Most Likely to Reply All","Excellence in Unscheduled Meetings","Employee of the Minute","Best Use of a Stapler","Least Likely to Finish a Cigar Lounge"];
+const officeHash=(n)=>{let x=n|0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);return(x^(x>>>16))>>>0;};
+function officeFunAt(ts=Date.now()){
+ const slot=Math.floor(ts/240000),day=Math.floor(ts/86400000),week=Math.floor(ts/604800000);
+ const index=officeHash(slot)%OFFICE_GAGS.length;
+ const rumors=Array.from({length:8},(_,i)=>({slot:slot-i,text:OFFICE_GAGS[officeHash(slot-i)%OFFICE_GAGS.length]}));
+ const lounge=(week%7+7)%7;
+ return {slot,day,rumors,rumor:rumors[0].text,award:OFFICE_AWARDS[officeHash(Math.floor(ts/1800000))%OFFICE_AWARDS.length],lounge,
+  loungeStatus:["Materials delivered","Awaiting permit","Architect changed plan","Foundation reconsidered","New boards ordered","Inspection postponed","Back to drawing board"][lounge]};
+}
+function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
+
+const BUILD = "build 145";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -2850,6 +2880,29 @@ function PatronFloor() {
   const [feed, setFeed] = useState([]);
   const [panel, setPanel] = useState(null);
   const [incidents, setIncidents] = useState([]);
+  const [funOpen,setFunOpen] = useState(false);
+  const [funTab,setFunTab] = useState("incidents");
+  const [funTick,setFunTick] = useState(Date.now());
+  const [funProgress,setFunProgress] = useState({day:-1,bingo:[],visits:0,work:0,hires:0});
+  useEffect(()=>{const id=setInterval(()=>setFunTick(Date.now()),15000);return()=>clearInterval(id);},[]);
+  useEffect(()=>{if(!me?.id)return;const key="ih-office-fun-"+me.id;
+    const d=officeFunAt().day,prior=safeOfficeLoad(key,{day:d,bingo:[],visits:0,work:0,hires:0});
+    setFunProgress(prior.day===d?prior:{day:d,bingo:[],visits:0,work:0,hires:0});
+  },[me?.id]);
+  const recordOfficeFun=(kind,line="")=>{
+    if(!meRef.current?.id)return;
+    setFunProgress(prev=>{
+      const d=officeFunAt().day;
+      const next=prev.day===d?{...prev}:{day:d,bingo:[],visits:0,work:0,hires:0};
+      if(kind==="visitor"){next.visits++;
+        for(const word of BINGO_WORDS)if(line.toLowerCase().includes(word)&&!next.bingo.includes(word))next.bingo.push(word);
+      }
+      if(kind==="work")next.work++;
+      if(kind==="hire")next.hires++;
+      try{localStorage.setItem("ih-office-fun-"+meRef.current.id,JSON.stringify(next));}catch{}
+      return next;
+    });
+  };
   const [report, setReport] = useState(null);
   const [toast, setToast] = useState(null);
   const [chair, setChair] = useState(null);
@@ -3264,6 +3317,7 @@ function PatronFloor() {
       }
       if(ch&&guest&&guest.id==="jess"&&guest.line.startsWith("Chancellor")) { ch.line="Nope. I am out of here."; ch.leaving=true; ch.x=Math.min(ROOM.w-75,ch.x+180); }
       if(guest&&visitorSeen.current!==guest.id+":"+guest.bucket){
+        recordOfficeFun("visitor",guest.line);
        visitorSeen.current=guest.id+":"+guest.bucket;say(guest.name+" is making the rounds.","sys");
       }
       const call=dougCallNow(now);setDougCall(call);
@@ -3486,7 +3540,8 @@ function PatronFloor() {
       return;
     }
     setDrift((v) => v + clickPow);   // instant feedback
-    clickBuf.current += 1;           // banked, then credited by the server
+    clickBuf.current += 1;
+    recordOfficeFun("work");           // banked, then credited by the server
     sfx("work");
     if (Math.random() < 0.04) say(`You ${pick(WORK_VERBS)}. Nobody saw. The ledger saw.`, "sys");
   };
@@ -3508,6 +3563,7 @@ function PatronFloor() {
     try {
       applyServer(await api.buyItem(item.id));
       sfx("buy");
+      recordOfficeFun("hire");
     } catch (e) {
       if (/afford/i.test(e.message || "")) {
         const fresh = await loadCatalog().catch(() => null);
@@ -4068,6 +4124,7 @@ function PatronFloor() {
             {b.mult<1?"☁":"✦"} {b.mult<1?"Debuff":"Boost"} {Math.round((b.mult-1)*100)}% · {Math.max(1,Math.ceil((Date.parse(b.until)-Date.now())/60000))}m
           </span>
         ))}
+        <button className="pg-btn" title="Office rumors, bingo, assignments, the cigar lounge and awards" onClick={()=>setFunOpen(true)}>📋 Office Nonsense</button>
         <div className="pg-emotes">
           {EMOTES.map((e) => (
             <button key={e.id} className="pg-emote" onClick={() => doEmote(e.id)} title={e.label}>
@@ -4300,6 +4357,31 @@ function PatronFloor() {
         </Modal>
       )}
 
+      {funOpen && (
+        <Modal onClose={()=>setFunOpen(false)}>
+          <div className="pg-stamp">Department of Office Nonsense</div>
+          <div className="pg-catswitch">
+            {["incidents","rumors","bingo","daily","lounge","awards"].map(t=>
+              <button key={t} className={"pg-btn"+(funTab===t?" on":"")} onClick={()=>setFunTab(t)}>{t==="incidents"?"Office log":t}</button>)}
+          </div>
+          {funTab==="incidents"&&<><p className="pg-small">The existing “While you were out” popup tracks BW earned. This is a separate, purely comedic record of what the office was allegedly doing.</p>
+            {officeFunAt(funTick).rumors.map((e,i)=><div className="pg-recaprow" key={e.slot}><b>{new Date(e.slot*240000).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</b><span>{e.text}</span></div>)}</>}
+          {funTab==="rumors"&&<><p className="pg-big">Rumor mill</p><p>{officeFunAt(funTick).rumor}</p><p className="pg-small">New allegedly confidential information every four minutes. Fact checking is not permitted.</p></>}
+          {funTab==="bingo"&&<><p className="pg-small">Listen for these phrases during NPC visits. Nine squares; no actual meetings required.</p>
+            <div className="pg-bingogrid">{BINGO_WORDS.map(w=><div key={w} className={"pg-bingosquare"+(funProgress.bingo.includes(w)?" on":"")}>{funProgress.bingo.includes(w)?"✓ ":""}{w}</div>)}</div>
+            <p className="pg-small">{funProgress.bingo.length}/9 phrases overheard today. Bragging rights only.</p></>}
+          {funTab==="daily"&&<><p className="pg-big">HR's Daily To-Do List</p>
+            {[["Clock in and do actual work",funProgress.work>=1],["Observe a roaming coworker",funProgress.visits>=1],["Approve a new hire",funProgress.hires>=1]].map(([label,done])=><div className="pg-recaprow" key={label}><span>{done?"☑":"☐"} {label}</span></div>)}
+            <p className="pg-small">Resets each UTC day. Completing everything earns the unofficial title “Executive Assistant to the Assistant.” No economic advantage.</p></>}
+          {funTab==="lounge"&&<><p className="pg-big">Joey's Cigar Lounge</p>
+            <p>🏗️ {officeFunAt(funTick).loungeStatus}</p>
+            <div className="pg-loungebar"><div style={{width:(8+officeFunAt(funTick).lounge*9)+"%"}}/></div>
+            <p className="pg-small">Project completion is not anticipated. Weekly redesigns reset the progress to “material acquisition.”</p></>}
+          {funTab==="awards"&&<><p className="pg-big">🏆 Employee of the Minute</p>
+            <p>{officeFunAt(funTick).award}</p><p className="pg-small">Issued by HR every 30 minutes. This award carries no salary adjustment, title change or parking privileges.</p></>}
+          <button className="pg-btn" onClick={()=>setFunOpen(false)}>Return to actual work</button>
+        </Modal>
+      )}
       {report && (
         <Modal onClose={() => setReport(null)}>
           <div className="pg-stamp">While you were out</div>
