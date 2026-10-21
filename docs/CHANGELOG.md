@@ -23,3 +23,13 @@ This is a concise human-readable chronology, not a substitute for Git history or
 ## 2026-10-20: Browser and isolated Postgres regression gate
 - Added Chromium page-load tests at 1440px and 390px, and temporary PostgreSQL synthetic pricing/reset assertions in CI. No production player data accessed.
 - Mandatory status-check branch protection and an authenticated test Supabase project are still separate follow-ups until configured/verified.
+
+## 2026-10-20: Cutout art integration
+Original vector-cutout illustrations integrated into existing hiring rows, approvals and cosmetic catalogue with consistent outlines, palette and no new hitboxes or economy impact. Rotating NPCs gain heavier ink lines, sleepy expressions and role props. Avah hair blonde and Rilie brunette. Current generated art-direction posters remain concept art; hand-coded SVGs are production visuals, not automatic sprite exports. No authenticated full-world visual QA yet.
+
+## 2026-10-20: Cutout character, costume, office kit and UI art — PR #4
+- Added original vector menu art with ink outlines and semantic category grouping across existing catalogs, without new items or changed prices.
+- Unified ten office characters' cutout silhouettes and props. Avah is blonde, Rilie brunette.
+- Refreshed player wardrobe strokes and office desk/chair/rug levels, and flattened familiar office fixtures.
+- Added read-only `?art-preview=1` and Chromium screenshot artifacts for art QA with phone, desktop, tabs and overflow checks.
+- Concept artwork was used as visual guidance, not copied as bitmap assets. A full authenticated in-office visual playthrough has not been completed.

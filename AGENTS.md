@@ -38,3 +38,6 @@ Read **this file first**, followed by `docs/CURRENT_STATE.md`, `docs/CHANGELOG.m
 - PR workflow now includes browser smoke at desktop/390px and PostgreSQL 16 synthetic contract fixtures. These tests are isolated from Production Supabase.
 - No real Supabase test project is yet connected. Tests against real RPCs and authenticated flows require a dedicated test project and secrets; never substitute production credentials.
 - Required GitHub branch protection must be separately configured via repository Settings; this connector does not expose branch protection editing. Never claim it's enforced without verification.
+
+## Approved art direction
+Read `docs/ART_DIRECTION.md` before creating/editing characters, office furniture, wardrobe, cosmetics, props or icons. Avah MUST have blonde hair and Rilie brunette. Art QA must render `?art-preview=1` at phone/desktop and test every affected category; never change player inventory IDs/prices to achieve visual effects.

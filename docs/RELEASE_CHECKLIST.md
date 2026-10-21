@@ -23,3 +23,9 @@
 
 ## Do not overclaim
 Passing this CI gate does NOT mean the browser or real RPC flows were tested. Never claim “full end-to-end QA” until an authenticated isolated test suite exists and has actually run.
+
+## Visual releases
+- [ ] Read `docs/ART_DIRECTION.md` for palette, character constraints and CSS/SVG asset families.
+- [ ] CI browser-smoke produces desktop/mobile art gallery and wardrobe screenshots; review screenshots visually before merge.
+- [ ] Check no overlapping labels/buttons in hiring, approvals, costumes, personnel, bar, and Seniority screens in an authenticated test session when available.
+- [ ] If actual in-game navigation cannot be verified, mark it unverified explicitly, not 'passed'.
