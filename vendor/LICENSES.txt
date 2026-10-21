@@ -93,3 +93,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+Lucide SVG utility icons (inline paths in index.html UtilityIcon)
+Source: https://github.com/lucide-icons/lucide
+Pinned source commit: 20aef31db93fe4d9f398dbb15b120d99c48eef95
+Files: icons/map.svg, icons/volume-2.svg, icons/volume-x.svg,
+icons/user-round.svg, icons/message-circle-question-mark.svg.
+ISC license; Feather-derived portions MIT. Full upstream notices: lucide-LICENSE.txt.
+EmoteArt and directory illustrations use original game SVG code.

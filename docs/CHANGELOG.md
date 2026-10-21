@@ -2,6 +2,12 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-21: Build 162 — find your people (candidate)
+- Reviewed original concept direction, actual gameplay and read-only server contracts; prioritized environment composition, outcome feedback, mobile hierarchy and social comedy in `POLISH_REVIEW_2026-10-21.md`.
+- Illustrated/labeled emotes, labeled utility controls and ten-stop walking directory. Existing movement, economy and social actions retained; fictional-office changes preserved.
+- Migration preserves permanent desk/vanity purchases and spending through seasonal rollover; revokes direct client access to internal reset helper. No production reset executed. Actual function tested only in isolated PostgreSQL.
+- New desktop/phone fixture flow; fictional-name guard joins CI. Local parser/helper/name checks and focused browser checks pass; full CI/migration/live evidence in PR. Physical-device and authenticated production checks remain unverified.
+
 ## 2026-10-21: Fictional office — public game uses no real people or company
 - Every character, role, brand, place and joke target in the game is now fictional (Example Property Co.; Wes, Hal, Nora, Gus,
   Rory, Theo, Iris, Bramblewick, Pip, Wren, Lena). The nameplate job list matched against players' first names is empty.

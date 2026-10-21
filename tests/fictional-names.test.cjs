@@ -4,7 +4,7 @@
 "use strict";
 const fs = require("fs"), path = require("path"), crypto = require("crypto"), assert = require("assert");
 const DENY = new Set(["00f2e65596ab8c19", "0beca1c4f3e61feb", "1f254faa04cffa0d", "4516ee21fa678eee", "48523aea5533460e", "4b65c5426d398dff", "4f31fa50e5bd5ff4", "576c3cef48a76d9b", "61ea0803f8853523", "6cb09fe72a3471a7", "6e753a6b0a37cd10", "7e632fde8818b2ee", "7f0b629cbb9d794b", "96d9632f363564cc", "bb44bf07cf9a2db0", "e15cecbdf65083f8", "fceac367216ad8d1"]);
-const ALLOW = [/\b\w+_extra\b/g, /\bnick(name|names|On)?\b/gi, /a chance to sign in/g, /\.pg-nick\w*/g, /setNick/g];
+const ALLOW = [/\blast_nick\b/g, /\b\w+_extra\b/g, /\bnick(name|names|On)?\b/gi, /a chance to sign in/g, /\.pg-nick\w*/g, /setNick/g];
 const ROOT = path.join(__dirname, "..");
 const files = ["index.html", "AGENTS.md", "vercel.json"].concat(...["docs", "tests", "sql", "supabase"].map((d) => walk(path.join(ROOT, d))));
 function walk(d) { if (!fs.existsSync(d)) return []; return fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name)) : [path.relative(ROOT, path.join(d, e.name))]); }

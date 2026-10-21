@@ -687,6 +687,13 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-weekclock>span{font-weight:700}.pg-weekclock strong{font-family:var(--mono);font-size:13px;color:#2C6B45;font-variant-numeric:tabular-nums}.pg-weekclock small{flex-basis:100%;color:var(--soft);line-height:1.5}
 .pg-weekclock.compact{padding:1px 0 0;border:0;background:none;display:block;font-size:9px;line-height:11px;white-space:nowrap;letter-spacing:0}
 .pg-weekclock.compact>span,.pg-weekclock.compact strong{display:block;font-size:9px;line-height:11px}.pg-wbrow{margin-top:1px;font-size:10px;line-height:12px}.pg-wbrow>.pg-face{flex:none}
+/* Readable cutout controls: original emote art and a small licensed utility subset. */
+.pg-utility-icon{width:21px;height:21px;display:block;flex:none}.pg-utility-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:44px!important;height:48px!important;padding:3px 1px}.pg-utility-button>span{font:700 8px var(--sans)}
+.pg-emotes .pg-emote{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:44px;min-height:48px;padding:3px 4px;border-radius:5px;background:#FBF5E7;box-shadow:0 2px 0 #B8A68A;color:var(--ink)}
+.pg-emote-art{width:26px;height:26px;display:block}.pg-emote>span{font:700 9px var(--sans)}.pg-emote[aria-pressed="true"]{background:#FFD36B;transform:translateY(1px);box-shadow:0 1px 0 #B8A68A}.pg-emote:focus-visible,.pg-directory-stop:focus-visible{outline:3px solid #3C6C87;outline-offset:3px}
+.pg-directory-button{display:flex;gap:6px;align-items:center;min-height:44px}.pg-directory-intro{display:flex;gap:12px;padding:16px;background:#E3EAD7;border-bottom:2px solid var(--rule);align-items:center}.pg-directory-intro>.pg-utility-icon{width:34px;height:34px;color:#3D624B}.pg-directory-intro h3{font-size:16px;margin:0 0 5px}.pg-directory-intro p{margin:0;font-size:12px;color:var(--soft);line-height:1.4}.pg-directory-note{margin-left:auto;background:#FFE5A0;padding:8px;transform:rotate(3deg);font:10px/1.5 var(--mono);box-shadow:2px 3px 0 #2B2B2B25;flex:none}
+.pg-directory-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:12px}.pg-directory-stop{display:flex;gap:10px;align-items:center;padding:12px 9px;border:1.5px solid #A99D84;border-radius:6px;background:#FFFBF2;text-align:left;color:var(--ink);cursor:pointer}.pg-directory-stop>span:not(.pg-iconart){min-width:0;flex:1}.pg-directory-stop>.pg-iconart{flex:0 0 36px;width:36px;height:36px}.pg-directory-stop b{font-size:13px;display:block;margin-bottom:4px}.pg-directory-stop>span>span{display:block;font-size:11px;line-height:1.4}.pg-directory-stop small{display:block;font-size:10px;color:var(--soft);line-height:1.4;margin-top:4px}.pg-directory-stop>i{font-size:18px;font-style:normal;color:#3D624B}.pg-directory-stop:hover{background:#FFF0C4;border-color:#786D60}
+@media(max-width:540px){.pg-utility-button{width:38px!important;min-width:38px!important}.pg-directory-grid{grid-template-columns:1fr}.pg-directory-note{display:none}.pg-emotes{width:100%;justify-content:space-between}.pg-emotes .pg-emote{flex:1;max-width:52px}.pg-directory-button{font-size:12px}.pg-directory-intro h3{font-size:15px}}
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -3224,7 +3231,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 161 · wear your pin";
+const BUILD = "build 162 · find your people";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4211,12 +4218,12 @@ function OfficeFloor() {
           </div>
         </div>
         <div className="pg-hudbtns">
-          <button className="pg-help" onClick={() => setShowHelp(true)}>?</button>
-        <button className="pg-help" onClick={() => { const m = setMuted(!mute); setMute(m);
+          <button className="pg-help pg-utility-button" aria-label="How to play" title="How to play" onClick={() => setShowHelp(true)}><UtilityIcon kind="help"/><span>Help</span></button>
+        <button className="pg-help pg-utility-button" aria-label={mute?"Turn sound on":"Turn sound off"} aria-pressed={!mute} onClick={() => { const m = setMuted(!mute); setMute(m);
                 if (!m) { wakeAudio(); sfx("door"); } }}
-                title={mute ? "Sound off" : "Sound on"}>{mute ? "\u2715" : "\u266a"}</button>
-        <button className="pg-help" onClick={() => setPanel("account")} title="Your account">
-          {user?.is_anonymous ? "!" : "✓"}
+                title={mute ? "Sound off" : "Sound on"}><UtilityIcon kind={mute?"muted":"sound"}/><span>{mute?"Muted":"Sound"}</span></button>
+        <button className="pg-help pg-utility-button" aria-label="Your account" onClick={() => setPanel("account")} title="Your account">
+          <UtilityIcon kind="account"/><span>{user?.is_anonymous?"Save":"Account"}</span>
         </button>
         </div>
       </div>
@@ -4508,11 +4515,10 @@ function OfficeFloor() {
           </span>
         ))}
         <button className="pg-btn" title="Office rumors, bingo, assignments, the rooftop lounge and awards" onClick={()=>setFunOpen(true)}><OfficeIcon kind="paper" compact/> Office Nonsense</button>
-        <div className="pg-emotes">
+        <button className="pg-btn pg-directory-button" onClick={()=>setPanel("directory")}><UtilityIcon kind="map"/> Office directory</button>
+        <div className="pg-emotes" aria-label="Express yourself">
           {EMOTES.map((e) => (
-            <button key={e.id} className="pg-emote" onClick={() => doEmote(e.id)} title={e.label}>
-              {EMOTE_ICON[e.id]}
-            </button>
+            <EmoteButton key={e.id} item={e} active={emote?.id===e.id&&emote.until>Date.now()} onClick={()=>doEmote(e.id)}/>
           ))}
         </div>
         <div className="pg-prompt">
@@ -4564,6 +4570,7 @@ function OfficeFloor() {
                     if(row){ setPrices(null); api.allPrices().then(setPrices).catch(() => {}); }
                   }} />
           )}
+          {panel === "directory" && <OfficeDirectory onGo={id=>{setPanel(null);if(id==="desk"&&myOffice)routeTo(myOffice.cx,myOffice.cy+40,"desk",myOffice);else{const f=FIXTURES.find(x=>x.id===id);if(f)walkTo(f);}}}/>}
           {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} schedule={weekSchedule} />}
           {(panel === "kindness" || panel === "sabotage") && (
             <Targets good={panel === "kindness"} board={board} me={me} cat={cat}
@@ -4869,7 +4876,7 @@ function prettyError(e) {
 }
 
 const PANEL_TITLES = {
-  shop: "Your desk", standings: "The whiteboard", kindness: "Break room",
+  directory: "Office directory", shop: "Your desk", standings: "The whiteboard", kindness: "Break room",
   sabotage: "Meeting room", wire: "Bulletin board", personnel: "Personnel file",
   fund: "Office fund", owner: "Hal's office", account: "Your account",
   wardrobe: "Supply closet", coffee: "The coffee bar", fridge: "The fridge",
@@ -5098,6 +5105,46 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       {c && <div className="pg-worn">{c.name}</div>}
     </div>
   );
+}
+
+// Utility paths adapted from Lucide, ISC; vendor/lucide-LICENSE.txt.
+function UtilityIcon({kind}) {
+ const speaker=<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/>;
+ return <svg className="pg-utility-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+ {kind==="map"?<><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15M9 3.236v15"/></>:
+ kind==="sound"?<>{speaker}<path d="M16 9a5 5 0 0 1 0 6M19.364 18.364a9 9 0 0 0 0-12.728"/></>:
+ kind==="muted"?<>{speaker}<path d="m16.5 14.5 5-5m-5 0 5 5"/></>:
+ kind==="account"?<><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></>:
+ <><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></>}
+ </svg>;
+}
+function EmoteArt({id}) {
+ return <svg className="pg-emote-art" viewBox="0 0 32 32" fill="none" stroke="#2B2B2B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+ <path d={id==="jump"?"M10 23v-8q6-4 12 0v8Z":"M10 25v-9q6-4 12 0v9Z"} fill={id==="panic"?"#F78B6B":"#7B9CC4"}/>
+ <path d="M11 4q5-3 10 0l-1 9H12Z" fill="#EBC4A5"/>
+ {id==="panic"?<><circle cx="14" cy="7" r="1"/><circle cx="18" cy="7" r="1"/><ellipse cx="16" cy="10.5" rx="1.4" ry="1.8"/><path d="m10 17-5-5m17 5 5-5M4 4l2 3m22-3-2 3"/></>:
+ <><path d="M13 7h2m2 0h2M14 11h4"/>{id==="wave"?<path d="m10 17-4 5m16-5 3-6V6m3-2 1 3m-6-5-1 3"/>:id==="dance"?<><path d="m10 17-5-4m17 4 5-4m-14 12-3 4m9-4 4 3"/><path d="M27 4v6m0-5 3-1" stroke="#A74135"/><circle cx="25.5" cy="11" r="1.5" fill="#A74135"/></>:id==="shrug"?<path d="m10 18-4 2-3-3m19 1 4 2 3-3M2 14h5m18 0h5"/>:id==="type"?<><path d="m10 17 3 5m9-5-3 5"/><rect x="4" y="23" width="24" height="6" rx="1" fill="#F8F1E3"/><path d="M8 26h2m3 0h2m3 0h2m3 0h2"/></>:<path d="m10 16-5-4m17 4 5-4M16 2V0m-5 28h10M12 24l-2 3m10-3 2 3"/>}</>}
+ </svg>;
+}
+function EmoteButton({item,active,onClick}) {
+ return <button className="pg-emote" title={item.label} aria-label={item.label} aria-pressed={!!active} onClick={onClick}><EmoteArt id={item.id}/><span>{item.id==="type"?"Type":item.label}</span></button>;
+}
+
+const DIRECTORY_STOPS=[
+ {id:"desk",name:"Your desk",kind:"computer",purpose:"Hiring, upgrades and your catalog",note:"Delegation begins here."},
+ {id:"whiteboard",kind:"trophy",purpose:"Weekly race and the Friday deadline",note:"Friendly competition. Aggressive stationery."},
+ {id:"hr",kind:"badge",purpose:"Your collection, pins and awards",note:"A file thick enough to be furniture."},
+ {id:"mirror",kind:"person",purpose:"Change your face, hair and outfit",note:"New look. Same inbox."},
+ {id:"wardrobe",kind:"shirt",purpose:"Try on a costume or dress a coworker",note:"Professionalism is temporarily optional."},
+ {id:"coffee",kind:"mug",purpose:"Kind gestures for your coworkers",note:"Be the reason somebody likes Mondays."},
+ {id:"coffeebar",kind:"coffee",purpose:"Coffee and short productivity boosts",note:"A meeting with a better outcome."},
+ {id:"vending",kind:"snack",purpose:"Help the office reach its shared goal",note:"Teamwork, itemized."},
+ {id:"suggestion",kind:"paper",purpose:"Send an idea to the suggestion box",note:"Have a thought. Leave a paper trail."},
+ {id:"owner",kind:"binder",purpose:"Raises, reviews and office politics",note:"Knock with confidence. Leave with paperwork."},
+];
+function OfficeDirectory({onGo}) {
+ return <section className="pg-directory" data-testid="office-directory"><div className="pg-directory-intro"><UtilityIcon kind="map"/><div><h3>Find your people. Find the coffee.</h3><p>Pick a stop. Your employee will walk there and open it.</p></div><span className="pg-directory-note">You are here.<br/>HR is aware.</span></div>
+ <div className="pg-directory-grid">{DIRECTORY_STOPS.map(stop=>{const f=FIXTURES.find(x=>x.id===stop.id),name=stop.name||f?.label;return <button key={stop.id} className="pg-directory-stop" aria-label={"Walk to "+name} onClick={()=>onGo(stop.id)}><OfficeIcon kind={stop.kind}/><span><b>{name}</b><span>{stop.purpose}</span><small>{stop.note}</small></span><i aria-hidden="true">→</i></button>;})}</div></section>;
 }
 
 const EMOTE_ICON = {
@@ -7476,6 +7523,7 @@ const ART_FITTINGS={"office_kit":[{"id":"d1","name":"A Desk Without A Wobble","n
 
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
 function ArtPreview(){
+ const [demoEmote,setDemoEmote]=useState(null);
  const qaSchedule={timezone:"America/Los_Angeles",server_now:"2026-10-21T17:00:00Z",ends_at:"2026-10-23T23:00:00Z",received_at:Date.now()};
  const [helpOpen,setHelpOpen]=useState(false);
  const [demoAvatar,setDemoAvatar]=useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
@@ -7546,6 +7594,8 @@ function ArtPreview(){
   <div data-testid="weekly-board-qa"><Standings board={[]} schedule={qaSchedule}/></div>
   <h2>5g. Worn beta pin · shared animated character rig</h2>
   <div data-testid="worn-pin-qa" className="ar-grid">{[null,"trex"].map((outfit,i)=><div className="ar-cell" key={i}><div style={{position:"relative",height:145}}><Body p={{name:"Pin preview",pin:"beta",look:demoAvatar,outfit:outfit?{id:outfit,until:"2099-01-01T00:00:00Z"}:null}} emote="wave"/></div><strong>{outfit?"Over a costume":"On your shirt"}</strong></div>)}</div>
+  <h2>5h. Illustrated emotes and office directory · read-only QA</h2>
+  <div data-testid="polish-controls-qa"><div className="pg-emotes">{EMOTES.map(e=><EmoteButton key={e.id} item={e} active={demoEmote===e.id} onClick={()=>setDemoEmote(e.id)}/>)}</div><OfficeDirectory onGo={()=>{}}/></div>
   <h2>6. Onboarding help · small-screen scroll QA</h2>
   <button className="pg-btn" data-testid="help-preview-open" onClick={()=>setHelpOpen(true)}>Open onboarding help</button>
   {helpOpen&&<Help rate={0} onClose={()=>setHelpOpen(false)}/>}
