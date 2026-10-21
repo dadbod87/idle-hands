@@ -575,6 +575,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:4px 10px;
   font-size:11px;font-style:italic;z-index:12;width:max-content;max-width:230px;
   white-space:normal;overflow-wrap:break-word;text-align:center;line-height:1.35}
+.pg-chance .pg-mumble{top:auto;bottom:calc(100% + 9px);max-height:160px;overflow-wrap:anywhere}
 .pg-mumble::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);
   border:6px solid transparent;border-top-color:var(--ink)}
 .pg-peername em{font-style:normal;display:block;font-family:var(--mono);font-size:8px;
@@ -1853,13 +1854,38 @@ function chanceNickname(guest){
 // Shared-clock shuffle bag: every visitor gets one turn per round before
 // anyone repeats. Fisher-Yates uses a deterministic seed so all browsers
 // agree on who appears, without storing or syncing client-side state.
+// Memoized shared-clock eligibility count; prevents a full-floor interval
+// from silently consuming a visitor's turn. Initialized at this season's reset.
+const visitorOriginSlot=Math.floor(Date.UTC(2026,9,20)/(4*60000));
+let visitorLastSlot=visitorOriginSlot-1;
+let visitorEligibleCount=0;
+let visitorLastResult=null;
+function visitorOrdinal(slot){
+ if(slot<visitorOriginSlot)return ((slot%OFFICE_CAST.length)+OFFICE_CAST.length)%OFFICE_CAST.length;
+ if(slot<visitorLastSlot){
+   visitorLastSlot=visitorOriginSlot-1;visitorEligibleCount=0;
+ }
+ if(slot===visitorLastSlot)return visitorLastResult;
+ while(visitorLastSlot<slot){
+   visitorLastSlot++;
+   const stamp=visitorLastSlot*4*60000;
+   const blocked=!!(chanceAt(stamp)&&daveAt(stamp));
+   if(!blocked)visitorEligibleCount++;
+   visitorLastResult=blocked?null:visitorEligibleCount-1;
+ }
+ return visitorLastResult;
+}
 function officeVisitorNow(t,ch,dv){
  if(ch&&dv)return null;
  const period=4*60000,slot=Math.floor(t/period),into=t-slot*period;
  const duration=46000;
  if(into>=duration)return null;
  const hash=(n)=>{let x=n|0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);return (x^(x>>>16))>>>0;};
- const size=OFFICE_CAST.length,round=Math.floor(slot/size),turn=((slot%size)+size)%size;
+ // Only count visitor opportunities where the floor isn't already full.
+ // The deterministic ordinal lets skipped visitors keep their place in the bag.
+ const ordinal=visitorOrdinal(slot);
+ if(ordinal===null)return null;
+ const size=OFFICE_CAST.length,round=Math.floor(ordinal/size),turn=((ordinal%size)+size)%size;
  const order=OFFICE_CAST.map((_,i)=>i);
  for(let i=size-1;i>0;i--){
    const j=hash((round*8191+i*131)|0)%(i+1);
@@ -3426,6 +3452,7 @@ function PatronFloor() {
 
   /* ---------------------------- actions --------------------------- */
   const doWork = () => {
+    if (dougCallNow(Date.now())) return;
     if (!atDeskRef.current) {        // you work at your desk, like everybody else
       const o = officeRef.current;
       if (o) routeTo(o.cx, o.cy + 40, null, o);
