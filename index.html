@@ -614,6 +614,22 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 @media(max-width:540px){.pg-row{gap:7px;padding:9px 6px}.pg-iconart{width:29px;height:29px;flex-basis:29px}.pg-iconart svg{width:25px;height:25px}.pg-hud{gap:6px}}
 @media(prefers-reduced-motion:reduce){.pg-row{transition:none}}
 
+
+.pg-artreview{background:#F8F1E3;min-height:100vh;padding:24px;color:#2B2B2B;font-family:system-ui,sans-serif}
+.pg-artreview header{border:4px solid #2B2B2B;border-radius:14px;background:#FFD36B;padding:16px 22px;box-shadow:6px 6px 0 #D9CDC0}
+.pg-artreview h1{margin:0;font-size:clamp(25px,4vw,50px);font-weight:900;line-height:1.1}
+.pg-artreview h2{margin:22px 0 12px;border-radius:7px;background:#2B2B2B;color:#FFF8E8;padding:8px 12px;font-size:17px}
+.pg-artreview .ar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:13px}
+.pg-artreview .ar-cell{border:2px solid #2B2B2B;border-radius:10px;background:#FFFDF5;padding:12px;min-width:0}
+.pg-artreview .ar-cell strong{display:block;margin-top:5px}
+.pg-artreview .ar-cell small{color:#5D6C5B;overflow-wrap:anywhere}
+.pg-artreview .ar-npc{height:118px;display:flex;align-items:center;justify-content:center}
+.pg-artreview .ar-npc .pg-body{transform:scale(1.05);transform-origin:center}
+.pg-artreview .ar-icons{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pg-artreview .ar-palette{display:flex;gap:8px;flex-wrap:wrap}
+.pg-artreview .ar-palette span{width:85px;height:62px;border:3px solid #2B2B2B;border-radius:8px;display:flex;align-items:end;justify-content:center;font-size:10px;font-weight:700;padding:2px}
+@media(max-width:430px){.pg-artreview{padding:10px}.pg-artreview .ar-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.pg-artreview .ar-cell{padding:6px}}
+
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -6907,8 +6923,29 @@ function Onboard({ user, code, onDone }) {
   );
 }
 
+/** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
+function ArtPreview(){
+ const types=["paper","badge","mug","chair","computer","plant","binder","wood","phone","person","star","shirt","notice","reset","gear"];
+ const colors=[["Paper","#F8F1E3"],["Sage","#8FA67A"],["Blue","#7B9CC4"],["Note","#FFD36B"],["Orange","#F78B6B"],["Ink","#2B2B2B"]];
+ return <main className="pg-artreview" data-testid="art-preview">
+  <header><h1>IDLE HANDS · ART QA</h1><p>Original 2D cutout office satire · QA gallery only · Never touches game accounts or Busywork.</p></header>
+  <h2>1. Flat cutout color and shape system</h2>
+  <div className="ar-palette">{colors.map(([name,color])=><span key={name} style={{background:color}}>{name}</span>)}</div>
+  <h2>2–3. Cast silhouettes and character styling</h2>
+  <div className="ar-grid">
+  {OFFICE_CAST.map(v=><div className="ar-cell" key={v.id}><div className="ar-npc"><OfficeVisitorBody visitor={{...v,facing:1}}/></div><strong>{v.name}</strong><small>{v.role}</small></div>)}
+  <div className="ar-cell"><div className="ar-npc"><ChanceBody/></div><strong>Chance</strong><small>Independent floor wanderer</small></div>
+  <div className="ar-cell"><div className="ar-npc"><DaveBody/></div><strong>Dave</strong><small>Owner</small></div>
+  </div>
+  <h2>4. Props, cosmetics, upgrades</h2>
+  <div className="ar-grid">{["Monitor upgrade","Nicer chair","Snack stash","Coffee setup","Rumor board","Operating agreement binder","Slush drinks","Joey wood","Tenant phone","Office plant","Employee badge","Office hoodie","Senior staff","Restructure"].map(name=><div className="ar-cell" key={name}><div className="ar-icons"><OfficeIcon kind={name}/><strong>{name}</strong></div></div>)}</div>
+  <h2>5. Small icon readability</h2>
+  <div className="ar-grid">{types.map(t=><div className="ar-cell" key={t}><div className="ar-icons"><OfficeIcon kind={t}/><OfficeIcon kind={t} compact/></div><strong>{t}</strong></div>)}</div>
+ </main>;
+}
+
 try {
-  ReactDOM.createRoot(document.getElementById("root")).render(<PatronFloor />);
+  ReactDOM.createRoot(document.getElementById("root")).render(new URLSearchParams(location.search).get("art-preview")==="1" ? <ArtPreview/> : <PatronFloor />);
 } catch (err) {
   window.__boot(err && err.stack ? err.stack : String(err));
 }
