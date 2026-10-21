@@ -2914,7 +2914,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 149 · cutout art";
+const BUILD = "build 150 · cutout art";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -5731,7 +5731,7 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
 
 function OfficeVisitorBody({visitor:v}){
  const id=v.id||"";
- const color=id==="jess"?"#343B43":id==="john"?"#F8F1E3":id==="matt"?"#E8E7E0":id==="joey"?"#4B5A63":id==="nick"?"#303C4B":id==="avah"?"#7B9CC4":id==="rilie"?"#836F90":v.color;
+ const color=id==="jess"?"#343B43":id==="dave"?"#CEBD7F":id==="chance"?"#617750":id==="john"?"#F8F1E3":id==="matt"?"#E8E7E0":id==="joey"?"#4B5A63":id==="nick"?"#303C4B":id==="avah"?"#7B9CC4":id==="rilie"?"#836F90":v.color;
  const hair=id==="avah"?"#D5AB62":id==="rilie"?"#51382E":v.hair;
  return <div className="pg-body chance pg-visitor-cutout" style={{transform:"scaleX("+v.facing+")"}}>
  <svg viewBox="0 0 74 92" className="pg-chancesvg" aria-label={v.name+" cutout cartoon character"} role="img">
@@ -5750,16 +5750,19 @@ function OfficeVisitorBody({visitor:v}){
  <ellipse cx="37" cy="29" rx="17" ry="19" fill="#E6B596" stroke="#2B2B2B" strokeWidth="2.7"/>
  {id==="avah"&&<><ellipse cx="55" cy="10" rx="8" ry="8" fill={hair} stroke="#2B2B2B" strokeWidth="2"/><path d="M24 15Q37-2 55 17Q48 6 37 11z" fill={hair}/></>}
  {id==="rilie"&&<path d="M20 19Q17 7 31 6Q49 2 55 17Q45 6 37 12Q29 7 20 19" fill={hair} stroke="#2B2B2B" strokeWidth="2"/>}
- {id==="joey"?<><path d="M19 21Q22 7 38 9Q51 9 54 21L18 22Z" fill="#7B9CC4" stroke="#2B2B2B" strokeWidth="2.6"/><path d="M36 20h29q-1 8-22 7" fill="#EBE3CE" stroke="#2B2B2B" strokeWidth="2"/></>:
+ {(id==="joey"||id==="chance")?<><path d="M19 21Q22 7 38 9Q51 9 54 21L18 22Z" fill={id==="chance"?"#68754D":"#7B9CC4"} stroke="#2B2B2B" strokeWidth="2.6"/><path d="M36 20h29q-1 8-22 7" fill={id==="chance"?"#68754D":"#EBE3CE"} stroke="#2B2B2B" strokeWidth="2"/></>:
  <path d="M20 22Q20 7 37 8Q56 6 54 23Q48 14 39 15Q28 14 20 22z" fill={hair} stroke="#2B2B2B" strokeWidth="2.7"/>}
  {id==="john"&&<path d="M24 12l-5-9 13 5M41 11l7-8-1 9" fill={hair} stroke="#2B2B2B" strokeWidth="2"/>}
  {id==="nick"&&<path d="M25 12l-7-7 14 6m11 0 6-8 0 12" fill={hair} stroke="#2B2B2B" strokeWidth="2"/>}
  <path d="M25 28q5-3 11 0M39 28q5-3 10 0" fill="none" stroke="#41332B" strokeWidth="2"/>
  <path d="M25 31q5 2 11 0M39 31q5 2 10 0" fill="none" stroke="#2B2B2B" strokeWidth="2.2"/>
  <circle cx="30" cy="29" r="1.7" fill="#2B2B2B"/><circle cx="44" cy="29" r="1.7" fill="#2B2B2B"/>
- {(id==="matt"||id==="nick"||id==="avah")&&<><rect x="24" y="24" width="13" height="11" rx="4" fill="none" stroke="#2B2B2B" strokeWidth="1.8"/><rect x="38" y="24" width="13" height="11" rx="4" fill="none" stroke="#2B2B2B" strokeWidth="1.8"/><path d="M37 28h2" stroke="#2B2B2B"/></>}
+ {(id==="matt"||id==="nick"||id==="avah"||id==="dave")&&<><rect x="24" y="24" width="13" height="11" rx="4" fill="none" stroke="#2B2B2B" strokeWidth="1.8"/><rect x="38" y="24" width="13" height="11" rx="4" fill="none" stroke="#2B2B2B" strokeWidth="1.8"/><path d="M37 28h2" stroke="#2B2B2B"/></>}
  <path d={id==="chance"?"M31 39Q38 43 44 38":"M32 40q5 2 10 0"} stroke="#7A5246" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+ {id==="dave"&&<><path d="M29 37q8 5 16 0" stroke="#817D78" strokeWidth="4" fill="none"/><path d="M20 20q8-9 17-7 10-2 17 7" stroke="#B6B0A8" strokeWidth="3" fill="none"/></>}
  {/* Story accessories make even the smallest office visitor distinguishable. */}
+ {id==="chance"&&<><path d="M9 54h15v16H9z" fill="#FFF8E8" stroke="#2B2B2B" strokeWidth="2"/><path d="M24 57h4q4 4-4 8" stroke="#2B2B2B" strokeWidth="2" fill="none"/></>}
+ {id==="dave"&&<><path d="M7 54h16v16H7z" fill="#FFF8E8" stroke="#2B2B2B" strokeWidth="2"/><circle cx="15" cy="62" r="5" fill="#FFD36B" stroke="#2B2B2B" strokeWidth="1"/></>}
  {id==="jess"&&<><rect x="1" y="57" width="18" height="7" rx="2" fill="#AC8760" stroke="#2B2B2B" strokeWidth="2"/><path d="M4 43h6l1 14H3z" fill="#F78B6B" stroke="#2B2B2B" strokeWidth="1.8"/><path d="M12 45h6l1 12h-8z" fill="#7B9CC4" stroke="#2B2B2B" strokeWidth="1.8"/></>}
  {id==="john"&&<><rect x="51" y="57" width="11" height="19" rx="2" fill="#353C48" stroke="#2B2B2B" strokeWidth="2"/><circle cx="56" cy="61" r="1" fill="#E05B5B"/></>}
  {id==="matt"&&<><path d="M2 53h26v26H2z" fill="#D8BF8C" stroke="#2B2B2B" strokeWidth="2.2"/><path d="M7 60h17M7 65h15M7 70h17" stroke="#7B603E" strokeWidth="1.7"/></>}
@@ -5772,46 +5775,8 @@ function OfficeVisitorBody({visitor:v}){
  </div>;
 }
 function DaveBody({ facing = 1 }) {
-  return (
-    <div className="pg-body chance" style={{ transform: `scaleX(${facing})` }}>
-      <div className="pg-rig">
-        <svg viewBox="0 0 74 92" className="pg-chancesvg" aria-hidden="true">
-          {/* forearms first, so the torso overlaps them and the sleeve reads as short */}
-          <rect x="11" y="49" width="7" height="19" rx="3.5" fill="#E0BA96" />
-          <rect x="56" y="49" width="7" height="19" rx="3.5" fill="#E0BA96" />
-          <ellipse cx="37" cy="20" rx="17" ry="16" fill="#E0BA96" />
-          {/* short grey hair, receding at the temples: fifties, not balding */}
-          <path d="M23 17c1-7 7-11.5 14-11.5S50 10 51 17c-4-4-8-5.5-14-5.5S27 13 23 17Z" fill="#ADABA5" />
-          <path d="M21.6 21.5c.1-2.4.6-4.4 1.4-6 .3 2.2.5 4.2.6 6Z" fill="#ADABA5" />
-          <path d="M52.4 21.5c-.1-2.4-.6-4.4-1.4-6-.3 2.2-.5 4.2-.6 6Z" fill="#ADABA5" />
-          <path d="M26 15.5c2-1.2 4.5-1.2 6.5 0M41.5 15.5c2-1.2 4.5-1.2 6.5 0"
-                stroke="#9A9892" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-          <ellipse cx="30" cy="20.5" rx="1.8" ry="2.2" fill="#2C2622" />
-          <ellipse cx="44" cy="20.5" rx="1.8" ry="2.2" fill="#2C2622" />
-          <path d="M32 29c3 1.6 7 1.6 10 0" stroke="#8A6A55" strokeWidth="1.6"
-                fill="none" strokeLinecap="round" />
-          {/* short sleeve polo */}
-          <path d="M37 36c-14 0-22 6-24 30h48c-2-24-10-30-24-30Z" fill="#5C7355" />
-          <path d="M15.6 52.5c1.6.4 3.4.5 5 .4M53.4 52.9c1.6.1 3.4 0 5-.4"
-                stroke="#485B43" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-          {/* collar and two-button placket */}
-          <path d="M37 36l-6.5 4 6.5 7.5 6.5-7.5-6.5-4Z" fill="#4A5E45" />
-          <rect x="36" y="40" width="2" height="13" rx="1" fill="#44563F" />
-          <circle cx="37" cy="44" r="1.1" fill="#EDF0E6" />
-          <circle cx="37" cy="49.5" r="1.1" fill="#EDF0E6" />
-          {/* belt and jeans */}
-          <rect x="17" y="66" width="40" height="9" fill="#5A4634" />
-          <rect x="34" y="67" width="6" height="7" rx="1" fill="#C2A24E" />
-          <rect x="21" y="74" width="14" height="16" rx="2" fill="#6885B0" />
-          <rect x="39" y="74" width="14" height="16" rx="2" fill="#6885B0" />
-          <path d="M24 74v16M46 74v16" stroke="#5A76A0" strokeWidth="1.2" fill="none" />
-        </svg>
-      </div>
-      <span className="pg-shadow wide" />
-    </div>
-  );
+ return <OfficeVisitorBody visitor={{id:"dave",name:"Dave",role:"Owner",hair:"#B6B0A8",color:"#CEBD7F",longHair:false,facing}}/>;
 }
-
 /* What a pineapple says when it goes. Mostly PINEAPPLE. Occasionally not.
    Pineapple is already the word you say in this office when something needs to
    not have happened, which is why it gets its own level. */
@@ -6080,28 +6045,8 @@ function CowLevel({ data, onDone }) {
 }
 
 function ChanceBody({ facing = 1 }) {
-  return (
-    <div className="pg-body chance walking" style={{ transform: `scaleX(${facing})` }}>
-      <div className="pg-rig">
-        <svg viewBox="0 0 74 92" className="pg-chancesvg" aria-hidden="true">
-          <ellipse cx="37" cy="20" rx="17" ry="16" fill="#E8C6A6" />
-          <path d="M21 15c2-9 10-13 16-13s14 4 16 13c-6-4-10-5-16-5s-10 1-16 5Z" fill="#7A5638" />
-          <ellipse cx="30" cy="20" rx="1.8" ry="2.2" fill="#2C2622" />
-          <ellipse cx="44" cy="20" rx="1.8" ry="2.2" fill="#2C2622" />
-          <path d="M31 28c4 2 8 2 12 0" stroke="#8A6A55" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-          <path d="M37 36c-14 0-22 6-24 30h48c-2-24-10-30-24-30Z" fill="#5B7A9E" />
-          <path d="M37 36l-7 4 7 9 7-9-7-4Z" fill="#EDF0E6" />
-          <path d="M30 37l7 3-7 4Zm14 0l-7 3 7 4Z" fill="#43607F" />
-          <rect x="17" y="66" width="40" height="9" fill="#3E5570" />
-          <rect x="21" y="74" width="14" height="16" rx="2" fill="#3E5570" />
-          <rect x="39" y="74" width="14" height="16" rx="2" fill="#3E5570" />
-        </svg>
-      </div>
-      <span className="pg-shadow wide" />
-    </div>
-  );
+ return <OfficeVisitorBody visitor={{id:"chance",name:"Chance",role:"Office Wanderer",hair:"#513C2A",color:"#617750",longHair:false,facing}}/>;
 }
-
 function Recap({ season }) {
   const st = season.stats || {};
   const row = (label, text) => text ? (
