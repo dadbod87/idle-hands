@@ -54,3 +54,10 @@ WornPin uses PIN_INDEX color/glyph and a bold outlined circular badge on the che
 ## Build 162 utility controls and navigation
 
 Use `EmoteArt` for six original cutout gestures with visible labels and 44px minimum targets; keep actual world emote behavior unchanged. `UtilityIcon` uses a pinned, licensed Lucide path subset for general controls. Directory cards reuse `OfficeIcon` and real walking destinations. These controls are not a replacement for the next environment-composition and feedback stages; their review and acceptance live in `POLISH_REVIEW_2026-10-21.md`. Test at phone/desktop and preserve route/hitbox semantics.
+
+
+## Build 163 lived-in office and reaction system
+
+`OfficeEnvironment`/`SceneryArt` compose three floor zones and seven decorative props, sharing warm paper/ink/sage/blue/coral. Keep their pointer events disabled and their world position/depth explicit; do not turn decorative props into untested walls. `FloorReaction` uses a paper receipt, stamp, mug/heart, costume or mishap card; one short local reaction at a time, still for reduced motion. Confirmed outcomes follow successful server responses; drafting has no invented reward. A receipt also appears inside purchase panels.
+
+Phone work/directory/emotes stay visible. Secondary tools are under More; notifications occupy measured space above the toolbar. Scenery, action and social components are also in the read-only gallery. The break room's three prop stories share a half-hour clock phase and offer readable illustrated inspections. Existing real office goal controls celebration bunting. Kindness notes use server deed names/masking; coffee-break signals are transient and never an official reward. All new art/audio is original SVG/Web Audio code; existing Lucide utility notices remain intact. Test touch, keyboard, hidden audio, failure paths and two-player fixture broadcasts before release.
