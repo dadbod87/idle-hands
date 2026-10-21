@@ -1,4 +1,5 @@
 name: Idle Hands regression gate
+# Character creator release requires all jobs green before merging.
 on:
   pull_request:
     branches: [main]
