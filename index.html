@@ -1850,16 +1850,22 @@ function chanceNickname(guest){
  if(!pool)return null;
  return pool[Math.abs(guest.bucket)%pool.length];
 }
-// Equal-probability visitor lottery every 4 minutes. A shared deterministic
-// hash makes all clients pick the same visitor; no alphabetical priority.
+// Shared-clock shuffle bag: every visitor gets one turn per round before
+// anyone repeats. Fisher-Yates uses a deterministic seed so all browsers
+// agree on who appears, without storing or syncing client-side state.
 function officeVisitorNow(t,ch,dv){
  if(ch&&dv)return null;
  const period=4*60000,slot=Math.floor(t/period),into=t-slot*period;
  const duration=46000;
  if(into>=duration)return null;
  const hash=(n)=>{let x=n|0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);return (x^(x>>>16))>>>0;};
- const pick=hash(slot)%OFFICE_CAST.length;
- const c=OFFICE_CAST[pick];
+ const size=OFFICE_CAST.length,round=Math.floor(slot/size),turn=((slot%size)+size)%size;
+ const order=OFFICE_CAST.map((_,i)=>i);
+ for(let i=size-1;i>0;i--){
+   const j=hash((round*8191+i*131)|0)%(i+1);
+   const tmp=order[i];order[i]=order[j];order[j]=tmp;
+ }
+ const c=OFFICE_CAST[order[turn]];
  const legs=c.path.length-1,leg=Math.min(legs-1,Math.floor(into/(duration/legs)));
  const a=c.path[leg],b=c.path[leg+1],pct=(into-leg*duration/legs)/(duration/legs);
  const v={...c,bucket:slot,x:a[0]+(b[0]-a[0])*pct,y:a[1]+(b[1]-a[1])*pct,
