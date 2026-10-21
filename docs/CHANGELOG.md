@@ -33,3 +33,8 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Refreshed player wardrobe strokes and office desk/chair/rug levels, and flattened familiar office fixtures.
 - Added read-only `?art-preview=1` and Chromium screenshot artifacts for art QA with phone, desktop, tabs and overflow checks.
 - Concept artwork was used as visual guidance, not copied as bitmap assets. A full authenticated in-office visual playthrough has not been completed.
+
+## 2026-10-20: Character builder & permanent wardrobe (PR #5)
+- Builds free first-day character creator using cutout sprite head, selectable body style, hair, eyes, expression, skin color and starter shirt; no mandatory uploaded photo.
+- Adds free mirror appearance changes for existing players, permanent BW-priced outfit collection, own-and-equip restrictions and cross-device server save.
+- Adds actual RPC isolation tests for wardrobe purchase/ownership and Playwright creator preview at phone/desktop. Database changes are additive and intended to preserve Seniority and inventory through resets.
