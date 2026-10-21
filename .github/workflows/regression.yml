@@ -16,6 +16,7 @@ jobs:
         with: {node-version: '22'}
       - run: npm install --no-save --no-package-lock @babel/parser@7
       - run: node tests/economy-and-office.test.cjs
+      - run: node tests/fictional-names.test.cjs
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -67,3 +68,4 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f tests/office-awards-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/weekly-deadline-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/pacific-week-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/permanent-cosmetics-contract.sql

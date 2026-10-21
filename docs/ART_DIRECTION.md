@@ -49,3 +49,8 @@ Costume thumbnails and expanded try-ons must use `CostumePreview` → `Body` →
 ## Build 161 worn pins
 
 WornPin uses PIN_INDEX color/glyph and a bold outlined circular badge on the chest. Keep it inside pg-rig/pg-flip so motion and facing follow the character, above garment/costume art without covering the face or changing hitboxes. Beta metadata fallback describes the existing pin only; ownership remains server-controlled. Use accessible HR Wear/Remove controls and preserve leaderboard identity.
+
+
+## Build 162 utility controls and navigation
+
+Use `EmoteArt` for six original cutout gestures with visible labels and 44px minimum targets; keep actual world emote behavior unchanged. `UtilityIcon` uses a pinned, licensed Lucide path subset for general controls. Directory cards reuse `OfficeIcon` and real walking destinations. These controls are not a replacement for the next environment-composition and feedback stages; their review and acceptance live in `POLISH_REVIEW_2026-10-21.md`. Test at phone/desktop and preserve route/hitbox semantics.
