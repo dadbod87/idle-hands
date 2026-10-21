@@ -19,7 +19,7 @@ test('two isolated players invite, walk, wave, and see actual kindness log notes
  // Read jokes without a purchase, then use the unchanged server deed action.
  await a.bringToFront();
  await expect(a.getByTestId('office-moments')).toBeVisible({timeout:15000});
- for(const label of ['Inspect the plant','Read the printer apology','Check the calendar']){await a.getByRole('button',{name:label,exact:true}).click();await expect(a.locator('.pg-prop-punchline')).not.toBeEmpty();}
+ for(const label of ['Inspect the plant','Read the printer apology','Check the calendar']){await a.getByTestId('office-moments').getByRole('button',{name:label,exact:true}).click();await expect(a.locator('.pg-prop-punchline')).not.toBeEmpty();}
  await a.locator('.pg-picks').getByRole('button',{name:/QA Pal/}).click();await a.getByRole('button',{name:/Leave a coffee/}).click();
  await expect.poll(()=>deeds.length).toBe(1);expect(fa.player.pp).toBe(499900);expect(fa.player.goodwill).toBe(1);expect(fb.player.pp).toBe(500000);
  await b.bringToFront();console.log('social: checking stored kindness');await b.reload();await expect(b.locator('.pg-stage')).toBeVisible({timeout:15000});await b.getByRole('button',{name:'Office directory',exact:true}).click();await b.getByRole('button',{name:'Walk to The Break Table',exact:true}).click();

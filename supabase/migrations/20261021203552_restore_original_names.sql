@@ -5,14 +5,14 @@ DO $restore$
 DECLARE r record; candidate jsonb; d text; before_def text; n int:=0;
 BEGIN
  FOR r IN SELECT key,data FROM public.catalog WHERE key IN ('chance_extra','costumes','items','mail','memos_extra','office_kit') ORDER BY key FOR UPDATE LOOP
-  IF md5(r.data::text) IS DISTINCT FROM CASE r.key
+  IF md5(r.data::text) IS DISTINCT FROM (CASE r.key
    WHEN 'chance_extra' THEN 'a6f6aa9fcc3d2be786f638dba7213689'
    WHEN 'costumes' THEN '8a7560ede4fc406cbcadab849488a7e9'
    WHEN 'items' THEN '5de58a4cf887fcf1af90d80af3c4b9b9'
    WHEN 'mail' THEN '3f95763732317b73e77c2feab82ae7bf'
    WHEN 'memos_extra' THEN 'b3c19e66a787c1d3444db9cc3fc4edc7'
    WHEN 'office_kit' THEN 'c0ed42190bf450815afd753da0b835ae'
-  END THEN RAISE EXCEPTION 'name restoration: catalog % changed since review; nothing applied',r.key; END IF;
+  END) THEN RAISE EXCEPTION 'name restoration: catalog % changed since review; nothing applied',r.key; END IF;
   d:=r.data::text;
   d:=replace(d,'Wes', 'Chance');
   d:=replace(d,'Hal', 'Dave');
