@@ -28,6 +28,16 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
   await expect(page.locator('.ar-palette span')).toHaveCount(6);
   await expect(page.locator('.ar-fixture')).toHaveCount(7);
   await expect(page.locator('.ar-icons .pg-iconart').first()).toBeVisible();
+  await expect(page.getByTestId('art-shop-preview')).toBeVisible();
+  for(const tab of ['Requisitions','Approvals','Wardrobe','Office upgrades']){
+    await page.getByTestId('art-shop-preview').getByRole('button',{name:tab,exact:true}).click();
+    await expect(page.getByTestId('art-shop-preview').locator('.pg-row')).toHaveCount(3);
+    const shop=await page.getByTestId('art-shop-preview').evaluate(el=>({scroll:el.scrollWidth,client:el.clientWidth}));
+    expect(shop.scroll).toBeLessThanOrEqual(shop.client+2);
+  }
+  await page.getByTestId('art-shop-preview').getByRole('button',{name:'Wardrobe',exact:true}).click();
+  await page.screenshot({path:'test-results/'+viewport.name+'-wardrobe-gallery.png',fullPage:true});
+
   const widths=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:window.innerWidth}));
   expect(widths.scroll).toBeLessThanOrEqual(widths.viewport+2);
   expect(exceptions).toEqual([]);
