@@ -4734,6 +4734,20 @@ function BadStag() {
 
 
 /* Original vector-cutout icon family: survives arbitrary scale, no external art fetch. */
+/* Real selectable outfit thumbnails: each illustrates the garment players purchase. */
+function WardrobeIcon({id}){
+ const colors={hoodie:"#4C668C",cardigan:"#6F8F74",blazer:"#282D34",hawaiian:"#E58A57",hoodie_gold:"#B79B55",friday:"#8268A4"};
+ const color=colors[id]||"#8FA67A";
+ return <span className="pg-iconart cosmetic" aria-hidden="true"><svg viewBox="0 0 44 44" fill="none" stroke="#25282A" strokeWidth="2.3" strokeLinejoin="round" strokeLinecap="round">
+  <path d="M14 6q8 7 16 0l11 8-6 10-4-4v18H13V20l-4 4-6-10z" fill={color}/>
+  {(id==="hoodie"||id==="hoodie_gold")&&<><path d="M14 7q-4-6 8-7q12 1 8 7l-7 13z" fill={color} strokeWidth="2"/><path d="M18 10l4 6 4-6M19 17v5M26 17v5" stroke="#F5EDE3" strokeWidth="1.5"/><path d="M17 28h11v7H17z" fill="#33465B" strokeWidth="1.4"/><circle cx="33" cy="30" r="3" fill="#FFD36B" strokeWidth="1"/></>}
+  {id==="cardigan"&&<><path d="M14 6l9 11-9 12M30 6l-8 11 9 12" stroke="#EBE4DA" strokeWidth="2.2"/><path d="M23 17v21" stroke="#F8EED7" strokeWidth="2"/><circle cx="22" cy="24" r="1.1" fill="#2B2B2B"/><circle cx="22" cy="31" r="1.1" fill="#2B2B2B"/></>}
+  {id==="blazer"&&<><path d="M14 7l8 13-8 11 4-26M30 7l-8 13 8 11-4-26" fill="#F9F5EF" strokeWidth="1.8"/><path d="M22 18l3 5-3 14-3-14z" fill="#C95754"/><path d="M14 31h8M25 31h7" stroke="#A3A9AC" strokeWidth="1.3"/></>}
+  {id==="hawaiian"&&[[15,14],[28,16],[21,27],[30,32]].map(([x,y],i)=><g key={i}><circle cx={x} cy={y} r="4" fill="#FFF2BA" strokeWidth=".7"/><path d={`M${x-3} ${y}q3-5 6 0q-3 5-6 0`} fill="#3E8168" strokeWidth=".6"/></g>)}
+  {id==="friday"&&<><path d="M14 14h17M13 24h19M13 34h18" stroke="#E4C679" strokeWidth="2.6"/><circle cx="23" cy="24" r="6" fill="#FFF1B5" strokeWidth="1.5"/><path d="M20 23h.5M25 23h.5M20 26q3 3 6 0" strokeWidth="1.2"/></>}
+ </svg></span>;
+}
+
 function OfficeIcon({kind="paper",compact=false,cosmetic=false}){
  const k=String(kind||"").toLowerCase();
  const type=/senior|badge|equity/.test(k)?"badge":/coffee|mug|boost|slush|drink|meric/.test(k)?"mug":/chair|seat/.test(k)?"chair":/computer|laptop|monitor|screen|tech|developer|code/.test(k)?"computer":/plant|garden|green/.test(k)?"plant":/contract|agreement|legal|binder|approval|document|paperwork|policy/.test(k)?"binder":/wood|lounge|joey|build|construction|plank/.test(k)?"wood":/call|phone|tenant/.test(k)?"phone":/staff|hire|intern|manager|assistant|employee|director|worker|recruit|person|personnel/.test(k)?"person":/bonus|perk|star|award|trophy|level/.test(k)?"star":/cone|party hat|hard hat|visor|helmet/.test(k)?"hat":/t-rex|dino|lynx|sandwich board/.test(k)?"costume":/costume|shirt|hoodie|jacket|coat|scarf|wear|fashion|outfit|uniform|bathrobe|kilt/.test(k)?"shirt":/rumor|bingo|bulletin/.test(k)?"notice":/reset|restruct/.test(k)?"reset":/upgrad|gear|improv|bonus|efficiency/.test(k)?"gear":/snack|chips|donut|food|lunch/.test(k)?"snack":"paper";
@@ -6472,7 +6486,7 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
             } catch { /* onLook reports the server error; keep previous selection */ }
             finally {setBusy(false);}
           }}>
-            <OfficeIcon kind={it.name+" hoodie"} cosmetic/><span className="pg-main"><b>{it.name}</b><span>{it.detail}</span></span>
+            <WardrobeIcon id={it.id}/><span className="pg-main"><b>{it.name}</b><span>{it.detail}</span></span>
             <span className="pg-right"><b>{active?"Wearing":owned?"Equip":fmt(it.cost)+" BW"}</b></span>
           </button>;
         })}
@@ -7069,7 +7083,7 @@ function ArtPreview(){
     <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><strong>First day: make your employee</strong></div>
     <AvatarControls value={demoAvatar} onChange={setDemoAvatar}/>
     <p>Clothing progression · {WARDROBE.length} server-backed permanent outfits</p>
-    <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><OfficeIcon kind={it.name+" hoodie"} cosmetic/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
+    <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><WardrobeIcon id={it.id}/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
   </div>
   <h2>0b. Actual new-employee onboarding screen · read-only QA</h2>
   <section data-testid="onboard-qa" style={{border:"2px dashed #2B2B2B",maxWidth:760,margin:"0 auto 18px",padding:6}}>
