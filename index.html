@@ -142,6 +142,9 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
   font-weight:700;box-shadow:4px 4px 0 var(--edge);flex:none}
 .pg-work:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--edge)}
 .pg-work:disabled{opacity:.45}
+.pg-statusboost{display:inline-flex;align-items:center;flex:none;font:700 10px var(--mono);border:1px solid #AD8050;border-radius:7px;padding:7px 9px;background:#4B3525;color:#F6D4A3;white-space:nowrap}
+.pg-seniority-stamp{margin:12px 0;padding:13px;border:2px dashed #9A7640;background:#F4E7CA;color:#47331B;transform:rotate(-0.4deg)}
+.pg-seniority-stamp strong{display:block;font:700 13px var(--mono);letter-spacing:.08em;text-transform:uppercase}
 .pg-drinkboost{display:inline-flex;align-items:center;flex:none;font:700 10px var(--mono);color:#F6E3AE;background:#294335;border:1px solid #A3B789;border-radius:7px;padding:7px 9px;white-space:nowrap}
 .pg-work.big{width:100%;padding:16px;margin-top:6px}
 .pg-work em{font-style:normal;opacity:.7;font-size:11px;margin-left:6px}
@@ -4059,6 +4062,12 @@ function PatronFloor() {
                   : <>Go to your desk <em>work happens there</em></>}
         </button>
         {jessDrinksAt() && <span className="pg-drinkboost" title="Jess's server-backed Mericans and slushies bonus">🥤 +20% BW · {Math.ceil(jessDrinksAt().remaining/60)}m</span>}
+        {heat>=5 && <span className="pg-statusboost" title="Under review: server earnings reduced by 25%">⚠ Under review · −25%</span>}
+        {(me?.buffs||[]).filter(b=>Date.parse(b.until)>Date.now()&&(!b.start||Date.parse(b.start)<=Date.now())).slice(0,2).map((b,i)=>(
+          <span className="pg-statusboost" key={"buff-"+i} title={"Modifier ends "+new Date(b.until).toLocaleTimeString()}>
+            {b.mult<1?"☁":"✦"} {b.mult<1?"Debuff":"Boost"} {Math.round((b.mult-1)*100)}% · {Math.max(1,Math.ceil((Date.parse(b.until)-Date.now())/60000))}m
+          </span>
+        ))}
         <div className="pg-emotes">
           {EMOTES.map((e) => (
             <button key={e.id} className="pg-emote" onClick={() => doEmote(e.id)} title={e.label}>
@@ -4110,7 +4119,8 @@ function PatronFloor() {
               }} clickPow={clickPow} lifetime={lifetime}
                   onBuy={buy} onUp={buyUp} guard={guard} flash={flash}
                   onRestructure={async () => {
-                    const row=await guard(() => api.restructure(), "Restructured");
+                    if(!window.confirm("HR FORM SR-404: Trade this cycle's Busywork, hires, approvals and temporary boosts for Seniority? Lifetime progress and existing Seniority stay."))return;
+                    const row=await guard(() => api.restructure(), "HR has approved your fresh start.");
                     if(row){ setPrices(null); api.allPrices().then(setPrices).catch(() => {}); }
                   }} />
           )}
@@ -5008,6 +5018,11 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
             }} />
         ) : (
           <div className="pg-pad">
+            <div className="pg-seniority-stamp">
+              <strong>Human Resources · Department Restructure</strong>
+              Form SR-404: Approval to voluntarily start over
+              <p>You receive <b>{avail} Seniority</b>. Your current Busywork, staff, upgrades and temporary bonuses reset. Permanent Seniority and lifetime earnings remain.</p>
+            </div>
             <p>Restructuring wipes your desk: points, hires and approvals all go. Your lifetime BW
               and your place on the whiteboard stay exactly where they are.</p>
             <p>You keep <b>Seniority</b> — a permanent <b>+3%</b> to everything, per point, forever.</p>
