@@ -33,3 +33,8 @@ Read **this file first**, followed by `docs/CURRENT_STATE.md`, `docs/CHANGELOG.m
 - The CI gate includes parser and deterministic/helper assertions; **not** authenticated browser tests, real Supabase purchasing, responsive screenshots or multi-client E2E.
 - Before expanding real-money-like economies or progress reset logic, develop a separate Supabase test project/isolated fixture path. Do not point destructive suites at Production.
 - GitHub branch protection (required status checks) is a separate repository setting. Even a green CI job does not prove that protections are configured; verify and enforce if access permits.
+
+## Expanded gate
+- PR workflow now includes browser smoke at desktop/390px and PostgreSQL 16 synthetic contract fixtures. These tests are isolated from Production Supabase.
+- No real Supabase test project is yet connected. Tests against real RPCs and authenticated flows require a dedicated test project and secrets; never substitute production credentials.
+- Required GitHub branch protection must be separately configured via repository Settings; this connector does not expose branch protection editing. Never claim it's enforced without verification.
