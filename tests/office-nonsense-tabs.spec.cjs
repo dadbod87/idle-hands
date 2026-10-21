@@ -18,6 +18,7 @@ for(const size of [{width:1440,height:900},{width:393,height:851},{width:320,hei
   if(mobile)await button.tap();else await button.click();
   await expect(button).toHaveAttribute('aria-pressed','true');await expect(dialog).toContainText(content);
  }
+ const colors=await nav.evaluate(el=>[getComputedStyle(el.querySelector('[aria-pressed="true"]')).backgroundColor,getComputedStyle(el.querySelector('[aria-pressed="false"]')).backgroundColor]);expect(colors[0]).not.toBe(colors[1]);
  await expect(dialog.getByText('🏆 Employee of the Minute',{exact:true})).toBeVisible();
  await page.screenshot({path:`test-results/office-nonsense-awards-${size.width}x${size.height}.png`,fullPage:true});
  await dialog.getByRole('button',{name:'Return to actual work',exact:true}).click();await expect(dialog).toHaveCount(0);
