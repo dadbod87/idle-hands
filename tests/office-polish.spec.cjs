@@ -21,9 +21,9 @@ for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and dir
  await directory.getByRole('button',{name:'Walk to Your desk',exact:true}).click();
  await expect(page.locator('.pg-panelhead')).toContainText('Your desk',{timeout:20000});
  await expect(page.getByRole('button',{name:/Do actual work/})).toBeVisible();
- await page.locator('.pg-panel .pg-x').click();await page.getByRole('button',{name:'Turn sound on',exact:true}).click();
- await expect(page.getByRole('button',{name:'Turn sound off',exact:true})).toHaveAttribute('aria-pressed','true');
- await page.getByRole('button',{name:'Turn sound off',exact:true}).click();
+ await page.locator('.pg-panel .pg-x').click();await page.locator('.pg-hudbtns').getByRole('button',{name:'Sound & feel',exact:true}).click();
+ await page.getByRole('button',{name:'Enable sound',exact:true}).click();await expect(page.getByRole('button',{name:'Mute all sound',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Mute all sound',exact:true}).click();await page.locator('.pg-panel .pg-x').click();
  expect(fixture.player.pp).toBe(500000);expect(fixture.player.equity).toBe(2);expect(fixture.player.owned.intern).toBe(2);
  expect(fixture.calls.some(x=>['buy_item','buy_fitting','set_look','restructure'].includes(x.rpc))).toBe(false);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);

@@ -1,3 +1,13 @@
+# Build 166 — prop scale and direct sound settings (2026-10-21)
+
+Frontend-only correction to build 165: smaller unmounted apology sheet, smaller break-room noticeboard, properly filled/larger water cooler, and printer-area planter moved clear of its label. All seven substantial scenery props now open free readings (including Misc. Urgent shelf, couch and break notice). Couch/notice offer the existing walk to break-table social activities. Arrow movement remains available after an inspection closes; Enter/Space do not also open a nearby fixture.
+
+The top-right Sound button opens the existing Sound & feel panel. Opening it does not change mute/volume. The redundant directory footer shortcut is removed; mobile More still offers sound settings. Default on/100% and explicit saved choices are unchanged. No SQL, RPC, player data, economy, catalog ID, schedule or ownership changes. Original names/brand remain intact.
+
+Validation: local logic/name/sound contracts pass; focused desktop/phone checks and final required CI/release evidence recorded in the PR. Actual game uses isolated HTTP/WebSocket fixtures, not production player writes. Physical phone remains unverified. Rollback: frontend revert only.
+
+---
+
 # Build 165 — approved original names and readable scenery (2026-10-21)
 
 This section supersedes earlier anonymization instructions below. The owner explicitly approved public use of the original first names and lounge/company names. Preserve these names; do not anonymize them again. Current display cast: Jess, John, Kyle, Matt, Avah, Nick, Rilie, Joey, plus Chance and owner Dave. Server memo resale references restore Angelica; Gwen was already unchanged. Internal cast aliases (nora/gus/etc.), player IDs, catalog IDs and storage keys intentionally stay stable. Original roles, first-name job plates, company branding/logo/background, mascot name, cigar lounge/humidor copy, notifications, achievements and server catalog text restored. Surnames stay omitted.

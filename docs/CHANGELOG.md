@@ -2,6 +2,12 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-21: Build 166 — a place for everything
+- Corrected oversized apology/notice art, tiny water cooler framing and printer-label planter overlap.
+- Shelf, couch and break notice now open free illustrated readings; couch/notice connect to actual break-table activities.
+- HUD Sound opens Sound & feel without muting; removed directory footer shortcut. Saved preferences/defaults preserved.
+- Keyboard movement restored after scenery readings. Browser coverage checks new interactions, retained progress, direct sound access and saved settings; release evidence in PR. No database or economy changes.
+
 ## 2026-10-21: Build 165 — familiar faces
 - Owner explicitly reversed anonymization: original first-name cast, roles, lounge, brand/mascot, catalog, memo and raise-message names restored. Internal IDs and all player data remain intact. Active agent rule and CI guard now protect approved original names; historical records remain unchanged.
 - Calendar/plant rotas/printer apology open accessible, free illustrated readings. Apology moved beside printer and explained. Printer joins walking directory; decorative scenery still passes movement clicks.

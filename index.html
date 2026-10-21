@@ -2043,7 +2043,7 @@ const FIXTURES = [
       "Occupied. You check the time. You will check it again shortly.",
     ] },
   { id: "watercooler", panel: null, label: "Water Cooler", sub: "Where things get said",
-    x: 2600, y: 520, w: 64, h: 104, deny: [
+    x: 2590, y: 510, w: 86, h: 140, deny: [
       "The bottle is empty. It has been empty long enough that this is now normal.",
       "You take a cup. Somebody appears within four seconds to talk about their weekend.",
       "It gurgles. Everyone in a twenty foot radius pretends not to have heard it.",
@@ -2352,7 +2352,7 @@ const DECOR = [
   { t: "window", x: 420, y: 22 }, { t: "window", x: 2260, y: 22 },
   { t: "mascot", x: 2440, y: 20 },
   { t: "rug", x: 1560, y: 900 },
-  { t: "plant", x: 1120, y: 620 }, { t: "plant", x: 2300, y: 620 }, { t: "plant", x: 3120, y: 620 },
+  { t: "plant", x: 1120, y: 620 }, { t: "plant", x: 2200, y: 710 }, { t: "plant", x: 3120, y: 620 },
   { t: "plant", x: 1520, y: 1180 }, { t: "deadplant", x: 1640, y: 1180 },
   { t: "boxes", x: 1440, y: 1260 }, { t: "boxes", x: 1620, y: 1300 },
   { t: "wetfloor", x: 1080, y: 1000 },
@@ -3316,7 +3316,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 165 · familiar faces";
+const BUILD = "build 166 · a place for everything";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4365,9 +4365,8 @@ function OfficeFloor() {
         </div>
         <div className="pg-hudbtns">
           <button className="pg-help pg-utility-button" aria-label="How to play" title="How to play" onClick={() => setShowHelp(true)}><UtilityIcon kind="help"/><span>Help</span></button>
-        <button className="pg-help pg-utility-button" aria-label={mute?"Turn sound on":"Turn sound off"} aria-pressed={!mute} onClick={() => { const m = setMuted(!mute); setMute(m);
-                if (!m) { wakeAudio(); sfx("door"); } }}
-                title={mute ? "Sound off" : "Sound on"}><UtilityIcon kind={mute?"muted":"sound"}/><span>{mute?"Muted":"Sound"}</span></button>
+        <button className="pg-help pg-utility-button" aria-label="Sound & feel" aria-haspopup="dialog" onClick={() => {wakeAudio();setPanel("sound");}}
+                title={mute ? "Sound & feel · muted" : "Sound & feel"}><UtilityIcon kind={mute?"muted":"sound"}/><span>Sound</span></button>
         <button className="pg-help pg-utility-button" aria-label="Your account" onClick={() => setPanel("account")} title="Your account">
           <UtilityIcon kind="account"/><span>{user?.is_anonymous?"Save":"Account"}</span>
         </button>
@@ -4695,7 +4694,7 @@ function OfficeFloor() {
       {panel && (
         <Panel onClose={() => setPanel(null)} title={panel.startsWith("prop:")?PROP_LABELS[panel.slice(5)]:PANEL_TITLES[panel]}>
           {reaction&&!["work","filed"].includes(reaction.kind)&&<div className="pg-panel-receipt" role="status"><OfficeIcon kind={reaction.kind==="kind"?"mug":"paper"} compact/><span>{reaction.label}</span></div>}
-          {panel.startsWith("prop:")&&<PropInspection kind={panel.slice(5)} variant={officeSceneAt(funTick)}/> }
+          {panel.startsWith("prop:")&&<PropInspection kind={panel.slice(5)} variant={officeSceneAt(funTick)} onCoffee={joinCoffeeBreak}/> }
           {panel === "shop" && (
             <Shop cat={cat} me={me} pp={pp} rate={rate}
               pins={pins}
@@ -4730,7 +4729,7 @@ function OfficeFloor() {
                   }} />
           )}
           {panel === "sound" && <SoundPanel muted={mute} volume={volume} onMute={()=>setMute(setMuted(!mute))} onVolume={v=>setVolume(setSoundLevel(v))}/>}
-          {panel === "directory" && <OfficeDirectory onSound={()=>setPanel("sound")} onGo={id=>{setPanel(null);if(id==="desk"&&myOffice)routeTo(myOffice.cx,myOffice.cy+40,"desk",myOffice);else{const f=FIXTURES.find(x=>x.id===id);if(f)walkTo(f);}}}/>}
+          {panel === "directory" && <OfficeDirectory onGo={id=>{setPanel(null);if(id==="desk"&&myOffice)routeTo(myOffice.cx,myOffice.cy+40,"desk",myOffice);else{const f=FIXTURES.find(x=>x.id===id);if(f)walkTo(f);}}}/>}
           {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} schedule={weekSchedule} />}
           {(panel === "kindness" || panel === "sabotage") && (
             <>
@@ -5321,9 +5320,9 @@ const DIRECTORY_STOPS=[
  {id:"printer",kind:"paper",purpose:"Clear a jam or read its latest apology",note:"It has prepared a statement."},
  {id:"owner",kind:"binder",purpose:"Raises, reviews and office politics",note:"Knock with confidence. Leave with paperwork."},
 ];
-function OfficeDirectory({onGo,onSound}) {
+function OfficeDirectory({onGo}) {
  return <section className="pg-directory" data-testid="office-directory"><div className="pg-directory-intro"><UtilityIcon kind="map"/><div><h3>Find your people. Find the coffee.</h3><p>Pick a stop. Your employee will walk there and open it.</p></div><span className="pg-directory-note">You are here.<br/>HR is aware.</span></div>
- <div className="pg-directory-grid">{DIRECTORY_STOPS.map(stop=>{const f=FIXTURES.find(x=>x.id===stop.id),name=stop.name||f?.label;return <button key={stop.id} className="pg-directory-stop" aria-label={"Walk to "+name} onClick={()=>onGo(stop.id)}><OfficeIcon kind={stop.kind}/><span><b>{name}</b><span>{stop.purpose}</span><small>{stop.note}</small></span><i aria-hidden="true">→</i></button>;})}</div>{onSound&&<div className="pg-note"><button className="pg-btn" onClick={onSound}><UtilityIcon kind="sound"/> Sound &amp; feel</button></div>}</section>;
+ <div className="pg-directory-grid">{DIRECTORY_STOPS.map(stop=>{const f=FIXTURES.find(x=>x.id===stop.id),name=stop.name||f?.label;return <button key={stop.id} className="pg-directory-stop" aria-label={"Walk to "+name} onClick={()=>onGo(stop.id)}><OfficeIcon kind={stop.kind}/><span><b>{name}</b><span>{stop.purpose}</span><small>{stop.note}</small></span><i aria-hidden="true">→</i></button>;})}</div></section>;
 }
 
 const EMOTE_ICON = {
@@ -5456,21 +5455,24 @@ function MiniMap({ pos, board, meId, cam, view, chair }) {
   );
 }
 
-/* Shared environmental set dressing. Visual layers never intercept walking. */
+/* Shared environmental props. Readable objects have explicit inspection buttons; floor zones pass walking clicks. */
 const SCENERY = [
  {id:"plant-rota",zone:"break",kind:"plant",x:320,y:1000,w:125,h:140},
- {id:"break-notice",zone:"break",kind:"notice",x:940,y:560,w:145,h:170},
+ {id:"break-notice",zone:"break",kind:"notice",x:960,y:560,w:86,h:88},
  {id:"bench",zone:"break",kind:"bench",x:800,y:1030,w:170,h:110},
- {id:"printer-apology",zone:"work",kind:"apology",x:2410,y:540,w:110,h:120},
+ {id:"printer-apology",zone:"work",kind:"apology",x:2420,y:540,w:68,h:84},
  {id:"calendar-loop",zone:"management",kind:"calendar",x:2200,y:170,w:160,h:150},
  {id:"office-shelf",zone:"work",kind:"shelf",x:1850,y:1080,w:200,h:155},
  {id:"management-plant",zone:"management",kind:"plant",x:1880,y:180,w:110,h:130},
 ];
-const PROP_LABELS={plant:"Inspect the plant",apology:"Read the printer apology",calendar:"Check the calendar"};
+const PROP_LABELS={plant:"Inspect the plant",apology:"Read the printer apology",calendar:"Check the calendar",shelf:"Browse Misc. Urgent",bench:"Take a minute on the couch",notice:"Read the break room notice"};
 const PROP_STORIES={
  plant:["WATERING ROTA","PLASTIC. STILL THIRSTY.","WATERING COMMITTEE"],
  apology:["SORRY ABOUT THE JAM","SORRY ABOUT THE SORRY","APOLOGY LOW ON TONER"],
- calendar:["MEETING ABOUT MEETINGS","FOLLOW-UP TO FOLLOW-UP","BOOKED: FIND FREE TIME"]
+ calendar:["MEETING ABOUT MEETINGS","FOLLOW-UP TO FOLLOW-UP","BOOKED: FIND FREE TIME"],
+ shelf:["MISC. URGENT","THE PROCEDURE PROCEDURE","PLEASE RETAIN FOREVER"],
+ bench:["RESERVED FOR DOING LESS","LUNCH HAS A SEAT","A MINUTE WELL WASTED"],
+ notice:["TAKE A MINUTE","MUG AMNESTY","BREAK ROOM TREATY"]
 };
 function SceneryArt({kind,variant=0,celebrating=false}){
  const v=((variant%3)+3)%3;
@@ -5494,7 +5496,7 @@ function SceneryArt({kind,variant=0,celebrating=false}){
   <path d="m102 86 28-3 3 22-28 3Z" fill="#F8F1E3"/><text x="118" y="96" textAnchor="middle" stroke="none" fill="#5B554B" fontSize="6">LUNCH</text><path d="m110 99 15-1" strokeWidth="1"/>
  </>}
  {kind==="apology"&&<>
-  <path d="M25 35h130v98H25Z" fill="#7B9CC4"/><path d="M18 123h144v15H18Z" fill="#526B7D"/>
+
   <g transform="rotate(-5 90 80)"><path d="M42 14h96v116H42Z" fill="#FFF7E7"/><path d="M71 12h38v10H71Z" fill="#E4C889" stroke="none"/><text x="90" y="49" textAnchor="middle" fill="#A74135" stroke="none" fontSize="9" fontWeight="bold">{v===0?"SORRY":v===1?"STILL SORRY":"TONER LOW"}</text><path d="M57 65h66m-66 8h61m-61 8h65m-65 8h50" stroke="#A59B87" strokeWidth="1.5"/><text x="90" y="111" textAnchor="middle" fill="#3C3933" stroke="none" fontSize="6">{PROP_STORIES.apology[v]}</text></g>
  </>}
  {kind==="calendar"&&<>
@@ -5516,15 +5518,15 @@ function OfficeEnvironment({variant=0,celebrating=false,onInspect}){
   <div className="pg-zone pg-zone-break" data-zone="break" style={{left:290,top:520,width:800,height:660}}><span>THE BREAK ROOM <small>productivity is on a break</small></span><i/></div>
   <div className="pg-zone pg-zone-work" data-zone="work" style={{left:1220,top:1040,width:1630,height:210}}><span>THE PAPER TRAIL <small>please retain for no reason</small></span></div>
   <div className="pg-zone pg-zone-management" data-zone="management" style={{left:1870,top:145,width:540,height:295}}><span>MANAGEMENT <small>by appointment, apparently</small></span></div>
-  {SCENERY.map(p=>{const interactive=!!onInspect&&!!PROP_STORIES[p.kind],style={left:p.x,top:p.y,width:p.w,height:p.h,zIndex:Math.round(p.y+p.h)};return interactive?<button key={p.id} type="button" className="pg-scenery pg-scenery-inspect" data-scenery={p.id} style={style} aria-label={PROP_LABELS[p.kind]} onKeyDown={e=>e.stopPropagation()} onClick={e=>{e.stopPropagation();onInspect(p.kind);}}><SceneryArt kind={p.kind} variant={variant} celebrating={celebrating}/><small>Read</small></button>:<div key={p.id} className="pg-scenery" data-scenery={p.id} style={style}><SceneryArt kind={p.kind} variant={variant} celebrating={celebrating}/></div>;})}
+  {SCENERY.map(p=>{const interactive=!!onInspect&&!!PROP_STORIES[p.kind],style={left:p.x,top:p.y,width:p.w,height:p.h,zIndex:Math.round(p.y+p.h)};return interactive?<button key={p.id} type="button" className="pg-scenery pg-scenery-inspect" data-scenery={p.id} style={style} aria-label={PROP_LABELS[p.kind]} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")e.stopPropagation();}} onClick={e=>{e.stopPropagation();onInspect(p.kind);}}><SceneryArt kind={p.kind} variant={variant} celebrating={celebrating}/><small>{p.kind==="bench"?"Take a minute":p.kind==="shelf"?"Browse":"Read"}</small></button>:<div key={p.id} className="pg-scenery" data-scenery={p.id} style={style}><SceneryArt kind={p.kind} variant={variant} celebrating={celebrating}/></div>;})}
  </>;
 }
 
 /* Front-facing fixture silhouettes share the same cabinet, paper and mug vocabulary. */
 function FixtureIllustration({kind,tierPct=0,celebrating=false}){
  const mug=(x,y)=><g key={x}><path d={`M${x} ${y}h12v13q-6 4-12 0Z`} fill="#FFF8E8"/><path d={`M${x+12} ${y+3}q9-1 0 7`} fill="none"/><circle cx={x+6} cy={y+7} r="4" fill="#FFD36B" stroke="none"/><path d={`M${x+4} ${y+8}q2 2 4 0`} strokeWidth="1"/></g>;
- return <svg className="pg-fixture-illustration" viewBox="0 0 160 130" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.6" strokeLinejoin="round" strokeLinecap="round">
- <ellipse cx="80" cy="125" rx="73" ry="4" fill="#544638" opacity=".2" stroke="none"/>
+ return <svg className="pg-fixture-illustration" viewBox={kind==="watercooler"?"40 0 80 130":"0 0 160 130"} preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.6" strokeLinejoin="round" strokeLinecap="round">
+ <ellipse cx="80" cy="125" rx={kind==="watercooler"?30:73} ry="4" fill="#544638" opacity=".2" stroke="none"/>
  {kind==="coffeebar"&&<>
   <path d="M8 81h144v40H8Z" fill="#A77A4F"/><path d="M5 76h150v9H5Z" fill="#CC9D63"/><path d="M52 85v34m54-34v34M15 92h28m21 0h31m20 0h28" strokeWidth="1.5"/>
   <rect x="12" y="17" width="59" height="59" rx="3" fill="#444C53"/><rect x="19" y="23" width="45" height="16" rx="2" fill="#5B7784"/><circle cx="56" cy="29" r="3" fill="#E9AF59"/><path d="M23 45h36v28H23Z" fill="#272B2F"/><path d="M37 43v8"/>{mug(34,54)}
@@ -6082,12 +6084,15 @@ function Standings({ board, me, fund, feuds = [], schedule }) {
 const PROP_PUNCHLINES={
  plant:["The plant is plastic. The rota is mandatory.","Facilities watered it twice. It remains emotionally unavailable.","The plant has formed a watering committee. The committee is plastic too."],
  apology:["The printer printed an apology for the paper jam. It jammed halfway through.","A second apology has been printed for the first apology. Please recycle responsibly.","The apology is low on toner. Its remorse is now light grey."],
- calendar:["A meeting about meetings. Attendance is compulsory; conclusions are optional.","The follow-up needs a follow-up. Someone has booked a room for the booking.","The calendar is fully booked with meetings to find free time."]
+ calendar:["A meeting about meetings. Attendance is compulsory; conclusions are optional.","The follow-up needs a follow-up. Someone has booked a room for the booking.","The calendar is fully booked with meetings to find free time."],
+ shelf:["The urgent folder has not moved since 2023. Apparently urgency has excellent shelf life.","Volume one explains how to request volume two. Volume two explains why your request was declined.","Nobody knows what these binders contain. Everybody agrees throwing them away would be a career move."],
+ bench:["You sit down. The couch sighs first. It has been in more meetings than you.","The lunch bag is holding this seat for someone who works from home.","You have successfully done nothing for a moment. Management has requested the minutes."],
+ notice:["Please take a minute. Please return it when finished. We are running low.","Return the good mugs. No questions asked. Several very pointed looks provided.","Your fish may be delicious. The microwave does not need to meet it."]
 };
-function PropInspection({kind,variant=0}){
+function PropInspection({kind,variant=0,onCoffee}){
  const phase=((variant%3)+3)%3;
  if(!PROP_STORIES[kind])return null;
- return <section className="pg-prop-inspection" data-testid="prop-inspection"><SceneryArt kind={kind} variant={phase}/><h3>{PROP_STORIES[kind][phase]}</h3><p>{kind==="apology"?"Facilities posted this beside the printer after its latest paper jam.":kind==="calendar"?"Management's meeting calendar. Every slot has a slot to discuss it.":"The office watering rota. It applies even to this plastic plant."}</p><p className="pg-note">{PROP_PUNCHLINES[kind][phase]}</p><small>Office nonsense. No cost, no reward, no meeting to attend.</small></section>;
+ return <section className="pg-prop-inspection" data-testid="prop-inspection"><SceneryArt kind={kind} variant={phase}/><h3>{PROP_STORIES[kind][phase]}</h3><p>{({apology:"Facilities posted this beside the printer after its latest paper jam.",calendar:"Management's meeting calendar. Every slot has a slot to discuss it.",plant:"The office watering rota. It applies even to this plastic plant.",shelf:"The office reference shelf. Five binders, one suspiciously permanent urgent tray.",bench:"The break-room couch. A perfectly respectable place to stop looking productive.",notice:"The break-room noticeboard. Small notices. Strong opinions. Officially optional."})[kind]}</p><p className="pg-note">{PROP_PUNCHLINES[kind][phase]}</p><small>Office nonsense. No cost, no reward, no meeting to attend.</small>{onCoffee&&["bench","notice"].includes(kind)&&<p><button className="pg-btn" onClick={onCoffee}>Head to the break table</button></p>}</section>;
 }
 function KindnessBoard({wire}){
  const notes=(wire||[]).filter(d=>DEED_TEXT[d.kind]?.good&&!DEED_TEXT[d.kind]?.office).slice(0,3);

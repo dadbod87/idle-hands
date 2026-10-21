@@ -4,8 +4,9 @@ for(const mode of ['desktop','mobile'])test(mode+': sound settings persist and o
  const context=await browser.newContext({...mode==='mobile'?devices['Pixel 7']:{viewport:{width:1440,height:900}},reducedMotion:'reduce'}),page=await context.newPage();
  const failRpcs=['buy_item'],fixture=await installGameFixture(page,{failRpcs});
  await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});
- await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:'Sound & feel',exact:true}).click();
+ await page.locator('.pg-hudbtns').getByRole('button',{name:'Sound & feel',exact:true}).click();
  await expect(page.getByRole('button',{name:'Try Paperwork stamp',exact:true})).toBeDisabled();
+ expect(await page.evaluate(()=>localStorage.getItem('ih_muted'))).toBe('1');
  await page.getByRole('button',{name:'Enable sound',exact:true}).click();
  await page.getByRole('slider',{name:'Effects volume'}).fill('22');await page.getByRole('button',{name:'Try Paperwork stamp',exact:true}).click();
  expect(await page.evaluate(()=>localStorage.getItem('ih_sound_level'))).toBe('0.22');
@@ -16,8 +17,8 @@ for(const mode of ['desktop','mobile'])test(mode+': sound settings persist and o
  await expect(page.locator('.pg-panel-receipt')).toContainText('Hired. Inbox included.');await expect(page.locator('.pg-room [data-reaction="receipt"]')).toHaveCount(1);
  expect(fixture.player.owned.intern).toBe(3);expect(fixture.player.pp).toBe(499900);
  await page.locator('.pg-panel .pg-x').click();
- await page.reload();await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});await expect(page.getByRole('button',{name:'Turn sound off',exact:true})).toBeVisible();
- await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:'Sound & feel',exact:true}).click();await expect(page.getByRole('slider',{name:'Effects volume'})).toHaveValue('22');
+ await page.reload();await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});await expect(page.locator('.pg-hudbtns').getByRole('button',{name:'Sound & feel',exact:true})).toBeVisible();
+ await page.locator('.pg-hudbtns').getByRole('button',{name:'Sound & feel',exact:true}).click();await expect(page.getByRole('slider',{name:'Effects volume'})).toHaveValue('22');
  await page.screenshot({path:'test-results/'+mode+'-sound-settings.png',fullPage:true});
  await page.goto('http://127.0.0.1:8765/?art-preview=1');const gallery=page.getByTestId('reaction-qa');await expect(gallery.locator('[data-reaction]')).toHaveCount(6);
  expect(await gallery.locator('[data-reaction]').evaluateAll(els=>els.every(el=>getComputedStyle(el).animationName==='none'))).toBe(true);
