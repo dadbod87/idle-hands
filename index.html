@@ -7067,6 +7067,10 @@ function ArtPreview(){
     <p>Clothing progression · {WARDROBE.length} server-backed permanent outfits</p>
     <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><OfficeIcon kind={it.name+" hoodie"} cosmetic/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
   </div>
+  <h2>0b. Actual new-employee onboarding screen · read-only QA</h2>
+  <section data-testid="onboard-qa" style={{border:"2px dashed #2B2B2B",maxWidth:760,margin:"0 auto 18px",padding:6}}>
+    <Onboard user={{id:"art-preview-only"}} code={null} onDone={()=>{}}/>
+  </section>
   <h2>1. Flat cutout color and shape system</h2>
   <div className="ar-palette">{colors.map(([name,color])=><span key={name} style={{background:color}}>{name}</span>)}</div>
   <h2>2–3. Cast silhouettes and character styling</h2>
