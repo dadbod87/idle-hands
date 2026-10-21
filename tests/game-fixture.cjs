@@ -7,7 +7,7 @@ async function installGameFixture(page,options={}) {
  pp:500000,week_pp:500000,lifetime:500000,equity:2,raises:0,heat:0,owned:{intern:2},upgrades:[],buffs:[],perks:[],achievements:[],
  wardrobe_owned:['hoodie','cardigan','blazer','hawaiian','hoodie_gold','friday'],pet:'pig',pets:['pig','calf','moth','pigeon','balloon','dragon'],
  look:{build:'regular',bottom:'trousers',gender:'neutral',hair:'messy',hairColor:1,skin:0,eyes:'tired',expression:'deadpan',top:0,legs:0,clothing:'starter'},
- vanity:{},kit:{desk:'d3',chair:'c2',rug:'r2'},streak:0,goodwill:0,notoriety:0};
+ extras:options.ownedPins||[],pin:options.pin||null,vanity:{},kit:{desk:'d3',chair:'c2',rug:'r2'},streak:0,goodwill:0,notoriety:0};
  const calls=[];
  await page.addInitScript(({id})=>{
   const exp=Math.floor(Date.now()/1000)+3600;
@@ -24,6 +24,7 @@ async function installGameFixture(page,options={}) {
    const rpc=url.pathname.split('/').pop(),args=req.postDataJSON()||{};
    calls.push({rpc,args});
    if(rpc==='upsert_player'){player.name=args.p_name;result=player;}
+   else if(rpc==='set_pin'){if(args.p_id!==null&&!player.extras.includes(args.p_id))throw Error('Fixture ownership violation');player.pin=args.p_id;result=player;}
    else if(rpc==='set_look'){player.look=args.p_look;result=player;}
    else if(rpc==='dress'){player.outfit={id:args.p_outfit,until:new Date(Date.now()+2700000).toISOString()};player.pp-=120;result=player;}
    else if(rpc==='do_work'){player.pp+=args.p_clicks;result=player;}
@@ -37,7 +38,7 @@ async function installGameFixture(page,options={}) {
    else if(rpc==='buy_fitting'){const item=(options.fittings?.[args.p_key]||[]).find(x=>x.id===args.p_id);const key=args.p_key==='vanity'?'vanity':'kit';player[key]={...player[key],[item.slot]:item.id};player.pp-=1000;result=player;}
    else if(rpc==='claim_office_awards'){player.achievements=[...new Set([...player.achievements,...(options.officeAwards||[])])];result=player;}
    else if(['claim_incoming','weekly_pins','spend_board','beta_testers'].includes(rpc))result=[];
-  }else if(url.pathname.endsWith('/catalog'))result=Object.entries({items:[{id:'intern',name:'Office Intern',cost:100,rate:1,desc:'An isolated test hire.'}],upgrades:[],deeds:{},tuning:{growth:1.35},drinks:[],costumes:options.costumes||[],office_kit:options.fittings?.office_kit||[],vanity:options.fittings?.vanity||[]}).map(([key,data])=>({key,data}));
+  }else if(url.pathname.endsWith('/catalog'))result=Object.entries({items:[{id:'intern',name:'Office Intern',cost:100,rate:1,desc:'An isolated test hire.'}],upgrades:[],deeds:{},tuning:{growth:1.35},drinks:[],costumes:options.costumes||[],special_pins:[{id:'beta',name:'Beta Tester',hue:'#8A6A2A',glyph:'β',note:'Here before it worked.'}],weekly_pins:[{id:'p01',name:'Five Year Pin',hue:'#C9A253',glyph:'★',note:'Nobody can confirm the five years.'}],office_kit:options.fittings?.office_kit||[],vanity:options.fittings?.vanity||[]}).map(([key,data])=>({key,data}));
   else if(url.pathname.endsWith('/players'))result=url.searchParams.has('id')?player:[player,...(options.coworkers||[])];
   else if(['seasons','suggestions','deeds'].some(x=>url.pathname.endsWith('/'+x)))result=[];
   await route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(result)});
