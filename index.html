@@ -3049,7 +3049,7 @@ function PatronFloor() {
     const catOnFocus = () => { if (!document.hidden) loadCatalog().then(setCat).catch(() => {}); };
     document.addEventListener("visibilitychange", catOnFocus);
     const t = setInterval(async () => {
-      try { applyServer(await api.sync()); } catch { /* offline, keep drifting */ }
+      try { applyServer(await api.sync()); api.allPrices().then(setPrices).catch(() => {}); } catch { /* offline, keep drifting */ }
       await claim();
     }, SYNC_MS);
     claim();
@@ -4109,7 +4109,10 @@ function PatronFloor() {
                 } catch (e) { flash(prettyError(e)); }
               }} clickPow={clickPow} lifetime={lifetime}
                   onBuy={buy} onUp={buyUp} guard={guard} flash={flash}
-                  onRestructure={() => guard(() => api.restructure(), "Restructured")} />
+                  onRestructure={async () => {
+                    const row=await guard(() => api.restructure(), "Restructured");
+                    if(row){ setPrices(null); api.allPrices().then(setPrices).catch(() => {}); }
+                  }} />
           )}
           {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} />}
           {(panel === "kindness" || panel === "sabotage") && (
@@ -4869,7 +4872,7 @@ function Help({ onClose, rate }) {
 /** Mail order. None of it earns you anything. That is the entire appeal. */
 function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear }) {
   const [which, setWhich] = useState("vanity");
-  // the server quotes the price; the client's own rate sum disagrees with it
+  // The server quotes the price; quotes refresh on changing rates or on reopen.
   const [quote, setQuote] = useState(null);
   useEffect(() => {
     let live = true;
@@ -4878,7 +4881,7 @@ function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear }) {
       api.fittingPrices().then((q) => { if (live) setQuote(q); }).catch(() => {});
     }, 20000);
     return () => { live = false; clearInterval(t); };
-  }, []);
+  }, [me?.id, me?.owned, me?.upgrades, me?.buffs, me?.equity, me?.heat, me?.frenzy_until]);
   const list = (which === "vanity" ? cat.vanity : cat.office_kit) || [];
   const have = which === "vanity" ? (me?.vanity || {}) : (me?.kit || {});
   const slots = [...new Set(list.map((x) => x.slot))];
@@ -4960,7 +4963,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
         ) : t === "hire" ? (
           <div className="pg-list">
             {(cat.items || []).map((it, i) => {
-              const have = owned[it.id] || 0, c = costOf(it, have);
+              const have = owned[it.id] || 0, c = Math.ceil(costOf(it, have) * (me?.dept === "resale" ? 0.9 : 1));
               const hidden = have === 0 && c > Math.max(pp, lifetime * 0.35) * 3;
               return (
                 <button key={it.id} className={"pg-row" + (i % 2 ? " alt" : "") + (pp < c ? " poor" : "")}
