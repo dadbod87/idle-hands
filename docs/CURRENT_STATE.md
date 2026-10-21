@@ -3,27 +3,27 @@
 Updated: 2026-10-20 (America/Los_Angeles). Recheck deployed SHA and live configuration at the beginning of every session.
 
 ## Mission and product
-A satirical multiplayer office idle game for The Patron Group. Users badge in, earn Busywork (BW), purchase staff, upgrades and cosmetics, interact and compete, then restructure for permanent Seniority. Intent: funny, approachable and rewarding to revisit; not demanding minute-by-minute attention.
+A satirical multiplayer office idle game set in a fictional office (Example Property Co.). Users badge in, earn Busywork (BW), purchase staff, upgrades and cosmetics, interact and compete, then restructure for permanent Seniority. Intent: funny, approachable and rewarding to revisit; not demanding minute-by-minute attention.
 
 ## Runtime & ownership
 - GitHub `dadbod87/idle-hands` / `main`; most application code in `index.html` (React 18 JSX transpiled by Babel at runtime).
 - Vercel project `idle-hands`; known working https://idle-hands-one.vercel.app.
 - Supabase ID `wbakpxbvqxppqbrwuokp` (production data, Auth, SQL RPCs). Do not embed new secrets.
-- Custom `idle-hands.thepatrongrp.com` registered/verified on Vercel; DNS record `idle-hands CNAME cname.vercel-dns.com` was outstanding as of last investigation; DNS uses Google nameservers, potentially managed at Squarespace. **Verify before promoting custom URL.**
+- A custom domain attached earlier in Vercel is not in use; the public address is the Vercel URL.
 
 ## Economy
 - Earn BW passively with server `accrue(uuid)`; click via `do_work`, purchases via `buy_item`, `buy_upgrade`; `restructure` exchanges cycle BW for Seniority.
 - Ownership-based hire price growth (catalog tuning, observed 1.35); Resale department has 10% price discount; client must match server `ceil(...)`.
 - Staff and upgrades reset on restructure; cycle/PP reset; temporary buffs, frenzy, heat cleared and `last_tick` reset; Seniority, perks, lifetime BW persist.
-- Server `live_mult` and `live_mult_at`; idle `accrual_interval_gain` partitions time at event windows, Jess drinks, buffs, frenzy and hours. Offline cap remains 8 hours plus relevant perk/department modifiers.
+- Server `live_mult` and `live_mult_at`; idle `accrual_interval_gain` partitions time at event windows, Nora drinks, buffs, frenzy and hours. Offline cap remains 8 hours plus relevant perk/department modifiers.
 - Caution: time-varying office-wide fund tiers/streak levels aren't fully historically reconstructed. Full authenticated economy regression suite remains to be built against a non-production DB.
 - Rate-dependent cosmetic/action prices are computed on server by `all_prices` / `fitting_prices`; UI quotes refresh periodically and after restructure. Manual click capped by server and blocked by Doug call on UI.
-- Jess drinks/slushies: office-wide +20% BW for 4-minute windows every 2 hours, backed by server. UI badge displays.
+- Nora drinks/slushies: office-wide +20% BW for 4-minute windows every 2 hours, backed by server. UI badge displays.
 
 ## NPCs and jokes
-- Rotating shuffle-bag of eight visitors Jess, John, Kyle, Matt, Avah, Nick, Rilie and builder Joey: 4-minute slots, 46-second visit, shuffled once per 8 opportunities.
-- Chance (former employee) and Dave (owner) have independent schedules; at most 3 NPCs. Matt/Nick occasionally exchange Buzzword Bingo bait.
-- Joey leaves temporary wood scraps and talks about the endlessly unfinished cigar lounge. Matt has a line about updating the operating agreement again. Chance teases Nick about poison oak.
+- Rotating shuffle-bag of eight visitors Nora, Gus, Rory, Theo, Iris, Bramblewick, Pip and builder Wren: 4-minute slots, 46-second visit, shuffled once per 8 opportunities.
+- Wes (former employee) and Hal (owner) have independent schedules; at most 3 NPCs. Theo/Bramblewick occasionally exchange Buzzword Bingo bait.
+- Wren leaves temporary wood scraps and talks about the endlessly unfinished rooftop lounge. Theo has a line about updating the operating agreement again. Wes teases Bramblewick about poison oak.
 - Many dialogue exchanges and special overlaps; review `officeVisitorNow`, `visitorOrdinal`, tick effect and `OfficeVisitorBody` before editing.
 
 ## Existing returning-player UI
@@ -37,7 +37,7 @@ Optional button opens six tabs:
 1. Rumor Mill: deterministically scheduled jokes.
 2. Corporate Buzzword Bingo: 3×3 phrases heard during NPC visits, **per-browser localStorage** and UTC-day reset.
 3. Daily HR assignments: work, encounter NPC, hire, **local-only**, joking title but no gameplay rewards.
-4. Joey's Cigar Lounge: intentionally futile rotating construction status/progress.
+4. Wren's Rooftop Lounge: intentionally futile rotating construction status/progress.
 5. Employee of the Minute: meaningless award, changes every 30 min.
 6. Office Incident Log: 8 recent **simulated** NPC rumors; not real historical logs and not the offline BW popup.
 All six are cosmetic/optional; no BW economy effects.
@@ -54,10 +54,10 @@ Warm retro workplace satire, desk/floor sprite world, stamp-like HR forms, funny
 CI additionally runs Playwright Chromium entry smoke tests at desktop/mobile sizes and ephemeral PostgreSQL contract tests. Neither exercises live authenticated Supabase RPCs. No Supabase test branch currently exists, and domain DNS remains independently unverified. Branch protection status needs explicit repository settings verification.
 
 ## 2026-10-20: Cutout art integration
-Original vector-cutout illustrations integrated into existing hiring rows, approvals and cosmetic catalogue with consistent outlines, palette and no new hitboxes or economy impact. Rotating NPCs gain heavier ink lines, sleepy expressions and role props. Avah hair blonde and Rilie brunette. Current generated art-direction posters remain concept art; hand-coded SVGs are production visuals, not automatic sprite exports. No authenticated full-world visual QA yet.
+Original vector-cutout illustrations integrated into existing hiring rows, approvals and cosmetic catalogue with consistent outlines, palette and no new hitboxes or economy impact. Rotating NPCs gain heavier ink lines, sleepy expressions and role props. Iris hair blonde and Pip brunette. Current generated art-direction posters remain concept art; hand-coded SVGs are production visuals, not automatic sprite exports. No authenticated full-world visual QA yet.
 
 ## Cutout art gallery & visual gate
-Render `?art-preview=1` on the game URL to see a read-only, non-authenticated gallery of eight rotating NPCs plus Chance and Dave, palette, prop and icon samples. GitHub Actions Playwright tests desktop and phone gallery rendering and horizontal overflow; PNG artifacts archived seven days. This gallery is not a replacement for authenticated game-world navigation QA.
+Render `?art-preview=1` on the game URL to see a read-only, non-authenticated gallery of eight rotating NPCs plus Wes and Hal, palette, prop and icon samples. GitHub Actions Playwright tests desktop and phone gallery rendering and horizontal overflow; PNG artifacts archived seven days. This gallery is not a replacement for authenticated game-world navigation QA.
 
 ## Cutout-art implementation candidate (PR #4)
 An original cutout SVG/CSS system adds 30px classed purchase icons across hire, approvals, vanity, office_kit, costume, staff, drink and perk lists, and updates all 10 NPCs with unified expressive silhouettes and props. Paper-doll body strokes and five office-kit furniture tiers are refreshed without altering stored ownership. Full test evidence and exact release state in PR #4. Read `docs/ART_DIRECTION.md`. Authenticated gameplay visually unverified; do not call the redesign complete until verified.
@@ -79,7 +79,7 @@ See `docs/VISUAL_REDESIGN.md` for recovered concept sheets, acceptance status, l
 
 ## Build 155: mobile help dialog scrolling
 
-Fixes the build 154 CSS regression that applied `overflow:hidden` to `.pg-card`, clipping onboarding help after Dave's office and hiding Start earning. Cards again scroll vertically, with touch panning, contained overscroll and a dynamic-viewport height cap. `.pg-panel` retains its separate clipped shell and scrolling body. `tests/modal-scroll.spec.cjs` sends touch swipes in 390x640 portrait and 844x390 landscape, verifies scrolling and the final button position, then taps Start earning to dismiss. No auth, economy or data changes. Local Node regression passed; local Chromium download was unavailable, so the required browser/SQL/logic CI gates must verify the candidate before merge. Rollback is a revert of this visual-only PR.
+Fixes the build 154 CSS regression that applied `overflow:hidden` to `.pg-card`, clipping onboarding help after Hal's office and hiding Start earning. Cards again scroll vertically, with touch panning, contained overscroll and a dynamic-viewport height cap. `.pg-panel` retains its separate clipped shell and scrolling body. `tests/modal-scroll.spec.cjs` sends touch swipes in 390x640 portrait and 844x390 landscape, verifies scrolling and the final button position, then taps Start earning to dismiss. No auth, economy or data changes. Local Node regression passed; local Chromium download was unavailable, so the required browser/SQL/logic CI gates must verify the candidate before merge. Rollback is a revert of this visual-only PR.
 
 ## 2026-10-21: Build 156 character personalities (candidate)
 

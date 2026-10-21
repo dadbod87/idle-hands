@@ -2,11 +2,21 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-21: Fictional office — public game uses no real people or company
+- Every character, role, brand, place and joke target in the game is now fictional (Example Property Co.; Wes, Hal, Nora, Gus,
+  Rory, Theo, Iris, Bramblewick, Pip, Wren, Lena). The nameplate job list matched against players' first names is empty.
+- New logo and a logo-free entry background (the previous artwork carried a real company's mark).
+- Migration `20261021200000_fictional_office_catalog.sql`: catalog **text** in six rows and one server message; ids, prices,
+  numbers and catalog keys unchanged (asserted in the migration). Dry-run on Production read-only before applying.
+- Persistent identifiers kept on purpose: catalog keys `chance_extra` / `dave_extra`, item / achievement / deed ids, storage keys.
+- Player accounts, names, progress, purchases and relationships are untouched (no player table is written).
+- New guard test `tests/fictional-names.test.cjs` (hashed deny-list, words and identifier parts). Run it with `node tests/fictional-names.test.cjs`; adding it to the CI workflow is a follow-up (needs a token with the GitHub `workflow` scope).
+
 ## 2026-10-20 and earlier: core product
 - React/Babel one-page game built with Supabase-backed auth, BW idle production, hire/upgrade catalogs, Seniority restructuring, social actions, gifts, collectibles, events, office exploration, achievements, leaderboards and weekly recap.
 - Product reset authorized for beta; legacy accounts/progress wiped. Beta badge granted to new records created through Nov 20, 2026 PT. Never run reset without explicit authorization.
-- Characters expanded: Chance, Dave and Jess/John/Kyle/Matt/Avah/Nick/Rilie/Joey. Equal-probability shuffled guest turns replaced alphabetical/scheduled priority; max three NPCs. Joey's construction joke and Matt–Nick bingo exchanges added.
-- Jess's Mericans/slushies boosts and Chance's poison-oak dialogue added. Server economy strengthened around temporary modifiers.
+- Characters expanded: Wes, Hal and Nora/Gus/Rory/Theo/Iris/Bramblewick/Pip/Wren. Equal-probability shuffled guest turns replaced alphabetical/scheduled priority; max three NPCs. Wren's construction joke and Theo–Bramblewick bingo exchanges added.
+- Nora's Mericans/slushies boosts and Wes's poison-oak dialogue added. Server economy strengthened around temporary modifiers.
 - Audit fixes: Resale discounts reflected in UI, price quotes refreshed after sync/restructure, restructure clears active buffs/frenzy and resets last_tick, server accrual integrates historical timed events and 77-second chair frenzy.
 - Vercel project linked to requested custom domain, but public DNS unverified.
 
@@ -25,11 +35,11 @@ This is a concise human-readable chronology, not a substitute for Git history or
 - Mandatory status-check branch protection and an authenticated test Supabase project are still separate follow-ups until configured/verified.
 
 ## 2026-10-20: Cutout art integration
-Original vector-cutout illustrations integrated into existing hiring rows, approvals and cosmetic catalogue with consistent outlines, palette and no new hitboxes or economy impact. Rotating NPCs gain heavier ink lines, sleepy expressions and role props. Avah hair blonde and Rilie brunette. Current generated art-direction posters remain concept art; hand-coded SVGs are production visuals, not automatic sprite exports. No authenticated full-world visual QA yet.
+Original vector-cutout illustrations integrated into existing hiring rows, approvals and cosmetic catalogue with consistent outlines, palette and no new hitboxes or economy impact. Rotating NPCs gain heavier ink lines, sleepy expressions and role props. Iris hair blonde and Pip brunette. Current generated art-direction posters remain concept art; hand-coded SVGs are production visuals, not automatic sprite exports. No authenticated full-world visual QA yet.
 
 ## 2026-10-20: Cutout character, costume, office kit and UI art — PR #4
 - Added original vector menu art with ink outlines and semantic category grouping across existing catalogs, without new items or changed prices.
-- Unified ten office characters' cutout silhouettes and props. Avah is blonde, Rilie brunette.
+- Unified ten office characters' cutout silhouettes and props. Iris is blonde, Pip brunette.
 - Refreshed player wardrobe strokes and office desk/chair/rug levels, and flattened familiar office fixtures.
 - Added read-only `?art-preview=1` and Chromium screenshot artifacts for art QA with phone, desktop, tabs and overflow checks.
 - Concept artwork was used as visual guidance, not copied as bitmap assets. A full authenticated in-office visual playthrough has not been completed.
