@@ -12,8 +12,9 @@ CREATE TABLE public.players (
 INSERT INTO public.players(id,pp,spent,look) VALUES(auth.uid(),2000000,0,'{"build":"regular","bottom":"trousers","top":0,"legs":0}'::jsonb);
 CREATE OR REPLACE FUNCTION public.accrue(p_id uuid) RETURNS public.players LANGUAGE sql AS $$ SELECT * FROM public.players WHERE id=p_id $$;
 \i sql/character_wardrobe.sql
+\i supabase/migrations/20261021151041_character_heads.sql
 DO $tests$
-DECLARE p public.players; before_pp numeric; rejected boolean;
+DECLARE p public.players; before_pp numeric; rejected boolean; head_id text;
 BEGIN
  SELECT pp INTO before_pp FROM public.players WHERE id=auth.uid();
  rejected:=false;
@@ -28,7 +29,18 @@ BEGIN
  BEGIN PERFORM public.buy_wardrobe('blazer'); EXCEPTION WHEN others THEN rejected:=true; END;
  IF NOT rejected THEN RAISE EXCEPTION 'Double-purchase allowed'; END IF;
  p:=public.set_look('{"build":"slim","bottom":"shorts","top":2,"legs":3,"hair":"curly","hairColor":3,"skin":2,"eyes":"wide","expression":"smile","glasses":true,"gender":"neutral","clothing":"blazer"}'::jsonb);
+ IF p.look->>'head'<>'classic' THEN RAISE EXCEPTION 'Legacy head default changed'; END IF;
  IF p.look->>'clothing'<>'blazer' OR p.look->>'hair'<>'curly' THEN RAISE EXCEPTION 'Avatar save failed'; END IF;
+ -- Save every head with the real function and retain purchased clothes and balance.
+ FOREACH head_id IN ARRAY ARRAY['classic','round','square','pear','alien','robot','cyclops','frog','bag'] LOOP
+  p:=public.set_look(jsonb_build_object('head',head_id,'gender','feminine','clothing','blazer'));
+  IF p.look->>'head'<>head_id OR p.look->>'gender'<>'feminine' OR p.look->>'clothing'<>'blazer' OR p.pp<>before_pp-45000 THEN RAISE EXCEPTION 'Head persistence changed progress'; END IF;
+ END LOOP;
+ rejected:=false;
+ BEGIN PERFORM public.set_look('{"head":"invalid"}'::jsonb); EXCEPTION WHEN others THEN rejected:=true; END;
+ IF NOT rejected THEN RAISE EXCEPTION 'Invalid head accepted'; END IF;
+ p:=public.set_look('{"build":"regular"}'::jsonb);
+ IF p.look->>'head'<>'bag' THEN RAISE EXCEPTION 'Old client erased new head'; END IF;
  rejected:=false;
  BEGIN PERFORM public.set_look('{"build":"slim","bottom":"shorts","top":900,"legs":3}'::jsonb); EXCEPTION WHEN others THEN rejected:=true; END;
  IF NOT rejected THEN RAISE EXCEPTION 'Out-of-range avatar accepted'; END IF;

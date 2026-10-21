@@ -61,3 +61,11 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Restores vertical scrolling on shared card dialogs after the cutout-world CSS accidentally overrode it with hidden overflow.
 - Keeps cards within the current mobile viewport, enables touch panning, and preserves separate panel-body scrolling.
 - Adds portrait/landscape touch-swipe regression coverage reaching and tapping Start earning at the bottom of Help. Node regression passed locally; local Chromium installation was blocked by download errors. Require all three CI jobs green before release. No player data, APIs or economy changes.
+
+## 2026-10-21: Build 156 body style fix and illustrated head collection
+
+- Fixes the unused body-style setting by giving every style/build combination its own torso path in the shared player/NPC rig.
+- Adds nine free head shapes, including alien intern, robot employee, cyclops, frog accountant and paper bag; keeps familiar human faces and existing player looks.
+- Adds a visual head picker, Surprise me, pants colors and accessible selected swatches. Special heads explain their fixed silhouette; hidden hair choices are retained.
+- Extends the authenticated appearance RPC with a validated head field. Installation does not rewrite players, spend BW or reset inventory; older clients keep a stored head when omitted.
+- Expands desktop/phone browser playthrough and actual isolated Postgres RPC contracts. Release, migration and exact verification evidence are recorded in the PR; physical phone and authenticated production gameplay are not claimed.
