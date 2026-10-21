@@ -19,6 +19,7 @@ jobs:
       - run: node tests/fictional-names.test.cjs
       - run: node tests/sound-contract.test.cjs
       - run: node tests/social-moments.test.cjs
+      - run: node tests/chair-spawns.test.cjs
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 12

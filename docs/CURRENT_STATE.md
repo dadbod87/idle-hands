@@ -1,3 +1,11 @@
+# Build 168 — map-wide good chair (2026-10-21)
+
+Good-chair placement now selects an equally weighted point from a dense, cached pool across the entire usable map, replacing the east/central rectangle (x1150–3049, y700–1219). Every point excludes the full chair footprint plus clearance around all nine offices (including Chance's), fixture art/labels, scenery and solid decorative props; actual wall collision is also checked. Open floor/background zones remain eligible. A stable window hash selects the same point for everyone. Chair depth follows its floor position and its button has an accessible name.
+
+Read-only production inspection confirmed chair_window supplies timing only and grab_chair does not accept coordinates. No server migration is needed; 7-minute schedule, 40-second visibility, claim behavior, Quick Hands grace, reward chances and rewards are unchanged. No player data was modified. Validation: parser/economy and approved-name contracts pass; chair contract verifies all 1,527 points and 20,000 windows for determinism, distribution, bounds, office exclusion and walkable connectivity. Two Chromium tests pass (desktop and Pixel 7 emulation): walk to opposite map edges, render the chair, reject a fixture claim without awarding anything, then apply an explicit successful server fixture response. Screenshots reviewed. CI/deployment evidence in release PR. Physical phone and real production claiming are unverified. Rollback: frontend revert; advise open clients to refresh to use the same placement version.
+
+---
+
 # Build 167 — all Office Nonsense sections visible (2026-10-21)
 
 The six Office Nonsense buttons now use a scoped three-column/two-row grid instead of an overflowing catalog switch row. The hidden sixth button was Awards (the cosmetic Employee of the Minute joke). All labels wrap and targets remain at least 44px tall; selected state is exposed with aria-pressed. Other catalog/tab layouts are unchanged. Feedback toast flex items no longer retain a high z-index above open dialogs.

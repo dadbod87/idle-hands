@@ -2,6 +2,10 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-21: Build 168 — musical chairs
+- Good chair can appear throughout usable map space, with equally weighted safe locations outside all private offices, fixtures and solid scenery. Shared deterministic window selection preserves one location for every client.
+- Timing/claims/rewards unchanged; backend inspected read-only, no migration/player writes. Distribution, geometry, connectivity and desktop/phone fixture interaction evidence tracked in PR.
+
 ## 2026-10-21: Build 167 — room for nonsense
 - Fixed clipped Office Nonsense navigation: all six buttons, including Awards after Lounge, fit in two rows with wrapping labels and selected-state accessibility.
 - Feedback notifications stay below open dialogs instead of painting over their controls.
