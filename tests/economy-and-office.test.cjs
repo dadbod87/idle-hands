@@ -60,6 +60,16 @@ assert(src.includes('function ArtPreview()'),'Visual QA gallery exists');
 assert(src.includes('function DaveBody({ facing = 1 }) {'),'Dave wrapper preserved');
 assert(src.includes('function ChanceBody({ facing = 1 }) {'),'Chance wrapper preserved');
 
+
+assert(src.includes('function AvatarHead('),'One avatar renderer for all players');
+assert(src.includes('function AvatarControls('),'Character creation controls present');
+assert(src.includes('await api.setLook(look)'),'Onboarding must persist custom look');
+assert(src.includes('wardrobe_owned'),'Purchased clothing inventory read');
+assert(src.includes('rpc("buy_wardrobe"'),'Wardrobe purchase uses server RPC');
+assert(src.includes('onBuyClothing='),'Wardrobe store connected');
+assert(src.includes('clothing:"starter"')||src.includes('clothing:one('),'Free starter outfit supported');
+assert(src.includes('<AvatarControls value={look} onChange={setLook}/>'),'Character preview controls present');
+
 const bagForRound = round => {
  const o=cast.map((_,i)=>i);
  for(let i=o.length-1;i>0;i--){
