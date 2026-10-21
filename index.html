@@ -6995,10 +6995,18 @@ function Onboard({ user, code, onDone }) {
 
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
 function ArtPreview(){
+ const [demoAvatar,setDemoAvatar]=useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
  const types=["paper","badge","mug","chair","computer","plant","binder","wood","phone","person","star","shirt","notice","reset","gear"];
  const colors=[["Paper","#F8F1E3"],["Sage","#8FA67A"],["Blue","#7B9CC4"],["Note","#FFD36B"],["Orange","#F78B6B"],["Ink","#2B2B2B"]];
  return <main className="pg-artreview" data-testid="art-preview">
   <header><h1>IDLE HANDS · ART QA</h1><p>Original 2D cutout office satire · QA gallery only · Never touches game accounts or Busywork.</p></header>
+  <h2>0. Shared character creator · free appearance choices</h2>
+  <div data-testid="avatar-qa" style={{background:"#FFFDF5",padding:15,border:"2px solid #2B2B2B",maxWidth:760,margin:"0 auto"}}>
+    <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><AvatarHead look={demoAvatar} size={74}/><strong>First day: make your employee</strong></div>
+    <AvatarControls value={demoAvatar} onChange={setDemoAvatar}/>
+    <p>Clothing progression · {WARDROBE.length} server-backed permanent outfits</p>
+    <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><OfficeIcon kind={it.name+" hoodie"} cosmetic/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
+  </div>
   <h2>1. Flat cutout color and shape system</h2>
   <div className="ar-palette">{colors.map(([name,color])=><span key={name} style={{background:color}}>{name}</span>)}</div>
   <h2>2–3. Cast silhouettes and character styling</h2>
