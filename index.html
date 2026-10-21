@@ -6438,9 +6438,14 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
         <button className="pg-work big" disabled={busy}
                 onClick={async () => {
                   setBusy(true);
-                  await onLook(look);
-                  await onSave(name.trim(), img);
-                  setBusy(false);
+                  try {
+                    await onLook(look);
+                    await onSave(name.trim(), img);
+                  } catch (e) {
+                    // Parent reports a visible error. Keep the editor responsive.
+                  } finally {
+                    setBusy(false);
+                  }
                 }}>
           {busy ? "Reissuing…" : "Reissue the badge"}
         </button>
