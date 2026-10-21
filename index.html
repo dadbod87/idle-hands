@@ -2895,7 +2895,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 146 · cutout art";
+const BUILD = "build 147 · cutout art";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4612,7 +4612,7 @@ function BadStag() {
 /* Original vector-cutout icon family: survives arbitrary scale, no external art fetch. */
 function OfficeIcon({kind="paper",compact=false,cosmetic=false}){
  const k=String(kind||"").toLowerCase();
- const type=/senior|badge|equity/.test(k)?"badge":/coffee|mug|boost|slush|drink|meric/.test(k)?"mug":/chair|seat/.test(k)?"chair":/computer|laptop|monitor|screen|tech|developer|code/.test(k)?"computer":/plant|garden|green/.test(k)?"plant":/contract|agreement|legal|binder|approval|document/.test(k)?"binder":/wood|lounge|joey|build|construction/.test(k)?"wood":/call|phone|tenant/.test(k)?"phone":/staff|hire|intern|manager|assistant|employee|director|worker|recruit/.test(k)?"person":/bonus|perk|star|award|trophy|level/.test(k)?"star":/costume|shirt|hoodie|jacket|coat|scarf|wear|fashion/.test(k)?"shirt":/rumor|bingo|bulletin/.test(k)?"notice":/reset|restruct/.test(k)?"reset":/upgrad|gear|improv/.test(k)?"gear":"paper";
+ const type=/senior|badge|equity/.test(k)?"badge":/coffee|mug|boost|slush|drink|meric/.test(k)?"mug":/chair|seat/.test(k)?"chair":/computer|laptop|monitor|screen|tech|developer|code/.test(k)?"computer":/plant|garden|green/.test(k)?"plant":/contract|agreement|legal|binder|approval|document/.test(k)?"binder":/wood|lounge|joey|build|construction/.test(k)?"wood":/call|phone|tenant/.test(k)?"phone":/staff|hire|intern|manager|assistant|employee|director|worker|recruit|person/.test(k)?"person":/bonus|perk|star|award|trophy|level/.test(k)?"star":/costume|shirt|hoodie|jacket|coat|scarf|wear|fashion/.test(k)?"shirt":/rumor|bingo|bulletin/.test(k)?"notice":/reset|restruct/.test(k)?"reset":/upgrad|gear|improv/.test(k)?"gear":"paper";
  return <span className={"pg-iconart"+(compact?" compact":"")+(cosmetic?" cosmetic":"")} aria-hidden="true">
  <svg viewBox="0 0 40 40" fill="none" stroke="#2B2B2B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
  {type==="paper"&&<><path d="M11 5h17l5 7v24H11z" fill="#FFF8E8"/><path d="M28 5v8h5"/><path d="M15 19h14M15 24h11M15 29h12" stroke="#9E8D6A"/><path d="M7 10v25h20" /></>}
@@ -5710,17 +5710,45 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
 
 
 function OfficeVisitorBody({visitor:v}){
+ const id=v.id||"";
+ const color=id==="jess"?"#343B43":id==="john"?"#F8F1E3":id==="matt"?"#E8E7E0":id==="joey"?"#4B5A63":id==="nick"?"#303C4B":id==="avah"?"#7B9CC4":id==="rilie"?"#836F90":v.color;
+ const hair=id==="avah"?"#D5AB62":id==="rilie"?"#51382E":v.hair;
  return <div className="pg-body chance pg-visitor-cutout" style={{transform:"scaleX("+v.facing+")"}}>
-  <svg viewBox="0 0 74 92" className="pg-chancesvg">
-   <rect x="17" y="46" width="40" height="38" rx="8" fill={v.color} stroke="#2B2B2B" strokeWidth="2.5"/>
-   <rect x="10" y="53" width="8" height="23" rx="4" fill="#D8AD8E"/><rect x="56" y="53" width="8" height="23" rx="4" fill="#D8AD8E"/>
-   {v.longHair&&<path d="M18 19Q18 1 37 1Q56 1 56 19L61 59Q52 64 49 48H25Q21 64 13 59Z" fill={v.hair}/>}
-   <ellipse cx="37" cy="26" rx="16" ry="19" fill="#DFB596" stroke="#2B2B2B" strokeWidth="2.3"/>
-   <path d="M21 22Q20 5 37 6Q55 5 53 22Q46 15 37 15Q28 15 21 22Z" fill={v.hair}/>
-   <path d="M25 24q6-4 12 0M39 24q6-4 11 0" stroke="#46372E" strokeWidth="2.5" fill="none"/><path d="M25 28q5 2 11 0M39 28q5 2 10 0" stroke="#2B2B2B" strokeWidth="2" fill="none"/><circle cx="31" cy="26" r="1.6" fill="#31241F"/><circle cx="43" cy="26" r="1.6" fill="#31241F"/>
-   <path d="M32 35Q37 38 42 35" stroke="#86574B" fill="none" strokeWidth="1.5"/>
-   <rect x="23" y="79" width="12" height="12" fill="#34383F" stroke="#2B2B2B" strokeWidth="2"/><rect x="39" y="79" width="12" height="12" fill="#34383F" stroke="#2B2B2B" strokeWidth="2"/>{v.id==="matt"&&<><path d="M14 56h21v24H14z" fill="#F8F1E3" stroke="#2B2B2B" strokeWidth="2"/><path d="M17 61h14M17 65h12M17 69h14" stroke="#8A6E1F" strokeWidth="1.5"/></>}{v.id==="joey"&&<path d="M2 58h31v6H2z" fill="#C89A60" stroke="#2B2B2B" strokeWidth="2"/>}{v.id==="avah"&&<path d="M53 48h9v16h-9z" fill="#7B9CC4" stroke="#2B2B2B" strokeWidth="2"/>}
-  </svg>
+ <svg viewBox="0 0 74 92" className="pg-chancesvg" aria-label={v.name+" cutout cartoon character"} role="img">
+ <ellipse cx="37" cy="90" rx="21" ry="2" fill="#202A21" opacity=".18"/>
+ {/* Hands, shoes and tailored clothing keep the original NPC size/hitbox. */}
+ <path d="M21 76h14v12q-2 3-15 3zM40 76h14v12q-2 3-15 3z" fill="#333943" stroke="#282828" strokeWidth="2.5"/>
+ <path d="M18 50h38l3 31H15z" fill={color} stroke="#2B2B2B" strokeWidth="2.8" strokeLinejoin="round"/>
+ <rect x="12" y="50" width="8" height="25" rx="4" fill="#DEAF90" stroke="#2B2B2B" strokeWidth="2"/>
+ <rect x="54" y="50" width="8" height="25" rx="4" fill="#DEAF90" stroke="#2B2B2B" strokeWidth="2"/>
+ <path d="M31 49l6 6 6-6" fill="none" stroke="#F8F1E3" strokeWidth="3"/>
+ {(id==="john"||id==="matt")&&<path d="M37 54l4 4-4 16-4-16z" fill={id==="john"?"#E05B5B":"#516274"} stroke="#2B2B2B" strokeWidth="1.4"/>}
+ {(id==="nick")&&<><path d="M20 51q17-13 34 0" fill="none" stroke="#657B97" strokeWidth="5"/><path d="M29 52l8 8 8-8" stroke="#172230" strokeWidth="2" fill="none"/></>}
+ {(id==="joey")&&<><path d="M15 70h43v7H15z" fill="#BA965F" stroke="#2B2B2B" strokeWidth="2"/><rect x="44" y="72" width="7" height="10" rx="1" fill="#D6A552" stroke="#2B2B2B" strokeWidth="1.5"/></>}
+ {id==="rilie"&&<path d="M19 44q18 11 37 0l-6 12-24 1z" fill="#D47779" stroke="#2B2B2B" strokeWidth="1.8"/>}
+ {v.longHair&&<path d="M17 25Q14 5 37 4Q61 4 58 30L63 59Q57 64 51 51Q23 48 20 58Q12 59 11 53Z" fill={hair} stroke="#2B2B2B" strokeWidth="2.7"/>}
+ <ellipse cx="37" cy="29" rx="17" ry="19" fill="#E6B596" stroke="#2B2B2B" strokeWidth="2.7"/>
+ {id==="avah"&&<><ellipse cx="55" cy="10" rx="8" ry="8" fill={hair} stroke="#2B2B2B" strokeWidth="2"/><path d="M24 15Q37-2 55 17Q48 6 37 11z" fill={hair}/></>}
+ {id==="rilie"&&<path d="M20 19Q17 7 31 6Q49 2 55 17Q45 6 37 12Q29 7 20 19" fill={hair} stroke="#2B2B2B" strokeWidth="2"/>}
+ {id==="joey"?<><path d="M19 21Q22 7 38 9Q51 9 54 21L18 22Z" fill="#7B9CC4" stroke="#2B2B2B" strokeWidth="2.6"/><path d="M36 20h29q-1 8-22 7" fill="#EBE3CE" stroke="#2B2B2B" strokeWidth="2"/></>:
+ <path d="M20 22Q20 7 37 8Q56 6 54 23Q48 14 39 15Q28 14 20 22z" fill={hair} stroke="#2B2B2B" strokeWidth="2.7"/>}
+ {id==="john"&&<path d="M24 12l-5-9 13 5M41 11l7-8-1 9" fill={hair} stroke="#2B2B2B" strokeWidth="2"/>}
+ {id==="nick"&&<path d="M25 12l-7-7 14 6m11 0 6-8 0 12" fill={hair} stroke="#2B2B2B" strokeWidth="2"/>}
+ <path d="M25 28q5-3 11 0M39 28q5-3 10 0" fill="none" stroke="#41332B" strokeWidth="2"/>
+ <path d="M25 31q5 2 11 0M39 31q5 2 10 0" fill="none" stroke="#2B2B2B" strokeWidth="2.2"/>
+ <circle cx="30" cy="29" r="1.7" fill="#2B2B2B"/><circle cx="44" cy="29" r="1.7" fill="#2B2B2B"/>
+ {(id==="matt"||id==="nick"||id==="avah")&&<><rect x="24" y="24" width="13" height="11" rx="4" fill="none" stroke="#2B2B2B" strokeWidth="1.8"/><rect x="38" y="24" width="13" height="11" rx="4" fill="none" stroke="#2B2B2B" strokeWidth="1.8"/><path d="M37 28h2" stroke="#2B2B2B"/></>}
+ <path d={id==="chance"?"M31 39Q38 43 44 38":"M32 40q5 2 10 0"} stroke="#7A5246" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+ {/* Story accessories make even the smallest office visitor distinguishable. */}
+ {id==="jess"&&<><rect x="1" y="57" width="18" height="7" rx="2" fill="#AC8760" stroke="#2B2B2B" strokeWidth="2"/><path d="M4 43h6l1 14H3z" fill="#F78B6B" stroke="#2B2B2B" strokeWidth="1.8"/><path d="M12 45h6l1 12h-8z" fill="#7B9CC4" stroke="#2B2B2B" strokeWidth="1.8"/></>}
+ {id==="john"&&<><rect x="51" y="57" width="11" height="19" rx="2" fill="#353C48" stroke="#2B2B2B" strokeWidth="2"/><circle cx="56" cy="61" r="1" fill="#E05B5B"/></>}
+ {id==="matt"&&<><path d="M2 53h26v26H2z" fill="#D8BF8C" stroke="#2B2B2B" strokeWidth="2.2"/><path d="M7 60h17M7 65h15M7 70h17" stroke="#7B603E" strokeWidth="1.7"/></>}
+ {id==="avah"&&<><rect x="55" y="48" width="13" height="21" rx="2" fill="#4F6C8B" stroke="#2B2B2B" strokeWidth="2"/><rect x="58" y="52" width="7" height="10" rx="1" fill="#F8F1E3"/></>}
+ {id==="joey"&&<><path d="M2 53H36v7H2z" fill="#BE8F5C" stroke="#2B2B2B" strokeWidth="2.2"/><path d="M12 54v6M28 54v6" stroke="#86603F" strokeWidth="1.4"/></>}
+ {id==="nick"&&<><rect x="2" y="56" width="30" height="20" rx="2" fill="#637A92" stroke="#2B2B2B" strokeWidth="2"/><circle cx="17" cy="66" r="4" fill="#FFD36B" stroke="#2B2B2B" strokeWidth="1.2"/><path d="M14 67q3 3 6 0" stroke="#2B2B2B" fill="none" strokeWidth="1"/></>}
+ {id==="kyle"&&<><circle cx="8" cy="64" r="4" fill="none" stroke="#2B2B2B" strokeWidth="2.2"/><path d="M12 64h9l3-3m-3 3 3 3" stroke="#D1A546" strokeWidth="3"/></>}
+ {id==="rilie"&&<><path d="M16 47q-9 4-8 25" stroke="#CF8587" strokeWidth="8" fill="none"/><path d="M9 70l-3 7M9 70l3 7" stroke="#CF8587" strokeWidth="2"/></>}
+ </svg>
  </div>;
 }
 function DaveBody({ facing = 1 }) {
