@@ -13,9 +13,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Install test-only parser
-        run: npm install --no-save --no-package-lock @babel/parser@7
-      - name: Run regression checks
-        run: node tests/economy-and-office.test.cjs
+        with: {node-version: '22'}
+      - run: npm install --no-save --no-package-lock @babel/parser@7
+      - run: node tests/economy-and-office.test.cjs
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Playwright
+        run: npm install --no-save --no-package-lock @playwright/test@1.56.1
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/idle-hands-http.log 2>&1 &
+      - name: Browser smoke (desktop and phone)
+        run: npx playwright test tests/browser.spec.cjs --reporter=line
+  isolated-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: idle_hands_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U test -d idle_hands_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: test
+      PGPASSWORD: test
+      PGDATABASE: idle_hands_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate isolated database contract fixtures
+        run: psql -v ON_ERROR_STOP=1 -f tests/economy-contract.sql
