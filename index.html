@@ -649,6 +649,28 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-artreview .ar-fixture{width:100%;height:110px;max-width:200px;margin:auto;position:relative}
 .pg-artreview .ar-fixture .pg-fx{width:100%;height:100%;position:relative;z-index:0;pointer-events:none}
 
+
+/* Paper-doll wardrobe / office kit tier visuals — no changes to server ownership. */
+.pg-torso path:first-child{stroke:#2B2B2B;stroke-width:2.2;stroke-linejoin:round}
+.pg-arm,.pg-leg{border:1.8px solid #2B2B2B}
+.pg-arm::after{content:"";position:absolute;left:0;bottom:-4px;width:100%;height:6px;background:#E6B596;border:1px solid #2B2B2B;border-radius:3px}
+.pg-leg::after{content:"";position:absolute;left:-2px;bottom:-3px;width:calc(100% + 4px);height:5px;background:#30343A;border:1px solid #2B2B2B;border-radius:2px}
+.pg-hat path,.pg-hat rect{stroke:#2B2B2B;stroke-width:1.5;stroke-linejoin:round}
+.pg-officedesk{border:3px solid #2B2B2B;box-shadow:4px 4px 0 #6D6C60}
+.pg-officedesk.mine{border-color:#D6A443;box-shadow:4px 4px 0 #3B3930}
+.pg-officedesk[data-desk="d1"]{background:#B69E78;border-color:#2B2B2B}
+.pg-officedesk[data-desk="d2"]{background:#C6DAE2;border-color:#2B2B2B}
+.pg-officedesk[data-desk="d3"]{background:#936847;border-color:#2B2B2B}
+.pg-officedesk[data-desk="d4"]{background:#E5E0D4;border-color:#2B2B2B}
+.pg-officedesk[data-desk="d5"]{background:#353539;border-color:#2B2B2B}
+.pg-officechair{border:2.5px solid #2B2B2B;box-shadow:3px 3px 0 rgba(30,30,30,.3)}
+.pg-officechair.chair-c1{background:#8FA67A}
+.pg-officechair.chair-c2{background:#7B9CC4}
+.pg-officechair.chair-c3{background:repeating-linear-gradient(0deg,#7B9CC4 0 4px,#6389A6 4px 8px)}
+.pg-officechair.chair-c4{background:#93604D}
+.pg-officefloor.rug-r1::after{background:#A88A68}
+.pg-officefloor.rug-r3::after{background:#D36C5C}
+
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -2914,7 +2936,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 151 · cutout art";
+const BUILD = "build 152 · cutout art";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -6949,6 +6971,11 @@ function ArtPreview(){
       </div>)}</div>}
     </Tabsy>
   </div>
+  <h2>4d. Owned office upgrade silhouettes — five tier samples</h2>
+  <div className="ar-grid">{["d1","d2","d3","d4","d5"].map((d,i)=><div className="ar-cell" key={d}><div className="ar-fixture" style={{height:102}}>
+    <div className="pg-officedesk" data-desk={d} style={{position:"relative",width:"100%",height:75,top:0,left:0}}><span/><b/></div>
+    <div className={"pg-officechair chair-c"+Math.min(4,i+1)} style={{top:40}}/>
+    </div><strong>{"Desk upgrade "+(i+1)}</strong></div>)}</div>
   <h2>5. Small icon readability</h2>
   <div className="ar-grid">{types.map(t=><div className="ar-cell" key={t}><div className="ar-icons"><OfficeIcon kind={t}/><OfficeIcon kind={t} compact/></div><strong>{t}</strong></div>)}</div>
  </main>;
