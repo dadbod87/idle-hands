@@ -1478,11 +1478,11 @@ const ACHV = [
   { id: "a13", name: "Vested", note: "Hold 25 equity.", test: (s) => s.equity >= 25 },
   { id: "a14", name: "Billion With A B", note: "1Qa lifetime PP.", test: (s) => s.lifetime >= 1e15 },
   { id: "a15", name: "Beloved", note: "Receive 10 kind things.", test: (s) => s.kind_received >= 10 },
-  { id: "a16", name: "Fired Guy", note: "Have 10 unkind things done to you.",
+  { id: "a16", name: "Office Legend", note: "Have 10 unkind things done to you.",
     test: (s) => Object.keys(s.hits || {}).filter((k) => DEED_TEXT[k] && !DEED_TEXT[k].good)
       .reduce((n, k) => n + s.hits[k], 0) >= 10 },
   { id: "a17", name: "Pineapple", note: "Say pineapple and get away with it.", test: (s) => s.hush >= 1 },
-  { id: "a18", name: "I Quit", note: "Restructure twice. Come back both times.", test: (s) => s.quits >= 2 },
+  { id: "a18", name: "Fresh Start", note: "Restructure twice.", test: (s) => s.quits >= 2 },
   { id: "a19", name: "Called In", note: "Get summoned to Dave's office.", test: (s) => s.busted >= 1 },
   { id: "a20", name: "Teflon", note: "Pin it on someone else 3 times.", test: (s) => (s.tally?.blame || 0) >= 3 },
   { id: "a21", name: "Dave's Favorite", note: "Land 3 raises.", test: (s) => s.raises >= 3 },
@@ -1634,7 +1634,7 @@ const MEMOS = [
 /* Chance quit. Chance's desk remains. Nobody will move it. */
 const GHOST_DESK = {
   name: "Chance",
-  plate: "FORMER EMPLOYEE",
+  plate: "OFFICE VISITOR",
   x: 3130, y: 1510,
   lines: [
     "The empty desk still has a mug on it.",
@@ -1691,7 +1691,7 @@ const FIXTURES = [
       "The ventilation is being sorted. It has been being sorted for some time.",
       "You look through the gap in the paper. It looks the same as last time.",
     ] },
-  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Work beers · after 11", x: 820, y: 600, w: 118, h: 140 },
+  { id: "cooler", panel: "cooler", label: "Merican Cooler", sub: "Break room · after 11", x: 820, y: 600, w: 118, h: 140 },
   { id: "confb", panel: null, label: "Conference Room B", sub: "Booked", x: 40, y: 300, w: 110, h: 160,
     deny: [
       "Booked. Recurring. Through 2031.",
