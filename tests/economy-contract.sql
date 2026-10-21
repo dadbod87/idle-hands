@@ -24,4 +24,23 @@ BEGIN
  IF EXISTS(SELECT 1 FROM example_player WHERE pp<>0 OR cycle<>0 OR owned<>'{}'::jsonb OR upgrades<>'[]'::jsonb OR buffs<>'[]'::jsonb OR equity<>5 OR frenzy_until IS NOT NULL)
  THEN RAISE EXCEPTION 'Seniority reset contract violated'; END IF;
 END $$;
+-- Permanent wardrobe must survive Seniority reset; clothing purchases deduct BW only once.
+CREATE TEMP TABLE wardrobe_test(pp numeric,spent numeric,wardrobe_owned jsonb,equity integer,cycle numeric);
+INSERT INTO wardrobe_test VALUES(10000,0,'[]'::jsonb,2,10000000000);
+UPDATE wardrobe_test SET pp=pp-2000,spent=spent+2000,wardrobe_owned=wardrobe_owned||'"hoodie"'::jsonb
+ WHERE pp>=2000 AND NOT wardrobe_owned ? 'hoodie';
+DO $
+BEGIN
+ IF (SELECT pp FROM wardrobe_test)<>8000 OR
+    (SELECT spent FROM wardrobe_test)<>2000 OR
+    NOT (SELECT wardrobe_owned ? 'hoodie' FROM wardrobe_test)
+ THEN RAISE EXCEPTION 'Wardrobe purchase contract broken'; END IF;
+END $;
+UPDATE wardrobe_test SET pp=0,cycle=0,equity=equity+1;
+DO $
+BEGIN
+ IF NOT (SELECT wardrobe_owned ? 'hoodie' FROM wardrobe_test) OR
+    (SELECT equity FROM wardrobe_test)<>3
+ THEN RAISE EXCEPTION 'Wardrobe not persistent across restructure'; END IF;
+END $;
 ROLLBACK;
