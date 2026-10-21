@@ -27,7 +27,8 @@ for(const mode of ['desktop','mobile']){
     await page.getByTitle(label,{exact:true}).click();
     await expect(avatar).toHaveClass(new RegExp('em-'+id));
   }
-  await page.getByRole('button',{name:/Go to your desk/}).click();
+  // The movement sample can already land at the desk on some viewport/camera frames.
+  await page.locator('.pg-work').click();
   await expect(page.getByRole('button',{name:/Do actual work/})).toBeVisible({timeout:30000});
   await page.getByRole('button',{name:/Do actual work/}).click();
   await expect.poll(()=>fixture.calls.some(x=>x.rpc==='do_work')).toBe(true);

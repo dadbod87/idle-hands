@@ -30,6 +30,7 @@ async function installGameFixture(page,options={}) {
    else if(rpc==='buy_item'){player.owned[args.p_item]=(player.owned[args.p_item]||0)+1;player.pp-=100;result=player;}
    else if(['sync','check_in'].includes(rpc))result=player;
    else if(rpc==='save_achievements'){player.achievements=args.p_list;result=player;}
+   else if(rpc==='weekly_schedule')result=options.weekSchedule||{timezone:'America/New_York',server_now:new Date().toISOString(),starts_at:'2026-10-16T21:00:00Z',ends_at:'2026-10-23T21:00:00Z'};
    else if(rpc==='office_state')result={total:0,target:10000000,tiers:0,streak:0,tz:'America/Los_Angeles'};
    else if(rpc==='all_prices')result={vending:100,deeds:{},fittings:{}};
    else if(rpc==='fitting_prices')result={prices:Object.fromEntries(Object.values(options.fittings||{}).flat().map(x=>[x.id,1000]))};

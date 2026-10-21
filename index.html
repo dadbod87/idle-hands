@@ -683,6 +683,10 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 
 .pg-officedesk .pg-desk-svg{width:100%;height:100%;display:block;pointer-events:none;overflow:hidden}
 .pg-artreview .pg-officedesk .pg-desk-svg{width:100%;height:100%}
+.pg-weekclock{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;padding:12px 16px;background:#FFF0C4;border-bottom:2px solid #A99D84;font-size:13px}
+.pg-weekclock>span{font-weight:700}.pg-weekclock strong{font-family:var(--mono);font-size:13px;color:#2C6B45;font-variant-numeric:tabular-nums}.pg-weekclock small{flex-basis:100%;color:var(--soft);line-height:1.5}
+.pg-weekclock.compact{padding:1px 0 0;border:0;background:none;display:block;font-size:9px;line-height:11px;white-space:nowrap;letter-spacing:0}
+.pg-weekclock.compact>span,.pg-weekclock.compact strong{display:block;font-size:9px;line-height:11px}.pg-wbrow{margin-top:1px;font-size:10px;line-height:12px}.pg-wbrow>.pg-face{flex:none}
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -3080,6 +3084,7 @@ const api = {
   grabChair: () => rpc("grab_chair"),
   saveAchievements: (list) => rpc("save_achievements", { p_list: list }),
   claimOfficeAwards: () => rpc("claim_office_awards"),
+  weekSchedule: () => rpc("weekly_schedule"),
   dress: (target, outfit) => rpc("dress", { p_target: target, p_outfit: outfit }),
   changeClothes: () => rpc("change_clothes"),
   commitToBit: () => rpc("commit_to_bit"),
@@ -3225,7 +3230,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 158 · office personality";
+const BUILD = "build 159 · weekly countdown";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3309,6 +3314,7 @@ function PatronFloor() {
   const [stale, setStale] = useState(false);      // a newer build is on the server
   const [sugg, setSugg] = useState([]);
   const [office, setOffice] = useState(null);
+  const [weekSchedule, setWeekSchedule] = useState(null);
   const [card, setCard] = useState(null);
   const [pins, setPins] = useState(null);
   const [spend, setSpend] = useState(null);
@@ -3457,6 +3463,17 @@ function PatronFloor() {
       if (u && !meRef.current) boot(u);
     });
   }, [boot]);
+
+  // A read-only server schedule; never closes or resets a season from the UI.
+  useEffect(()=>{
+    if(phase!=="play")return;
+    let active=true;
+    const refresh=async()=>{try{const data=await api.weekSchedule();if(active&&data)setWeekSchedule({...data,received_at:Date.now()});}catch{/* Retain the last known deadline while offline. */}};
+    const visible=()=>{if(!document.hidden)refresh();};
+    refresh();const timer=setInterval(visible,30000);
+    document.addEventListener("visibilitychange",visible);
+    return()=>{active=false;clearInterval(timer);document.removeEventListener("visibilitychange",visible);};
+  },[phase,me?.id]);
 
   /* ------------------------- live + heartbeat --------------------- */
   useEffect(() => {
@@ -4341,7 +4358,7 @@ function PatronFloor() {
                  style={{ left: f.x, top: f.y, width: f.w, height: f.h,
                           zIndex: Math.round(f.y + f.h) }}
                  onClick={(e) => walkTo(f, e)}>
-              <FixtureArt id={f.id} board={board} tierPct={Math.min(100, (fund / nextTier.at) * 100)} />
+              <FixtureArt id={f.id} board={board} schedule={weekSchedule} tierPct={Math.min(100, (fund / nextTier.at) * 100)} />
               <div className="pg-fxlabel">{f.label}</div>
             </div>
           ))}
@@ -4553,7 +4570,7 @@ function PatronFloor() {
                     if(row){ setPrices(null); api.allPrices().then(setPrices).catch(() => {}); }
                   }} />
           )}
-          {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} />}
+          {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} schedule={weekSchedule} />}
           {(panel === "kindness" || panel === "sabotage") && (
             <Targets good={panel === "kindness"} board={board} me={me} cat={cat}
                      lifetime={lifetime} pp={pp} cool={cool} onCommit={commit} prices={prices} />
@@ -5250,7 +5267,7 @@ function FixtureIllustration({kind,tierPct=0}){
  </svg>;
 }
 
-function FixtureArt({ id, board, tierPct }) {
+function FixtureArt({ id, board, tierPct, schedule }) {
   if(["coffeebar","fridge","vending","cooler","coffee","printer","watercooler","sink"].includes(id))return <FixtureIllustration kind={id} tierPct={tierPct}/>;
   if (id === "whiteboard") {
     // this week, matching the panel behind it. lifetime survives the wipe on purpose,
@@ -5261,10 +5278,11 @@ function FixtureArt({ id, board, tierPct }) {
         <div className="pg-wbtitle">This week</div>
         {week.slice(0, 3).map((p, i) => (
           <div key={p.id} className="pg-wbrow">
-            <b>{i + 1}</b><Face src={p.avatar_url} name={p.name} look={p.look} size={16} />
+            <b>{i + 1}</b><Face src={p.avatar_url} name={p.name} look={p.look} size={12} />
             <span>{p.name}</span><em>{fmt(p.week_pp || 0)}</em>
           </div>
         ))}
+        <WeeklyDeadline schedule={schedule} compact/>
         <div className="pg-wbtray" />
       </div>
     );
@@ -5644,7 +5662,34 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
   );
 }
 
-function Standings({ board, me, fund, feuds = [] }) {
+// Countdown uses the server clock; the browser timezone only formats the local note.
+function weeklyTimeLeft(schedule, now = Date.now()) {
+  const end = Date.parse(schedule?.ends_at), server = Date.parse(schedule?.server_now);
+  if (!Number.isFinite(end) || !Number.isFinite(server) || !Number.isFinite(schedule?.received_at)) return null;
+  return Math.max(0, Math.ceil((end - server - (now - schedule.received_at)) / 1000));
+}
+function weeklyCountdown(seconds) {
+  const days = Math.floor(seconds / 86400), hours = Math.floor(seconds % 86400 / 3600);
+  const mins = Math.floor(seconds % 3600 / 60), secs = seconds % 60;
+  return `${days ? days + "d " : ""}${String(hours).padStart(2,"0")}h ${String(mins).padStart(2,"0")}m ${String(secs).padStart(2,"0")}s left`;
+}
+function WeeklyDeadline({schedule, compact=false}) {
+  const [now,setNow] = useState(Date.now());
+  useEffect(()=>{const timer=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(timer);},[]);
+  const left=weeklyTimeLeft(schedule,now);
+  if(left===null)return <div className={compact?"pg-weekclock compact":"pg-weekclock"}>Weekly deadline unavailable · reconnect to check.</div>;
+  const options={weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"};
+  const deadline=new Date(schedule.ends_at);
+  const officeDate=new Intl.DateTimeFormat("en-US",{...options,timeZone:schedule.timezone}).format(deadline);
+  const localDate=new Intl.DateTimeFormat("en-US",options).format(deadline);
+  return <div className={"pg-weekclock"+(compact?" compact":"")} data-testid={compact?"wall-week-deadline":"week-deadline"}>
+    <span>{compact?"Ends ":"This week ends "}<time dateTime={schedule.ends_at}>{officeDate}</time></span>
+    <strong role="timer" aria-label="Time left in this scoring week">{left>0?weeklyCountdown(left):"Closing this week…"}</strong>
+    {!compact&&<small>Office time · {schedule.timezone}<br/>Your time: {localDate}</small>}
+  </div>;
+}
+
+function Standings({ board, me, fund, feuds = [], schedule }) {
   const [tab, setTab] = useState("week");
   const ranked = [...board].sort((a, b) =>
     tab === "week" ? (b.week_pp || 0) - (a.week_pp || 0) : (b.lifetime || 0) - (a.lifetime || 0));
@@ -5659,9 +5704,10 @@ function Standings({ board, me, fund, feuds = [] }) {
       </div>
       <div className="pg-earnbar">
         {tab === "week"
-          ? <>Settled Friday at five. Whoever tops it gets a <b>trophy</b> that never goes away, and the new week starts straight away — the weekend counts toward it.</>
+          ? <>Whoever tops it gets a <b>trophy</b> that never goes away, and the new week starts straight away — the weekend counts toward it.</>
           : <>Every point anyone has ever earned. This one never resets.</>}
       </div>
+      {tab === "week" && <WeeklyDeadline schedule={schedule}/>}
       <div className="pg-list">
         {ranked.map((p, i) => (
           <div key={p.id} className={"pg-row static" + (i % 2 ? " alt" : "") + (me && p.id === me.id ? " mine" : "")}>
@@ -7423,6 +7469,7 @@ const ART_FITTINGS={"office_kit":[{"id":"d1","name":"A Desk Without A Wobble","n
 
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
 function ArtPreview(){
+ const qaSchedule={timezone:"America/New_York",server_now:"2026-10-21T17:00:00Z",ends_at:"2026-10-23T21:00:00Z",received_at:Date.now()};
  const [helpOpen,setHelpOpen]=useState(false);
  const [demoAvatar,setDemoAvatar]=useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
  const types=["paper","badge","mug","chair","computer","plant","binder","wood","phone","person","star","shirt","notice","reset","gear"];
@@ -7451,7 +7498,7 @@ function ArtPreview(){
   <h2>4. Props, cosmetics, upgrades</h2>
   <div className="ar-grid">{["Monitor upgrade","Nicer chair","Snack stash","Coffee setup","Rumor board","Operating agreement binder","Slush drinks","Joey wood","Tenant phone","Office plant","Employee badge","Office hoodie","Senior staff","Restructure"].map(name=><div className="ar-cell" key={name}><div className="ar-icons"><OfficeIcon kind={name}/><strong>{name}</strong></div></div>)}</div>
   <h2>4b. In-world fixture and office-object cutouts</h2>
-  <div className="ar-grid">{["bulletin","whiteboard","portrait","hr","owner","watercooler","printer"].map(id=><div className="ar-cell" key={id}><div className="ar-fixture"><div className="pg-fx"><FixtureArt id={id} board={[]} tierPct={20}/></div></div><strong>{id}</strong></div>)}</div>
+  <div className="ar-grid">{["bulletin","whiteboard","portrait","hr","owner","watercooler","printer"].map(id=><div className="ar-cell" key={id}><div className="ar-fixture"><div className="pg-fx"><FixtureArt id={id} board={[]} tierPct={20} schedule={qaSchedule}/></div></div><strong>{id}</strong></div>)}</div>
   <h2>4c. Actual shop navigation and long-item text stress test</h2>
   <div data-testid="art-shop-preview" style={{maxWidth:760,margin:"0 auto 12px",border:"2px solid #2B2B2B",background:"#FFFDF5",padding:8}}>
     <Tabsy tabs={[["hire","Requisitions"],["ups","Approvals"],["costume","Wardrobe"],["furniture","Office upgrades"]]}>
@@ -7488,6 +7535,8 @@ function ArtPreview(){
   <div data-testid="break-table-qa" style={{width:240,height:195,margin:"0 auto"}}><FixtureIllustration kind="coffee"/></div>
   <h2>5e. Actual personnel file · cosmetic commendations</h2>
   <section data-testid="personnel-qa" style={{maxWidth:760,margin:"0 auto 18px",border:"2px solid #2B2B2B"}}><Personnel me={{id:"personnel-qa",achievements:["oa_welcome","oa_glue"],look:demoAvatar}} lifetime={0} cat={{depts:[]}}/></section>
+  <h2>5f. Weekly whiteboard · read-only clock fixture</h2>
+  <div data-testid="weekly-board-qa"><Standings board={[]} schedule={qaSchedule}/></div>
   <h2>6. Onboarding help · small-screen scroll QA</h2>
   <button className="pg-btn" data-testid="help-preview-open" onClick={()=>setHelpOpen(true)}>Open onboarding help</button>
   {helpOpen&&<Help rate={0} onClose={()=>setHelpOpen(false)}/>}

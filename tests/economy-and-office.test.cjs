@@ -74,3 +74,13 @@ for(let round=0;round<100;round++) assert.equal(new Set(bagForRound(round)).size
 assert(src.includes('const clickPow = Math.min('),'Server-aligned click cap expression');
 assert(src.includes('if (dougCallNow(Date.now())) return;'),'Manual click guard');
 console.log('PASS: JSX parse; 6 comedy features; existing recaps; cost growth/reset/discount; 100 no-repeat rotations; daily rollover; all NPCs; click guard.');
+
+const weekContext={Date,Math};vm.createContext(weekContext);
+vm.runInContext(fragment('function weeklyTimeLeft(', 'function WeeklyDeadline(')+';this.left=weeklyTimeLeft;this.countdown=weeklyCountdown;',weekContext);
+const schedule={ends_at:'2026-10-23T21:00:00Z',server_now:'2026-10-23T20:59:50Z',received_at:100000};
+assert.equal(weekContext.left(schedule,100000),10,'Server time anchors countdown despite wrong client clock');
+assert.equal(weekContext.left(schedule,105000),5,'Countdown advances with elapsed client time');
+assert.equal(weekContext.left(schedule,120000),0,'No negative countdown at closing');
+assert.equal(weekContext.left(null,100000),null,'No fabricated deadline when unavailable');
+assert.equal(weekContext.countdown(183845),'2d 03h 04m 05s left');
+console.log('PASS: weekly countdown server clock, elapsed time, cutoff and missing schedule');
