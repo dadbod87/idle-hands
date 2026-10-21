@@ -1339,7 +1339,9 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-here{width:7px;height:7px;border-radius:50%;background:#4E8B5A;flex:none;
   margin-left:-4px;align-self:center;box-shadow:0 0 0 2px #FBFCF7}
 /* the weekly pin, worn beside the badge */
-/* worn on the whiteboard beside the name, not carried around the floor */
+/* Shared pin identity on the leaderboard and animated character chest. */
+.pg-wornpin{position:absolute;left:calc(50% + 4px);top:37px;width:12px;height:12px;z-index:9;pointer-events:none;overflow:visible}
+.pg-pinchip{padding:0;font-family:inherit}
 .pg-boardpin{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;
   width:17px;height:17px;margin-left:6px;border-radius:50%;font-style:normal;font-size:10px;
   color:#FFF8E6;border:1.5px solid rgba(0,0,0,.4);
@@ -2736,10 +2738,11 @@ function chairAt(t = Date.now()) {
 /* Pins are bought weekly and worn indefinitely, so a character may be wearing
    one that is no longer stocked. Index the whole pool once the catalogue loads
    rather than threading it through every component that draws a person. */
-let PIN_INDEX = {};
+const BETA_PIN = {id:"beta",name:"Beta Tester",hue:"#8A6A2A",glyph:"β",note:"Here before it worked. Saw the floor when it was one long corridor."};
+let PIN_INDEX = {beta:BETA_PIN};
 function setPinIndex(weekly, special) {
   PIN_INDEX = Object.fromEntries(
-    [...(weekly || []), ...(special || [])].map((x) => [x.id, x]));
+    [BETA_PIN, ...(weekly || []), ...(special || [])].map((x) => [x.id, x]));
 }
 /** Given, never sold. */
 function isSpecialPin(id) { return id === "beta"; }
@@ -3221,7 +3224,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 159 · weekly countdown";
+const BUILD = "build 161 · wear your pin";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -5001,6 +5004,17 @@ function Face({ src, name, size = 40, look }) {
   );
 }
 
+function WornPin({id}) {
+  const pin=PIN_INDEX[id];
+  if(!pin)return null;
+  return <svg className="pg-wornpin" data-worn-pin={id} viewBox="0 0 24 24" role="img" aria-label={pin.name+" pin"}>
+    <title>{pin.name+" — "+pin.note}</title>
+    <circle cx="12" cy="12" r="10.5" fill={pin.hue} stroke="#2B2B2B" strokeWidth="2"/>
+    <circle cx="12" cy="12" r="8" fill="none" stroke={isSpecialPin(id)?"#FFD36B":"#FFF8E6"} strokeWidth="1"/>
+    <text x="12" y="16.5" textAnchor="middle" fontSize="14" fontFamily="Arial, sans-serif" fontWeight="700" fill="#FFF8E6">{pin.glyph}</text>
+  </svg>;
+}
+
 function Body({ p, src, me, moving, facing = 1, emote }) {
   const worn = wearing(p);
   const c = worn ? COSTUMES[worn.id] : null;
@@ -5065,6 +5079,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
         <span className="pg-arm right" style={{ background: shirt, "--skin":AVATAR_SKIN[normalizedAvatar(L).skin], width: B.arm, right: 30 - B.legX - 4 }} />
         <span className="pg-leg left"  style={{ background: pants, width: B.legW, left: B.legX }} />
         <span className="pg-leg right" style={{ background: pants, width: B.legW, right: B.legX }} />
+        <WornPin id={p?.pin}/>
         {p?.cast&&<CastAccessory id={p.cast}/>}
         {c?.sign && (
           <div className="pg-sign" style={{
@@ -5980,16 +5995,17 @@ function SpendFile({ me, spend, pins, onWear, onPet }) {
             {all.filter((x) => owned.includes(x.id))
                 .sort((a, b) => (isSpecialPin(b.id) ? 1 : 0) - (isSpecialPin(a.id) ? 1 : 0))
                 .map((x) => (
-              <span key={x.id}
+              <button type="button" key={x.id}
+                    aria-label={(me?.pin===x.id?"Remove ":"Wear ")+x.name} aria-pressed={me?.pin===x.id}
                     className={"pg-pinchip" + (me?.pin === x.id ? " on" : "")}
                     style={{ background: x.hue,
                              boxShadow: isSpecialPin(x.id)
                                ? "0 0 0 2px #C9A253, 0 0 12px rgba(201,162,83,.7)" : undefined }}
                     title={x.name + " — " + x.note}
-                    onClick={() => onWear(me?.pin === x.id ? null : x.id)}>{x.glyph}</span>
+                    onClick={() => onWear(me?.pin === x.id ? null : x.id)}>{x.glyph}</button>
             ))}
           </div>
-          <div className="pg-fine">Tap to wear it. Tap again to take it off.</div>
+          <div className="pg-fine" role="status">{PIN_INDEX[me?.pin]?"Wearing: "+PIN_INDEX[me.pin].name+". Tap again to take it off.":"Tap a pin to wear it on your character."}</div>
         </>
       )}
 
@@ -7460,7 +7476,7 @@ const ART_FITTINGS={"office_kit":[{"id":"d1","name":"A Desk Without A Wobble","n
 
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
 function ArtPreview(){
- const qaSchedule={timezone:"America/New_York",server_now:"2026-10-21T17:00:00Z",ends_at:"2026-10-23T21:00:00Z",received_at:Date.now()};
+ const qaSchedule={timezone:"America/Los_Angeles",server_now:"2026-10-21T17:00:00Z",ends_at:"2026-10-23T23:00:00Z",received_at:Date.now()};
  const [helpOpen,setHelpOpen]=useState(false);
  const [demoAvatar,setDemoAvatar]=useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
  const types=["paper","badge","mug","chair","computer","plant","binder","wood","phone","person","star","shirt","notice","reset","gear"];
@@ -7528,6 +7544,8 @@ function ArtPreview(){
   <section data-testid="personnel-qa" style={{maxWidth:760,margin:"0 auto 18px",border:"2px solid #2B2B2B"}}><Personnel me={{id:"personnel-qa",achievements:["oa_welcome","oa_glue"],look:demoAvatar}} lifetime={0} cat={{depts:[]}}/></section>
   <h2>5f. Weekly whiteboard · read-only clock fixture</h2>
   <div data-testid="weekly-board-qa"><Standings board={[]} schedule={qaSchedule}/></div>
+  <h2>5g. Worn beta pin · shared animated character rig</h2>
+  <div data-testid="worn-pin-qa" className="ar-grid">{[null,"trex"].map((outfit,i)=><div className="ar-cell" key={i}><div style={{position:"relative",height:145}}><Body p={{name:"Pin preview",pin:"beta",look:demoAvatar,outfit:outfit?{id:outfit,until:"2099-01-01T00:00:00Z"}:null}} emote="wave"/></div><strong>{outfit?"Over a costume":"On your shirt"}</strong></div>)}</div>
   <h2>6. Onboarding help · small-screen scroll QA</h2>
   <button className="pg-btn" data-testid="help-preview-open" onClick={()=>setHelpOpen(true)}>Open onboarding help</button>
   {helpOpen&&<Help rate={0} onClose={()=>setHelpOpen(false)}/>}

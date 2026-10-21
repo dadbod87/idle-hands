@@ -101,3 +101,17 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Reads the existing server boundary (Friday 17:00 America/New_York currently) through a new authenticated, read-only schedule RPC; no changes to points, resets, purchases or stored players.
 - Keeps daylight-saving calendar weeks accurate and never uses a wrong device clock as the countdown anchor. Resynchronizes while visible/on return and waits for the server at the cutoff.
 - Adds isolated SQL boundary/DST/auth tests, countdown helper checks and actual whiteboard navigation tests at desktop/phone sizes. Exact gates and live release state are tracked in the PR.
+
+## 2026-10-21: Build 160 Friday 4 PM Pacific
+
+- Changes actual server week boundaries and week keys to Friday 16:00 America/Los_Angeles, following Pacific daylight saving automatically.
+- Countdown RPC and read-only gallery use the Pacific deadline. This week ends Oct 23 at 4 PM PDT / 23:00 UTC.
+- Migration guards the active season key and does not reset progress or shift unrelated office-hour earning bonuses.
+- Adds isolated boundary/DST/year/unchanged-player contracts and updates desktop/phone countdown expectations. Final gate, migration and deployment evidence is tracked in the PR.
+
+## 2026-10-21: Build 161 worn pin rendering
+
+- Fixes equipped beta/weekly pins missing from character models by rendering the catalog pin on the chest inside the shared animated rig.
+- Keeps pins visible over costumes and preserves existing leaderboard pins, ownership validation and stored selection.
+- Improves HR pin buttons with accessible Wear/Remove names, selected state and Wearing feedback.
+- Adds desktop/phone HR equip/reload/remove/replace checks and costume-layer gallery coverage. No server, economy or inventory changes.
