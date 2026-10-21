@@ -3923,7 +3923,7 @@ function PatronFloor() {
   return (
     <div className="pg-root">
       <div className="pg-hud">
-        <Face src={me?.avatar_url} name={me?.name} size={40} />
+        <Face src={me?.avatar_url} name={me?.name} look={me?.look} size={40} />
         <div className="pg-hudid">
           <div className="pg-hudname">{me?.name}</div>
           <div className="pg-hudrole">{roleFor(me?.week_pp || 0)}{me?.equity ? ` · ${me.equity} Seniority` : ""}</div>
@@ -4739,11 +4739,11 @@ function OfficeIcon({kind="paper",compact=false,cosmetic=false}){
  </svg></span>;
 }
 
-function Face({ src, name, size = 40 }) {
+function Face({ src, name, size = 40, look }) {
   const ini = (name || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return (
     <span className="pg-face" style={{ width: size, height: size, fontSize: size * 0.36 }}>
-      {src ? <img src={src} alt="" /> : <b>{ini}</b>}
+      {look ? <AvatarHead look={look} size={size}/> : src ? <img src={src} alt="" /> : <b>{ini}</b>}
     </span>
   );
 }
@@ -4964,7 +4964,7 @@ function FixtureArt({ id, board, tierPct }) {
         <div className="pg-wbtitle">This week</div>
         {week.slice(0, 3).map((p, i) => (
           <div key={p.id} className="pg-wbrow">
-            <b>{i + 1}</b><Face src={p.avatar_url} name={p.name} size={16} />
+            <b>{i + 1}</b><Face src={p.avatar_url} name={p.name} look={p.look} size={16} />
             <span>{p.name}</span><em>{fmt(p.week_pp || 0)}</em>
           </div>
         ))}
@@ -4980,7 +4980,7 @@ function FixtureArt({ id, board, tierPct }) {
       <div className="pg-portrait">
         <div className="pg-portraittop">Employee of the Week</div>
         <div className="pg-portraitframe">
-          <Face src={anyone ? top.avatar_url : null} name={anyone ? top.name : "?"} size={54} />
+          <Face src={anyone ? top.avatar_url : null} name={anyone ? top.name : "?"} look={anyone?top.look:null} size={54} />
         </div>
         <div className="pg-portraitplate">{anyone ? top.name : "VACANT"}</div>
         {anyone && <div className="pg-portraitpp">{fmt(top.week_pp)} BW</div>}
@@ -5321,7 +5321,7 @@ function Standings({ board, me, fund, feuds = [] }) {
         {ranked.map((p, i) => (
           <div key={p.id} className={"pg-row static" + (i % 2 ? " alt" : "") + (me && p.id === me.id ? " mine" : "")}>
             <span className="pg-ct">{i + 1}</span>
-            <Face src={p.avatar_url} name={p.name} size={34} />
+            <Face src={p.avatar_url} name={p.name} look={p.look} size={34} />
             {p.last_seen && Date.now() - new Date(p.last_seen).getTime() < 120000 && (
               <i className="pg-here" title="on the floor now" />
             )}
@@ -5382,7 +5382,7 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit, prices })
       <div className="pg-picks">
         {others.map((p) => (
           <button key={p.id} className={"pg-pick" + (sel === p.id ? " on" : "")} onClick={() => setSel(p.id)}>
-            <Face src={p.avatar_url} name={p.name} size={44} /><span>{p.name}</span>
+            <Face src={p.avatar_url} name={p.name} look={p.look} size={44} /><span>{p.name}</span>
           </button>
         ))}
       </div>
@@ -5468,7 +5468,7 @@ function Owner({ me, board, lifetime, pp, cool, cat, prices, onMeeting, onRaise,
       <div className="pg-picks">
         {others.map((p) => (
           <button key={p.id} className={"pg-pick" + (sel === p.id ? " on" : "")} onClick={() => setSel(p.id)}>
-            <Face src={p.avatar_url} name={p.name} size={44} /><span>{p.name}</span>
+            <Face src={p.avatar_url} name={p.name} look={p.look} size={44} /><span>{p.name}</span>
           </button>
         ))}
       </div>
@@ -6291,7 +6291,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
       <div className="pg-picks">
         {board.map((p) => (
           <button key={p.id} className={"pg-pick" + (sel === p.id ? " on" : "")} onClick={() => setSel(p.id)}>
-            <Face src={p.avatar_url} name={p.name} size={44} />
+            <Face src={p.avatar_url} name={p.name} look={p.look} size={44} />
             <span>{me && p.id === me.id ? "yourself" : p.name}</span>
           </button>
         ))}
