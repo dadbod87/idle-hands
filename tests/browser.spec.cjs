@@ -27,6 +27,13 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
   await expect(page.locator('.ar-npc')).toHaveCount(10);
   await expect(page.locator('.ar-palette span')).toHaveCount(6);
   await expect(page.locator('.ar-fixture')).toHaveCount(12);
+  await expect(page.getByTestId('avatar-qa')).toBeVisible();
+  await expect(page.getByTestId('avatar-qa').locator('.ar-cell')).toHaveCount(6);
+  await page.getByTestId('avatar-qa').getByLabel('Hair', {exact:true}).selectOption('long');
+  await page.getByTestId('avatar-qa').getByLabel('Expression').selectOption('happy');
+  await expect(page.getByTestId('avatar-qa').getByLabel('Hair', {exact:true})).toHaveValue('long');
+  await page.screenshot({path:'test-results/'+viewport.name+'-avatar-creator.png',fullPage:true});
+
   await expect(page.locator('.ar-icons .pg-iconart').first()).toBeVisible();
   await expect(page.getByTestId('art-shop-preview')).toBeVisible();
   for(const tab of ['Requisitions','Approvals','Wardrobe','Office upgrades']){

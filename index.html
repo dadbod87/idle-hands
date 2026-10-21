@@ -671,6 +671,7 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officefloor.rug-r1::after{background:#A88A68}
 .pg-officefloor.rug-r3::after{background:#D36C5C}
 
+.pg-avatar-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:15px 0}.pg-avatar-field{display:flex;flex-direction:column;gap:5px;background:#F8F1E3;border:2px solid #2B2B2B;border-radius:8px;padding:9px;font:700 11px var(--mono)}.pg-avatar-field select{width:100%;background:white;border:2px solid #2B2B2B;padding:7px;font:12px var(--sans)}.pg-avatar-swatches{display:flex;gap:4px;flex-wrap:wrap}.pg-avatar-swatches button{width:24px;height:24px;border:2px solid #2B2B2B;border-radius:6px;cursor:pointer}.pg-avatar-swatches button.chosen{outline:3px solid #D34B42;outline-offset:1px}.pg-avatar-preview{display:flex;align-items:center;gap:18px;background:#FFEDBC;border:2px dashed #2B2B2B;padding:18px;margin:12px 0;min-height:110px}.pg-avatar-preview .pg-body{flex:none}.pg-avatar-preview span{font-size:12px;max-width:220px}@media(max-width:440px){.pg-avatar-controls{grid-template-columns:1fr}}
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -2222,6 +2223,65 @@ const BOTTOM_LABEL = { trousers: "Trousers", skirt: "Skirt", shorts: "Shorts" };
 const BUILD_LABEL = { slim: "Slim", regular: "Regular", broad: "Broad" };
 
 /** A stable look for anyone who hasn't chosen one, derived from their name. */
+
+/* Canonical paper-doll appearance shared by onboarding, mirror and world rendering. */
+const AVATAR_HAIR=["short","messy","long","bun","bob","curly","bald"];
+const AVATAR_COLORS=["#302822","#61412F","#9A6239","#D5AB62","#191B24","#A54B35","#BBA7A2"];
+const AVATAR_SKIN=["#F1C5A5","#DCA581","#BD805F","#955E46","#68452F","#F9D9C5"];
+const AVATAR_EYES=["tired","bright","wide","sleepy"];
+const AVATAR_EXPRS=["deadpan","smile","skeptical","happy","surprised"];
+const WARDROBE=[
+ {id:"hoodie",name:"Suspiciously Comfortable Hoodie",cost:2000,shirt:"#4C668C",detail:"A sweatshirt with a productivity exemption."},
+ {id:"cardigan",name:"Chaos Coordinator Cardigan",cost:8500,shirt:"#6F8F74",detail:"For the person organizing everybody else's panic."},
+ {id:"blazer",name:"Unreasonably Important Blazer",cost:45000,shirt:"#282D34",detail:"Includes no additional authority."},
+ {id:"hawaiian",name:"Mentally On Vacation",cost:90000,shirt:"#E58A57",detail:"Out of office. Still physically present."},
+ {id:"hoodie_gold",name:"Executive Hoodie",cost:360000,shirt:"#B79B55",detail:"Formalwear for people who refuse."},
+ {id:"friday",name:"Casual Friday Forever",cost:1200000,shirt:"#8268A4",detail:"Dress code approval pending."}
+];
+function normalizedAvatar(look={}){
+ const one=(v,opts,d)=>opts.includes(v)?v:d;
+ const integer=(n,max,def=0)=>Number.isInteger(Number(n))&&Number(n)>=0&&Number(n)<max?Number(n):def;
+ return {build:one(look.build,BUILD_LIST,"regular"),bottom:one(look.bottom,BOTTOM_LIST,"trousers"),
+ top:integer(look.top,TOPS.length),legs:integer(look.legs,LEGS.length),
+ gender:one(look.gender,["masculine","feminine","neutral"],"neutral"),
+ hair:one(look.hair,AVATAR_HAIR,"messy"),hairColor:integer(look.hairColor,AVATAR_COLORS.length),
+ skin:integer(look.skin,AVATAR_SKIN.length),eyes:one(look.eyes,AVATAR_EYES,"tired"),
+ expression:one(look.expression,AVATAR_EXPRS,"deadpan"),glasses:!!look.glasses,
+ clothing:one(look.clothing,["starter",...WARDROBE.map(x=>x.id)],"starter")};
+}
+function AvatarHead({look={},size=40}){
+ const a=normalizedAvatar(look),skin=AVATAR_SKIN[a.skin],hair=AVATAR_COLORS[a.hairColor];
+ return <svg viewBox="0 0 52 56" width={size} height={size} aria-hidden="true" style={{display:"block",overflow:"visible",filter:"drop-shadow(1px 1px 0 #2B2B2B)"}}>
+ {(a.hair==="long"||a.hair==="bun"||a.hair==="curly")&&<path d="M10 21Q7 0 26 1Q48 0 43 24L48 52H4z" fill={hair} stroke="#2B2B2B" strokeWidth="2.8"/>}
+ <path d="M10 19Q10 5 26 5Q42 5 42 19V34Q41 51 26 51Q10 51 10 34Z" fill={skin} stroke="#2B2B2B" strokeWidth="2.8"/>
+ {a.hair!=="bald"&&<path d={a.hair==="bob"?"M8 26Q2 1 26 2Q50 2 44 27L39 20Q26 12 12 20Z":a.hair==="messy"?"M9 23L4 12 14 14 15 1 23 9 31 0 32 11 44 5 41 21Q27 12 9 23Z":"M9 22Q7 3 26 3Q44 3 43 23Q37 12 26 14Q17 12 9 22Z"} fill={hair} stroke="#2B2B2B" strokeWidth="2.6" strokeLinejoin="round"/>}
+ {a.hair==="bun"&&<circle cx="37" cy="6" r="8" fill={hair} stroke="#2B2B2B" strokeWidth="2.4"/>}
+ {a.hair==="curly"&&[12,20,28,36,42].map((x,i)=><circle key={x} cx={x} cy={9+(i%2)*3} r="7" fill={hair} stroke="#2B2B2B" strokeWidth="1.8"/>)}
+ <path d={a.expression==="skeptical"?"M14 26l12 3M30 27l10-4":"M14 26h12M30 26h10"} stroke="#2B2B2B" strokeWidth="2.2"/>
+ {a.eyes==="wide"||a.expression==="surprised"?<><ellipse cx="20" cy="33" rx="4" ry="5" fill="#FFF"/><ellipse cx="34" cy="33" rx="4" ry="5" fill="#FFF"/></>:null}
+ <circle cx="20" cy="33" r={a.eyes==="sleepy"?1.5:2.1} fill="#2B2B2B"/><circle cx="34" cy="33" r={a.eyes==="sleepy"?1.5:2.1} fill="#2B2B2B"/>
+ {a.glasses&&<><rect x="12" y="27" width="15" height="14" rx="5" stroke="#2B2B2B" fill="none" strokeWidth="2.3"/><rect x="28" y="27" width="14" height="14" rx="5" stroke="#2B2B2B" fill="none" strokeWidth="2.3"/><path d="M27 32h2" stroke="#2B2B2B" strokeWidth="2.2"/></>}
+ <path d={a.expression==="happy"?"M20 42Q26 52 33 42Z":a.expression==="smile"?"M19 43q7 6 14 0":a.expression==="skeptical"?"M21 46l10-2":a.expression==="surprised"?"M25 43q4-5 5 1q-1 6-5 1Z":"M21 44h10"} stroke="#70483D" fill={a.expression==="happy"?"#A75A60":"none"} strokeWidth="2" strokeLinecap="round"/>
+ </svg>;
+}
+function AvatarControls({value,onChange}){
+ const a=normalizedAvatar(value),set=(key,v)=>onChange({...a,[key]:v});
+ const select=(title,key,opts)=> <label className="pg-avatar-field"><span>{title}</span><select aria-label={title} value={a[key]} onChange={e=>set(key,e.target.value)}>{opts.map(v=><option value={v} key={v}>{v}</option>)}</select></label>;
+ const colors=(title,key,opts)=> <div className="pg-avatar-field"><span>{title}</span><div className="pg-avatar-swatches">{opts.map((color,i)=><button type="button" key={i} className={a[key]===i?"chosen":""} onClick={()=>set(key,i)} style={{background:color}} aria-label={title+" "+(i+1)} />)}</div></div>;
+ return <div className="pg-avatar-controls">
+ {select("Body style","gender",["masculine","feminine","neutral"])}
+ {select("Build","build",BUILD_LIST)}
+ {select("Hair","hair",AVATAR_HAIR)}
+ {colors("Hair color","hairColor",AVATAR_COLORS)}
+ {colors("Skin tone","skin",AVATAR_SKIN)}
+ {select("Eyes","eyes",AVATAR_EYES)}
+ {select("Expression","expression",AVATAR_EXPRS)}
+ {select("Pants","bottom",BOTTOM_LIST)}
+ <label className="pg-avatar-field"><span>Glasses</span><input type="checkbox" checked={a.glasses} onChange={e=>set("glasses",e.target.checked)}/></label>
+ <div className="pg-avatar-field"><span>Starter shirt</span><div className="pg-avatar-swatches">{TOPS.map((color,i)=><button key={i} type="button" className={a.top===i?"chosen":""} style={{background:color}} aria-label={"Starter shirt "+(i+1)} onClick={()=>set("top",i)}/>)}</div></div>
+ </div>;
+}
+
 function lookFor(p) {
   if (p && p.look && p.look.build) return p.look;
   const seed = ((p && p.name) || "x").split("")
@@ -2807,6 +2867,7 @@ const api = {
   suggestMemo: (text) => rpc("suggest_memo", { p_text: text }),
   approveSuggestion: (id, ok) => rpc("approve_suggestion", { p_id: id, p_ok: ok }),
   setLook: (look) => rpc("set_look", { p_look: look }),
+  buyWardrobe: (id) => rpc("buy_wardrobe", { p_item: id }),
   setDept: (id) => rpc("set_dept", { p_dept: id }),
   buyPerk: (id) => rpc("buy_perk", { p_id: id }),
   claimContract: (i) => rpc("claim_contract", { p_idx: i }),
@@ -2936,7 +2997,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 152 · cutout art";
+const BUILD = "build 153 · character creator";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3862,7 +3923,7 @@ function PatronFloor() {
   return (
     <div className="pg-root">
       <div className="pg-hud">
-        <Face src={me?.avatar_url} name={me?.name} size={40} />
+        <Face src={me?.avatar_url} name={me?.name} look={me?.look} size={40} />
         <div className="pg-hudid">
           <div className="pg-hudname">{me?.name}</div>
           <div className="pg-hudrole">{roleFor(me?.week_pp || 0)}{me?.equity ? ` · ${me.equity} Seniority` : ""}</div>
@@ -4316,8 +4377,9 @@ function PatronFloor() {
           {panel === "account" && <Account user={user} onLinked={() => setPanel(null)} />}
           {panel === "mirror" && (
             <Mirror me={me} user={user}
+              onBuyClothing={async(id)=>{ const row=await guard(()=>api.buyWardrobe(id),"Wardrobe purchase approved.");if(row){setFloor(await loadFloor());}return row; }}
               onLook={async (look) => {
-                try { applyServer(await api.setLook(look)); } catch { /* cosmetic */ }
+                try { applyServer(await api.setLook(look)); setFloor(await loadFloor()); } catch(e) { flash(prettyError(e)); throw e; }
               }}
               onSave={async (name, dataUrl) => {
                 try {
@@ -4677,11 +4739,11 @@ function OfficeIcon({kind="paper",compact=false,cosmetic=false}){
  </svg></span>;
 }
 
-function Face({ src, name, size = 40 }) {
+function Face({ src, name, size = 40, look }) {
   const ini = (name || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return (
     <span className="pg-face" style={{ width: size, height: size, fontSize: size * 0.36 }}>
-      {src ? <img src={src} alt="" /> : <b>{ini}</b>}
+      {look ? <AvatarHead look={look} size={size}/> : src ? <img src={src} alt="" /> : <b>{ini}</b>}
     </span>
   );
 }
@@ -4694,13 +4756,14 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const nickOn = p?.nickname && new Date(p.nickname.until) > new Date();
   const nick = nickOn ? p.nickname.text : null;
   const B = BUILDS[L.build] || BUILDS.regular;
-  const shirt = c?.shirt || TOPS[L.top % TOPS.length];
+  const wardrobeItem=WARDROBE.find(x=>x.id===L.clothing);
+  const shirt = c?.shirt || wardrobeItem?.shirt || TOPS[L.top % TOPS.length];
   const pants = LEGS[L.legs % LEGS.length];
   const bottom = c ? "trousers" : L.bottom;      // costumes override the outfit
   const cls = [
     "pg-body", me ? "me" : "", c?.big ? "big" : "",
     moving ? "walking" : "idling", emote ? "em-" + emote : "",
-    "bt-" + bottom,
+    "bt-" + bottom, "garment-" + (L.clothing || "starter"),
     v.glow ? "glow-" + v.glow : "", v.size ? "size-" + v.size : "",
     v.aura ? "aura-" + v.aura : "",
     MOUNTS[p?.mount] ? "riding" : "",
@@ -4718,10 +4781,17 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       <div className="pg-rig">
         {c?.art && <CostumeSuit art={c.art} layer="back" />}
         {c && <Hat kind={c.hat} />}
-        <Face src={src} name={p.name} size={40} />
+        <span className="pg-face" style={{width:40,height:40,display:"block"}}><AvatarHead look={L} size={40}/></span>
         {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
           <path d={B.torso} fill={shirt} />
+          {wardrobeItem&&<>
+            {(L.clothing==="hoodie"||L.clothing==="hoodie_gold")&&<><path d="M21 0Q30 13 39 0" stroke="#263446" strokeWidth="4" fill="none"/><path d="M30 15v23" stroke="#DCE7EA" strokeWidth="1.5"/><path d="M20 24q10 4 20 0v10H20Z" fill="rgba(0,0,0,.13)" stroke="#2B2B2B" strokeWidth="1.5"/><path d="M26 7v9M34 7v9" stroke="#F8F1E3" strokeWidth="1.5"/></>}
+            {(L.clothing==="cardigan")&&<><path d="M21 1l9 14 9-14M30 12v26" fill="none" stroke="#F4DFCE" strokeWidth="4"/><circle cx="30" cy="19" r="1.6" fill="#2B2B2B"/><circle cx="30" cy="29" r="1.6" fill="#2B2B2B"/></>}
+            {L.clothing==="blazer"&&<><path d="M17 2l10 14-7 8-8-17M43 2L33 16l7 8 8-17" fill="#E5E1D8" stroke="#2B2B2B" strokeWidth="1.4"/><path d="M30 10l4 5-4 14-4-14Z" fill="#D16E5F" stroke="#2B2B2B" strokeWidth="1.3"/></>}
+            {L.clothing==="hawaiian"&&<>{[[18,13],[38,19],[25,28],[42,35]].map(([x,y],i)=><g key={i}><circle cx={x} cy={y} r="4" fill="#FFDC8E"/><path d={`M${x-2} ${y}q2-4 4 0q-2 4-4 0`} fill="#45866F"/></g>)}</>}
+            {L.clothing==="friday"&&<><path d="M14 12h32M12 23h36M16 34h28" stroke="#FFD36B" strokeWidth="3" opacity=".65"/><circle cx="30" cy="14" r="5" fill="#FFF2C2" stroke="#2B2B2B" strokeWidth="1.5"/><path d="M28 14h4M28 16q2 2 4 0" stroke="#2B2B2B" strokeWidth="1"/></>}
+          </>}
           {c?.skirt && <path d="M12 30h36l5 15H7Z" fill={c.skirt} />}
           {c?.tie && <path d="M30 6l4 4-4 16-4-16Z" fill={c.tie} />}
           {c?.floral && <>
@@ -4901,7 +4971,7 @@ function FixtureArt({ id, board, tierPct }) {
         <div className="pg-wbtitle">This week</div>
         {week.slice(0, 3).map((p, i) => (
           <div key={p.id} className="pg-wbrow">
-            <b>{i + 1}</b><Face src={p.avatar_url} name={p.name} size={16} />
+            <b>{i + 1}</b><Face src={p.avatar_url} name={p.name} look={p.look} size={16} />
             <span>{p.name}</span><em>{fmt(p.week_pp || 0)}</em>
           </div>
         ))}
@@ -4917,7 +4987,7 @@ function FixtureArt({ id, board, tierPct }) {
       <div className="pg-portrait">
         <div className="pg-portraittop">Employee of the Week</div>
         <div className="pg-portraitframe">
-          <Face src={anyone ? top.avatar_url : null} name={anyone ? top.name : "?"} size={54} />
+          <Face src={anyone ? top.avatar_url : null} name={anyone ? top.name : "?"} look={anyone?top.look:null} size={54} />
         </div>
         <div className="pg-portraitplate">{anyone ? top.name : "VACANT"}</div>
         {anyone && <div className="pg-portraitpp">{fmt(top.week_pp)} BW</div>}
@@ -5258,7 +5328,7 @@ function Standings({ board, me, fund, feuds = [] }) {
         {ranked.map((p, i) => (
           <div key={p.id} className={"pg-row static" + (i % 2 ? " alt" : "") + (me && p.id === me.id ? " mine" : "")}>
             <span className="pg-ct">{i + 1}</span>
-            <Face src={p.avatar_url} name={p.name} size={34} />
+            <Face src={p.avatar_url} name={p.name} look={p.look} size={34} />
             {p.last_seen && Date.now() - new Date(p.last_seen).getTime() < 120000 && (
               <i className="pg-here" title="on the floor now" />
             )}
@@ -5319,7 +5389,7 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit, prices })
       <div className="pg-picks">
         {others.map((p) => (
           <button key={p.id} className={"pg-pick" + (sel === p.id ? " on" : "")} onClick={() => setSel(p.id)}>
-            <Face src={p.avatar_url} name={p.name} size={44} /><span>{p.name}</span>
+            <Face src={p.avatar_url} name={p.name} look={p.look} size={44} /><span>{p.name}</span>
           </button>
         ))}
       </div>
@@ -5405,7 +5475,7 @@ function Owner({ me, board, lifetime, pp, cool, cat, prices, onMeeting, onRaise,
       <div className="pg-picks">
         {others.map((p) => (
           <button key={p.id} className={"pg-pick" + (sel === p.id ? " on" : "")} onClick={() => setSel(p.id)}>
-            <Face src={p.avatar_url} name={p.name} size={44} /><span>{p.name}</span>
+            <Face src={p.avatar_url} name={p.name} look={p.look} size={44} /><span>{p.name}</span>
           </button>
         ))}
       </div>
@@ -6228,7 +6298,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
       <div className="pg-picks">
         {board.map((p) => (
           <button key={p.id} className={"pg-pick" + (sel === p.id ? " on" : "")} onClick={() => setSel(p.id)}>
-            <Face src={p.avatar_url} name={p.name} size={44} />
+            <Face src={p.avatar_url} name={p.name} look={p.look} size={44} />
             <span>{me && p.id === me.id ? "yourself" : p.name}</span>
           </button>
         ))}
@@ -6290,11 +6360,11 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
   );
 }
 
-function Mirror({ me, user, onSave, onLook }) {
+function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
   const [img, setImg] = useState(null);
   const [name, setName] = useState(me?.name || "");
   const [busy, setBusy] = useState(false);
-  const [look, setLook] = useState(lookFor(me));
+  const [look, setLook] = useState(normalizedAvatar(lookFor(me)));
   const fileRef = useRef(null);
   const cycle = (key, list) => setLook((L) => ({
     ...L, [key]: list[(list.indexOf(L[key]) + 1) % list.length] }));
@@ -6333,32 +6403,31 @@ function Mirror({ me, user, onSave, onLook }) {
         <div>
           <div className="pg-mirrorlabel">After</div>
           <div className="pg-preview">
-            <Body p={{ ...me, name: name || me?.name, look }} src={img || me?.avatar_url} />
+            <Body p={{ ...me, name: name || me?.name, look }} />
           </div>
         </div>
       </div>
 
-      <div className="pg-lookrow">
-        <button className="pg-lookbtn" onClick={() => cycle("build", BUILD_LIST)}>
-          <span>Build</span><b>{BUILD_LABEL[look.build]}</b>
-        </button>
-        <button className="pg-lookbtn" onClick={() => cycle("bottom", BOTTOM_LIST)}>
-          <span>Bottoms</span><b>{BOTTOM_LABEL[look.bottom]}</b>
-        </button>
-        <button className="pg-lookbtn" onClick={() => cycleN("top", TOPS.length)}>
-          <span>Shirt</span><i style={{ background: TOPS[look.top % TOPS.length] }} />
-        </button>
-        <button className="pg-lookbtn" onClick={() => cycleN("legs", LEGS.length)}>
-          <span>Colour</span><i style={{ background: LEGS[look.legs % LEGS.length] }} />
-        </button>
-        <button className="pg-lookbtn wide" onClick={() => setLook(randomLook())}>
-          <b>Shuffle</b>
-        </button>
+      <AvatarControls value={look} onChange={setLook}/>
+      <div className="pg-wardrobe-stock">
+        <h4 className="pg-h4">Company wardrobe · permanent purchases</h4>
+        <p className="pg-fine">Spend Busywork on ridiculous outfits. Keep every purchased piece, even after restructuring. Clothes are cosmetic—no productivity bonuses.</p>
+        <button className={"pg-row"+(look.clothing==="starter"?" mine":"")} type="button" onClick={()=>setLook(v=>({...v,clothing:"starter"}))}><OfficeIcon kind="office shirt"/><span className="pg-main"><b>Standard Issue Outfit</b><span>Free. Disturbingly adequate.</span></span><span className="pg-right"><b>{look.clothing==="starter"?"Wearing":"Equip"}</b></span></button>
+        {WARDROBE.map(it=>{
+          const owned=Array.isArray(me?.wardrobe_owned)&&me.wardrobe_owned.includes(it.id);
+          const active=look.clothing===it.id;
+          return <button className={"pg-row"+(active?" mine":"")} type="button" key={it.id} onClick={async ()=>{
+            if(owned){setLook(v=>({...v,clothing:it.id}));return;}
+            const saved=await onBuyClothing(it.id);if(saved)setLook(v=>({...v,clothing:it.id}));
+          }}>
+            <OfficeIcon kind={it.name+" hoodie"} cosmetic/><span className="pg-main"><b>{it.name}</b><span>{it.detail}</span></span>
+            <span className="pg-right"><b>{active?"Wearing":owned?"Equip":fmt(it.cost)+" BW"}</b></span>
+          </button>;
+        })}
       </div>
-
       <div className="pg-pad">
         <button className="pg-btn ghost pg-wide" onClick={() => fileRef.current?.click()}>
-          {img ? "Try a different photo" : "New badge photo"}
+          {img ? "Change legacy photo" : "Legacy photo (optional)"}
         </button>
         <input ref={fileRef} type="file" accept="image/*" onChange={onFile} style={{ display: "none" }} />
         <label className="pg-field" style={{ marginTop: 14 }}>
@@ -6838,6 +6907,7 @@ function Account({ user, onLinked }) {
 function Onboard({ user, code, onDone }) {
   const [name, setName] = useState("");
   const [img, setImg] = useState(null);
+  const [look,setLook] = useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
   const fileRef = useRef(null);
@@ -6868,8 +6938,8 @@ function Onboard({ user, code, onDone }) {
       if (img) { try { url = await uploadBadge(user.id, img); } catch { /* optional */ } }
       if (!code) throw new Error("missing office code — reload and enter it at the door");
       const row = await api.upsertPlayer(name.trim().slice(0, 12), url, code);
-      try { await api.setLook(randomLook()); } catch { /* cosmetic */ }
-      onDone(row);
+      const saved=await api.setLook(look);
+      onDone(saved || row);
     } catch (e) {
       const m = (e.message || "").toLowerCase();
       setErr(m.includes("code") ? "That's not the office code."
@@ -6895,8 +6965,7 @@ function Onboard({ user, code, onDone }) {
         </div>
         <div className="pg-badgemain">
           <div className="pg-badgephoto">
-            <Face src={img} name={name} size={74} />
-            {!img && <div className="pg-badgehint">no photo<br />on file</div>}
+            <AvatarHead look={look} size={74}/>
           </div>
           <div className="pg-badgeid">
             <b>{name || "\u2014\u2014\u2014\u2014\u2014\u2014"}</b>
@@ -6920,16 +6989,8 @@ function Onboard({ user, code, onDone }) {
         <div className="pg-fine">Twelve characters. It has to fit on a desk plate.</div>
       </label>
 
-      <div className="pg-field">
-        <span>Badge photo</span>
-        <button className="pg-btn ghost pg-wide" onClick={() => fileRef.current?.click()}>
-          {img ? "Use a different photo" : "Choose a photo"}
-        </button>
-        <input ref={fileRef} type="file" accept="image/*" onChange={onFile} style={{ display: "none" }} />
-        <div className="pg-fine">Cropped square. It goes on your character's head, so pick
-          something you don't mind walking around as.</div>
-      </div>
-
+      <div className="pg-avatar-preview"><Body p={{name:name||"New Hire",look}}/><span>HR has approved your face. Qualifications remain unverified.</span></div>
+      <AvatarControls value={look} onChange={setLook}/>
       {err && <div className="pg-fine pg-err">{err}</div>}
       <button className="pg-work big" disabled={!name.trim() || busy} onClick={go}>
         {busy ? "Processing paperwork…" : "Start the shift"}
@@ -6941,10 +7002,18 @@ function Onboard({ user, code, onDone }) {
 
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
 function ArtPreview(){
+ const [demoAvatar,setDemoAvatar]=useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
  const types=["paper","badge","mug","chair","computer","plant","binder","wood","phone","person","star","shirt","notice","reset","gear"];
  const colors=[["Paper","#F8F1E3"],["Sage","#8FA67A"],["Blue","#7B9CC4"],["Note","#FFD36B"],["Orange","#F78B6B"],["Ink","#2B2B2B"]];
  return <main className="pg-artreview" data-testid="art-preview">
   <header><h1>IDLE HANDS · ART QA</h1><p>Original 2D cutout office satire · QA gallery only · Never touches game accounts or Busywork.</p></header>
+  <h2>0. Shared character creator · free appearance choices</h2>
+  <div data-testid="avatar-qa" style={{background:"#FFFDF5",padding:15,border:"2px solid #2B2B2B",maxWidth:760,margin:"0 auto"}}>
+    <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><AvatarHead look={demoAvatar} size={74}/><strong>First day: make your employee</strong></div>
+    <AvatarControls value={demoAvatar} onChange={setDemoAvatar}/>
+    <p>Clothing progression · {WARDROBE.length} server-backed permanent outfits</p>
+    <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><OfficeIcon kind={it.name+" hoodie"} cosmetic/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
+  </div>
   <h2>1. Flat cutout color and shape system</h2>
   <div className="ar-palette">{colors.map(([name,color])=><span key={name} style={{background:color}}>{name}</span>)}</div>
   <h2>2–3. Cast silhouettes and character styling</h2>
