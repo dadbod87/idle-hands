@@ -6935,6 +6935,20 @@ function ArtPreview(){
   <div className="ar-grid">{["Monitor upgrade","Nicer chair","Snack stash","Coffee setup","Rumor board","Operating agreement binder","Slush drinks","Joey wood","Tenant phone","Office plant","Employee badge","Office hoodie","Senior staff","Restructure"].map(name=><div className="ar-cell" key={name}><div className="ar-icons"><OfficeIcon kind={name}/><strong>{name}</strong></div></div>)}</div>
   <h2>4b. In-world fixture and office-object cutouts</h2>
   <div className="ar-grid">{["bulletin","whiteboard","portrait","hr","owner","watercooler","printer"].map(id=><div className="ar-cell" key={id}><div className="ar-fixture"><div className="pg-fx"><FixtureArt id={id} board={[]} tierPct={20}/></div></div><strong>{id}</strong></div>)}</div>
+  <h2>4c. Actual shop navigation and long-item text stress test</h2>
+  <div data-testid="art-shop-preview" style={{maxWidth:760,margin:"0 auto 12px",border:"2px solid #2B2B2B",background:"#FFFDF5",padding:8}}>
+    <Tabsy tabs={[["hire","Requisitions"],["ups","Approvals"],["costume","Wardrobe"],["furniture","Office upgrades"]]}>
+    {t=><div className="pg-list">{(t==="hire"?["Office Intern","Middle Manager","The Original Patron Group"]:
+      t==="ups"?["Second Monitor","Laminator Access","Restructure The Restructure"]:
+      t==="costume"?["Traffic Cone","Hawaiian Shirt","Inflatable T-Rex"]:
+      ["A Desk Without A Wobble","Leather. Reclining. Silent.","The Founder Portrait"]).map((name,i)=>
+      <div key={name} className={"pg-row"+(i%2?" alt":"")}>
+        <OfficeIcon kind={name+(t==="costume"?" costume":"")}/>
+        <span className="pg-main"><b>{name}</b><span>Readability · cutout edition</span></span>
+        <span className="pg-right"><b>{i===2?"1.2B":"1,350"} BW</b></span>
+      </div>)}</div>}
+    </Tabsy>
+  </div>
   <h2>5. Small icon readability</h2>
   <div className="ar-grid">{types.map(t=><div className="ar-cell" key={t}><div className="ar-icons"><OfficeIcon kind={t}/><OfficeIcon kind={t} compact/></div><strong>{t}</strong></div>)}</div>
  </main>;
