@@ -2,6 +2,11 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-21: Build 167 — room for nonsense
+- Fixed clipped Office Nonsense navigation: all six buttons, including Awards after Lounge, fit in two rows with wrapping labels and selected-state accessibility.
+- Feedback notifications stay below open dialogs instead of painting over their controls.
+- Responsive browser checks activate every section and verify the joke award without changing player progress. No data, economy or reward changes; exact CI/release evidence in PR.
+
 ## 2026-10-21: Build 166 — a place for everything
 - Corrected oversized apology/notice art, tiny water cooler framing and printer-label planter overlap.
 - Shelf, couch and break notice now open free illustrated readings; couch/notice connect to actual break-table activities.
