@@ -1424,7 +1424,9 @@ body{background:#D9CDC0}
 .pg-ppnum{color:#544229}.pg-ppsub{color:#544E43}
 .pg-btn,.pg-work{border-radius:7px;border-color:#2B2B2B;box-shadow:3px 3px 0 #2B2B2B44}
 .pg-btn{background:#FFF7E5}.pg-btn.primary,.pg-work{background:#8FA67A;color:#1F3025}
-.pg-panel,.pg-card{border-radius:10px;background:#F8F1E3;overflow:hidden}.pg-tabs button{border-radius:5px 5px 0 0}
+.pg-panel,.pg-card{border-radius:10px;background:#F8F1E3}
+.pg-panel{overflow:hidden}
+.pg-card{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;max-height:86vh;max-height:min(86dvh,calc(100dvh - 24px))}.pg-tabs button{border-radius:5px 5px 0 0}
 .pg-face-custom{isolation:isolate}
 .pg-avatar-field select{min-height:40px}
 @media(max-width:540px){.pg-emote,.pg-help,.pg-open{min-width:40px;min-height:40px}.pg-btn{min-height:44px}.pg-hudpp{padding:5px 7px}.pg-hudrole{font-size:9px}.pg-stage{touch-action:manipulation}.pg-avatar-swatches button{min-width:34px;min-height:34px}}
@@ -3112,7 +3114,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 154 · cutout world";
+const BUILD = "build 155 · mobile dialog scroll";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;

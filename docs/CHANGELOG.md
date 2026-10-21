@@ -55,3 +55,9 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Self-hosted pinned browser dependencies after reproducing a CDN startup failure. Added full game UI tests with isolated HTTP fixtures and touch emulation; kept existing PostgreSQL contract jobs.
 - No production player data or SQL changed. Live authenticated and physical-device verification remain outstanding; exact concept-art fidelity not claimed.
 - CI follow-up: restricted Playwright discovery to browser spec files; kept the Node helper regression in its own dependency/job boundary. All six local browser tests passed after the correction.
+
+## 2026-10-21: Build 155 mobile onboarding help scroll fix
+
+- Restores vertical scrolling on shared card dialogs after the cutout-world CSS accidentally overrode it with hidden overflow.
+- Keeps cards within the current mobile viewport, enables touch panning, and preserves separate panel-body scrolling.
+- Adds portrait/landscape touch-swipe regression coverage reaching and tapping Start earning at the bottom of Help. Node regression passed locally; local Chromium installation was blocked by download errors. Require all three CI jobs green before release. No player data, APIs or economy changes.
