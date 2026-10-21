@@ -7220,6 +7220,7 @@ function Onboard({ user, code, onDone, preview=false }) {
 
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
 function ArtPreview(){
+ const [helpOpen,setHelpOpen]=useState(false);
  const [demoAvatar,setDemoAvatar]=useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
  const types=["paper","badge","mug","chair","computer","plant","binder","wood","phone","person","star","shirt","notice","reset","gear"];
  const colors=[["Paper","#F8F1E3"],["Sage","#8FA67A"],["Blue","#7B9CC4"],["Note","#FFD36B"],["Orange","#F78B6B"],["Ink","#2B2B2B"]];
@@ -7271,6 +7272,9 @@ function ArtPreview(){
   <div className="ar-grid" data-testid="pet-qa">{Object.entries(CRITTERS).map(([id,pet])=><div className="ar-cell" key={id}><svg viewBox={id==="bull"?"0 0 74 62":"0 0 34 34"} className="pg-petart" style={{width:68,height:68}} role="img" aria-label={pet.name}>{pet.art}</svg><strong>{pet.name}</strong></div>)}</div>
   <h2>5. Small icon readability</h2>
   <div className="ar-grid">{types.map(t=><div className="ar-cell" key={t}><div className="ar-icons"><OfficeIcon kind={t}/><OfficeIcon kind={t} compact/></div><strong>{t}</strong></div>)}</div>
+  <h2>6. Onboarding help · small-screen scroll QA</h2>
+  <button className="pg-btn" data-testid="help-preview-open" onClick={()=>setHelpOpen(true)}>Open onboarding help</button>
+  {helpOpen&&<Help rate={0} onClose={()=>setHelpOpen(false)}/>}
  </main>;
 }
 
