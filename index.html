@@ -1835,6 +1835,21 @@ function officeVisitorAt(c,t){
  return {...c,bucket,x:a[0]+(b[0]-a[0])*pct,y:a[1]+(b[1]-a[1])*pct,
  facing:b[0]>=a[0]?1:-1,line:c.lines[Math.abs(bucket)%c.lines.length],leaving:into>duration-8000};
 }
+// Chance invents a fresh, harmless nickname each visit. Stable per visit.
+const CHANCE_NICKNAMES={
+ jess:["Captain Clipboard","Snack Commander","Chief of Everything"],
+ john:["Squirrel Wrangler","Project Tornado","Captain Side Quest"],
+ kyle:["Chauffeur Supreme","Keymaster Deluxe","Sir Drives-a-Lot"],
+ matt:["Clause Wizard","Contractosaurus","My Legal Legend"],
+ avah:["Text Message Titan","Phone Whisperer","Inbox Ninja"],
+ nick:["Keyboard Wizard","Captain Clickety","Lord of the Loading Bar"],
+ rilie:["Captain Fluid","The Vibe Navigator","Miss Plot Twist"]
+};
+function chanceNickname(guest){
+ const pool=CHANCE_NICKNAMES[guest.id];
+ if(!pool)return null;
+ return pool[Math.abs(guest.bucket)%pool.length];
+}
 function officeVisitorNow(t,ch,dv){
  if(ch&&dv)return null;
  const active=OFFICE_CAST.map(c=>officeVisitorAt(c,t)).filter(Boolean);
@@ -3174,6 +3189,12 @@ function PatronFloor() {
       const guest=officeVisitorNow(now,ch,dv);setVisitor(guest);
       if(ch&&guest&&guest.id==="matt")ch.line="Matt! My life partner! Did you bring coffee?";
       if(ch&&guest&&guest.id==="avah")ch.line="There she is! My favorite McNeil.";
+      // Existing character-specific exchanges still take priority on most visits.
+      // On every third overlapping visit Chance makes up a nickname instead.
+      if(ch&&guest&&Math.abs(guest.bucket)%3===1&&!(guest.id==="jess"&&guest.line.startsWith("Chancellor"))) {
+        const nickname=chanceNickname(guest);
+        if(nickname)ch.line=guest.name+"! What's up, "+nickname+"?";
+      }
       if(ch&&guest&&guest.id==="jess"&&guest.line.startsWith("Chancellor")) { ch.line="Nope. I am out of here."; ch.leaving=true; ch.x=Math.min(ROOM.w-75,ch.x+180); }
       if(guest&&visitorSeen.current!==guest.id+":"+guest.bucket){
        visitorSeen.current=guest.id+":"+guest.bucket;say(guest.name+" is making the rounds.","sys");
