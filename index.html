@@ -672,6 +672,17 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-officefloor.rug-r3::after{background:#D36C5C}
 
 .pg-avatar-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:15px 0}.pg-avatar-field{display:flex;flex-direction:column;gap:5px;background:#F8F1E3;border:2px solid #2B2B2B;border-radius:8px;padding:9px;font:700 11px var(--mono)}.pg-avatar-field select{width:100%;background:white;border:2px solid #2B2B2B;padding:7px;font:12px var(--sans)}.pg-avatar-swatches{display:flex;gap:4px;flex-wrap:wrap}.pg-avatar-swatches button{width:24px;height:24px;border:2px solid #2B2B2B;border-radius:6px;cursor:pointer}.pg-avatar-swatches button.chosen{outline:3px solid #D34B42;outline-offset:1px}.pg-avatar-preview{display:flex;align-items:center;gap:18px;background:#FFEDBC;border:2px dashed #2B2B2B;padding:18px;margin:12px 0;min-height:110px}.pg-avatar-preview .pg-body{flex:none}.pg-avatar-preview span{font-size:12px;max-width:220px}@media(max-width:440px){.pg-avatar-controls{grid-template-columns:1fr}}
+/* No round photo-mask behind hand-drawn character heads. */
+.pg-rig .pg-avatar-head{position:absolute;left:50%;top:-9px;transform:translateX(-50%);z-index:5;display:block;overflow:visible;background:none;border:0;border-radius:0;box-shadow:none;pointer-events:none}
+.pg-rig .pg-avatar-head svg{display:block;width:100%;height:auto;overflow:visible}
+.pg-body.me .pg-avatar-head{box-shadow:none}
+.pg-avatar-preview{min-height:184px;justify-content:flex-start;padding:19px 26px;gap:38px;overflow:visible}
+.pg-avatar-preview .pg-body{flex:0 0 60px;transform:scale(1.6);transform-origin:center center;margin:24px 20px 28px 22px}
+.pg-avatar-preview>span,.pg-avatar-preview>strong{font-size:14px;line-height:1.35;max-width:210px}
+@media(max-width:440px){.pg-avatar-preview{gap:17px;padding:16px 15px}.pg-avatar-preview .pg-body{transform:scale(1.45);margin:23px 12px 26px 16px}}
+
+.pg-officedesk .pg-desk-svg{width:100%;height:100%;display:block;pointer-events:none;overflow:hidden}
+.pg-artreview .pg-officedesk .pg-desk-svg{width:100%;height:100%}
 /* ---------------- weekly recap ---------------- */
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
@@ -2251,17 +2262,27 @@ function normalizedAvatar(look={}){
 }
 function AvatarHead({look={},size=40}){
  const a=normalizedAvatar(look),skin=AVATAR_SKIN[a.skin],hair=AVATAR_COLORS[a.hairColor];
- return <svg viewBox="0 0 52 56" width={size} height={size} aria-hidden="true" style={{display:"block",overflow:"visible",filter:"drop-shadow(1px 1px 0 #2B2B2B)"}}>
- {(a.hair==="long"||a.hair==="bun"||a.hair==="curly")&&<path d="M10 21Q7 0 26 1Q48 0 43 24L48 52H4z" fill={hair} stroke="#2B2B2B" strokeWidth="2.8"/>}
- <path d="M10 19Q10 5 26 5Q42 5 42 19V34Q41 51 26 51Q10 51 10 34Z" fill={skin} stroke="#2B2B2B" strokeWidth="2.8"/>
- {a.hair!=="bald"&&<path d={a.hair==="bob"?"M8 26Q2 1 26 2Q50 2 44 27L39 20Q26 12 12 20Z":a.hair==="messy"?"M9 23L4 12 14 14 15 1 23 9 31 0 32 11 44 5 41 21Q27 12 9 23Z":"M9 22Q7 3 26 3Q44 3 43 23Q37 12 26 14Q17 12 9 22Z"} fill={hair} stroke="#2B2B2B" strokeWidth="2.6" strokeLinejoin="round"/>}
- {a.hair==="bun"&&<circle cx="37" cy="6" r="8" fill={hair} stroke="#2B2B2B" strokeWidth="2.4"/>}
- {a.hair==="curly"&&[12,20,28,36,42].map((x,i)=><circle key={x} cx={x} cy={9+(i%2)*3} r="7" fill={hair} stroke="#2B2B2B" strokeWidth="1.8"/>)}
- <path d={a.expression==="skeptical"?"M14 26l12 3M30 27l10-4":"M14 26h12M30 26h10"} stroke="#2B2B2B" strokeWidth="2.2"/>
- {a.eyes==="wide"||a.expression==="surprised"?<><ellipse cx="20" cy="33" rx="4" ry="5" fill="#FFF"/><ellipse cx="34" cy="33" rx="4" ry="5" fill="#FFF"/></>:null}
- <circle cx="20" cy="33" r={a.eyes==="sleepy"?1.5:2.1} fill="#2B2B2B"/><circle cx="34" cy="33" r={a.eyes==="sleepy"?1.5:2.1} fill="#2B2B2B"/>
- {a.glasses&&<><rect x="12" y="27" width="15" height="14" rx="5" stroke="#2B2B2B" fill="none" strokeWidth="2.3"/><rect x="28" y="27" width="14" height="14" rx="5" stroke="#2B2B2B" fill="none" strokeWidth="2.3"/><path d="M27 32h2" stroke="#2B2B2B" strokeWidth="2.2"/></>}
- <path d={a.expression==="happy"?"M20 42Q26 52 33 42Z":a.expression==="smile"?"M19 43q7 6 14 0":a.expression==="skeptical"?"M21 46l10-2":a.expression==="surprised"?"M25 43q4-5 5 1q-1 6-5 1Z":"M21 44h10"} stroke="#70483D" fill={a.expression==="happy"?"#A75A60":"none"} strokeWidth="2" strokeLinecap="round"/>
+ const expressive=a.expression==="happy"||a.expression==="surprised";
+ return <svg viewBox="0 0 64 67" width={size} height={size} role="img" aria-label="Custom cartoon face" style={{display:"block",overflow:"visible",filter:"drop-shadow(1px 2px 0 rgba(43,43,43,.22))"}}>
+ {/* Rear hair is cutout-paper shaped, not the former circular badge. */}
+ {(a.hair==="long"||a.hair==="bun"||a.hair==="curly"||a.hair==="bob")&&<path d="M12 21Q8 3 29 2Q54 0 53 25L58 62L41 60L35 45L19 60L4 62Z" fill={hair} stroke="#292827" strokeWidth="3.3" strokeLinejoin="round"/>}
+ <path d="M18 14Q30 6 44 13Q52 19 49 38Q48 53 32 57Q16 55 14 39Q12 22 18 14Z" fill={skin} stroke="#292827" strokeWidth="3.1"/>
+ <path d="M15 31Q10 28 9 35Q9 41 16 43M49 31Q55 29 55 36Q55 42 48 43" fill={skin} stroke="#292827" strokeWidth="2.3"/>
+ {/* Distinct expressive front hair silhouettes inspired by the approved concept sheets. */}
+ {a.hair==="messy"&&<path d="M12 27L7 15L18 18L21 3L29 13L37 2L39 13L54 8L49 23L56 25L47 27Q41 18 33 19Q25 14 18 24Z" fill={hair} stroke="#292827" strokeWidth="3.4" strokeLinejoin="round"/>}
+ {a.hair==="short"&&<path d="M14 27Q11 5 31 6Q51 5 50 27L44 19L32 17L20 21Z" fill={hair} stroke="#292827" strokeWidth="3.2"/>}
+ {a.hair==="long"&&<path d="M14 28Q8 6 31 5Q55 4 49 29Q43 18 35 20L25 17Z" fill={hair} stroke="#292827" strokeWidth="3.2"/>}
+ {a.hair==="bob"&&<path d="M12 34Q5 6 30 4Q53 4 52 34L48 42L44 19Q33 13 19 22L18 42Z" fill={hair} stroke="#292827" strokeWidth="3.3"/>}
+ {a.hair==="bun"&&<><circle cx="46" cy="8" r="9" fill={hair} stroke="#292827" strokeWidth="3"/><path d="M13 28Q11 6 30 6Q51 6 49 27Q43 16 32 17Q23 14 13 28Z" fill={hair} stroke="#292827" strokeWidth="3.3"/></>}
+ {a.hair==="curly"&&[15,23,32,41,49].map((x,i)=><circle key={x} cx={x} cy={13+(i%2)*3} r="8" fill={hair} stroke="#292827" strokeWidth="2.6"/>)}
+ {/* Brows and big white half-lidded eyes give the trademark deadpan office expression. */}
+ <path d={a.expression==="skeptical"?"M16 31l12 1M36 31l11-5":"M17 30q6-3 11 0M36 30q6-3 11 0"} stroke="#302521" strokeWidth="2.8" fill="none" strokeLinecap="round"/>
+ <ellipse cx="23" cy="37" rx={a.eyes==="wide"?7:6} ry={a.eyes==="wide"?6:4.5} fill="#FFF9EC" stroke="#302521" strokeWidth="1.9"/>
+ <ellipse cx="42" cy="37" rx={a.eyes==="wide"?7:6} ry={a.eyes==="wide"?6:4.5} fill="#FFF9EC" stroke="#302521" strokeWidth="1.9"/>
+ {(a.eyes==="sleepy"||a.eyes==="tired")&&<path d="M17 36q6 2 12 0M36 36q6 2 12 0" stroke="#302521" strokeWidth="2.4" fill="none"/>}
+ <ellipse cx="24" cy="38" rx="2.1" ry="2.9" fill="#282626"/><ellipse cx="43" cy="38" rx="2.1" ry="2.9" fill="#282626"/>
+ {a.glasses&&<><rect x="14" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><rect x="34" y="30" width="17" height="15" rx="5" stroke="#20242C" fill="none" strokeWidth="2.5"/><path d="M31 34h3" stroke="#20242C" strokeWidth="2.5"/></>}
+ <path d={a.expression==="happy"?"M25 49Q33 61 41 48Z":a.expression==="smile"?"M25 49Q32 55 40 49":a.expression==="skeptical"?"M26 51l13-3":a.expression==="surprised"?"M29 48q5-4 7 1q1 8-5 7q-4-2-2-8Z":"M26 50h12"} fill={expressive?"#A95759":"none"} stroke="#7B5044" strokeWidth="2.2" strokeLinecap="round"/>
  </svg>;
 }
 function AvatarControls({value,onChange}){
@@ -4152,7 +4173,7 @@ function PatronFloor() {
                        if (mine) routeTo(o.cx, o.cy + 40, "desk", o);
                        else if (chances) sayAt(o.cx, o.deskY - 6, pick(GHOST_DESK.lines));
                      }}>
-                  <span /><b />
+                  <OfficeDeskArt tier={p?.kit?.desk || "d1"}/>
                   {mine && <div className="pg-fxlabel">Your Desk</div>}
                 </div>
               </div>
@@ -4713,6 +4734,20 @@ function BadStag() {
 
 
 /* Original vector-cutout icon family: survives arbitrary scale, no external art fetch. */
+/* Real selectable outfit thumbnails: each illustrates the garment players purchase. */
+function WardrobeIcon({id}){
+ const colors={hoodie:"#4C668C",cardigan:"#6F8F74",blazer:"#282D34",hawaiian:"#E58A57",hoodie_gold:"#B79B55",friday:"#8268A4"};
+ const color=colors[id]||"#8FA67A";
+ return <span className="pg-iconart cosmetic" aria-hidden="true"><svg viewBox="0 0 44 44" fill="none" stroke="#25282A" strokeWidth="2.3" strokeLinejoin="round" strokeLinecap="round">
+  <path d="M14 6q8 7 16 0l11 8-6 10-4-4v18H13V20l-4 4-6-10z" fill={color}/>
+  {(id==="hoodie"||id==="hoodie_gold")&&<><path d="M14 7q-4-6 8-7q12 1 8 7l-7 13z" fill={color} strokeWidth="2"/><path d="M18 10l4 6 4-6M19 17v5M26 17v5" stroke="#F5EDE3" strokeWidth="1.5"/><path d="M17 28h11v7H17z" fill="#33465B" strokeWidth="1.4"/><circle cx="33" cy="30" r="3" fill="#FFD36B" strokeWidth="1"/></>}
+  {id==="cardigan"&&<><path d="M14 6l9 11-9 12M30 6l-8 11 9 12" stroke="#EBE4DA" strokeWidth="2.2"/><path d="M23 17v21" stroke="#F8EED7" strokeWidth="2"/><circle cx="22" cy="24" r="1.1" fill="#2B2B2B"/><circle cx="22" cy="31" r="1.1" fill="#2B2B2B"/></>}
+  {id==="blazer"&&<><path d="M14 7l8 13-8 11 4-26M30 7l-8 13 8 11-4-26" fill="#F9F5EF" strokeWidth="1.8"/><path d="M22 18l3 5-3 14-3-14z" fill="#C95754"/><path d="M14 31h8M25 31h7" stroke="#A3A9AC" strokeWidth="1.3"/></>}
+  {id==="hawaiian"&&[[15,14],[28,16],[21,27],[30,32]].map(([x,y],i)=><g key={i}><circle cx={x} cy={y} r="4" fill="#FFF2BA" strokeWidth=".7"/><path d={`M${x-3} ${y}q3-5 6 0q-3 5-6 0`} fill="#3E8168" strokeWidth=".6"/></g>)}
+  {id==="friday"&&<><path d="M14 14h17M13 24h19M13 34h18" stroke="#E4C679" strokeWidth="2.6"/><circle cx="23" cy="24" r="6" fill="#FFF1B5" strokeWidth="1.5"/><path d="M20 23h.5M25 23h.5M20 26q3 3 6 0" strokeWidth="1.2"/></>}
+ </svg></span>;
+}
+
 function OfficeIcon({kind="paper",compact=false,cosmetic=false}){
  const k=String(kind||"").toLowerCase();
  const type=/senior|badge|equity/.test(k)?"badge":/coffee|mug|boost|slush|drink|meric/.test(k)?"mug":/chair|seat/.test(k)?"chair":/computer|laptop|monitor|screen|tech|developer|code/.test(k)?"computer":/plant|garden|green/.test(k)?"plant":/contract|agreement|legal|binder|approval|document|paperwork|policy/.test(k)?"binder":/wood|lounge|joey|build|construction|plank/.test(k)?"wood":/call|phone|tenant/.test(k)?"phone":/staff|hire|intern|manager|assistant|employee|director|worker|recruit|person|personnel/.test(k)?"person":/bonus|perk|star|award|trophy|level/.test(k)?"star":/cone|party hat|hard hat|visor|helmet/.test(k)?"hat":/t-rex|dino|lynx|sandwich board/.test(k)?"costume":/costume|shirt|hoodie|jacket|coat|scarf|wear|fashion|outfit|uniform|bathrobe|kilt/.test(k)?"shirt":/rumor|bingo|bulletin/.test(k)?"notice":/reset|restruct/.test(k)?"reset":/upgrad|gear|improv|bonus|efficiency/.test(k)?"gear":/snack|chips|donut|food|lunch/.test(k)?"snack":"paper";
@@ -4781,7 +4816,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       <div className="pg-rig">
         {c?.art && <CostumeSuit art={c.art} layer="back" />}
         {c && <Hat kind={c.hat} />}
-        <span className="pg-face" style={{width:40,height:40,display:"block"}}><AvatarHead look={L} size={40}/></span>
+        <span className="pg-avatar-head" style={{width:48,height:52}}><AvatarHead look={L} size={48}/></span>
         {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
           <path d={B.torso} fill={shirt} />
@@ -5823,6 +5858,31 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
 }
 
 
+
+/** Actual player-office illustrations: inked desk objects that grow with purchased kit. */
+function OfficeDeskArt({tier="d1"}){
+ const n=Math.max(1,Math.min(5,Number(String(tier).replace("d",""))||1));
+ const mug=<g><path d="M157 52h16v15q-8 7-16 0z" fill="#F8F1E3" stroke="#292827" strokeWidth="2.3"/><path d="M173 56h6q4 8-6 9" fill="none" stroke="#292827" strokeWidth="2.3"/><circle cx="165" cy="59" r="3.7" fill="#FFD36B"/></g>;
+ return <svg className="pg-desk-svg" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
+  <rect x="2" y="3" width="196" height="94" rx="3" fill={n===5?"#454549":n===4?"#E2DFD5":n===3?"#A77750":n===2?"#BFAB88":"#A89C87"} stroke="#292827" strokeWidth="3"/>
+  <path d="M5 88h189" stroke="#292827" strokeWidth="3" opacity=".7"/>
+  <rect x="19" y="12" width={n>=3?69:58} height="43" rx="3" fill="#2F3640" stroke="#202427" strokeWidth="3"/>
+  <rect x="24" y="17" width={n>=3?59:48} height="32" rx="1" fill={n>=4?"#81B9D4":"#829FB0"} stroke="#202427" strokeWidth="1.6"/>
+  <path d="M30 24h26M30 31h37M30 38h17" stroke="#EDF4F0" strokeWidth="2.5" opacity=".9"/>
+  <path d="M45 55v7M34 62h24" stroke="#202427" strokeWidth="3.2"/>
+  {n>=3&&<g><rect x="91" y="12" width="53" height="42" rx="2" fill="#2F3640" stroke="#202427" strokeWidth="3"/><rect x="96" y="17" width="43" height="31" fill="#648FAF"/><path d="M101 25h26M101 31h33M101 37h16" stroke="#FFF8E6" strokeWidth="2"/><path d="M114 54v8M103 62h24" stroke="#202427" strokeWidth="3"/></g>}
+  {n>=5&&<g><rect x="149" y="13" width="41" height="33" rx="2" fill="#2F3640" stroke="#202427" strokeWidth="2.4"/><rect x="153" y="17" width="33" height="24" fill="#7B9CC4"/><path d="M158 23h19M158 29h16" stroke="#FFF8E6" strokeWidth="2"/></g>}
+  <path d="M72 72h51l6 8H68Z" fill="#DDDAD2" stroke="#292827" strokeWidth="2.3"/>
+  {Array.from({length:8},(_,i)=><path key={i} d={`M${74+i*6} 75v3`} stroke="#6E777F" strokeWidth="2"/>)}
+  {n>=2&&<g><rect x="135" y="68" width="24" height="14" rx="2" fill="#D8A657" stroke="#292827" strokeWidth="2"/><path d="M141 73h12M141 77h8" stroke="#FFF3D9" strokeWidth="1.7"/></g>}
+  {n>=4&&<g><path d="M178 88V65" stroke="#5E8558" strokeWidth="2.5"/><path d="M178 76Q160 67 165 61q15 0 13 15M178 73q18-18 18-7q-3 9-18 7" fill="#8FA67A" stroke="#292827" strokeWidth="1.8"/><path d="M169 82h19l-4 13h-11z" fill="#D99566" stroke="#292827" strokeWidth="2"/></g>}
+  {n<5&&mug}
+  {n>=3&&<g><rect x="10" y="66" width="33" height="6" fill="#F8F1E3" stroke="#292827" strokeWidth="1.6"/><rect x="12" y="73" width="34" height="6" fill="#FFF1C2" stroke="#292827" strokeWidth="1.6"/><rect x="9" y="80" width="38" height="6" fill="#F8F1E3" stroke="#292827" strokeWidth="1.6"/></g>}
+  <rect x="5" y="5" width="27" height="11" transform="rotate(-5 5 5)" fill="#FFD36B" stroke="#292827" strokeWidth="1.4"/>
+  <circle cx="16" cy="11" r="2" fill="#292827"/><circle cx="23" cy="11" r="2" fill="#292827"/>
+ </svg>;
+}
+
 function OfficeVisitorBody({visitor:v}){
  const id=v.id||"";
  const color=id==="jess"?"#343B43":id==="dave"?"#CEBD7F":id==="chance"?"#617750":id==="john"?"#F8F1E3":id==="matt"?"#E8E7E0":id==="joey"?"#4B5A63":id==="nick"?"#303C4B":id==="avah"?"#7B9CC4":id==="rilie"?"#836F90":v.color;
@@ -6426,7 +6486,7 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
             } catch { /* onLook reports the server error; keep previous selection */ }
             finally {setBusy(false);}
           }}>
-            <OfficeIcon kind={it.name+" hoodie"} cosmetic/><span className="pg-main"><b>{it.name}</b><span>{it.detail}</span></span>
+            <WardrobeIcon id={it.id}/><span className="pg-main"><b>{it.name}</b><span>{it.detail}</span></span>
             <span className="pg-right"><b>{active?"Wearing":owned?"Equip":fmt(it.cost)+" BW"}</b></span>
           </button>;
         })}
@@ -7020,11 +7080,15 @@ function ArtPreview(){
   <header><h1>IDLE HANDS · ART QA</h1><p>Original 2D cutout office satire · QA gallery only · Never touches game accounts or Busywork.</p></header>
   <h2>0. Shared character creator · free appearance choices</h2>
   <div data-testid="avatar-qa" style={{background:"#FFFDF5",padding:15,border:"2px solid #2B2B2B",maxWidth:760,margin:"0 auto"}}>
-    <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><AvatarHead look={demoAvatar} size={74}/><strong>First day: make your employee</strong></div>
+    <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><strong>First day: make your employee</strong></div>
     <AvatarControls value={demoAvatar} onChange={setDemoAvatar}/>
     <p>Clothing progression · {WARDROBE.length} server-backed permanent outfits</p>
-    <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><OfficeIcon kind={it.name+" hoodie"} cosmetic/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
+    <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><WardrobeIcon id={it.id}/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
   </div>
+  <h2>0b. Actual new-employee onboarding screen · read-only QA</h2>
+  <section data-testid="onboard-qa" style={{border:"2px dashed #2B2B2B",maxWidth:760,margin:"0 auto 18px",padding:6}}>
+    <Onboard user={{id:"art-preview-only"}} code={null} onDone={()=>{}}/>
+  </section>
   <h2>1. Flat cutout color and shape system</h2>
   <div className="ar-palette">{colors.map(([name,color])=><span key={name} style={{background:color}}>{name}</span>)}</div>
   <h2>2–3. Cast silhouettes and character styling</h2>
@@ -7053,7 +7117,7 @@ function ArtPreview(){
   </div>
   <h2>4d. Owned office upgrade silhouettes — five tier samples</h2>
   <div className="ar-grid">{["d1","d2","d3","d4","d5"].map((d,i)=><div className="ar-cell" key={d}><div className="ar-fixture" style={{height:102}}>
-    <div className="pg-officedesk" data-desk={d} style={{position:"relative",width:"100%",height:75,top:0,left:0}}><span/><b/></div>
+    <div className="pg-officedesk" data-desk={d} style={{position:"relative",width:"100%",height:75,top:0,left:0}}><OfficeDeskArt tier={d}/></div>
     <div className={"pg-officechair chair-c"+Math.min(4,i+1)} style={{top:40}}/>
     </div><strong>{"Desk upgrade "+(i+1)}</strong></div>)}</div>
   <h2>5. Small icon readability</h2>

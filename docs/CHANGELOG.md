@@ -38,3 +38,10 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Builds free first-day character creator using cutout sprite head, selectable body style, hair, eyes, expression, skin color and starter shirt; no mandatory uploaded photo.
 - Adds free mirror appearance changes for existing players, permanent BW-priced outfit collection, own-and-equip restrictions and cross-device server save.
 - Adds actual RPC isolation tests for wardrobe purchase/ownership and Playwright creator preview at phone/desktop. Database changes are additive and intended to preserve Seniority and inventory through resets.
+
+## 2026-10-20: Avatar overlap fix and closer cutout art — PR #8
+- Removed the inherited round badge layer from character creator heads; unified the actual game renderer and previews.
+- Redrew the small avatar face/hair shapes and enlarged the onboarding preview for visibility on phones.
+- Replaced flat rectangle desk props with illustrated tier-aware desk SVGs and differentiated permanent clothing thumbnails.
+- Added browser checks for old-mask regression and non-authenticated real onboarding layout, plus archived phone/desktop screenshots.
+- No economy RPCs, item ownership IDs or production player records changed.

@@ -28,6 +28,21 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
   await expect(page.locator('.ar-palette span')).toHaveCount(6);
   await expect(page.locator('.ar-fixture')).toHaveCount(12);
   await expect(page.getByTestId('avatar-qa')).toBeVisible();
+  await expect(page.getByTestId('onboard-qa')).toBeVisible();
+  await expect(page.getByTestId('onboard-qa').locator('.pg-avatar-head')).toHaveCount(1);
+  const onboardingWidth=await page.getByTestId('onboard-qa').evaluate(el=>({client:el.clientWidth,scroll:el.scrollWidth}));
+  expect(onboardingWidth.scroll).toBeLessThanOrEqual(onboardingWidth.client+2);
+  await page.screenshot({path:'test-results/'+viewport.name+'-real-onboarding.png',fullPage:true});
+
+  await expect(page.getByTestId('avatar-qa').locator('.pg-avatar-head')).toHaveCount(1);
+  await expect(page.getByTestId('avatar-qa').locator('.pg-avatar-head .pg-face')).toHaveCount(0);
+  const hs=await page.getByTestId('avatar-qa').locator('.pg-avatar-head').evaluate(el=>{
+    const c=getComputedStyle(el);return {radius:c.borderRadius,bg:c.backgroundColor,border:c.borderTopWidth};
+  });
+  expect(hs.radius).toBe('0px');
+  expect(hs.bg).toBe('rgba(0, 0, 0, 0)');
+  expect(hs.border).toBe('0px');
+
   await expect(page.getByTestId('avatar-qa').locator('.ar-cell')).toHaveCount(6);
   await page.getByTestId('avatar-qa').getByLabel('Hair', {exact:true}).selectOption('long');
   await page.getByTestId('avatar-qa').getByLabel('Expression').selectOption('happy');
