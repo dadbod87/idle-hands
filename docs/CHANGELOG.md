@@ -2,6 +2,10 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-21: Build 164 — sound on
+- Sound defaults to enabled at 100%, as requested. Saved mute/volume choices still apply.
+- Existing sound contract covers fresh defaults and preference reload; no data or economy changes. CI/deployment evidence in release PR.
+
 ## 2026-10-21: Build 163 — the coffee has a subplot (candidate)
 - Implemented the four requested polish stages: lived-in office zones, confirmed action reactions and office sound cues, compact measured mobile controls, opt-in coffee breaks and recurring social/prop humor.
 - Volume/mute persist locally; hidden tabs and rapid repeats stay quiet. Existing sound control preserved; new Sound & feel auditions added. No voice service credits used or new third-party assets imported.
