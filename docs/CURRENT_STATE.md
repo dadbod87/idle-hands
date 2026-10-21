@@ -1,3 +1,11 @@
+# Build 167 — all Office Nonsense sections visible (2026-10-21)
+
+The six Office Nonsense buttons now use a scoped three-column/two-row grid instead of an overflowing catalog switch row. The hidden sixth button was Awards (the cosmetic Employee of the Minute joke). All labels wrap and targets remain at least 44px tall; selected state is exposed with aria-pressed. Other catalog/tab layouts are unchanged. Feedback toast flex items no longer retain a high z-index above open dialogs.
+
+Frontend-only; no database, player progress, economy, awards qualification, localStorage or server behavior changed. Focused desktop, narrow phone and landscape tests activate all six sections without horizontal scrolling and verify Awards content and unchanged fixture progress. Required CI/deployment evidence is recorded in the release PR. Physical phone and authenticated production writes are not claimed. Rollback: revert this frontend change.
+
+---
+
 # Build 166 — prop scale and direct sound settings (2026-10-21)
 
 Frontend-only correction to build 165: smaller unmounted apology sheet, smaller break-room noticeboard, properly filled/larger water cooler, and printer-area planter moved clear of its label. All seven substantial scenery props now open free readings (including Misc. Urgent shelf, couch and break notice). Couch/notice offer the existing walk to break-table social activities. Arrow movement remains available after an inspection closes; Enter/Space do not also open a nearby fixture.
