@@ -46,3 +46,8 @@ Read `docs/ART_DIRECTION.md` before creating/editing characters, office furnitur
 - `AvatarHead`, `AvatarControls`, `normalizedAvatar`, `WARDROBE` in `index.html` determine shared onboarding, mirror, in-world appearance and outfit prices.
 - Database migration `sql/character_wardrobe.sql` adds permanent `players.wardrobe_owned`, extends `set_look` validation and adds `buy_wardrobe`. Never ship frontend purchase UI until migration is applied and read-only verified.
 - `tests/wardrobe-rpc-contract.sql` exercises *actual migration RPC bodies* in isolated PostgreSQL. Avatar creator gallery and mobile checks run in Chromium. Do not reset wardrobe on Seniority.
+
+## Avatar & permanent wardrobe
+- `normalizedAvatar`, `AvatarHead`, `AvatarControls` and `Body` share a server-validated appearance schema; avatar edits use `set_look` RPC, permanent clothing uses `buy_wardrobe` RPC.
+- `players.wardrobe_owned` is persistent across restructure; never reset it. Starter customization is free. No player photo is required. Cosmetic wearable hats from `COSTUMES` remain separate 45-minute social actions.
+- Onboarding requires valid office invite code and Supabase authentication. Gallery tests are unauthenticated and do not certify live account flows.
