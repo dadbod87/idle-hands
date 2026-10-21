@@ -38,3 +38,9 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Builds free first-day character creator using cutout sprite head, selectable body style, hair, eyes, expression, skin color and starter shirt; no mandatory uploaded photo.
 - Adds free mirror appearance changes for existing players, permanent BW-priced outfit collection, own-and-equip restrictions and cross-device server save.
 - Adds actual RPC isolation tests for wardrobe purchase/ownership and Playwright creator preview at phone/desktop. Database changes are additive and intended to preserve Seniority and inventory through resets.
+
+## 2026-10-20 — Player avatar creator, permanent clothing, PR #5
+- Replaced required photo portrait with modular 2D cutout face for new employees; avatar builder and profile mirror share the art renderer.
+- Added six permanent BW-purchased office outfits and server-side purchasing/ownership validations, leaving existing temporary social costumes untouched.
+- Added mobile/desktop visual QA creator fixture; preserved existing accounts and Seniority economy.
+- QA notes: source/Chromium synthetic gallery/Postgres contract checks, not real signed-in transactions.
