@@ -7,6 +7,7 @@ for(const mode of ['desktop','mobile']){
   await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible();
   const wall=page.getByTestId('wall-week-deadline');
   await expect(wall).toContainText('Fri, Oct 23, 5:00 PM EDT');
+  expect(await page.locator('.pg-wbrow>.pg-face').evaluateAll(els=>els.every(el=>el.getBoundingClientRect().width<=14))).toBe(true);
   const timer=wall.getByRole('timer'),initial=await timer.innerText();
   await expect(timer).not.toHaveText(initial,{timeout:4000});
   expect(await wall.evaluate(el=>el.getBoundingClientRect().bottom<=el.closest('.pg-wb').getBoundingClientRect().bottom)).toBe(true);
