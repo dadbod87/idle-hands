@@ -57,3 +57,5 @@ The sheets show flat cutout forms, angular faces, oversized half-lidded eyes, lo
 ## Release and rollback
 
 Open PR and require all three regression jobs green before merging. Verify the Git-linked Vercel result and served build. Do not label the overall redesign complete while the unmet/unverified criteria above remain. Revert this PR to restore prior visual behavior; no database rollback is needed.
+
+CI run 39555054411 confirmed economy-and-office and isolated-postgres success. Browser discovery initially also loaded the separate Node helper test and failed because its parser dependency belongs to the other job. Playwright now explicitly discovers only `*.spec.cjs`; all six local browser tests passed again after that correction. Require the new CI run green before merge.

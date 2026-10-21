@@ -54,3 +54,4 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Corrected depth sorting so actors can stand behind their desks. Kept map geometry, collisions, paths, items, prices, timers and server API unchanged.
 - Self-hosted pinned browser dependencies after reproducing a CDN startup failure. Added full game UI tests with isolated HTTP fixtures and touch emulation; kept existing PostgreSQL contract jobs.
 - No production player data or SQL changed. Live authenticated and physical-device verification remain outstanding; exact concept-art fidelity not claimed.
+- CI follow-up: restricted Playwright discovery to browser spec files; kept the Node helper regression in its own dependency/job boundary. All six local browser tests passed after the correction.
