@@ -2867,6 +2867,7 @@ const api = {
   suggestMemo: (text) => rpc("suggest_memo", { p_text: text }),
   approveSuggestion: (id, ok) => rpc("approve_suggestion", { p_id: id, p_ok: ok }),
   setLook: (look) => rpc("set_look", { p_look: look }),
+  buyWardrobe: (id) => rpc("buy_wardrobe", { p_item: id }),
   setDept: (id) => rpc("set_dept", { p_dept: id }),
   buyPerk: (id) => rpc("buy_perk", { p_id: id }),
   claimContract: (i) => rpc("claim_contract", { p_idx: i }),
@@ -2996,7 +2997,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 152 · cutout art";
+const BUILD = "build 153 · character creator";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4376,8 +4377,9 @@ function PatronFloor() {
           {panel === "account" && <Account user={user} onLinked={() => setPanel(null)} />}
           {panel === "mirror" && (
             <Mirror me={me} user={user}
+              onBuyClothing={async(id)=>{ const row=await guard(()=>api.buyWardrobe(id),"Wardrobe purchase approved.");if(row){setFloor(await loadFloor());}return row; }}
               onLook={async (look) => {
-                try { applyServer(await api.setLook(look)); } catch { /* cosmetic */ }
+                try { applyServer(await api.setLook(look)); setFloor(await loadFloor()); } catch(e) { flash(prettyError(e)); throw e; }
               }}
               onSave={async (name, dataUrl) => {
                 try {
@@ -6351,7 +6353,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
   );
 }
 
-function Mirror({ me, user, onSave, onLook }) {
+function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
   const [img, setImg] = useState(null);
   const [name, setName] = useState(me?.name || "");
   const [busy, setBusy] = useState(false);
@@ -6400,6 +6402,22 @@ function Mirror({ me, user, onSave, onLook }) {
       </div>
 
       <AvatarControls value={look} onChange={setLook}/>
+      <div className="pg-wardrobe-stock">
+        <h4 className="pg-h4">Company wardrobe · permanent purchases</h4>
+        <p className="pg-fine">Spend Busywork on ridiculous outfits. Keep every purchased piece, even after restructuring. Clothes are cosmetic—no productivity bonuses.</p>
+        <button className={"pg-row"+(look.clothing==="starter"?" mine":"")} type="button" onClick={()=>setLook(v=>({...v,clothing:"starter"}))}><OfficeIcon kind="office shirt"/><span className="pg-main"><b>Standard Issue Outfit</b><span>Free. Disturbingly adequate.</span></span><span className="pg-right"><b>{look.clothing==="starter"?"Wearing":"Equip"}</b></span></button>
+        {WARDROBE.map(it=>{
+          const owned=Array.isArray(me?.wardrobe_owned)&&me.wardrobe_owned.includes(it.id);
+          const active=look.clothing===it.id;
+          return <button className={"pg-row"+(active?" mine":"")} type="button" key={it.id} onClick={async ()=>{
+            if(owned){setLook(v=>({...v,clothing:it.id}));return;}
+            const saved=await onBuyClothing(it.id);if(saved)setLook(v=>({...v,clothing:it.id}));
+          }}>
+            <OfficeIcon kind={it.name+" hoodie"} cosmetic/><span className="pg-main"><b>{it.name}</b><span>{it.detail}</span></span>
+            <span className="pg-right"><b>{active?"Wearing":owned?"Equip":fmt(it.cost)+" BW"}</b></span>
+          </button>;
+        })}
+      </div>
       <div className="pg-pad">
         <button className="pg-btn ghost pg-wide" onClick={() => fileRef.current?.click()}>
           {img ? "Change legacy photo" : "Legacy photo (optional)"}
