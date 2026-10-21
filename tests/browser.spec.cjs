@@ -28,6 +28,15 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
   await expect(page.locator('.ar-palette span')).toHaveCount(6);
   await expect(page.locator('.ar-fixture')).toHaveCount(12);
   await expect(page.getByTestId('avatar-qa')).toBeVisible();
+  await expect(page.getByTestId('avatar-qa').locator('.pg-avatar-head')).toHaveCount(1);
+  await expect(page.getByTestId('avatar-qa').locator('.pg-avatar-head .pg-face')).toHaveCount(0);
+  const hs=await page.getByTestId('avatar-qa').locator('.pg-avatar-head').evaluate(el=>{
+    const c=getComputedStyle(el);return {radius:c.borderRadius,bg:c.backgroundColor,border:c.borderTopWidth};
+  });
+  expect(hs.radius).toBe('0px');
+  expect(hs.bg).toBe('rgba(0, 0, 0, 0)');
+  expect(hs.border).toBe('0px');
+
   await expect(page.getByTestId('avatar-qa').locator('.ar-cell')).toHaveCount(6);
   await page.getByTestId('avatar-qa').getByLabel('Hair', {exact:true}).selectOption('long');
   await page.getByTestId('avatar-qa').getByLabel('Expression').selectOption('happy');
