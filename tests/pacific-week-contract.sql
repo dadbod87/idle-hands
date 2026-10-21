@@ -1,4 +1,5 @@
 -- Isolated only, after weekly-deadline-contract.sql. No production player tests.
+SELECT set_config('test.employee_id','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',false);
 CREATE TABLE public.season_state(id integer PRIMARY KEY,current_week text);
 INSERT INTO public.season_state SELECT 1,to_char(date_trunc('week',now() AT TIME ZONE 'America/Los_Angeles') + CASE WHEN (now() AT TIME ZONE 'America/Los_Angeles') >= date_trunc('week',now() AT TIME ZONE 'America/Los_Angeles')+interval '4 days 16 hours' THEN interval '7 days' ELSE interval '0 days' END,'IYYY-IW');
 CREATE TEMP TABLE preserved_players AS SELECT to_jsonb(p) AS snapshot FROM public.players p;
