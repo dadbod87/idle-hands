@@ -2780,23 +2780,36 @@ function meetingAt(t = Date.now()) {
   return { window: null, startsIn: (at - sec) * 1000 };
 }
 
-/** Mirrors chair_window() in Postgres: one chair every 7 minutes, 40 seconds
-    on the floor, in the same spot for everybody. Change one, change both. */
-function chairAt(t = Date.now()) {
-  const sec = Math.floor(t / 1000);
-  const into = sec % 420;
-  if (into >= 40) return null;
-  const w = Math.floor(sec / 420);
-  // deterministic position so all eight people sprint at the same chair
-  let h = (w * 2654435761) % 2147483647;
-  h = (h ^ (h >>> 13)) >>> 0;
-  // the central hall only — never inside a room, never behind a wall
-  // the central hall only
-  const x = 1150 + (h % 1900);
-  const y = 700 + ((h >>> 7) % 520);
-  return { window: w, x, y, endsIn: (40 - into) * 1000 };
+// Full-map, equally weighted safe positions. Cached only after the complete map is initialized.
+// Chair art is 46x54; padding also keeps its bobbing animation and nearby labels clear.
+let chairSpawnCache=null;
+function goodChairSpawns(){
+ if(chairSpawnCache)return chairSpawnCache;
+ const props=DECOR.filter(d=>["plant","deadplant","boxes","wetfloor"].includes(d.t)).map(d=>({...d,w:d.t==="boxes"?80:45,h:d.t==="boxes"?62:64}));
+ const obstacles=[...OFFICES,...FIXTURES.map(f=>({x:f.x-30,y:f.y-10,w:f.w+60,h:f.h+50})),...SCENERY.map(p=>({...p,h:p.h+22})),...props];
+ const points=[];
+ for(let cy=WALL_H+70;cy<=ROOM.h-60;cy+=40){
+  for(let cx=60;cx<=ROOM.w-60;cx+=40){
+   const x=cx-23,y=cy-27;
+   if(obstacles.some(b=>x<b.x+b.w+18&&x+46>b.x-18&&y<b.y+b.h+18&&y+54>b.y-18))continue;
+   if(blocked(cx,cy)||blocked(cx,cy+27))continue;
+   points.push({x,y});
+  }
+ }
+ if(!points.length)throw new Error("No safe good-chair spawn positions in the floor plan");
+ chairSpawnCache=points;
+ return points;
 }
-
+/** Timing mirrors chair_window() in Postgres: every 7 minutes, visible for 40 seconds.
+    Placement is client-side and deterministic per window, so all clients see the same chair.
+    Claims and rewards remain server-authoritative and are unchanged. */
+function chairAt(t = Date.now()) {
+ const sec=Math.floor(t/1000),into=sec%420;
+ if(into>=40)return null;
+ const w=Math.floor(sec/420),points=goodChairSpawns();
+ const point=points[officeHash(w^0x43484149)%points.length];
+ return {window:w,x:point.x,y:point.y,endsIn:(40-into)*1000};
+}
 
 /* Pins are bought weekly and worn indefinitely, so a character may be wearing
    one that is no longer stocked. Index the whole pool once the catalogue loads
@@ -3317,7 +3330,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 167 · room for nonsense";
+const BUILD = "build 168 · musical chairs";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4617,7 +4630,7 @@ function OfficeFloor() {
             </div>
           )}
           {chair && !chairTakenBy && (
-            <button className="pg-chair" style={{ left: chair.x, top: chair.y }}
+            <button className="pg-chair" aria-label="Grab the good chair" style={{ left: chair.x, top: chair.y, zIndex:Math.round(chair.y+54) }}
                     onClick={(e) => { e.stopPropagation(); grabChair(); }}>
               <svg viewBox="0 0 40 48">
                 <rect x="8" y="2" width="24" height="22" rx="3" fill="#B23B2E" />

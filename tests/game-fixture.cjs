@@ -29,6 +29,7 @@ async function installGameFixture(page,options={}) {
    else if(rpc==='set_look'){player.look=args.p_look;result=player;}
    else if(rpc==='dress'){player.outfit={id:args.p_outfit,until:new Date(Date.now()+2700000).toISOString()};player.pp-=120;result=player;}
    else if(rpc==='do_deed'){if(options.onDeed)options.onDeed(player,args);else{player.pp-=100;player.goodwill=(player.goodwill||0)+1;}result=player;}
+   else if(rpc==='grab_chair'){if(!options.onGrabChair)throw Error('Chair fixture requires an explicit outcome');options.onGrabChair(player,args);result=player;}
    else if(rpc==='do_work'){player.pp+=args.p_clicks;result=player;}
    else if(rpc==='buy_item'){player.owned[args.p_item]=(player.owned[args.p_item]||0)+1;player.pp-=100;result=player;}
    else if(['sync','check_in'].includes(rpc))result=player;
