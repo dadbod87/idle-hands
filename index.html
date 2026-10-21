@@ -1840,7 +1840,7 @@ function officeVisitorNow(t,ch,dv){
  const active=OFFICE_CAST.map(c=>officeVisitorAt(c,t)).filter(Boolean);
  active.sort((a,b)=>a.id.localeCompare(b.id));
  const v=active[0]||null;
- if(v&&v.id==="jess"&&ch)v.line="Chance, are you quitting again?";
+ if(v&&v.id==="jess"&&ch)v.line=(Math.abs(v.bucket)%2===0 ? "Lenny, I know you can hear me." : "Chancellor! We need to talk.");
  if(v&&v.id==="jess"&&dv)v.line="Dave's out. Everybody act normal.";
  if(v&&v.id==="avah"&&ch)v.line=(Math.abs(v.bucket)%2===0 ? "Chance, did you get a code?" : "Chance, can you answer the phone? Actually, never mind.");
 
@@ -3170,6 +3170,7 @@ function PatronFloor() {
       }
       if (!dv) daveSeen.current = false;
       const guest=officeVisitorNow(now,ch,dv);setVisitor(guest);
+      if(ch&&guest&&guest.id==="jess"&&guest.line.startsWith("Chancellor")) { ch.line="Nope. I am out of here."; ch.leaving=true; ch.x=Math.min(ROOM.w-75,ch.x+180); }
       if(guest&&visitorSeen.current!==guest.id+":"+guest.bucket){
        visitorSeen.current=guest.id+":"+guest.bucket;say(guest.name+" is making the rounds.","sys");
       }
