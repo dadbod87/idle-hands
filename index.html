@@ -6412,13 +6412,19 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
       <div className="pg-wardrobe-stock">
         <h4 className="pg-h4">Company wardrobe · permanent purchases</h4>
         <p className="pg-fine">Spend Busywork on ridiculous outfits. Keep every purchased piece, even after restructuring. Clothes are cosmetic—no productivity bonuses.</p>
-        <button className={"pg-row"+(look.clothing==="starter"?" mine":"")} type="button" onClick={()=>setLook(v=>({...v,clothing:"starter"}))}><OfficeIcon kind="office shirt"/><span className="pg-main"><b>Standard Issue Outfit</b><span>Free. Disturbingly adequate.</span></span><span className="pg-right"><b>{look.clothing==="starter"?"Wearing":"Equip"}</b></span></button>
+        <button className={"pg-row"+(look.clothing==="starter"?" mine":"")} type="button" disabled={busy} onClick={async ()=>{const next={...look,clothing:"starter"};setBusy(true);try{await onLook(next);setLook(next);}catch{}finally{setBusy(false);}}}><OfficeIcon kind="office shirt"/><span className="pg-main"><b>Standard Issue Outfit</b><span>Free. Disturbingly adequate.</span></span><span className="pg-right"><b>{look.clothing==="starter"?"Wearing":"Equip"}</b></span></button>
         {WARDROBE.map(it=>{
           const owned=Array.isArray(me?.wardrobe_owned)&&me.wardrobe_owned.includes(it.id);
           const active=look.clothing===it.id;
-          return <button className={"pg-row"+(active?" mine":"")} type="button" key={it.id} onClick={async ()=>{
-            if(owned){setLook(v=>({...v,clothing:it.id}));return;}
-            const saved=await onBuyClothing(it.id);if(saved)setLook(v=>({...v,clothing:it.id}));
+          return <button className={"pg-row"+(active?" mine":"")} type="button" key={it.id} disabled={busy} onClick={async ()=>{
+            setBusy(true);
+            try {
+              if(!owned){const saved=await onBuyClothing(it.id);if(!saved)return;}
+              const next={...look,clothing:it.id};
+              await onLook(next);
+              setLook(next);
+            } catch { /* onLook reports the server error; keep previous selection */ }
+            finally {setBusy(false);}
           }}>
             <OfficeIcon kind={it.name+" hoodie"} cosmetic/><span className="pg-main"><b>{it.name}</b><span>{it.detail}</span></span>
             <span className="pg-right"><b>{active?"Wearing":owned?"Equip":fmt(it.cost)+" BW"}</b></span>
