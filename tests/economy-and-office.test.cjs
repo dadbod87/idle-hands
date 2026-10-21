@@ -51,6 +51,15 @@ assert(src.includes('function OfficeIcon('),'Cutout vector icon system');
 assert(src.includes('<OfficeIcon kind={it.name} />'),'Hiring art integrated');
 assert(src.includes('<OfficeIcon kind={u.name+" upgrade"} />'),'Upgrades art integrated');
 assert(src.includes('<OfficeIcon kind={x.name+" "+slot} cosmetic />'),'Catalogue art integrated');
+assert(src.includes('<OfficeIcon kind={c.name+" costume"} cosmetic/>'),'Costume wardrobe art integrated');
+assert(src.includes('<OfficeIcon kind={k.name+" senior badge"} compact/>'),'Seniority perks art integrated');
+assert(src.includes('<OfficeIcon kind={d.name+" coffee mug"} compact/>'),'Coffee/beverage item art integrated');
+assert(src.includes('<OfficeIcon kind={d.name+" slush drinks"} compact/>'),'Slush beverage item art integrated');
+assert(src.includes('<OfficeIcon kind={d.name+" personnel"} compact/>'),'Personnel art integrated');
+assert(src.includes('function ArtPreview()'),'Visual QA gallery exists');
+assert(src.includes('function DaveBody({ facing = 1 }) {'),'Dave wrapper preserved');
+assert(src.includes('function ChanceBody({ facing = 1 }) {'),'Chance wrapper preserved');
+
 const bagForRound = round => {
  const o=cast.map((_,i)=>i);
  for(let i=o.length-1;i>0;i--){
