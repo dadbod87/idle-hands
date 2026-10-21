@@ -23,7 +23,7 @@ The shared goal reads existing `office_state` total/target/hit; no new goal or r
 
 The user's video trial auditions used ElevenLabs; an earlier local narration used Kokoro. This release uses original synthesized Web Audio, adding no external voice account, cloned voice, audio asset, billing dependency, secret or trial-credit consumption. Voice lines are not part of this acceptance. A future voice pass should choose a deliberately small set of lines/voices and verify the current public-game license before generating/exporting assets.
 
-Sound & feel offers labeled auditions and a 0–100% master effects slider. The previous sound toggle remains. Preferences stay in local storage. Default master level is 35%; mute immediately gates already-scheduled notes; hidden tabs silence the master and reject new cues. Rapid work, repeated purchases and events have individual cooldowns plus a short global burst cap. Sound is presentation only and never determines an outcome.
+Sound & feel offers labeled auditions and a 0–100% master effects slider. The previous sound toggle remains. Preferences stay in local storage. Build 163 initially used 35%; build 164 changes the default to 100% with sound enabled, per user request. Saved preferences take precedence; mute immediately gates already-scheduled notes; hidden tabs silence the master and reject new cues. Rapid work, repeated purchases and events have individual cooldowns plus a short global burst cap. Sound is presentation only and never determines an outcome.
 
 ## Safety, regression and release
 

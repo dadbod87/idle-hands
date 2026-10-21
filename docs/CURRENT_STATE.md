@@ -145,3 +145,8 @@ User authorized all four polish stages and deployment. Based on main `9ce6532` (
 4. Break room has opt-in live coffee invitations (45 seconds), walking and shared waves; ephemeral channel signals cannot award anything. Kindness board derives only existing server deed records and respects hush. Three shared clock-based prop stories have illustrated inspections/punchlines. Existing office goal drives progress/celebration; office state now loads on entry and refreshes while visible. Normal kind actions/prices/RPCs unchanged.
 
 Two-player browser test relays the actual Supabase client's broadcast protocol in memory, with isolated HTTP responses; verified invitation, walking, peer wave, a real UI deed request and note retention on reload. This is not production multiplayer or database E2E. Node audio graph and invite validation contracts pass. No SQL migration, schema, ownership, reset or economy changes. Real physical-phone and authenticated production interaction remain unverified. Rollback: revert frontend changes; all saved inventory/progress uses existing fields unchanged. Full regression and live production gallery must be verified before claiming release.
+
+
+## Build 164: sound on at 100%
+
+User requested sound enabled at full volume by default. Fresh browsers now start with muted=false and soundLevel=1. Existing explicit ih_muted/ih_sound_level settings still take precedence; an untouched former 35% default was never stored and becomes 100% on reload. No database/player changes. Existing sound contract verifies fresh defaults and saved-setting reload. Parser/name/audio/social checks and required CI must pass before merge; deployment evidence in release PR. Frontend-only rollback.

@@ -2929,7 +2929,7 @@ const CLOSING_LINE =
    ================================================================== */
 
 let ctx = null, master = null;
-let muted = false, soundLevel = .35;
+let muted = false, soundLevel = 1;
 const soundLast = {}, soundBurst = [];
 try { const saved=localStorage.getItem("ih_sound_level"); if(saved!==null&&Number.isFinite(Number(saved)))soundLevel=Math.max(0,Math.min(1,Number(saved))); } catch {}
 function syncAudioGain(){if(master)try{master.gain.value=muted||document.hidden?0:soundLevel;}catch{}}
@@ -3307,7 +3307,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 163 · the coffee has a subplot";
+const BUILD = "build 164 · sound on";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
