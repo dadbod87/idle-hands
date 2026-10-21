@@ -44,5 +44,5 @@ BEGIN
 END
 $body$;
 
-REVOKE ALL ON FUNCTION public.set_look(jsonb) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.set_look(jsonb) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.set_look(jsonb) TO authenticated;

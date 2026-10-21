@@ -1,6 +1,6 @@
 -- Ephemeral PostgreSQL contract harness; NEVER run against Production.
 CREATE SCHEMA IF NOT EXISTS auth;
-DO $create_role$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='authenticated') THEN CREATE ROLE authenticated; END IF; END $create_role$;
+DO $create_role$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='authenticated') THEN CREATE ROLE authenticated; END IF; IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon; END IF; END $create_role$;
 CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'::uuid $$;
 CREATE TABLE public.players (
  id uuid PRIMARY KEY,
@@ -16,6 +16,7 @@ CREATE OR REPLACE FUNCTION public.accrue(p_id uuid) RETURNS public.players LANGU
 DO $tests$
 DECLARE p public.players; before_pp numeric; rejected boolean; head_id text;
 BEGIN
+ IF has_function_privilege('anon','public.set_look(jsonb)','EXECUTE') OR NOT has_function_privilege('authenticated','public.set_look(jsonb)','EXECUTE') THEN RAISE EXCEPTION 'Appearance RPC grants incorrect'; END IF;
  SELECT pp INTO before_pp FROM public.players WHERE id=auth.uid();
  rejected:=false;
  BEGIN PERFORM public.set_look('{"build":"regular","bottom":"trousers","top":0,"legs":0,"clothing":"blazer"}'::jsonb); EXCEPTION WHEN others THEN rejected:=true; END;
