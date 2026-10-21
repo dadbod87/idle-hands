@@ -38,8 +38,11 @@ for(const mode of ['desktop','mobile']){
   const fixture=await installGameFixture(page,{officeAwards:['oa_welcome']});fixture.player.goodwill=3;
   await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible();
   // Walk north until the wall cabinet is in the actual camera view.
-  await page.keyboard.down('ArrowUp');await page.waitForTimeout(2100);await page.keyboard.up('ArrowUp');
-  await page.keyboard.down('ArrowRight');await page.waitForTimeout(450);await page.keyboard.up('ArrowRight');
+  await page.keyboard.down('ArrowUp');
+  await expect.poll(()=>page.locator('.pg-me').evaluate(el=>parseFloat(el.style.top)),{timeout:10000}).toBeLessThan(230);
+  await page.keyboard.up('ArrowUp');await page.keyboard.down('ArrowRight');
+  await expect.poll(()=>page.locator('.pg-me').evaluate(el=>parseFloat(el.style.left)),{timeout:10000}).toBeGreaterThan(1690);
+  await page.keyboard.up('ArrowRight');
   await expect(page.locator('.pg-prompt')).toContainText('HR Cabinet');
   await page.locator('.pg-prompt .pg-open').click();
   const panel=page.locator('.pg-panel');await expect(panel).toBeVisible({timeout:20000});
