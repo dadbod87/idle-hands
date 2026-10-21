@@ -3230,7 +3230,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 159 · weekly countdown";
+const BUILD = "build 160 · pacific closing time";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -7469,7 +7469,7 @@ const ART_FITTINGS={"office_kit":[{"id":"d1","name":"A Desk Without A Wobble","n
 
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
 function ArtPreview(){
- const qaSchedule={timezone:"America/New_York",server_now:"2026-10-21T17:00:00Z",ends_at:"2026-10-23T21:00:00Z",received_at:Date.now()};
+ const qaSchedule={timezone:"America/Los_Angeles",server_now:"2026-10-21T17:00:00Z",ends_at:"2026-10-23T23:00:00Z",received_at:Date.now()};
  const [helpOpen,setHelpOpen]=useState(false);
  const [demoAvatar,setDemoAvatar]=useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
  const types=["paper","badge","mug","chair","computer","plant","binder","wood","phone","person","star","shirt","notice","reset","gear"];
