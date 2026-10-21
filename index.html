@@ -3624,7 +3624,7 @@ function PatronFloor() {
             {me?.equity > 0 && (
               <span className="pg-tag good"
                     data-tip={`+${(me.equity * 3).toFixed(0)}% output from ${me.equity} Seniority (3% each). Resets at the end of the week.`}>
-                ▲ {me.equity} equity
+                ▲ {me.equity} Seniority
               </span>
             )}
             {heat > 0 && !underReview && (
@@ -4902,7 +4902,7 @@ function Standings({ board, me, fund, feuds = [] }) {
                      style={{ background: PIN_INDEX[p.pin].hue }}>{PIN_INDEX[p.pin].glyph}</i>
                 )}
                 {p.trophies > 0 && <span className="pg-trophy">{"\u25C6".repeat(Math.min(p.trophies, 5))}</span>}</b>
-              <span>{roleFor(p.week_pp || 0)}{p.equity ? ` · ${p.equity} equity` : ""}
+              <span>{roleFor(p.week_pp || 0)}{p.equity ? ` · ${p.equity} Seniority` : ""}
                 {(p.heat || 0) >= HEAT_LIMIT ? " · under review" : ""}</span>
             </span>
             <span className="pg-right">
