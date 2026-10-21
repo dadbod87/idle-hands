@@ -84,3 +84,10 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Adds eight goal-based cosmetic Personnel commendations emphasizing kindness, reciprocity and collaboration alongside collection and streak milestones, plus eight light office memos.
 - New award claims derive from stored server stats; new IDs cannot be asserted by a client. Existing awards/progress are merged and retained. No currency or productivity reward changes.
 - Adds isolated PostgreSQL eligibility/auth/retention tests and phone/desktop actual UI/catalog/awards verification. Deployment and exact test evidence are recorded in the PR.
+
+## 2026-10-21: Build 159 weekly scoring countdown
+
+- Adds a live countdown and exact cutoff to the wall whiteboard and This week leaderboard, with office timezone and viewer-local time in the expanded panel.
+- Reads the existing server boundary (Friday 17:00 America/New_York currently) through a new authenticated, read-only schedule RPC; no changes to points, resets, purchases or stored players.
+- Keeps daylight-saving calendar weeks accurate and never uses a wrong device clock as the countdown anchor. Resynchronizes while visible/on return and waits for the server at the cutoff.
+- Adds isolated SQL boundary/DST/auth tests, countdown helper checks and actual whiteboard navigation tests at desktop/phone sizes. Exact gates and live release state are tracked in the PR.
