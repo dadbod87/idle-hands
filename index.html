@@ -2266,7 +2266,7 @@ function AvatarHead({look={},size=40}){
 }
 function AvatarControls({value,onChange}){
  const a=normalizedAvatar(value),set=(key,v)=>onChange({...a,[key]:v});
- const select=(title,key,opts)=> <label className="pg-avatar-field"><span>{title}</span><select value={a[key]} onChange={e=>set(key,e.target.value)}>{opts.map(v=><option value={v} key={v}>{v}</option>)}</select></label>;
+ const select=(title,key,opts)=> <label className="pg-avatar-field"><span>{title}</span><select aria-label={title} value={a[key]} onChange={e=>set(key,e.target.value)}>{opts.map(v=><option value={v} key={v}>{v}</option>)}</select></label>;
  const colors=(title,key,opts)=> <div className="pg-avatar-field"><span>{title}</span><div className="pg-avatar-swatches">{opts.map((color,i)=><button type="button" key={i} className={a[key]===i?"chosen":""} onClick={()=>set(key,i)} style={{background:color}} aria-label={title+" "+(i+1)} />)}</div></div>;
  return <div className="pg-avatar-controls">
  {select("Body style","gender",["masculine","feminine","neutral"])}
