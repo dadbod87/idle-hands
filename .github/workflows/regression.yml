@@ -61,4 +61,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate isolated database contract fixtures
-        run: psql -v ON_ERROR_STOP=1 -f tests/economy-contract.sql
+        run: |
+          psql -v ON_ERROR_STOP=1 -f tests/economy-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/wardrobe-rpc-contract.sql
