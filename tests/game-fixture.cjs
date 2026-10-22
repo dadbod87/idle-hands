@@ -42,7 +42,8 @@ async function installGameFixture(page,options={}) {
    const rpc=url.pathname.split('/').pop(),args=req.postDataJSON()||{};
    calls.push({rpc,args});
    if(options.failRpcs?.includes(rpc)){await route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({message:'Fixture request declined',code:'P0001'})});return;}
-   if(rpc==='upsert_player'){player.name=args.p_name;if(args.p_avatar)player.avatar_url=args.p_avatar;result=player;}
+   if(rpc==='cow_try')result=options.onCowTry?options.onCowTry(player):null;
+   else if(rpc==='upsert_player'){player.name=args.p_name;if(args.p_avatar)player.avatar_url=args.p_avatar;result=player;}
    else if(rpc==='set_pin'){if(args.p_id!==null&&!player.extras.includes(args.p_id))throw Error('Fixture ownership violation');player.pin=args.p_id;result=player;}
    else if(rpc==='set_look'){player.look=args.p_look;result=player;}
    else if(rpc==='dress'){player.outfit={id:args.p_outfit,until:new Date(Date.now()+2700000).toISOString()};player.pp-=120;result=player;}

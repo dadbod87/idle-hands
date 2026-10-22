@@ -25,3 +25,5 @@ BEGIN
  THEN RAISE EXCEPTION 'Seniority reset contract violated'; END IF;
 END $$;
 ROLLBACK;
+
+\i tests/weekly-secret-contract.sql

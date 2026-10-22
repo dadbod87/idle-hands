@@ -1,3 +1,15 @@
+# Build 180 — out of the box (2026-10-22)
+
+Removes the border, padding, corner clipping and shadow from custom-photo heads in world avatars, HUD and previews. PNG transparency and existing uploaded images remain supported; picker selection outlines remain visible controls. The head keeps its existing dimensions and wardrobe/body placement.
+
+The server now draws and persists one random secret-level unlock time per office week, between one hour after Friday 4 PM Pacific reset and one hour before the next reset. Calendar arithmetic uses the actual Pacific week, including 167/169-hour daylight-saving weeks. Legacy pin_next timestamps no longer override a new week’s random draw. Same-week requests retain the draw and the existing global once-per-week claim/locking behavior. Installation only replaces the guarded cow_arm body; current claims, player data, reward calculations, cow_try/cow_finish and permissions remain intact. This week’s completed claim is preserved.
+
+Validation includes isolated SQL using the actual scheduler and claim RPCs: 1,000 random draws over regular/DST/year boundaries, stable draws on repeated calls, ignored stale overrides, claim eligibility/duplicate/other-player/anonymous handling, unchanged grants and player data. Browser fixtures cover frameless transparent faces and server-only secret entry. All browser Supabase traffic is intercepted; no real player progress is changed. Production migration, CI, merge/deployment and live evidence are recorded in the release PR/report.
+
+Rollback: revert frontend; restore the reviewed scheduler body from tests/fixtures/cow_arm-baseline.sql if needed. Do not clear current claims or edit players to roll back.
+
+---
+
 # Build 179 — local watering (2026-10-22)
 
 Fixes the planter beside Dave’s office sending the player to the couch-side plant. Scenery inspection now preserves the selected object ID through routing, arrival, watering-can placement and punchline/camera framing. Dave’s planter has a distinct inspection label/description and independent persisted joke rotation. Existing field-guide/default destinations and their saved rotations remain compatible. Both plants still report the same existing server-authoritative cosmetic `plant` activity; no new rewards, cooldowns, RPCs or database changes.
