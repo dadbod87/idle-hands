@@ -58,10 +58,10 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
   await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();await openMirror(page);const dialog=page.getByRole('dialog');
   await dialog.getByLabel('Upload custom face',{exact:true}).setInputFiles(path.join(__dirname,'fixtures/translucent-face.png'));
   const preview=dialog.locator('.pg-mirrorrow .pg-preview').last().locator('[data-head="photo"] img');await expect(preview).toBeVisible();expect(await faceAlpha(preview)).toEqual([0,128,255]);
-  expect(await preview.evaluate(img=>getComputedStyle(img.parentElement).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
+  expect(await preview.evaluate(img=>{const s=getComputedStyle(img.parentElement);return {background:s.backgroundColor,border:s.borderWidth,padding:s.padding,shadow:s.boxShadow,radius:s.borderRadius};})).toEqual({background:'rgba(0, 0, 0, 0)',border:'0px',padding:'0px',shadow:'none',radius:'0px'});
   await page.screenshot({path:`test-results/translucent-face-picker-${viewport.width}.png`,fullPage:true});
   await dialog.getByRole('button',{name:'Reissue the badge',exact:true}).click();await expect(dialog).toHaveCount(0);expect(f.uploads).toHaveLength(1);expect(f.uploads[0].path).toMatch(/\.png$/);expect(f.uploads[0].contentType).toBe('image/png');
-  await page.reload();const hud=page.locator('.pg-hud [data-head="photo"] img'),world=page.locator('.pg-body.me [data-head="photo"] img');await expect(world).toBeVisible();expect(await faceAlpha(hud)).toEqual([0,128,255]);expect(await faceAlpha(world)).toEqual([0,128,255]);
+  await page.reload();const hud=page.locator('.pg-hud [data-head="photo"] img'),world=page.locator('.pg-body.me [data-head="photo"] img');await expect(world).toBeVisible();expect(await faceAlpha(hud)).toEqual([0,128,255]);expect(await faceAlpha(world)).toEqual([0,128,255]);for(const image of [hud,world])expect(await image.evaluate(img=>{const s=getComputedStyle(img.parentElement);return [s.borderWidth,s.boxShadow,s.padding,s.borderRadius];})).toEqual(['0px','none','0px','0px']);
   await page.screenshot({path:`test-results/translucent-face-world-${viewport.width}.png`,fullPage:true});await context.close();
  });
 }

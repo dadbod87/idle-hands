@@ -49,3 +49,8 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 ## Per-planter watering
 - [ ] Activate Dave’s planter by keyboard/touch, then the couch-side planter; verify exact actor/effect anchors and independent rotations across reload.
 - [ ] Test desktop/phone/short landscape, bubble/actor/prop clearance or caption fallback, preserved field-guide destination and unchanged player progress/shared plant activity.
+
+## Frameless faces and weekly secret
+- [ ] Check photo-head computed border/shadow/padding/clipping and alpha in preview/HUD/world; review desktop/phone screenshots.
+- [ ] Execute actual scheduler/claim SQL with 1,000 draws, reset/DST/year boundaries, stable same-week time, stale pins, one shared claim and unchanged progress/grants.
+- [ ] Verify the guarded function migration and existing claim remain intact before frontend release; never trigger a real secret claim for QA.

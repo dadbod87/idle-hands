@@ -91,3 +91,7 @@ Preserve alpha through the 256px crop and PNG upload. The shared custom-head ink
 ## Build 179 per-planter watering
 
 Carry scenery identity through inspection, walking and performance so each plant uses its own world anchor and local joke rotation. Preserve shared plant art, watering-can design and server activity kind. Bubbles must clear the selected prop and actor; short viewports keep the feedback-caption fallback.
+
+## Build 180 custom faces without frames
+
+Custom-photo heads render their own silhouette: no added border, padding, shadow or corner clipping. Preserve PNG alpha and shared avatar dimensions. Keep the picker tile’s selected/focus outline as a control affordance. This owner request supersedes the earlier ink-framed-photo direction.
