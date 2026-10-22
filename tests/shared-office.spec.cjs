@@ -16,7 +16,7 @@ test('real shared ballots, named commendations and lounge scenes persist across 
  // Explicit server-fixture history crosses all story thresholds; no production data is used.
  for(const id of [aid,bid])for(const kind of ['plant','bench','apology','calendar','shelf','notice','lounge','printer'])store.perform(id,kind);
  await open(b,'lounge');await expect(b.getByTestId('lounge-story')).toContainText('Commemorative planning plaque installed');await expect(b.getByTestId('lounge-story')).toContainText('16 recorded');await b.screenshot({path:'test-results/mobile-shared-lounge.png',fullPage:true});
- await b.getByRole('button',{name:'Contribute to the planning phase',exact:true}).tap();await expect(b.getByTestId('prop-performance')).toBeVisible({timeout:20000});await expect(b.getByTestId('lounge-milestone')).toHaveClass(/stage-3/);await expect(b.getByTestId('prop-performance')).toHaveCount(0,{timeout:10000});await b.screenshot({path:'test-results/mobile-lounge-world-milestone.png',fullPage:true});
+ await b.getByRole('button',{name:'Contribute to the planning phase',exact:true}).tap();await expect(b.getByTestId('prop-performance')).toBeVisible({timeout:20000});await expect(b.locator('.pg-stage').getByTestId('prop-performance')).toHaveCount(0);await expect(b.locator('.pg-prop-performance')).toHaveCount(0);await expect(b.getByTestId('lounge-milestone')).toHaveClass(/stage-3/);await expect(b.getByTestId('prop-performance')).toHaveCount(0,{timeout:10000});await b.screenshot({path:'test-results/mobile-lounge-world-milestone.png',fullPage:true});
  for(const f of [fa,fb]){expect(f.player.pp).toBe(500000);expect(f.player.equity).toBe(2);expect(f.player.owned.intern).toBe(2);}expect(errors).toEqual([]);
  await aCtx.close();await bCtx.close();
 });
