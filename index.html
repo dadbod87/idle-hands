@@ -3442,7 +3442,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 178 · clearly you";
+const BUILD = "build 179 · local watering";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4326,15 +4326,15 @@ function OfficeFloor() {
     setFloor(await loadFloor());
   };
 
-  const performScene=(kind)=>{
-    const action=PROP_ACTIONS[kind];if(!action)return;const prop=SCENERY.find(p=>p.kind===kind);const anchor=prop||FIXTURES.find(f=>f.id===(kind==="lounge"?"lounge":"printer"));
-    const stored=sceneSerial.current[kind],variant=Number.isSafeInteger(stored)&&stored>=0?stored:0;sceneSerial.current[kind]=(variant+1)%action.lines.length;try{localStorage.setItem("ih-scenes-"+meRef.current.id,JSON.stringify(sceneSerial.current));}catch{}const line=action.lines[variant%action.lines.length];
-    setPropScene({kind,variant,line,top:anchor.y,px:anchor.x+anchor.w/2,py:anchor.y+anchor.h*.5});clearTimeout(sceneTimer.current);sceneTimer.current=setTimeout(()=>setPropScene(null),6500);
+  const performScene=(target)=>{
+    const anchor=propSceneTarget(target);if(!anchor)return;const {kind,serialKey}=anchor;const action=PROP_ACTIONS[kind];if(!action)return;
+    const stored=sceneSerial.current[serialKey],variant=Number.isSafeInteger(stored)&&stored>=0?stored:0;sceneSerial.current[serialKey]=(variant+1)%action.lines.length;try{localStorage.setItem("ih-scenes-"+meRef.current.id,JSON.stringify(sceneSerial.current));}catch{}const line=action.lines[variant%action.lines.length];
+    setPropScene({kind,propId:anchor.id,variant,line,top:anchor.y,px:anchor.x+anchor.w/2,py:anchor.y+anchor.h*.5});clearTimeout(sceneTimer.current);sceneTimer.current=setTimeout(()=>setPropScene(null),6500);
     doEmote(action.emote,6000);say(line,"sys");sfx(kind==="plant"?"break":"pop");
     filePlay(()=>api.officePerform(kind),null);
   };
   scenePerformRef.current=performScene;
-  const startPropScene=(kind)=>{const prop=SCENERY.find(p=>p.kind===kind)||FIXTURES.find(f=>f.id===(kind==="lounge"?"lounge":"printer"));if(!prop)return;setPanel(null);routeTo(prop.x+prop.w/2,kind==="bench"?prop.y+prop.h-20:prop.y+prop.h+40,"scene:"+kind);};
+  const startPropScene=(target)=>{const prop=propSceneTarget(target);if(!prop)return;setPanel(null);routeTo(prop.x+prop.w/2,prop.kind==="bench"?prop.y+prop.h-20:prop.y+prop.h+40,"scene:"+prop.id);};
 
   const grabChair = async () => {
     const current=chairAt();if(!current){flash("The good chair has moved on. Emotionally, so have we.");return;}
@@ -4379,6 +4379,7 @@ function OfficeFloor() {
     y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h / 2, 0, ROOM.h - view.h),
   };
   if(propScene)cam.y=propCameraY(cam.y,propScene,pos,view,propBubbleHeight,ROOM.h);
+  const inspectedProp=panel?.startsWith("prop:")?propSceneTarget(panel.slice(5)):null;
   const jamClaim = office?.printer || null;
   const jamFixedBy = jam && jamClaim && jamClaim.window === jam.window ? jamClaim.by : null;
   const printerBox = FIXTURES.find((x) => x.id === "printer");
@@ -4661,7 +4662,7 @@ function OfficeFloor() {
              onClick={walkClick}>
           <div className="pg-wall" style={{ height: WALL_H }} />
           <div className="pg-carpet" style={{ top: WALL_H }} />
-          <OfficeEnvironment variant={officeSceneAt(funTick)} celebrating={!!office?.hit} onInspect={kind=>setPanel("prop:"+kind)}/>
+          <OfficeEnvironment variant={officeSceneAt(funTick)} celebrating={!!office?.hit} onInspect={id=>setPanel("prop:"+id)}/>
           {propScene&&<PropPerformance scene={propScene}/>}
           {propScene&&<PropPunchline scene={propScene} cam={cam} view={view} pos={pos} onHeight={setPropBubbleHeight}/>}
           <LoungeWorld play={play}/>
@@ -4878,8 +4879,8 @@ function OfficeFloor() {
       {showHelp && <Help onClose={() => setShowHelp(false)} rate={rate} onGuide={()=>{setShowHelp(false);openGuide();}} />}
 
       {panel && (
-        <Panel stablePurchases={panel==="shop"||panel==="mirror"} receipt={reaction&&!["work","filed"].includes(reaction.kind)?reaction:null} onClose={() => setPanel(null)} title={panel.startsWith("prop:")?PROP_LABELS[panel.slice(5)]:PANEL_TITLES[panel]}>
-          {panel.startsWith("prop:")&&<PropInspection kind={panel.slice(5)} variant={officeSceneAt(funTick)} onCoffee={joinCoffeeBreak} onPerform={startPropScene}/> }
+        <Panel stablePurchases={panel==="shop"||panel==="mirror"} receipt={reaction&&!["work","filed"].includes(reaction.kind)?reaction:null} onClose={() => setPanel(null)} title={panel.startsWith("prop:")?(inspectedProp?.label||PROP_LABELS[inspectedProp?.kind]):PANEL_TITLES[panel]}>
+          {panel.startsWith("prop:")&&<PropInspection kind={inspectedProp?.kind} propId={inspectedProp?.id} variant={officeSceneAt(funTick)} onCoffee={joinCoffeeBreak} onPerform={startPropScene}/> }
           {panel === "shop" && (
             <Shop cat={cat} me={me} pp={pp} rate={rate}
               pins={pins}
@@ -5651,8 +5652,16 @@ const SCENERY = [
  {id:"printer-apology",zone:"work",kind:"apology",x:2420,y:540,w:68,h:84},
  {id:"calendar-loop",zone:"management",kind:"calendar",x:2200,y:170,w:160,h:150},
  {id:"office-shelf",zone:"work",kind:"shelf",x:1850,y:1080,w:200,h:155},
- {id:"management-plant",zone:"management",kind:"plant",x:1880,y:180,w:110,h:130},
+ {id:"management-plant",label:"Inspect the plant by Dave’s office",zone:"management",kind:"plant",x:1880,y:180,w:110,h:130},
 ];
+// Explicit scenery IDs survive inspection, routing and arrival. Kind-only entry
+// points (field guide/lounge) retain their original default destination/rotation.
+function propSceneTarget(target){
+ const prop=SCENERY.find(p=>p.id===target)||SCENERY.find(p=>p.kind===target);
+ if(prop)return {...prop,serialKey:SCENERY.find(p=>p.kind===prop.kind).id===prop.id?prop.kind:prop.id};
+ const fixture=["lounge","printer"].includes(target)?FIXTURES.find(f=>f.id===target):null;
+ return fixture?{...fixture,kind:target,serialKey:target}:null;
+}
 const PROP_LABELS={plant:"Inspect the plant",apology:"Read the printer apology",calendar:"Check the calendar",shelf:"Browse Misc. Urgent",bench:"Take a minute on the couch",notice:"Read the break room notice"};
 const PROP_STORIES={
  plant:["WATERING ROTA","PLASTIC. STILL THIRSTY.","WATERING COMMITTEE"],
@@ -5706,7 +5715,7 @@ function OfficeEnvironment({variant=0,celebrating=false,onInspect}){
   <div className="pg-zone pg-zone-break" data-zone="break" style={{left:290,top:520,width:800,height:660}}><span>THE BREAK ROOM <small>productivity is on a break</small></span><i/></div>
   <div className="pg-zone pg-zone-work" data-zone="work" style={{left:1220,top:1040,width:1630,height:210}}><span>THE PAPER TRAIL <small>please retain for no reason</small></span></div>
   <div className="pg-zone pg-zone-management" data-zone="management" style={{left:1870,top:145,width:540,height:295}}><span>MANAGEMENT <small>by appointment, apparently</small></span></div>
-  {SCENERY.map(p=>{const interactive=!!onInspect&&!!PROP_STORIES[p.kind],style={left:p.x,top:p.y,width:p.w,height:p.h,zIndex:Math.round(p.y+p.h)};return interactive?<button key={p.id} type="button" className="pg-scenery pg-scenery-inspect" data-scenery={p.id} style={style} aria-label={PROP_LABELS[p.kind]} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")e.stopPropagation();}} onClick={e=>{e.stopPropagation();onInspect(p.kind);}}><SceneryArt kind={p.kind} variant={variant} celebrating={celebrating}/><small>{p.kind==="bench"?"Take a minute":p.kind==="shelf"?"Browse":"Read"}</small></button>:<div key={p.id} className="pg-scenery" data-scenery={p.id} style={style}><SceneryArt kind={p.kind} variant={variant} celebrating={celebrating}/></div>;})}
+  {SCENERY.map(p=>{const interactive=!!onInspect&&!!PROP_STORIES[p.kind],style={left:p.x,top:p.y,width:p.w,height:p.h,zIndex:Math.round(p.y+p.h)};return interactive?<button key={p.id} type="button" className="pg-scenery pg-scenery-inspect" data-scenery={p.id} style={style} aria-label={p.label||PROP_LABELS[p.kind]} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")e.stopPropagation();}} onClick={e=>{e.stopPropagation();onInspect(p.id);}}><SceneryArt kind={p.kind} variant={variant} celebrating={celebrating}/><small>{p.kind==="bench"?"Take a minute":p.kind==="shelf"?"Browse":"Read"}</small></button>:<div key={p.id} className="pg-scenery" data-scenery={p.id} style={style}><SceneryArt kind={p.kind} variant={variant} celebrating={celebrating}/></div>;})}
  </>;
 }
 
@@ -6381,10 +6390,10 @@ function PropPunchline({scene,cam,view,pos,onHeight}){
   return()=>observer.disconnect();
  },[scene.line,width,onHeight]);
  const fits=height>0&&bottom-height>=cam.y+10&&bottom+8<=cam.y+view.h-10;
- return <div ref={ref} className="pg-deskbubble pg-prop-bubble" data-testid="prop-bubble" aria-hidden="true" style={{left:clamp(scene.px,cam.x+width/2+12,cam.x+view.w-width/2-12),top:bottom,width,visibility:fits?"visible":"hidden",zIndex:Math.round(scene.py+3000)}}>{scene.line}</div>;
+ return <div ref={ref} className="pg-deskbubble pg-prop-bubble" data-testid="prop-bubble" data-scenery-target={scene.propId} aria-hidden="true" style={{left:clamp(scene.px,cam.x+width/2+12,cam.x+view.w-width/2-12),top:bottom,width,visibility:fits?"visible":"hidden",zIndex:Math.round(scene.py+3000)}}>{scene.line}</div>;
 }
 function PropPerformance({scene}){return <>
- {scene.kind!=="bench"&&<svg className={"pg-scene-effect effect-"+scene.kind} aria-hidden="true" viewBox="0 0 100 80" fill="none" stroke="#2B2B2B" strokeWidth="2.5" style={{left:scene.px-(scene.kind==="plant"?65:0),top:scene.py,zIndex:Math.round(scene.py+2000)}}>
+ {scene.kind!=="bench"&&<svg className={"pg-scene-effect effect-"+scene.kind} data-scenery-target={scene.propId} aria-hidden="true" viewBox="0 0 100 80" fill="none" stroke="#2B2B2B" strokeWidth="2.5" style={{left:scene.px-(scene.kind==="plant"?65:0),top:scene.py,zIndex:Math.round(scene.py+2000)}}>
  {scene.kind==="plant"?<WateringCanArt/>:scene.kind==="notice"?<>{[10,38,66].map((x,i)=><g key={x} className="pg-scene-sheet"><path d={`M${x} 18h20v26q-10 5-20 0Z`} fill={["#8FA67A","#F78B6B","#7B9CC4"][i]}/><path d={`M${x+20} 23q14-1 0 12`}/><path d={`M${x+5} 33q5 5 10 0`}/></g>)}</>:<g className="pg-scene-sheet"><path d="M29 8h43v58H29Z" fill="#FFF8E9"/><path d="M37 22h27m-27 9h24m-24 9h26" stroke="#A59C88"/><path d="m23 51 55-9 2 17-55 9Z" fill="#FFD36B"/><text x="51" y="58" fontSize="6" textAnchor="middle" fill="#B23B2E" stroke="none">{scene.kind==="lounge"?"APPROVED?":"FILED. WHY?"}</text></g>}
  </svg>}
  </>;}
@@ -6400,10 +6409,10 @@ const PROP_PUNCHLINES={
  bench:["You sit down. The couch sighs first. It has been in more meetings than you.","The lunch bag is holding this seat for someone who works from home.","You have successfully done nothing for a moment. Management has requested the minutes."],
  notice:["Please take a minute. Please return it when finished. We are running low.","Return the good mugs. No questions asked. Several very pointed looks provided.","Your fish may be delicious. The microwave does not need to meet it."]
 };
-function PropInspection({kind,variant=0,onCoffee,onPerform}){
+function PropInspection({kind,propId,variant=0,onCoffee,onPerform}){
  const phase=((variant%3)+3)%3;
  if(!PROP_STORIES[kind])return null;
- return <section className="pg-prop-inspection" data-testid="prop-inspection"><SceneryArt kind={kind} variant={phase}/><h3>{PROP_STORIES[kind][phase]}</h3><p>{({apology:"Facilities posted this beside the printer after its latest paper jam.",calendar:"Management's meeting calendar. Every slot has a slot to discuss it.",plant:"The office watering rota. It applies even to this plastic plant.",shelf:"The office reference shelf. Five binders, one suspiciously permanent urgent tray.",bench:"The break-room couch. A perfectly respectable place to stop looking productive.",notice:"The break-room noticeboard. Small notices. Strong opinions. Officially optional."})[kind]}</p><p className="pg-note">{PROP_PUNCHLINES[kind][phase]}</p><small>Office nonsense. No cost, no reward, no meeting to attend.</small>{onPerform&&PROP_ACTIONS[kind]&&<p><button className="pg-btn primary" onClick={()=>onPerform(kind)}>{PROP_ACTIONS[kind].label}</button></p>}{onCoffee&&["bench","notice"].includes(kind)&&<p><button className="pg-btn" onClick={onCoffee}>Head to the break table</button></p>}</section>;
+ return <section className="pg-prop-inspection" data-testid="prop-inspection"><SceneryArt kind={kind} variant={phase}/><h3>{PROP_STORIES[kind][phase]}</h3><p>{({apology:"Facilities posted this beside the printer after its latest paper jam.",calendar:"Management's meeting calendar. Every slot has a slot to discuss it.",plant:propId==="management-plant"?"The planter by Dave’s office has its own watering rota. Management is monitoring the plastic.":"The office watering rota. It applies even to this plastic plant.",shelf:"The office reference shelf. Five binders, one suspiciously permanent urgent tray.",bench:"The break-room couch. A perfectly respectable place to stop looking productive.",notice:"The break-room noticeboard. Small notices. Strong opinions. Officially optional."})[kind]}</p><p className="pg-note">{PROP_PUNCHLINES[kind][phase]}</p><small>Office nonsense. No cost, no reward, no meeting to attend.</small>{onPerform&&PROP_ACTIONS[kind]&&<p><button className="pg-btn primary" onClick={()=>onPerform(propId||kind)}>{PROP_ACTIONS[kind].label}</button></p>}{onCoffee&&["bench","notice"].includes(kind)&&<p><button className="pg-btn" onClick={onCoffee}>Head to the break table</button></p>}</section>;
 }
 function KindnessBoard({wire}){
  const notes=(wire||[]).filter(d=>DEED_TEXT[d.kind]?.good&&!DEED_TEXT[d.kind]?.office).slice(0,3);
