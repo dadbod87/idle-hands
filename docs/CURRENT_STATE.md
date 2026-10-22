@@ -1,3 +1,15 @@
+# Build 173 — you found nothing (2026-10-22)
+
+The invite-door joke now has its own warm-gold, readable line instead of disappearing into 10px low-opacity fine print. Supporting copy is 12px opaque text. Invite validation, account creation and gameplay are unchanged. Frontend rollback: revert this release.
+
+The owner separately authorized a fresh-launch production account reset. Executed once through the connected Supabase SQL tool against project wbakpxbvqxppqbrwuokp: four Auth accounts and three characters removed, along with refresh tokens, sessions, player/social history, suggestions, seasonal winners and shared participation. Independent read-back confirmed accounts/characters/sessions/refresh tokens/event claims/shared activity all zero. Hash guards preserved all 26 catalog rows, public game-function definitions and door settings except the now-empty admin pointer; the existing first-new-player admin assignment remains. No schema, RPC, invite-code or schedule change. This is an explicit administrative operation, not a regression test or weekly rollover. The guarded one-time SQL is archived under ops/ and must never run automatically. Six legacy uploaded badge photos remain in Storage; connected tools expose no Storage deletion API. Clean them through Supabase Storage → badges, retaining the bucket and policies. No claim of complete uploaded-file erasure.
+
+Canonical game address is now https://idlehands.thepatrongrp.com/ (same Vercel project and Supabase database); https://game.thepatrongrp.com/ is the separately hosted hub. These user-confirmed DNS/TLS changes supersede the old-domain notes below. Old address forwarding has not been enabled.
+
+Validation: local JSX/economy and approved-name checks passed. After installing missing Chromium, both desktop and 390px entry browser tests passed; screenshots visually reviewed for legibility and clipping. No production account was created. Required CI gates and live deployment verification pending; exact evidence belongs in PR.
+
+---
+
 # Build 172 — above the paperwork (2026-10-22)
 
 Prop jokes now also appear in a small text-only bubble matching the existing cigar-lounge/desk speech style. Its bottom stays above both the prop and character; its horizontal position stays inside the camera. Actual text height is measured before showing it. When a short viewport has no headroom, keep the bubble hidden and retain the readable feedback-strip caption instead of moving text over the action. No illustration card returns. Couch pose, can beside the plant, small effects, saved scripts, shared participation and all gameplay remain. No backend/data/economy change. Rollback: revert this frontend release.
