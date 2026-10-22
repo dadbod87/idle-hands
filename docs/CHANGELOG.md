@@ -2,6 +2,11 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-22: Build 170 — a little more headroom
+- Fixed camera-edge clipping caught in the hosted desktop smoke after build 169. Full scene cards stay in the current viewport; short landscape views use compact text beside the actor. No backend/data/economy change.
+- Replaced the blue-box watering can with one shared illustrated can: open loop handle, rounded reservoir, fill opening, angled spout, brass shower rose and droplets. Both world effect and scene card use it.
+- Explicit scene bounds checks added for desktop, phone portrait and short landscape; required CI and deployment evidence in release PR.
+
 ## 2026-10-22: Build 169 — questionable responsibilities
 - Fixed ambient/partner bingo collection, memo failure draft retention/pending sends, and chair approach interaction.
 - Added free original animated prop performances, rotating punchlines, sitting/watering poses, optional field guide, Help discoveries, and 36 non-adjacent-repeat log gags. Successful real printer fixes get a confirmed visual joke.
