@@ -35,3 +35,9 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Check zero-income expiry, future starts (including timestamp-valued legacy `from`), multiple benefits/penalties, full long-name details, keyboard/tap/hover, no duplicate status badges and retained settlement/notification controls.
 - [ ] Preserve build 174 TV/four-screen and prop/camera tests.
 - [ ] Confirm the served production HTML matches the merged artifact, capture production desktop/mobile in-game screenshots, and disclose intercepted fixture data.
+
+## Stable purchases and custom faces
+- [ ] Repeatedly click a fixed purchase coordinate across receipt arrival/expiry; verify target/neighbor bounds and no unintended purchase on desktop, phone and short landscape.
+- [ ] Test custom face selection, preview, invalid/decode/upload failure, retry, save/reload, HUD/world rendering, illustrated/photo switching and unchanged progress using intercepted fixtures.
+- [ ] Execute the photo extension through the isolated wardrobe SQL suite; verify the guarded additive migration live before frontend deployment.
+- [ ] Inspect head-picker and in-game screenshots at phone/desktop and preserve prior HUD, wardrobe, TV and prop gates.

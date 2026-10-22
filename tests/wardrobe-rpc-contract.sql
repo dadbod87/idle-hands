@@ -49,3 +49,19 @@ BEGIN
  IF NOT EXISTS (SELECT 1 FROM public.players WHERE id=auth.uid() AND wardrobe_owned ? 'blazer') THEN RAISE EXCEPTION 'Permanent inventory lost during reset'; END IF;
  RAISE NOTICE 'PASS: purchase, pricing, ownership, equip, avatar persistence, invalid input and reset';
 END $tests$;
+
+-- Extend the actual deployed function; installation cannot rewrite players.
+CREATE TEMP TABLE photo_before AS SELECT row_to_json(p)::jsonb AS value FROM public.players p;
+\i supabase/migrations/20261022192506_custom_photo_head.sql
+DO $photo_tests$
+DECLARE p public.players; rejected boolean:=false;
+BEGIN
+ IF (SELECT value FROM photo_before)<>(SELECT row_to_json(employee_row)::jsonb FROM public.players employee_row) THEN RAISE EXCEPTION 'Photo installation changed a player'; END IF;
+ IF has_function_privilege('anon','public.set_look(jsonb)','EXECUTE') OR NOT has_function_privilege('authenticated','public.set_look(jsonb)','EXECUTE') THEN RAISE EXCEPTION 'Photo migration changed grants'; END IF;
+ p:=public.set_look('{"head":"photo","clothing":"blazer"}');
+ IF p.look->>'head'<>'photo' OR p.pp<>0 OR NOT p.wardrobe_owned ? 'blazer' THEN RAISE EXCEPTION 'Photo persistence changed progress'; END IF;
+ p:=public.set_look('{"clothing":"blazer"}');IF p.look->>'head'<>'photo' THEN RAISE EXCEPTION 'Older client erased photo selection'; END IF;
+ p:=public.set_look('{"head":"frog","clothing":"blazer"}');IF p.look->>'head'<>'frog' THEN RAISE EXCEPTION 'Cannot return to illustrated head'; END IF;
+ BEGIN PERFORM public.set_look('{"head":"photo2"}');EXCEPTION WHEN others THEN rejected:=true;END;IF NOT rejected THEN RAISE EXCEPTION 'Unknown photo head accepted'; END IF;
+ RAISE NOTICE 'PASS: photo extension, no install writes, grants, persistence, illustrated switch and unchanged progress';
+END $photo_tests$;
