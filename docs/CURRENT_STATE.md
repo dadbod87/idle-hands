@@ -1,3 +1,11 @@
+# Build 171 — let the office perform (2026-10-22)
+
+Removed the large illustrated world popup from every prop performance, including couch, plant, paperwork, printer and lounge. Rotating punchlines now appear as plain text in the existing feedback strip below the floor, alongside any confirmation/error message. The floor shows only character poses and small prop effects. The watering can sits beside the plant rather than over it. Inspection dialogs remain deliberate actions; illustration gallery/certificates remain intact. No data, inventory, economy, RPC or sound changes. Rollback: revert this frontend release.
+
+Desktop/phone/short-landscape checks assert no scene popup or joke text inside the floor, retain actual world effects, couch pose, script rotation and progress. Release CI/deployment evidence is recorded in the PR. Physical-device and real production gameplay writes remain unverified.
+
+---
+
 # Build 170 — camera-safe joke cards (2026-10-22)
 
 Post-deployment review of build 169 found that a world-bounded scene card could still clip above the *camera* at the bottom of the map. Cards now clamp to the visible camera rectangle; short landscape views use a compact text card beside the actor. Prop effects remain anchored to the prop. The watering can now has a large open handle, rounded reservoir, fill opening, angled spout and brass shower rose; the world effect and card share the same SVG artwork. No database, inventory or economy change. Desktop/portrait/landscape tests explicitly check scene-card bounds. Build 169 feature release evidence is PR #25; this frontend correction follows its full gate in its own PR.

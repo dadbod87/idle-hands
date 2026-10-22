@@ -1542,7 +1542,7 @@ body{background:#D9CDC0}
 .pg-panel-receipt{display:flex;align-items:center;gap:9px;padding:10px 14px;background:#E3EBD8;border-bottom:1px solid #A3AC91;font:700 12px var(--sans)}
 
 /* Notifications get their own measured row rather than covering touch controls. */
-.pg-feedback-rail{border:2px solid var(--ink);border-top:0;background:#EEE4D0;min-height:30px;padding:6px 10px;display:flex;align-items:center;font:11px/1.3 var(--mono)}
+.pg-feedback-rail{border:2px solid var(--ink);border-top:0;background:#EEE4D0;min-height:30px;padding:6px 10px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;font:11px/1.3 var(--mono)}
 .pg-feedback-idle{color:#756D5D}.pg-feedback-rail .pg-toast{position:static;z-index:auto;display:block;transform:none;max-width:none;width:100%;background:none;color:#2B2B2B;padding:0;margin:0;text-align:left;font:700 11px/1.35 var(--sans)}
 .pg-more,.pg-more-content{display:contents}.pg-more-toggle,.pg-sound-shortcut,.pg-walk-hint-short{display:none!important}.pg-panel:focus,.pg-card:focus{outline:none}.pg-x{min-height:44px;min-width:54px}
 @media(max-width:540px){
@@ -1570,8 +1570,7 @@ body{background:#D9CDC0}
 
 
 /* Office performances are local, short and pointer-transparent. */
-.pg-prop-performance{position:absolute;width:240px;transform:translate(-50%,-100%);pointer-events:none;text-align:center;background:#FFF8E9;border:2px solid var(--ink);box-shadow:3px 4px 0 #2B2B2B44;padding:8px;max-width:70vw;font:700 12px var(--mono)}
-.pg-prop-performance svg{display:block;width:110px;height:74px;margin:auto}.pg-prop-performance b{display:block}
+.pg-prop-caption{display:block;width:100%;font-weight:700}
 .pg-scene-sheet{animation:scene-paper .6s ease-out}.pg-scene-drops{animation:scene-water .8s linear infinite}
 @keyframes scene-paper{from{transform:translateY(18px)}to{transform:translateY(0)}}@keyframes scene-water{50%{transform:translateY(5px);opacity:.4}}
 .pg-body.em-sit .pg-leg{transform:rotate(-65deg);transform-origin:top center}.pg-body.em-sit .pg-rig{transform:translateY(13px)}
@@ -1587,7 +1586,6 @@ body{background:#D9CDC0}
 
 .pg-card:has(.pg-community-card),.pg-card:has(.pg-field-guide){width:min(760px,calc(100vw - 24px));max-width:min(760px,calc(100vw - 24px))}
 
-.pg-prop-performance.compact{font-size:11px}.pg-prop-performance.compact svg{display:none}
 .pg-scene-effect{position:absolute;width:90px;height:72px;transform:translate(-50%,-50%);pointer-events:none}
 </style>
 </head>
@@ -3387,7 +3385,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 170 · a little more headroom";
+const BUILD = "build 171 · let the office perform";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4227,7 +4225,7 @@ function OfficeFloor() {
   const performScene=(kind)=>{
     const action=PROP_ACTIONS[kind];if(!action)return;const prop=SCENERY.find(p=>p.kind===kind);const anchor=prop||FIXTURES.find(f=>f.id===(kind==="lounge"?"lounge":"printer"));
     const stored=sceneSerial.current[kind],variant=Number.isSafeInteger(stored)&&stored>=0?stored:0;sceneSerial.current[kind]=(variant+1)%action.lines.length;try{localStorage.setItem("ih-scenes-"+meRef.current.id,JSON.stringify(sceneSerial.current));}catch{}const line=action.lines[variant%action.lines.length];
-    setPropScene({kind,variant,line,x:clamp(anchor.x+anchor.w/2,150,ROOM.w-150),y:Math.max(165,anchor.y-12),px:anchor.x+anchor.w/2,py:anchor.y+anchor.h*.5});clearTimeout(sceneTimer.current);sceneTimer.current=setTimeout(()=>setPropScene(null),6500);
+    setPropScene({kind,variant,line,px:anchor.x+anchor.w/2,py:anchor.y+anchor.h*.5});clearTimeout(sceneTimer.current);sceneTimer.current=setTimeout(()=>setPropScene(null),6500);
     doEmote(action.emote,6000);say(line,"sys");sfx(kind==="plant"?"break":"pop");
     filePlay(()=>api.officePerform(kind),null);
   };
@@ -4572,7 +4570,7 @@ function OfficeFloor() {
           <div className="pg-wall" style={{ height: WALL_H }} />
           <div className="pg-carpet" style={{ top: WALL_H }} />
           <OfficeEnvironment variant={officeSceneAt(funTick)} celebrating={!!office?.hit} onInspect={kind=>setPanel("prop:"+kind)}/>
-          {propScene&&<PropPerformance scene={propScene} cam={cam} view={view}/>}
+          {propScene&&<PropPerformance scene={propScene}/>}
           <LoungeWorld play={play}/>
 
           {DECOR.map((d, i) => d.t === "kitchenfloor" ? (
@@ -4751,7 +4749,7 @@ function OfficeFloor() {
         )}
       </div>
 
-      <div className="pg-feedback-rail" role="status" aria-live="polite" aria-atomic="true">{toast?<span key={toast.k} className="pg-toast">{toast.text}</span>:<span className="pg-feedback-idle">Quiet floor. Loud stationery.</span>}</div>
+      <div className="pg-feedback-rail" role="status" aria-live="polite" aria-atomic="true">{toast&&<span key={toast.k} className="pg-toast">{toast.text}</span>}{propScene?<span className={"pg-prop-caption scene-"+propScene.kind} data-testid="prop-performance">{propScene.line}</span>:!toast&&<span className="pg-feedback-idle">Quiet floor. Loud stationery.</span>}</div>
       <div className="pg-bar">
         <button className={"pg-work" + (atDesk ? "" : " away")} onClick={doWork} disabled={!!dougCall}>
           {dougCall ? <>Doug is on the phone <em>{Math.ceil(Math.max(0,dougCall.until-Date.now())/1000)}s</em></> : atDesk ? <>Do actual work <em>+{fmt(clickPow)} BW</em></>
@@ -6235,9 +6233,8 @@ function PerformanceArt({kind,variant=0}){
  {kind==="plant"?<><g transform="translate(0 5) scale(1.05)"><WateringCanArt/></g><path d="M104 85h30l-4 12h-22Z" fill="#C58E69"/><path d="M119 85V53q-22-8-21-22 22 0 21 22 23-15 22-28-22 6-22 28" fill="#8FA67A"/></>:kind==="bench"?<><rect x="13" y="35" width="124" height="48" rx="10" fill="#7B9CC4"/><path d="M17 65h116m-72-27v27M20 83v10m110-10v10"/><path d="M72 50h49v20H72Z" fill="#FFD36B"/><text x="97" y="63" textAnchor="middle" fontSize="8" fill="#2B2B2B" stroke="none">ON BREAK</text></>:kind==="lounge"?<><path d="M22 12v80m106-80v80" stroke="#9B714B" strokeWidth="7"/><path d="M18 38h114v16H18Z" fill="#B23B2E"/><path d="m65 27 12 40m7-40-17 40" stroke="#F8F1E3"/><rect x="35" y="66" width="80" height="27" rx="3" fill="#FFD36B"/><text x="75" y="83" textAnchor="middle" fill="#2B2B2B" fontSize="9" stroke="none">PLANNING</text></>:<><path className="pg-scene-sheet" d="M42 8h67v81H42Z" fill="#F8F1E3"/><path d="M54 30h43m-43 10h34m-34 10h43m-43 10h36" stroke="#A59C88" strokeWidth="2"/><g transform={"rotate("+(variant%2?8:-8)+" 77 72)"}><rect x="47" y="65" width="60" height="19" fill="#FFE6A1" stroke="#B23B2E"/><text x="77" y="78" textAnchor="middle" fill="#B23B2E" fontSize="8" stroke="none">{kind==="calendar"?"RECURRING":kind==="shelf"?"VERY URGENT":"UNHELPFUL"}</text></g></>}
  </svg>;
 }
-function PropPerformance({scene,cam,view}){const compact=view.h<300,x=compact?cam.x+view.w*.25:clamp(scene.x,cam.x+130,cam.x+view.w-130),y=compact?cam.y+Math.min(90,view.h-12):clamp(scene.y,cam.y+160,cam.y+view.h-12);return <>
- <div className={"pg-prop-performance scene-"+scene.kind+(compact?" compact":"")} data-testid="prop-performance" style={{left:x,top:y,zIndex:Math.round(y+5000)}}><PerformanceArt kind={scene.kind} variant={scene.variant}/><b>{scene.line}</b></div>
- {scene.kind!=="bench"&&<svg className={"pg-scene-effect effect-"+scene.kind} aria-hidden="true" viewBox="0 0 100 80" fill="none" stroke="#2B2B2B" strokeWidth="2.5" style={{left:scene.px,top:scene.py,zIndex:Math.round(scene.py+2000)}}>
+function PropPerformance({scene}){return <>
+ {scene.kind!=="bench"&&<svg className={"pg-scene-effect effect-"+scene.kind} aria-hidden="true" viewBox="0 0 100 80" fill="none" stroke="#2B2B2B" strokeWidth="2.5" style={{left:scene.px-(scene.kind==="plant"?65:0),top:scene.py,zIndex:Math.round(scene.py+2000)}}>
  {scene.kind==="plant"?<WateringCanArt/>:scene.kind==="notice"?<>{[10,38,66].map((x,i)=><g key={x} className="pg-scene-sheet"><path d={`M${x} 18h20v26q-10 5-20 0Z`} fill={["#8FA67A","#F78B6B","#7B9CC4"][i]}/><path d={`M${x+20} 23q14-1 0 12`}/><path d={`M${x+5} 33q5 5 10 0`}/></g>)}</>:<g className="pg-scene-sheet"><path d="M29 8h43v58H29Z" fill="#FFF8E9"/><path d="M37 22h27m-27 9h24m-24 9h26" stroke="#A59C88"/><path d="m23 51 55-9 2 17-55 9Z" fill="#FFD36B"/><text x="51" y="58" fontSize="6" textAnchor="middle" fill="#B23B2E" stroke="none">{scene.kind==="lounge"?"APPROVED?":"FILED. WHY?"}</text></g>}
  </svg>}
  </>;}

@@ -2,6 +2,11 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-22: Build 171 — let the office perform
+- Removed the obstructing illustrated popup from all prop actions; jokes use the feedback strip below the floor. Confirmation/error messages remain visible alongside the caption.
+- Watering can sits beside the plant; couch shows the seated character without a card. Small world effects, saved jokes, reduced motion and shared participation remain.
+- Desktop/phone/landscape and paperwork/lounge/printer browser checks guard against popup recurrence; release evidence in PR. No backend/player-data change.
+
 ## 2026-10-22: Build 170 — a little more headroom
 - Fixed camera-edge clipping caught in the hosted desktop smoke after build 169. Full scene cards stay in the current viewport; short landscape views use compact text beside the actor. No backend/data/economy change.
 - Replaced the blue-box watering can with one shared illustrated can: open loop handle, rounded reservoir, fill opening, angled spout, brass shower rose and droplets. Both world effect and scene card use it.
