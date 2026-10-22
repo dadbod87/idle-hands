@@ -26,7 +26,7 @@ Read **this file first**, followed by `docs/CURRENT_STATE.md`, `docs/CHANGELOG.m
 - Current server idle accrual integrates time-dependent bonuses; check events, buffs, Jess 20% window, chair frenzy 77 seconds, work-hour modifier and offline cap before modifying.
 - Avoid duplicate or competing popups: `While you were out` shows offline BW, `Incident report` covers targeted player actions, `Recap` covers weekly summary. `Office Incident Log` is a separate optional simulated history.
 - Eight rotating office guests shuffle without replacement: Jess, John, Kyle, Matt, Avah, Nick, Rilie, Joey; Chance and Dave are independent. Keep at most 3 NPC avatars, including paired Nick/Matt gag.
-- Office Nonsense features use local browser state for bingo/tasks and deterministic simulated rumors/log. Do not claim cross-device persistence or server gameplay rewards for them.
+- Office Nonsense bingo/tasks use local browser state; rumors/log are deterministic simulated fiction. Shared polls, cosmetic commendations and prop-participation lounge stories (build 169) use authenticated server RPCs and dedicated tables, with no economic rewards. Clearly distinguish these systems; never claim local bingo is synced or invented rumors are actual player activity.
 - User directive (2026-10-21, build 165): preserve the original approved first-name cast, roles, Patron Group branding and Joey's Cigar Lounge. Do not anonymize them again. Do not add surnames, private employee details, credentials, secrets or work data. `tests/fictional-names.test.cjs` now guards the approved display names and stable internal IDs (run before every PR).
 
 ## Gaps and test honesty

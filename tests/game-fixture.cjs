@@ -1,6 +1,15 @@
 // Runs the unmodified game UI and real Supabase client against intercepted HTTP.
 // Every Supabase request is fulfilled locally. No production credentials or writes.
 const fixtureId='00000000-0000-4000-8000-000000000001';
+
+function makeOfficePlayFixture(){
+ const votes={},nominations={},actions={},people={};
+ const state=id=>{const entries=Object.values(votes),counts=[0,1,2].map(i=>entries.filter(v=>v===i).length),totals={},contributors=new Set();for(const [key,a] of Object.entries(actions)){totals[a.kind]=(totals[a.kind]||0)+a.n;contributors.add(a.id);}
+ const grouped={};for(const [key,recipient] of Object.entries(nominations)){const category=key.split('|')[1],k=category+'|'+recipient;grouped[k]??={category,recipient,name:people[recipient]||'QA Pal',votes:0};grouped[k].votes++;}
+ return {week:'2026-43',ends_at:'2026-10-23T23:00:00Z',poll:{question:'Who gets custody of the thermostat?',options:['The Cold Coalition','The Sweater Lobby','The plastic plant'],counts,total:entries.length,mine:votes[id]??null},previous_poll:{question:'The printer needs a name. Legal insists.',options:['Jamothy','Print Eastwood','Out of Office'],counts:[0,0,0],total:0},nominations:Object.values(grouped),my_nominations:Object.fromEntries(Object.entries(nominations).filter(([k])=>k.startsWith(id+'|')).map(([k,v])=>[k.split('|')[1],v])),actions:totals,contributors:contributors.size,my_actions:Object.fromEntries(Object.values(actions).filter(a=>a.id===id).map(a=>[a.kind,a.n])),hydrators:Object.values(actions).filter(a=>a.kind==='plant').map(a=>({id:a.id,name:people[a.id],visits:a.n}))};};
+ return {people,state,vote:(id,c)=>{votes[id]=c;return state(id);},nominate:(id,c,r)=>{nominations[id+'|'+c]=r;return state(id);},perform:(id,k)=>{const key=id+'|'+k,a=actions[key];if(!a)actions[key]={id,kind:k,n:1,t:Date.now()};else if(a.n<6&&Date.now()-a.t>=15000){a.n++;a.t=Date.now();}return state(id);}};
+}
+
 async function installGameFixture(page,options={}) {
  const now=new Date().toISOString();
  const player={id:options.id||fixtureId,name:options.name||'QA Employee',created_at:'2026-01-01T00:00:00Z',signed_at:now,last_tick:now,
@@ -8,7 +17,7 @@ async function installGameFixture(page,options={}) {
  wardrobe_owned:['hoodie','cardigan','blazer','hawaiian','hoodie_gold','friday'],pet:'pig',pets:['pig','calf','moth','pigeon','balloon','dragon'],
  look:{build:'regular',bottom:'trousers',gender:'neutral',hair:'messy',hairColor:1,skin:0,eyes:'tired',expression:'deadpan',top:0,legs:0,clothing:'starter'},
  extras:options.ownedPins||[],pin:options.pin||null,vanity:{},kit:{desk:'d3',chair:'c2',rug:'r2'},streak:0,goodwill:0,notoriety:0};
- const calls=[];
+ const calls=[];const officePlay=options.playStore||makeOfficePlayFixture();officePlay.people[player.id]=player.name;for(const p of options.coworkers||[])officePlay.people[p.id]=p.name;
  await page.addInitScript(({id})=>{
   const exp=Math.floor(Date.now()/1000)+3600;
   const token=btoa(JSON.stringify({alg:'HS256',typ:'JWT'}))+'.'+btoa(JSON.stringify({sub:id,role:'authenticated',exp}))+'.fixture';
@@ -29,12 +38,17 @@ async function installGameFixture(page,options={}) {
    else if(rpc==='set_look'){player.look=args.p_look;result=player;}
    else if(rpc==='dress'){player.outfit={id:args.p_outfit,until:new Date(Date.now()+2700000).toISOString()};player.pp-=120;result=player;}
    else if(rpc==='do_deed'){if(options.onDeed)options.onDeed(player,args);else{player.pp-=100;player.goodwill=(player.goodwill||0)+1;}result=player;}
+   else if(rpc==='fix_printer'){if(!options.onFixPrinter)throw Error('Printer fixture requires an explicit outcome');options.onFixPrinter(player,args);result=player;}
    else if(rpc==='grab_chair'){if(!options.onGrabChair)throw Error('Chair fixture requires an explicit outcome');options.onGrabChair(player,args);result=player;}
    else if(rpc==='do_work'){player.pp+=args.p_clicks;result=player;}
    else if(rpc==='buy_item'){player.owned[args.p_item]=(player.owned[args.p_item]||0)+1;player.pp-=100;result=player;}
    else if(['sync','check_in'].includes(rpc))result=player;
    else if(rpc==='save_achievements'){player.achievements=args.p_list;result=player;}
    else if(rpc==='weekly_schedule')result=options.weekSchedule||{timezone:'America/Los_Angeles',server_now:new Date().toISOString(),starts_at:'2026-10-16T23:00:00Z',ends_at:'2026-10-23T23:00:00Z'};
+   else if(rpc==='office_play_state')result=officePlay.state(player.id);
+   else if(rpc==='office_vote')result=officePlay.vote(player.id,args.p_choice);
+   else if(rpc==='office_nominate')result=officePlay.nominate(player.id,args.p_category,args.p_recipient);
+   else if(rpc==='office_perform')result=officePlay.perform(player.id,args.p_kind);
    else if(rpc==='office_state')result=options.officeState||{total:0,target:10000000,tiers:0,streak:0,tz:'America/Los_Angeles'};
    else if(rpc==='all_prices')result={vending:100,deeds:{},fittings:{}};
    else if(rpc==='fitting_prices')result={prices:Object.fromEntries(Object.values(options.fittings||{}).flat().map(x=>[x.id,1000]))};
@@ -49,4 +63,4 @@ async function installGameFixture(page,options={}) {
  });
  return {player,calls};
 }
-module.exports={installGameFixture};
+module.exports={installGameFixture,makeOfficePlayFixture};

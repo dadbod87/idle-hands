@@ -1,3 +1,17 @@
+# Build 169 — questionable responsibilities (2026-10-22)
+
+Repairs ambient/partner bingo credit (cloned progress arrays, progress stamps, saved progress resumes), memo-draft loss on failure and duplicate pending sends, and good-chair UI reach (distant click routes toward it; a nearby second click claims). Existing chair timing/rewards unchanged; no server position tracking or anti-cheat claim.
+
+Free prop performances: couch sitting, plastic-plant watering, printer apologies, meeting scheduling, urgent filing, mug amnesty and lounge planning. Six rotating punchlines each, original scene SVGs, sit/water poses, reduced-motion art, map-edge card clamping, and normal movement cancellation. Successful real printer fixes trigger a separate joke only after the server confirms the fix. No invented earnings. Optional field guide and Help introduce existing coffee invitations, costume previews, suggestions and bingo. Log expanded to 36 gags in deterministic shuffled bags without immediate repeats.
+
+Shared additions use new dedicated RPC-only tables: one changeable weekly poll ballot/player, one changeable commendation/category/player for another real signed-in coworker, and bounded prop participation. Old-week ballots are rejected. Pacific Friday 4pm periods use existing week_key/week_started, including DST. Real aggregate counts, honest ties, last-week poll and honors, screenshot-ready certificates, actual plant-watering leaders, and four lounge milestones from real activity. All are cosmetic, without currency/ownership/player-row changes. The lounge remains closed and existing secrets stay functional. Missing service and failed filings show explicit errors/last confirmed records.
+
+Migration: `20261022135640_shared_office_stories.sql` is additive. Tables have RLS and no direct anon/authenticated access; four public RPCs authenticate and require a signed-in player. Private aggregation/config helpers are not executable by anon/authenticated. Existing player rows, RPCs and economics are untouched. Frontend rollback can leave these additive tables/functions safely in place.
+
+Validation/acceptance tracked in `COMEDY_RELEASE_2026-10-22.md` and release PR. Isolated actual migration contracts verify access, bad inputs, replay limits, changing ballots, previous-week separation and unchanged player snapshots. Browser fixtures verify real UI on desktop/phone, including two-player persistence and failure cases. No production test votes/claims/nominations or player resets. Physical phone and authenticated real Supabase gameplay writes remain unverified. Baseline Supabase advisory follow-ups are documented, separate from this feature. Release commit/CI/deployment evidence belongs in PR.
+
+---
+
 # Build 168 — map-wide good chair (2026-10-21)
 
 Good-chair placement now selects an equally weighted point from a dense, cached pool across the entire usable map, replacing the east/central rectangle (x1150–3049, y700–1219). Every point excludes the full chair footprint plus clearance around all nine offices (including Chance's), fixture art/labels, scenery and solid decorative props; actual wall collision is also checked. Open floor/background zones remain eligible. A stable window hash selects the same point for everyone. Chair depth follows its floor position and its button has an accessible name.
