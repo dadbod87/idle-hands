@@ -17,7 +17,7 @@ async function installGameFixture(page,options={}) {
  wardrobe_owned:['hoodie','cardigan','blazer','hawaiian','hoodie_gold','friday'],pet:'pig',pets:['pig','calf','moth','pigeon','balloon','dragon'],
  look:{build:'regular',bottom:'trousers',gender:'neutral',hair:'messy',hairColor:1,skin:0,eyes:'tired',expression:'deadpan',top:0,legs:0,clothing:'starter'},
  extras:options.ownedPins||[],pin:options.pin||null,vanity:{},kit:{desk:'d3',chair:'c2',rug:'r2'},streak:0,goodwill:0,notoriety:0};
- const calls=[];const officePlay=options.playStore||makeOfficePlayFixture();officePlay.people[player.id]=player.name;for(const p of options.coworkers||[])officePlay.people[p.id]=p.name;
+ const uploads=[];const calls=[];const officePlay=options.playStore||makeOfficePlayFixture();officePlay.people[player.id]=player.name;for(const p of options.coworkers||[])officePlay.people[p.id]=p.name;
  await page.addInitScript(({id})=>{
   const exp=Math.floor(Date.now()/1000)+3600;
   const token=btoa(JSON.stringify({alg:'HS256',typ:'JWT'}))+'.'+btoa(JSON.stringify({sub:id,role:'authenticated',exp}))+'.fixture';
@@ -28,12 +28,16 @@ async function installGameFixture(page,options={}) {
  await page.route('https://wbakpxbvqxppqbrwuokp.supabase.co/**',async route=>{
   const req=route.request(),url=new URL(req.url());
   let result=null;
-  if(url.pathname.includes('/auth/'))result={id:player.id,is_anonymous:false};
+  if(url.pathname.startsWith('/storage/v1/object/')){
+   if(req.method()==='GET'){await route.fulfill({status:200,contentType:'image/png',body:require('node:fs').readFileSync(require('node:path').join(__dirname,'fixtures/custom-face.png'))});return;}
+   if(options.failRpcs?.includes('badge_upload')){await route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({statusCode:400,error:'Fixture upload declined',message:'Fixture upload declined'})});return;}
+   uploads.push({path:url.pathname,body:req.postDataBuffer()});result={Key:'badges/'+player.id+'.jpg'};
+  }else if(url.pathname.includes('/auth/'))result={id:player.id,is_anonymous:false};
   else if(url.pathname.includes('/rpc/')){
    const rpc=url.pathname.split('/').pop(),args=req.postDataJSON()||{};
    calls.push({rpc,args});
    if(options.failRpcs?.includes(rpc)){await route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({message:'Fixture request declined',code:'P0001'})});return;}
-   if(rpc==='upsert_player'){player.name=args.p_name;result=player;}
+   if(rpc==='upsert_player'){player.name=args.p_name;if(args.p_avatar)player.avatar_url=args.p_avatar;result=player;}
    else if(rpc==='set_pin'){if(args.p_id!==null&&!player.extras.includes(args.p_id))throw Error('Fixture ownership violation');player.pin=args.p_id;result=player;}
    else if(rpc==='set_look'){player.look=args.p_look;result=player;}
    else if(rpc==='dress'){player.outfit={id:args.p_outfit,until:new Date(Date.now()+2700000).toISOString()};player.pp-=120;result=player;}
@@ -41,6 +45,7 @@ async function installGameFixture(page,options={}) {
    else if(rpc==='fix_printer'){if(!options.onFixPrinter)throw Error('Printer fixture requires an explicit outcome');options.onFixPrinter(player,args);result=player;}
    else if(rpc==='grab_chair'){if(!options.onGrabChair)throw Error('Chair fixture requires an explicit outcome');options.onGrabChair(player,args);result=player;}
    else if(rpc==='do_work'){player.pp+=args.p_clicks;result=player;}
+   else if(rpc==='buy_upgrade'){player.upgrades=[...player.upgrades,args.p_up];player.pp-=100;result=player;}
    else if(rpc==='buy_item'){player.owned[args.p_item]=(player.owned[args.p_item]||0)+1;player.pp-=100;result=player;}
    else if(['sync','check_in'].includes(rpc))result=player;
    else if(rpc==='save_achievements'){player.achievements=args.p_list;result=player;}
@@ -55,12 +60,12 @@ async function installGameFixture(page,options={}) {
    else if(rpc==='buy_fitting'){const item=(options.fittings?.[args.p_key]||[]).find(x=>x.id===args.p_id);const key=args.p_key==='vanity'?'vanity':'kit';player[key]={...player[key],[item.slot]:item.id};player.pp-=options.fittingPrices?.[item.id]??Math.max(1000,item.min_cost||0);result=player;}
    else if(rpc==='claim_office_awards'){player.achievements=[...new Set([...player.achievements,...(options.officeAwards||[])])];result=player;}
    else if(['claim_incoming','weekly_pins','spend_board','beta_testers'].includes(rpc))result=[];
-  }else if(url.pathname.endsWith('/catalog'))result=Object.entries({items:[{id:'intern',name:'Office Intern',cost:100,rate:1,desc:'An isolated test hire.'}],upgrades:[],deeds:{},tuning:{growth:1.35},drinks:[],costumes:options.costumes||[],special_pins:[{id:'beta',name:'Beta Tester',hue:'#8A6A2A',glyph:'β',note:'Here before it worked.'}],weekly_pins:[{id:'p01',name:'Five Year Pin',hue:'#C9A253',glyph:'★',note:'Nobody can confirm the five years.'}],office_kit:options.fittings?.office_kit||[],vanity:options.fittings?.vanity||[]}).map(([key,data])=>({key,data}));
+  }else if(url.pathname.endsWith('/catalog'))result=Object.entries({items:options.items||[{id:'intern',name:'Office Intern',cost:100,rate:1,desc:'An isolated test hire.'}],upgrades:options.upgrades||[],deeds:{},tuning:{growth:1.35},drinks:[],costumes:options.costumes||[],special_pins:[{id:'beta',name:'Beta Tester',hue:'#8A6A2A',glyph:'β',note:'Here before it worked.'}],weekly_pins:[{id:'p01',name:'Five Year Pin',hue:'#C9A253',glyph:'★',note:'Nobody can confirm the five years.'}],office_kit:options.fittings?.office_kit||[],vanity:options.fittings?.vanity||[]}).map(([key,data])=>({key,data}));
   else if(url.pathname.endsWith('/players'))result=url.searchParams.has('id')?player:[player,...(options.coworkers||[])];
   else if(url.pathname.endsWith('/deeds'))result=options.deeds||[];
   else if(['seasons','suggestions'].some(x=>url.pathname.endsWith('/'+x)))result=[];
   await route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(result)});
  });
- return {player,calls};
+ return {player,calls,uploads};
 }
 module.exports={installGameFixture,makeOfficePlayFixture};

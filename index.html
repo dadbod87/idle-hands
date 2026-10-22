@@ -1614,6 +1614,20 @@ body{background:#D9CDC0}
 @media(max-width:540px){.pg-hud{grid-template-columns:36px minmax(0,1fr) minmax(105px,145px);gap:5px 7px}.pg-hudid{grid-column:2;grid-row:1}.pg-hudpp{grid-column:3;grid-row:1/3;max-width:145px}.pg-hudbtns{grid-column:1/3;grid-row:2}.pg-effects{grid-column:1/-1;grid-row:3}.pg-effect{max-width:205px}.pg-effect-detail{width:100%}}
 @media(max-height:500px) and (min-width:541px){.pg-hud{grid-template-columns:32px minmax(85px,125px) minmax(0,1fr) minmax(120px,180px) auto;padding:5px;gap:6px}.pg-effects{grid-column:3;grid-row:1}.pg-hudpp{grid-column:4;grid-row:1}.pg-hudbtns{grid-column:5;grid-row:1}.pg-hudid::before{display:none}.pg-ppsub .pg-tag:not(.plain){display:none}.pg-hudpp .pg-ppnum{font-size:22px}.pg-hudpp{padding:4px}.pg-effects-empty{font-size:9px}}
 
+
+/* Keep transient confirmations out of the scrollable purchase target geometry. */
+.pg-panelhead{flex:none}.pg-panelbody{min-height:0;flex:1 1 auto;scrollbar-gutter:stable}
+.pg-panel[data-stable-purchases="true"]{height:min(86vh,calc(100vh - 24px));height:min(86dvh,calc(100dvh - 24px))}
+.pg-panel-receipt{flex:0 0 56px;height:56px;min-height:56px;overflow:auto;scrollbar-gutter:stable}
+.pg-panel-receipt:empty{background:#F0E8D7}.pg-panel-receipt>.pg-iconart{flex:none}.pg-panel-receipt>span{line-height:1.35}
+.pg-shop-earnbar{height:64px;min-height:64px;overflow:auto}
+.pg-purchase-list>.pg-row{height:88px;min-height:88px}.pg-purchase-list .pg-main b,.pg-purchase-list .pg-main span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.pg-purchase-list .pg-right{width:96px;min-width:96px}.pg-purchase-list .pg-ct{overflow:hidden}
+.pg-photo-head{display:grid;place-items:center;padding:4%;background:#F8F1E3;border:2px solid #2B2B2B;border-radius:5px;box-shadow:2px 2px 0 #2B2B2B33;overflow:hidden;line-height:1}
+.pg-photo-head img{display:block;width:100%;height:100%;object-fit:cover;border-radius:2px}.pg-photo-head>span{font:700 12px var(--mono)}
+.pg-head-options .pg-custom-photo{background:#FFF0C6}.pg-photo-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:9px}.pg-photo-actions .pg-btn{min-height:44px}.pg-photo-message{font:11px/1.5 var(--sans);margin:8px 0;overflow-wrap:anywhere}
+@media(max-width:540px){.pg-shop-earnbar{height:90px;min-height:90px}.pg-purchase-list>.pg-row{height:104px;min-height:104px}.pg-purchase-list .pg-right{width:76px;min-width:76px}.pg-purchase-list .pg-main b{font-size:12px}.pg-panel-receipt{font-size:11px}}
+
 </style>
 </head>
 <body>
@@ -2537,15 +2551,20 @@ function normalizedAvatar(look={}){
  const integer=(n,max,def=0)=>Number.isInteger(Number(n))&&Number(n)>=0&&Number(n)<max?Number(n):def;
  return {build:one(look.build,BUILD_LIST,"regular"),bottom:one(look.bottom,BOTTOM_LIST,"trousers"),
  top:integer(look.top,TOPS.length),legs:integer(look.legs,LEGS.length),
- head:one(look.head,AVATAR_HEADS.map(x=>x.id),"classic"),
+ head:one(look.head,[...AVATAR_HEADS.map(x=>x.id),"photo"],"classic"),
  gender:one(look.gender,["masculine","feminine","neutral"],"neutral"),
  hair:one(look.hair,AVATAR_HAIR,"messy"),hairColor:integer(look.hairColor,AVATAR_COLORS.length),
  skin:integer(look.skin,AVATAR_SKIN.length),eyes:one(look.eyes,AVATAR_EYES,"tired"),
  expression:one(look.expression,AVATAR_EXPRS,"deadpan"),glasses:!!look.glasses,
  clothing:one(look.clothing,["starter",...WARDROBE.map(x=>x.id)],"starter")};
 }
-function AvatarHead({look={},size=40}){
+function PhotoHead({src,size=40}) {
+ const [failed,setFailed]=useState(false);useEffect(()=>setFailed(false),[src]);
+ return <span className="pg-photo-head" data-head="photo" role="img" aria-label={src&&!failed?"Custom photo face":"Custom photo unavailable"} style={{width:size,height:size}}>{src&&!failed?<img src={src} alt="" onError={()=>setFailed(true)}/>:<span aria-hidden="true">Photo?</span>}</span>;
+}
+function AvatarHead({look={},size=40,src}){
  const a=normalizedAvatar(look),skin=AVATAR_SKIN[a.skin],hair=AVATAR_COLORS[a.hairColor];
+ if(a.head==="photo")return <PhotoHead src={src} size={size}/>;
  const human=["classic","round","square","pear","cyclops"].includes(a.head);
  const faceFill=a.head==="alien"?"#A8BE82":a.head==="robot"?"#B5C4CB":a.head==="frog"?"#8FA67A":a.head==="bag"?"#D7B77D":skin;
  const outline={classic:"M18 14Q32 4 47 15L49 34L53 41L48 44L48 55L32 58L24 53L23 61L17 59L17 45Q9 45 9 36Q8 28 16 29Z",
@@ -2589,7 +2608,7 @@ function AvatarHead({look={},size=40}){
  {a.glasses&&a.head==="cyclops"&&<rect x="13" y="20" width="38" height="28" rx="9" fill="none" stroke="#20242C" strokeWidth="3"/>}
  </svg>;
 }
-function AvatarControls({value,onChange}){
+function AvatarControls({value,onChange,photoSrc,onUpload,photoBusy=false,photoError,photoMessage}){
  const a=normalizedAvatar(value),set=(key,v)=>onChange({...a,[key]:v});
  const hasHair=["classic","round","square","pear","cyclops"].includes(a.head);
  const shuffle=()=>{const choose=xs=>xs[Math.floor(Math.random()*xs.length)];onChange({...a,
@@ -2600,17 +2619,17 @@ function AvatarControls({value,onChange}){
  const select=(title,key,opts)=> <label className="pg-avatar-field"><span>{title}</span><select aria-label={title} value={a[key]} onChange={e=>set(key,e.target.value)}>{opts.map(v=><option value={v} key={v}>{v}</option>)}</select></label>;
  const colors=(title,key,opts)=> <div className="pg-avatar-field"><span>{title}</span><div className="pg-avatar-swatches">{opts.map((color,i)=><button type="button" key={i} className={a[key]===i?"chosen":""} aria-pressed={a[key]===i} onClick={()=>set(key,i)} style={{background:color}} aria-label={title+" "+(i+1)} />)}</div></div>;
  return <div className="pg-avatar-controls">
- <fieldset className="pg-head-picker"><legend>Face & head · free to be weird</legend><button type="button" className="pg-btn pg-shuffle" onClick={shuffle}>Surprise me</button><div className="pg-head-options">{AVATAR_HEADS.map(h=><button type="button" key={h.id} aria-label={h.name} aria-pressed={a.head===h.id} className={a.head===h.id?"chosen":""} onClick={()=>set("head",h.id)}><AvatarHead look={{...a,head:h.id}} size={44}/><span>{h.name}</span></button>)}</div><p className="pg-fine" aria-live="polite">{AVATAR_HEADS.find(h=>h.id===a.head).note} All heads work with every outfit. {!hasHair&&"This head has its own silhouette; your hair choice is kept for human heads."}</p></fieldset>
+ <fieldset className="pg-head-picker"><legend>Face & head · free to be weird</legend><button type="button" className="pg-btn pg-shuffle" onClick={shuffle}>Surprise me</button><div className="pg-head-options">{onUpload&&<button type="button" className={"pg-custom-photo"+(a.head==="photo"?" chosen":"")} aria-label="Custom photo" aria-pressed={a.head==="photo"} disabled={photoBusy} onClick={()=>photoSrc?set("head","photo"):onUpload()}><PhotoHead src={photoSrc} size={44}/><span>Custom photo</span></button>}{AVATAR_HEADS.map(h=><button type="button" key={h.id} aria-label={h.name} aria-pressed={a.head===h.id} className={a.head===h.id?"chosen":""} onClick={()=>set("head",h.id)}><AvatarHead look={{...a,head:h.id}} size={44}/><span>{h.name}</span></button>)}</div><p className="pg-fine" aria-live="polite">{a.head==="photo"?"Your uploaded face, framed for office life.":AVATAR_HEADS.find(h=>h.id===a.head).note} All heads work with every outfit. {!hasHair&&"This head has its own silhouette; your hair choice is kept for human heads."}</p>{onUpload&&<div className="pg-photo-actions"><button className="pg-btn" type="button" disabled={photoBusy} onClick={onUpload}>{photoBusy?"Preparing photo…":photoSrc?"Replace custom photo":"Upload custom photo"}</button><span className="pg-fine">JPG, PNG, WebP or GIF · up to 10 MB · square crop</span></div>}{photoError&&<p className="pg-photo-message pg-err" role="alert">{photoError}</p>}{photoMessage&&<p className="pg-photo-message" role="status">{photoMessage}</p>}</fieldset>
  {select("Body style","gender",["masculine","feminine","neutral"])}
  {select("Build","build",BUILD_LIST)}
  {hasHair&&select("Hair","hair",AVATAR_HAIR)}
  {hasHair&&colors("Hair color","hairColor",AVATAR_COLORS)}
  {colors("Skin tone","skin",AVATAR_SKIN)}
- {a.head!=="alien"&&select("Eyes","eyes",AVATAR_EYES)}
- {select("Expression","expression",AVATAR_EXPRS)}
+ {a.head!=="alien"&&a.head!=="photo"&&select("Eyes","eyes",AVATAR_EYES)}
+ {a.head!=="photo"&&select("Expression","expression",AVATAR_EXPRS)}
  {select("Pants","bottom",BOTTOM_LIST)}
  {colors("Pants color","legs",LEGS)}
- <label className="pg-avatar-field"><span>Glasses</span><input type="checkbox" checked={a.glasses} onChange={e=>set("glasses",e.target.checked)}/></label>
+ {a.head!=="photo"&&<label className="pg-avatar-field"><span>Glasses</span><input type="checkbox" checked={a.glasses} onChange={e=>set("glasses",e.target.checked)}/></label>}
  <div className="pg-avatar-field"><span>Starter shirt</span><div className="pg-avatar-swatches">{TOPS.map((color,i)=><button key={i} type="button" className={a.top===i?"chosen":""} aria-pressed={a.top===i} style={{background:color}} aria-label={"Starter shirt "+(i+1)} onClick={()=>set("top",i)}/>)}</div></div>
  </div>;
 }
@@ -3304,6 +3323,16 @@ async function loadFloor() {
   return { players: players || [], deeds: deeds || [] };
 }
 
+async function prepareBadgePhoto(file) {
+ if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type))throw Error("Choose a JPG, PNG, WebP or GIF image.");
+ if(file.size>10*1024*1024)throw Error("Choose a photo smaller than 10 MB.");
+ const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(Error("Could not read that photo. Try another file."));r.readAsDataURL(file);});
+ const im=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error("That image could not be opened. Try another photo."));image.src=data;});
+ const cv=document.createElement("canvas");cv.width=cv.height=256;const ctx=cv.getContext("2d"),side=Math.min(im.naturalWidth,im.naturalHeight);
+ ctx.fillStyle="#F8F1E3";ctx.fillRect(0,0,256,256);ctx.drawImage(im,(im.naturalWidth-side)/2,(im.naturalHeight-side)/2,side,side,0,0,256,256);
+ return cv.toDataURL("image/jpeg",0.85);
+}
+
 async function uploadBadge(userId, dataUrl) {
   const blob = await (await fetch(dataUrl)).blob();
   const path = `${userId}.jpg`;
@@ -3412,7 +3441,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 175 · status report";
+const BUILD = "build 176 · hold that pose";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4848,8 +4877,7 @@ function OfficeFloor() {
       {showHelp && <Help onClose={() => setShowHelp(false)} rate={rate} onGuide={()=>{setShowHelp(false);openGuide();}} />}
 
       {panel && (
-        <Panel onClose={() => setPanel(null)} title={panel.startsWith("prop:")?PROP_LABELS[panel.slice(5)]:PANEL_TITLES[panel]}>
-          {reaction&&!["work","filed"].includes(reaction.kind)&&<div className="pg-panel-receipt" role="status"><OfficeIcon kind={reaction.kind==="kind"?"mug":"paper"} compact/><span>{reaction.label}</span></div>}
+        <Panel stablePurchases={panel==="shop"||panel==="mirror"} receipt={reaction&&!["work","filed"].includes(reaction.kind)?reaction:null} onClose={() => setPanel(null)} title={panel.startsWith("prop:")?PROP_LABELS[panel.slice(5)]:PANEL_TITLES[panel]}>
           {panel.startsWith("prop:")&&<PropInspection kind={panel.slice(5)} variant={officeSceneAt(funTick)} onCoffee={joinCoffeeBreak} onPerform={startPropScene}/> }
           {panel === "shop" && (
             <Shop cat={cat} me={me} pp={pp} rate={rate}
@@ -4948,15 +4976,17 @@ function OfficeFloor() {
               onLook={async (look) => {
                 try { applyServer(await api.setLook(look)); setFloor(await loadFloor()); } catch(e) { flash(prettyError(e)); throw e; }
               }}
-              onSave={async (name, dataUrl) => {
+              onSave={async (name, dataUrl, look) => {
                 try {
-                  let url = null;
+                  let url = me?.avatar_url || null;
                   if (dataUrl) url = await uploadBadge(user.id, dataUrl);
+                  if(look.head==="photo"&&!url)throw Error("Upload a photo before saving this head.");
                   applyServer(await api.upsertPlayer(name || me.name, url, null));
+                  applyServer(await api.setLook(look));
                   setFloor(await loadFloor());
                   flash("Badge reissued.");
                   setPanel(null);
-                } catch (e) { flash(prettyError(e)); }
+                } catch (e) { flash(prettyError(e)); throw e; }
               }} />
           )}
           {panel === "suggest" && (
@@ -5325,7 +5355,7 @@ function Face({ src, name, size = 40, look }) {
   const ini = (name || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return (
     <span className={look ? "pg-face pg-face-custom" : "pg-face"} style={{ width: size, height: size, fontSize: size * 0.36 }}>
-      {look ? <AvatarHead look={look} size={size}/> : src ? <img src={src} alt="" /> : <b>{ini}</b>}
+      {look ? <AvatarHead look={look} src={src} size={size}/> : src ? <img src={src} alt="" /> : <b>{ini}</b>}
     </span>
   );
 }
@@ -5374,7 +5404,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       <div className="pg-rig">
         {c?.art && <CostumeSuit art={c.art} layer="back" />}
         {c && <Hat kind={c.hat} />}
-        <span className="pg-avatar-head" style={{width:48,height:52}}><AvatarHead look={{...L,expression:emote==="panic"?"surprised":emote==="dance"?"happy":L.expression}} size={48}/></span>
+        <span className="pg-avatar-head" style={{width:48,height:52}}><AvatarHead look={{...L,head:!p?.look?.build&&(src||p?.avatar_url)?"photo":L.head,expression:emote==="panic"?"surprised":emote==="dance"?"happy":L.expression}} src={src||p?.avatar_url} size={48}/></span>
         {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
           <path className="pg-body-outline" d={B.torso} fill={shirt} />
@@ -5859,13 +5889,14 @@ function useDialogFocus(onClose){
  },[]);
  return ref;
 }
-function Panel({ title, children, onClose }) {
+function Panel({ title, children, onClose, receipt=null, stablePurchases=false }) {
   const dialogRef=useDialogFocus(onClose),titleId=React.useId();
   return (
     <div className="pg-modal" onClick={onClose}>
-      <div className="pg-panel" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
+      <div className="pg-panel" data-stable-purchases={stablePurchases?"true":undefined} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
         <div className="pg-panelhead"><span id={titleId}>{title}</span>
           <button className="pg-x" onClick={onClose}>close</button></div>
+        <div className="pg-panel-receipt" role={receipt?"status":undefined} aria-live="polite" aria-atomic="true">{receipt&&<><OfficeIcon kind={receipt.kind==="kind"?"mug":"paper"} compact/><span>{receipt.label}</span></>}</div>
         <div className="pg-panelbody">{children}</div>
       </div>
     </div>
@@ -6099,7 +6130,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
   const avail = cycle <= 1e9 ? 0 : Math.floor(1.6 * Math.log10(cycle / 1e9));
   return (
     <>
-      <div className="pg-earnbar">
+      <div className="pg-earnbar pg-shop-earnbar">
         Your desk earns <b>{fmt(rate)} BW/sec</b> — that's <b>{fmt(rate * 3600)} BW</b> an hour,
         whether this tab is open or not. Buy more staff to raise it.
       </div>
@@ -6109,7 +6140,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
           <Catalogue cat={cat} me={me} pp={pp} rate={rate} onFitting={onFitting}
                      pins={pins} onPin={onPin} onWear={onWear} />
         ) : t === "hire" ? (
-          <div className="pg-list">
+          <div className="pg-list pg-purchase-list">
             {(cat.items || []).map((it, i) => {
               const have = owned[it.id] || 0, c = Math.ceil(costOf(it, have) * (me?.dept === "resale" ? 0.9 : 1));
               const hidden = have === 0 && c > Math.max(pp, lifetime * 0.35) * 3;
@@ -6130,7 +6161,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
             })}
           </div>
         ) : t === "ups" ? (
-          <div className="pg-list">
+          <div className="pg-list pg-purchase-list">
             {(cat.upgrades || []).filter((u) => (owned[u.req[0]] || 0) >= u.req[1] || ups.includes(u.id))
               .map((u, i) => (
               <button key={u.id}
@@ -7452,29 +7483,11 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
   const [img, setImg] = useState(null);
   const [name, setName] = useState(me?.name || "");
   const [busy, setBusy] = useState(false);
-  const [look, setLook] = useState(normalizedAvatar(lookFor(me)));
+  const [look, setLook] = useState(normalizedAvatar({...lookFor(me),head:!me?.look?.build&&me?.avatar_url?"photo":me?.look?.head}));
+  const [photoBusy,setPhotoBusy]=useState(false),[photoError,setPhotoError]=useState(null);
   const fileRef = useRef(null);
-  const cycle = (key, list) => setLook((L) => ({
-    ...L, [key]: list[(list.indexOf(L[key]) + 1) % list.length] }));
-  const cycleN = (key, n) => setLook((L) => ({ ...L, [key]: ((L[key] || 0) + 1) % n }));
-
-  const onFile = (e) => {
-    const f = e.target.files?.[0]; if (!f) return;
-    const r = new FileReader();
-    r.onload = () => {
-      const im = new Image();
-      im.onload = () => {
-        const S = 256, cv = document.createElement("canvas");
-        cv.width = S; cv.height = S;
-        const ctx = cv.getContext("2d");
-        const side = Math.min(im.width, im.height);
-        ctx.drawImage(im, (im.width - side) / 2, (im.height - side) / 2, side, side, 0, 0, S, S);
-        setImg(cv.toDataURL("image/jpeg", 0.85));
-      };
-      im.src = r.result;
-    };
-    r.readAsDataURL(f);
-  };
+  const onFile=async e=>{const file=e.target.files?.[0];e.target.value="";if(!file)return;setPhotoBusy(true);setPhotoError(null);try{const photo=await prepareBadgePhoto(file);setImg(photo);setLook(v=>({...v,head:"photo"}));}catch(error){setPhotoError(error.message);}finally{setPhotoBusy(false);}};
+  const saveClothingLook=next=>onLook(img&&next.head==="photo"?{...next,head:me?.look?.head||"classic"}:next);
 
   return (
     <div>
@@ -7491,16 +7504,17 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
         <div>
           <div className="pg-mirrorlabel">After</div>
           <div className="pg-preview">
-            <Body p={{ ...me, name: name || me?.name, look }} />
+            <Body p={{ ...me, name: name || me?.name, look }} src={img||me?.avatar_url} />
           </div>
         </div>
       </div>
 
-      <AvatarControls value={look} onChange={setLook}/>
+      <AvatarControls value={look} onChange={setLook} photoSrc={img||me?.avatar_url} onUpload={()=>fileRef.current?.click()} photoBusy={photoBusy} photoError={photoError} photoMessage={img?"Photo ready to preview. Reissue the badge to save your face.":null}/>
+      <input ref={fileRef} type="file" aria-label="Upload custom face" accept="image/jpeg,image/png,image/webp,image/gif" onChange={onFile} hidden/>
       <div className="pg-wardrobe-stock">
         <h4 className="pg-h4">Company wardrobe · permanent purchases</h4>
         <p className="pg-fine">Spend Busywork on ridiculous outfits. Keep every purchased piece, even after restructuring. Clothes are cosmetic—no productivity bonuses.</p>
-        <button className={"pg-row"+(look.clothing==="starter"?" mine":"")} type="button" disabled={busy} onClick={async ()=>{const next={...look,clothing:"starter"};setBusy(true);try{await onLook(next);setLook(next);}catch{}finally{setBusy(false);}}}><OfficeIcon kind="office shirt"/><span className="pg-main"><b>Standard Issue Outfit</b><span>Free. Disturbingly adequate.</span></span><span className="pg-right"><b>{look.clothing==="starter"?"Wearing":"Equip"}</b></span></button>
+        <button className={"pg-row"+(look.clothing==="starter"?" mine":"")} type="button" disabled={busy} onClick={async ()=>{const next={...look,clothing:"starter"};setBusy(true);try{await saveClothingLook(next);setLook(next);}catch{}finally{setBusy(false);}}}><OfficeIcon kind="office shirt"/><span className="pg-main"><b>Standard Issue Outfit</b><span>Free. Disturbingly adequate.</span></span><span className="pg-right"><b>{look.clothing==="starter"?"Wearing":"Equip"}</b></span></button>
         {WARDROBE.map(it=>{
           const owned=Array.isArray(me?.wardrobe_owned)&&me.wardrobe_owned.includes(it.id);
           const active=look.clothing===it.id;
@@ -7509,7 +7523,7 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
             try {
               if(!owned){const saved=await onBuyClothing(it.id);if(!saved)return;}
               const next={...look,clothing:it.id};
-              await onLook(next);
+              await saveClothingLook(next);
               setLook(next);
             } catch { /* onLook reports the server error; keep previous selection */ }
             finally {setBusy(false);}
@@ -7520,23 +7534,20 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
         })}
       </div>
       <div className="pg-pad">
-        <button className="pg-btn ghost pg-wide" onClick={() => fileRef.current?.click()}>
-          {img ? "Change legacy photo" : "Legacy photo (optional)"}
-        </button>
-        <input ref={fileRef} type="file" accept="image/*" onChange={onFile} style={{ display: "none" }} />
         <label className="pg-field" style={{ marginTop: 14 }}>
           <span>Name on the badge <i className="pg-count">{name.length}/12</i></span>
           <input value={name} maxLength={12} onKeyDown={(e) => e.stopPropagation()}
                  onChange={(e) => setName(e.target.value.slice(0, 12))} />
         </label>
-        <button className="pg-work big" disabled={busy}
+        <button className="pg-work big" disabled={busy||photoBusy}
                 onClick={async () => {
                   setBusy(true);
                   try {
-                    await onLook(look);
-                    await onSave(name.trim(), img);
-                  } catch {
-                    // The parent shows the server failure; allow another attempt.
+                    setPhotoError(null);
+                    await onSave(name.trim(), img, look);
+                  } catch(error) {
+                    setPhotoError(error.message||"Could not save your badge. Please try again.");
+                    fileRef.current?.parentElement?.querySelector(".pg-head-picker")?.scrollIntoView({block:"start"});
                   } finally {
                     setBusy(false);
                   }
@@ -8011,32 +8022,17 @@ function Onboard({ user, code, onDone, preview=false }) {
   const [look,setLook] = useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
+  const [photoBusy,setPhotoBusy]=useState(false),[photoError,setPhotoError]=useState(null);
   const fileRef = useRef(null);
 
-  const onFile = (e) => {
-    const f = e.target.files?.[0]; if (!f) return;
-    const r = new FileReader();
-    r.onload = () => {
-      const im = new Image();
-      im.onload = () => {
-        const S = 256, cv = document.createElement("canvas");
-        cv.width = S; cv.height = S;
-        const ctx = cv.getContext("2d");
-        const side = Math.min(im.width, im.height);
-        ctx.drawImage(im, (im.width - side) / 2, (im.height - side) / 2, side, side, 0, 0, S, S);
-        setImg(cv.toDataURL("image/jpeg", 0.85));
-      };
-      im.src = r.result;
-    };
-    r.readAsDataURL(f);
-  };
+  const onFile=async e=>{const file=e.target.files?.[0];e.target.value="";if(!file)return;setPhotoBusy(true);setErr(null);setPhotoError(null);try{setImg(await prepareBadgePhoto(file));setLook(v=>({...v,head:"photo"}));}catch(error){setPhotoError(error.message);}finally{setPhotoBusy(false);}};
 
   const go = async () => {
     if (preview || !name.trim() || busy) return;
     setBusy(true);
     try {
       let url = null;
-      if (img) { try { url = await uploadBadge(user.id, img); } catch { /* optional */ } }
+      if (img) url = await uploadBadge(user.id, img);
       if (!code) throw new Error("missing office code — reload and enter it at the door");
       const row = await api.upsertPlayer(name.trim().slice(0, 12), url, code);
       const saved=await api.setLook(look);
@@ -8090,10 +8086,11 @@ function Onboard({ user, code, onDone, preview=false }) {
         <div className="pg-fine">Twelve characters. It has to fit on a desk plate.</div>
       </label>
 
-      <div className="pg-avatar-preview"><Body p={{name:name||"New Hire",look}}/><span>HR has approved your face. Qualifications remain unverified.</span></div>
-      <AvatarControls value={look} onChange={setLook}/>
+      <div className="pg-avatar-preview"><Body p={{name:name||"New Hire",look}} src={img}/><span>HR has approved your face. Qualifications remain unverified.</span></div>
+      <AvatarControls value={look} onChange={setLook} photoSrc={img} onUpload={()=>fileRef.current?.click()} photoBusy={photoBusy} photoError={photoError}/>
+      <input ref={fileRef} type="file" aria-label="Upload custom face" accept="image/jpeg,image/png,image/webp,image/gif" onChange={onFile} hidden/>
       {err && <div className="pg-fine pg-err">{err}</div>}
-      <button className="pg-work big" disabled={preview || !name.trim() || busy} onClick={go}>
+      <button className="pg-work big" disabled={preview || !name.trim() || busy || photoBusy} onClick={go}>
         {busy ? "Processing paperwork…" : "Start the shift"}
       </button>
       <div className="pg-fine pg-center">You start earning the second you badge in.</div>

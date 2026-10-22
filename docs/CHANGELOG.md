@@ -1,3 +1,17 @@
+# Build 176 — hold that pose (2026-10-22)
+
+Fixes purchase click targets shifting when temporary confirmations appear/disappear. Every panel keeps a fixed 56px receipt slot above its scrollable content; shop/mirror dialogs have stable viewport-sized frames. Requisitions and Approvals retain fixed row/price-column geometry and reserve summary height so changing earnings, unlocked descriptions or repeated clicks cannot re-center the panel or move neighboring rows. Full row text remains accessible even when visually clamped. Existing confirmations and server purchase rules remain.
+
+Restores custom uploaded faces alongside the nine illustrated heads. “Custom photo” is the first head choice in Mirror and onboarding. JPG/PNG/WebP/GIF input is validated, center-cropped locally to a 256px JPEG, previewed immediately and selected explicitly. File/decode/upload errors are visible and retryable. Existing uploaded photos can be selected without uploading again; choosing a cartoon keeps the photo available. HUD, world avatars and shared identity cards honor the saved photo head. Clothing, costumes, pins and body choices remain intact. Legacy profiles without a stored illustrated look retain their uploaded face. Photos continue using the existing public badges bucket; no upload/access policy change.
+
+Migration `20261022192506_custom_photo_head.sql` extends only the existing set_look head allowlist with `photo`. It checks the exact reviewed function-body hash and aborts on drift. Installation changes no player rows, grants, storage policies, tables, economy or inventory. Apply and independently verify this additive validation before deploying the frontend. The isolated wardrobe SQL suite executes the actual migration and verifies unchanged rows, grants, photo persistence, old-client retention, illustrated switching and invalid-input rejection.
+
+Validation includes all mandatory Node suites plus actual browser fixtures for fixed-coordinate repeat purchases, confirmation expiry, long descriptions, Approvals, desktop/mobile/short-landscape layout; photo preview/upload failure/retry/save/reload, HUD/world rendering, switching both ways, unchanged progress and onboarding file validation. Supabase requests/uploads are intercepted during browser tests; no real photos/accounts/progress are modified. Production deployment/SHA, final CI and screenshots are recorded in the release PR. Physical devices and real authenticated production uploads are not claimed. Baseline: build 175 merge e2957b7c61c7dce16567a62e825bdf27423066e5.
+
+Rollback: revert the frontend; leave the additive photo head validation and uploaded image data intact. Older clients keep working; advise refreshing for the new renderer. Read-only advisory checks show existing project-wide findings; this release preserves existing access rules.
+
+---
+
 # Build 175 — status report (2026-10-22)
 
 Consolidates active effects in the top HUD between identity and Busywork on wide screens. The bounded badge row moves below identity on narrow screens and stays inline in short landscape views. Scroll horizontally or tab to reach every effect; no fixed two-effect limit. Names, actual multiplier benefit/penalty, remaining time and provenance are available on hover, focus and tap, including a dismissible detail card. Positive triangle/solid border and negative down-triangle/dashed border distinguish effects beyond color. Long names truncate only on the badge; details and accessible names retain the full text.

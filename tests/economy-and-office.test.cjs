@@ -60,7 +60,7 @@ assert(src.includes('function ArtPreview()'),'Visual QA gallery exists');
 assert(src.includes('function HalBody({ facing = 1 }) {'),'Dave wrapper preserved');
 assert(src.includes('function WesBody({ facing = 1 }) {'),'Chance wrapper preserved');
 
-assert(src.includes('await onLook(next);'),'Outfit equip must persist through server, not only preview');
+assert(src.includes('await saveClothingLook(next);') && src.includes('const saveClothingLook=next=>onLook('),'Outfit equip persists through server while protecting pending photo drafts');
 assert(src.includes('const next={...look,clothing:it.id};'),'Purchased wardrobe equip prepares appearance');
 const bagForRound = round => {
  const o=cast.map((_,i)=>i);

@@ -24,7 +24,7 @@ Approved direction: **original, flat 2D cutout-cartoon office satire**. Inspired
 - Before changing any SVG or wearable layer, confirm that it does not obscure clickable objects, alter earning formulas, or change player inventory IDs.
 
 ## Character creator graphics contract
-- `AvatarHead` must visually match the layered office cutout theme rather than use photo uploads. `AvatarControls` in onboarding and mirror must share `normalizedAvatar` exactly; hairstyle, hair color, skin, eyes, expression, glasses, body build, pants and shirt are free.
+- Illustrated `AvatarHead` choices must visually match the layered office cutout theme. Owner-requested custom photos are an optional, ink-framed head choice beside the illustrated heads. `AvatarControls` in onboarding and mirror must share `normalizedAvatar` exactly; hairstyle, hair color, skin, eyes, expression, glasses, body build, pants and shirt are free.
 - Clothing upgrades are permanent visual-only pieces in `WARDROBE`, applied behind prank-costume overlays. Keep outfit palette consistent with the approved boards.
 - New illustrations must be evaluated at actual game character scale, 390px viewport and 1440px viewport. The art preview is an integration test, not a substitute for player sign-in QA.
 
@@ -79,3 +79,7 @@ Polls and commendations use readable cards, minimum 44px action controls, honest
 ## Build 175 active-effect badges
 
 Use the warm-paper/sage/coral and thick ink contract for the single HUD status strip. Benefits use ▲ with solid borders; penalties use ▼ with dashed borders. Badges and detail close controls have 44px touch targets. Keep the row bounded and horizontally scrollable; never wrap an unbounded stack over the office. Full names, multiplier, time and provenance remain accessible on hover, focus and tap. Detail cards must remain inside the HUD width and stop activation keys from moving/opening floor fixtures.
+
+## Build 176 stable purchasing and custom photos
+
+Keep transient panel feedback in a reserved 56px slot above the independently scrolling body. Purchasing dialogs and row geometry remain stable during confirmation arrival/expiry, number changes and unlock descriptions. Use the existing warm paper/ink style. Custom photo is an explicit head choice beside the illustrations, sharing a bold ink frame in Mirror previews, HUD and the moving character rig; preserve body, wardrobe, costumes and pin layers. Decode/crop photos locally before upload, show errors beside the picker and retain uploaded photos when selecting illustrated heads.
