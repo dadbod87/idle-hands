@@ -30,6 +30,11 @@ jobs:
         with: {node-version: '22'}
       - name: Install Playwright
         run: npm install --no-save --no-package-lock @playwright/test@1.56.1
+      - name: Use Ubuntu archive for browser dependencies
+        run: |
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/apt-mirrors.txt
+          fi
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Start local static server
