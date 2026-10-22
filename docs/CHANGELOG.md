@@ -2,7 +2,7 @@
 
 Fixes the planter beside Dave’s office sending the player to the couch-side plant. Scenery inspection now preserves the selected object ID through routing, arrival, watering-can placement and punchline/camera framing. Dave’s planter has a distinct inspection label/description and independent persisted joke rotation. Existing field-guide/default destinations and their saved rotations remain compatible. Both plants still report the same existing server-authoritative cosmetic `plant` activity; no new rewards, cooldowns, RPCs or database changes.
 
-Fixture browser checks cover keyboard/touch activation, both planters in succession, independent rotation before/after reload, exact actor/effect locations, bubble clearance and short-viewport caption fallback at desktop, phone and short landscape. No production-player data changes. Final CI, merge/deployment SHA and live screenshot evidence are tracked in the release PR/report. Rollback: revert frontend only.
+Fixture browser checks cover keyboard/touch activation, both planters in succession, independent rotation before/after reload, exact actor/effect locations, bubble clearance and short-viewport caption fallback at desktop, phone and short landscape. No production-player data changes. CI browser setup now uses Ubuntu’s standard HTTPS archive when the runner mirror list points at the Azure mirror; repeated Azure font/library download timeouts prevented tests from starting. Every existing test and gate remains. Final CI, merge/deployment SHA and live screenshot evidence are tracked in the release PR/report. Rollback: revert frontend only.
 
 ---
 
