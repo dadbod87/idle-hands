@@ -3441,7 +3441,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 176 · hold that pose";
+const BUILD = "build 177 · badge approved";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -8062,7 +8062,7 @@ function Onboard({ user, code, onDone, preview=false }) {
         </div>
         <div className="pg-badgemain">
           <div className="pg-badgephoto">
-            <AvatarHead look={look} size={74}/>
+            <AvatarHead look={look} src={img} size={74}/>
           </div>
           <div className="pg-badgeid">
             <b>{name || "\u2014\u2014\u2014\u2014\u2014\u2014"}</b>
