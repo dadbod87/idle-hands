@@ -2,6 +2,11 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-22: Build 172 — above the paperwork
+- Restored visible prop punchlines as compact text-only speech bubbles matching the cigar-lounge style, positioned above prop and character.
+- Measure actual text height and retain feedback-strip fallback when camera headroom is insufficient; no large illustrated cards return.
+- Desktop/phone/landscape regression coverage, no player data or backend changes; release evidence in PR.
+
 ## 2026-10-22: Build 171 — let the office perform
 - Removed the obstructing illustrated popup from all prop actions; jokes use the feedback strip below the floor. Confirmation/error messages remain visible alongside the caption.
 - Watering can sits beside the plant; couch shows the seated character without a card. Small world effects, saved jokes, reduced motion and shared participation remain.

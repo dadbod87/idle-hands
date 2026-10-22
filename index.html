@@ -1571,6 +1571,7 @@ body{background:#D9CDC0}
 
 /* Office performances are local, short and pointer-transparent. */
 .pg-prop-caption{display:block;width:100%;font-weight:700}
+.pg-deskbubble.pg-prop-bubble{max-width:none;animation:none}
 .pg-scene-sheet{animation:scene-paper .6s ease-out}.pg-scene-drops{animation:scene-water .8s linear infinite}
 @keyframes scene-paper{from{transform:translateY(18px)}to{transform:translateY(0)}}@keyframes scene-water{50%{transform:translateY(5px);opacity:.4}}
 .pg-body.em-sit .pg-leg{transform:rotate(-65deg);transform-origin:top center}.pg-body.em-sit .pg-rig{transform:translateY(13px)}
@@ -3385,7 +3386,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 171 · let the office perform";
+const BUILD = "build 172 · above the paperwork";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4225,7 +4226,7 @@ function OfficeFloor() {
   const performScene=(kind)=>{
     const action=PROP_ACTIONS[kind];if(!action)return;const prop=SCENERY.find(p=>p.kind===kind);const anchor=prop||FIXTURES.find(f=>f.id===(kind==="lounge"?"lounge":"printer"));
     const stored=sceneSerial.current[kind],variant=Number.isSafeInteger(stored)&&stored>=0?stored:0;sceneSerial.current[kind]=(variant+1)%action.lines.length;try{localStorage.setItem("ih-scenes-"+meRef.current.id,JSON.stringify(sceneSerial.current));}catch{}const line=action.lines[variant%action.lines.length];
-    setPropScene({kind,variant,line,px:anchor.x+anchor.w/2,py:anchor.y+anchor.h*.5});clearTimeout(sceneTimer.current);sceneTimer.current=setTimeout(()=>setPropScene(null),6500);
+    setPropScene({kind,variant,line,top:anchor.y,px:anchor.x+anchor.w/2,py:anchor.y+anchor.h*.5});clearTimeout(sceneTimer.current);sceneTimer.current=setTimeout(()=>setPropScene(null),6500);
     doEmote(action.emote,6000);say(line,"sys");sfx(kind==="plant"?"break":"pop");
     filePlay(()=>api.officePerform(kind),null);
   };
@@ -4571,6 +4572,7 @@ function OfficeFloor() {
           <div className="pg-carpet" style={{ top: WALL_H }} />
           <OfficeEnvironment variant={officeSceneAt(funTick)} celebrating={!!office?.hit} onInspect={kind=>setPanel("prop:"+kind)}/>
           {propScene&&<PropPerformance scene={propScene}/>}
+          {propScene&&<PropPunchline scene={propScene} cam={cam} view={view} pos={pos}/>}
           <LoungeWorld play={play}/>
 
           {DECOR.map((d, i) => d.t === "kitchenfloor" ? (
@@ -6232,6 +6234,12 @@ function PerformanceArt({kind,variant=0}){
  return <svg viewBox="0 0 150 100" role="img" aria-label={kind==="bench"?"A couch with a reserved break cushion":kind==="plant"?"Watering can and plastic leaf":kind==="lounge"?"A ceremonial ribbon and planning plaque":"Officially unnecessary paperwork"} fill="none" stroke="#2B2B2B" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
  {kind==="plant"?<><g transform="translate(0 5) scale(1.05)"><WateringCanArt/></g><path d="M104 85h30l-4 12h-22Z" fill="#C58E69"/><path d="M119 85V53q-22-8-21-22 22 0 21 22 23-15 22-28-22 6-22 28" fill="#8FA67A"/></>:kind==="bench"?<><rect x="13" y="35" width="124" height="48" rx="10" fill="#7B9CC4"/><path d="M17 65h116m-72-27v27M20 83v10m110-10v10"/><path d="M72 50h49v20H72Z" fill="#FFD36B"/><text x="97" y="63" textAnchor="middle" fontSize="8" fill="#2B2B2B" stroke="none">ON BREAK</text></>:kind==="lounge"?<><path d="M22 12v80m106-80v80" stroke="#9B714B" strokeWidth="7"/><path d="M18 38h114v16H18Z" fill="#B23B2E"/><path d="m65 27 12 40m7-40-17 40" stroke="#F8F1E3"/><rect x="35" y="66" width="80" height="27" rx="3" fill="#FFD36B"/><text x="75" y="83" textAnchor="middle" fill="#2B2B2B" fontSize="9" stroke="none">PLANNING</text></>:<><path className="pg-scene-sheet" d="M42 8h67v81H42Z" fill="#F8F1E3"/><path d="M54 30h43m-43 10h34m-34 10h43m-43 10h36" stroke="#A59C88" strokeWidth="2"/><g transform={"rotate("+(variant%2?8:-8)+" 77 72)"}><rect x="47" y="65" width="60" height="19" fill="#FFE6A1" stroke="#B23B2E"/><text x="77" y="78" textAnchor="middle" fill="#B23B2E" fontSize="8" stroke="none">{kind==="calendar"?"RECURRING":kind==="shelf"?"VERY URGENT":"UNHELPFUL"}</text></g></>}
  </svg>;
+}
+function PropPunchline({scene,cam,view,pos}){
+ const ref=useRef(null),[height,setHeight]=useState(0),width=Math.min(260,view.w-24),bottom=Math.min(scene.top-16,pos.y-110);
+ React.useLayoutEffect(()=>{setHeight(ref.current?.offsetHeight||0);},[scene.line,width]);
+ const fits=height>0&&bottom-height>=cam.y+10&&bottom+8<=cam.y+view.h-10;
+ return <div ref={ref} className="pg-deskbubble pg-prop-bubble" data-testid="prop-bubble" aria-hidden="true" style={{left:clamp(scene.px,cam.x+width/2+12,cam.x+view.w-width/2-12),top:bottom,width,visibility:fits?"visible":"hidden",zIndex:Math.round(scene.py+3000)}}>{scene.line}</div>;
 }
 function PropPerformance({scene}){return <>
  {scene.kind!=="bench"&&<svg className={"pg-scene-effect effect-"+scene.kind} aria-hidden="true" viewBox="0 0 100 80" fill="none" stroke="#2B2B2B" strokeWidth="2.5" style={{left:scene.px-(scene.kind==="plant"?65:0),top:scene.py,zIndex:Math.round(scene.py+2000)}}>
