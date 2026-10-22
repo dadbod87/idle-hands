@@ -813,8 +813,9 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-goldrule::before,.pg-goldrule::after{content:"";flex:1;height:1px;
   background:linear-gradient(90deg,rgba(201,176,99,0),rgba(201,176,99,.6),rgba(201,176,99,0))}
 .pg-doorlede{color:rgba(233,228,214,.78);font-size:12.5px;letter-spacing:.01em;margin:0 0 18px}
-.pg-doorfine{color:rgba(196,190,172,.42);font-size:10px;line-height:1.75;margin-top:22px;
-  padding-top:16px;border-top:1px solid rgba(201,176,99,.14)}
+.pg-doorfine{color:#C4BEAC;font-size:12px;line-height:1.65;margin-top:22px;
+  padding-top:16px;border-top:1px solid rgba(201,176,99,.24)}
+.pg-doorjoke{display:block;color:#F6E3AE;font-size:13px;font-weight:600;line-height:1.6;margin-top:10px}
 
 /* the code field: a hairline, not a box */
 .pg-door-page .pg-code{width:100%;background:rgba(0,0,0,0);border:none;
@@ -3386,7 +3387,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 172 · above the paperwork";
+const BUILD = "build 173 · you found nothing";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -7683,7 +7684,8 @@ function CodeDoor({ onOk }) {
       </div>
       <div className="pg-doorfine">
         There is nothing behind this door until the code is right — no account is created,
-        nothing is saved. If you found this by accident, you found nothing.
+        nothing is saved.
+        <span className="pg-doorjoke">If you found this by accident, you found nothing.</span>
       </div>
     </div>
   );

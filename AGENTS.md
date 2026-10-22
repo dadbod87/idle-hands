@@ -5,8 +5,8 @@ Read **this file first**, followed by `docs/CURRENT_STATE.md`, `docs/CHANGELOG.m
 ## Repository and deployment
 - Repository: `dadbod87/idle-hands`; production branch: `main`.
 - Application: single-file `index.html` with React 18, Babel standalone and Supabase JS, hosted on Vercel project `idle-hands` (the owner manages the team account).
-- Public Vercel URL: https://idle-hands-one.vercel.app/
-- A custom domain attached earlier in Vercel is **not in use**; the public address is the Vercel URL above. Do not announce or rely on any other domain.
+- Canonical game URL: https://idlehands.thepatrongrp.com/ (verified HTTPS on 2026-10-22). Existing Vercel fallback: https://idle-hands-one.vercel.app/.
+- Game Room hub: https://game.thepatrongrp.com/ is hosted separately; its Idle Hands card points to the canonical game URL. Both game hostnames use the same production database. No old-domain redirect has been enabled.
 - Production Supabase project: `wbakpxbvqxppqbrwuokp`. Treat all player data as real. No destructive queries or testing with real accounts.
 - Timezone for office/user: America/Los_Angeles; some shared NPC timers are deliberately UTC-epoch based.
 
