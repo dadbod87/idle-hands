@@ -196,3 +196,10 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Keeps pins visible over costumes and preserves existing leaderboard pins, ownership validation and stored selection.
 - Improves HR pin buttons with accessible Wear/Remove names, selected state and Wearing feedback.
 - Adds desktop/phone HR equip/reload/remove/replace checks and costume-layer gallery coverage. No server, economy or inventory changes.
+# 2026-10-22: TV recovery camera correction (build 174 candidate)
+
+- Frame the measured prop punchline, whole prop and actor together when the camera has room; preserve short-viewport feedback-strip fallback and strict clearance assertions.
+- Remeasure bubbles on actual size changes, including font/layout changes.
+- Add deterministic checks using the actual camera helper for tall props, varied text/viewport heights and impossible room-edge/short layouts.
+- Recovery session verified the saved PR/main heads and failed CI logs. Local parser/economy/name/sound/social/chair/comedy checks passed. Production migration/release remain blocked by Supabase SQL approval denial and Vercel team-scope 403; live TV screenshots remain unperformed. No player data changed.
+

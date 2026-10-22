@@ -84,3 +84,21 @@ assert.equal(weekContext.left(schedule,120000),0,'No negative countdown at closi
 assert.equal(weekContext.left(null,100000),null,'No fabricated deadline when unavailable');
 assert.equal(weekContext.countdown(183845),'2d 03h 04m 05s left');
 console.log('PASS: weekly countdown server clock, elapsed time, cutoff and missing schedule');
+
+// Exercise actual camera framing with a plant taller than the actor-centered headroom.
+const cameraContext={Math,clamp:(x,a,b)=>Math.max(a,Math.min(b,x))};vm.createContext(cameraContext);
+vm.runInContext(fragment('function propCameraY(', 'function PropPunchline(')+';this.frame=propCameraY;',cameraContext);
+const plantScene={top:1000,py:1070},actorPosition={y:1180};
+for(const height of [38,54,72,90])for(const viewportHeight of [400,500,700]){
+ const centered=actorPosition.y-viewportHeight/2;
+ const framed=cameraContext.frame(centered,plantScene,actorPosition,{h:viewportHeight},height,1700);
+ const bubbleBottom=Math.min(plantScene.top-16,actorPosition.y-110);
+ assert(bubbleBottom-height>=framed+10,'Measured bubble stays inside camera');
+ assert(actorPosition.y+40<=framed+viewportHeight-10,'Whole actor remains visible');
+ assert(1140+24<=framed+viewportHeight-10,'Whole prop and label remain visible');
+ assert(framed>=0&&framed<=1700-viewportHeight,'Camera stays in room');
+}
+assert.equal(cameraContext.frame(1090,plantScene,actorPosition,{h:180},54,1700),1090,'Short viewport retains feedback-strip fallback');
+assert.equal(cameraContext.frame(0,{top:30,py:70},{y:130},{h:400},54,1700),0,'No false headroom above room edge');
+assert.equal(cameraContext.frame(980,plantScene,actorPosition,{h:400},0,1700),980,'Wait for actual text measurement');
+console.log('PASS: prop camera frames measured bubble, tall prop and actor; short/edge fallback retained');
