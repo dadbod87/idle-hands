@@ -1,3 +1,9 @@
+# Build 170 — camera-safe joke cards (2026-10-22)
+
+Post-deployment review of build 169 found that a world-bounded scene card could still clip above the *camera* at the bottom of the map. Cards now clamp to the visible camera rectangle; short landscape views use a compact text card beside the actor. Prop effects remain anchored to the prop. The watering can now has a large open handle, rounded reservoir, fill opening, angled spout and brass shower rose; the world effect and card share the same SVG artwork. No database, inventory or economy change. Desktop/portrait/landscape tests explicitly check scene-card bounds. Build 169 feature release evidence is PR #25; this frontend correction follows its full gate in its own PR.
+
+---
+
 # Build 169 — questionable responsibilities (2026-10-22)
 
 Repairs ambient/partner bingo credit (cloned progress arrays, progress stamps, saved progress resumes), memo-draft loss on failure and duplicate pending sends, and good-chair UI reach (distant click routes toward it; a nearby second click claims). Existing chair timing/rewards unchanged; no server position tracking or anti-cheat claim.

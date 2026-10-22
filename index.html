@@ -1587,6 +1587,7 @@ body{background:#D9CDC0}
 
 .pg-card:has(.pg-community-card),.pg-card:has(.pg-field-guide){width:min(760px,calc(100vw - 24px));max-width:min(760px,calc(100vw - 24px))}
 
+.pg-prop-performance.compact{font-size:11px}.pg-prop-performance.compact svg{display:none}
 .pg-scene-effect{position:absolute;width:90px;height:72px;transform:translate(-50%,-50%);pointer-events:none}
 </style>
 </head>
@@ -3386,7 +3387,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 169 · questionable responsibilities";
+const BUILD = "build 170 · a little more headroom";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4571,7 +4572,7 @@ function OfficeFloor() {
           <div className="pg-wall" style={{ height: WALL_H }} />
           <div className="pg-carpet" style={{ top: WALL_H }} />
           <OfficeEnvironment variant={officeSceneAt(funTick)} celebrating={!!office?.hit} onInspect={kind=>setPanel("prop:"+kind)}/>
-          {propScene&&<PropPerformance scene={propScene}/>}
+          {propScene&&<PropPerformance scene={propScene} cam={cam} view={view}/>}
           <LoungeWorld play={play}/>
 
           {DECOR.map((d, i) => d.t === "kitchenfloor" ? (
@@ -6218,15 +6219,26 @@ const PROP_ACTIONS={
  printer:{label:"Printer fixed",emote:"type",lines:["THIS PAGE INTENTIONALLY UNHELPFUL.","SUCCESS. PLEASE DO NOT INTERPRET THIS AS A PRECEDENT.","You opened the tray. The tray has opened an investigation."]}
 };
 function loungeStory(play){const actions=play?.actions||{},total=Object.values(actions).reduce((n,v)=>n+Number(v||0),0);const stage=total>=15?3:total>=8?2:total>=3?1:0;return {total,stage,next:[3,8,15,null][stage],title:["Materials awaiting a committee","A chair. For the planning committee.","Grand opening of the ribbon","Commemorative planning plaque installed"][stage],line:["Every free prop performance helps. Joey is counting this as teamwork.","The office has achieved somewhere to sit while discussing somewhere to sit.","The ribbon is open. The lounge remains closed. Please respect the distinction.","A plaque commemorates the progress. Work will resume after the plaque ceremony."][stage]};}
+function WateringCanArt(){return <g data-art="watering-can" strokeLinejoin="round" strokeLinecap="round">
+ <path d="M28 25C1 7-4 55 27 53L29 44C9 47 9 22 27 34Z" fill="#7B9CC4"/>
+ <path d="M57 44 79 24 85 31 62 61Z" fill="#7B9CC4"/>
+ <path d="M23 29Q40 21 59 29L64 58Q61 69 43 70 25 70 21 61Z" fill="#7B9CC4"/>
+ <path d="M28 36 27 57Q29 63 36 63" stroke="#B9CDDF" strokeWidth="4"/>
+ <ellipse cx="41" cy="29" rx="18" ry="6" fill="#B9CDDF"/>
+ <ellipse cx="41" cy="28" rx="10" ry="2.5" fill="#476781" stroke="none"/>
+ <path d="m77 22 7-5 9 12-7 5Z" fill="#FFD36B"/>
+ <path d="m84 22 3 4" strokeWidth="2"/>
+ <path className="pg-scene-drops" d="m91 37 2 6m-10-3 2 6m7 4 2 6m-10-3 2 6" stroke="#5286AA" strokeWidth="3"/>
+ </g>;}
 function PerformanceArt({kind,variant=0}){
  return <svg viewBox="0 0 150 100" role="img" aria-label={kind==="bench"?"A couch with a reserved break cushion":kind==="plant"?"Watering can and plastic leaf":kind==="lounge"?"A ceremonial ribbon and planning plaque":"Officially unnecessary paperwork"} fill="none" stroke="#2B2B2B" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
- {kind==="plant"?<><path d="M20 42h45v40H20Z" fill="#7B9CC4"/><path d="M23 44q-23-30-15 9m56 3 31-15 6 8-35 24"/><path className="pg-scene-drops" d="m100 49 4 10m8-6 4 10m-14 5 3 8" stroke="#7B9CC4"/><path d="M104 85h30l-4 12h-22Z" fill="#C58E69"/><path d="M119 85V53q-22-8-21-22 22 0 21 22 23-15 22-28-22 6-22 28" fill="#8FA67A"/></>:kind==="bench"?<><rect x="13" y="35" width="124" height="48" rx="10" fill="#7B9CC4"/><path d="M17 65h116m-72-27v27M20 83v10m110-10v10"/><path d="M72 50h49v20H72Z" fill="#FFD36B"/><text x="97" y="63" textAnchor="middle" fontSize="8" fill="#2B2B2B" stroke="none">ON BREAK</text></>:kind==="lounge"?<><path d="M22 12v80m106-80v80" stroke="#9B714B" strokeWidth="7"/><path d="M18 38h114v16H18Z" fill="#B23B2E"/><path d="m65 27 12 40m7-40-17 40" stroke="#F8F1E3"/><rect x="35" y="66" width="80" height="27" rx="3" fill="#FFD36B"/><text x="75" y="83" textAnchor="middle" fill="#2B2B2B" fontSize="9" stroke="none">PLANNING</text></>:<><path className="pg-scene-sheet" d="M42 8h67v81H42Z" fill="#F8F1E3"/><path d="M54 30h43m-43 10h34m-34 10h43m-43 10h36" stroke="#A59C88" strokeWidth="2"/><g transform={"rotate("+(variant%2?8:-8)+" 77 72)"}><rect x="47" y="65" width="60" height="19" fill="#FFE6A1" stroke="#B23B2E"/><text x="77" y="78" textAnchor="middle" fill="#B23B2E" fontSize="8" stroke="none">{kind==="calendar"?"RECURRING":kind==="shelf"?"VERY URGENT":"UNHELPFUL"}</text></g></>}
+ {kind==="plant"?<><g transform="translate(0 5) scale(1.05)"><WateringCanArt/></g><path d="M104 85h30l-4 12h-22Z" fill="#C58E69"/><path d="M119 85V53q-22-8-21-22 22 0 21 22 23-15 22-28-22 6-22 28" fill="#8FA67A"/></>:kind==="bench"?<><rect x="13" y="35" width="124" height="48" rx="10" fill="#7B9CC4"/><path d="M17 65h116m-72-27v27M20 83v10m110-10v10"/><path d="M72 50h49v20H72Z" fill="#FFD36B"/><text x="97" y="63" textAnchor="middle" fontSize="8" fill="#2B2B2B" stroke="none">ON BREAK</text></>:kind==="lounge"?<><path d="M22 12v80m106-80v80" stroke="#9B714B" strokeWidth="7"/><path d="M18 38h114v16H18Z" fill="#B23B2E"/><path d="m65 27 12 40m7-40-17 40" stroke="#F8F1E3"/><rect x="35" y="66" width="80" height="27" rx="3" fill="#FFD36B"/><text x="75" y="83" textAnchor="middle" fill="#2B2B2B" fontSize="9" stroke="none">PLANNING</text></>:<><path className="pg-scene-sheet" d="M42 8h67v81H42Z" fill="#F8F1E3"/><path d="M54 30h43m-43 10h34m-34 10h43m-43 10h36" stroke="#A59C88" strokeWidth="2"/><g transform={"rotate("+(variant%2?8:-8)+" 77 72)"}><rect x="47" y="65" width="60" height="19" fill="#FFE6A1" stroke="#B23B2E"/><text x="77" y="78" textAnchor="middle" fill="#B23B2E" fontSize="8" stroke="none">{kind==="calendar"?"RECURRING":kind==="shelf"?"VERY URGENT":"UNHELPFUL"}</text></g></>}
  </svg>;
 }
-function PropPerformance({scene}){return <>
- <div className={"pg-prop-performance scene-"+scene.kind} data-testid="prop-performance" style={{left:scene.x,top:scene.y,zIndex:Math.round(scene.y+5000)}}><PerformanceArt kind={scene.kind} variant={scene.variant}/><b>{scene.line}</b></div>
+function PropPerformance({scene,cam,view}){const compact=view.h<300,x=compact?cam.x+view.w*.25:clamp(scene.x,cam.x+130,cam.x+view.w-130),y=compact?cam.y+Math.min(90,view.h-12):clamp(scene.y,cam.y+160,cam.y+view.h-12);return <>
+ <div className={"pg-prop-performance scene-"+scene.kind+(compact?" compact":"")} data-testid="prop-performance" style={{left:x,top:y,zIndex:Math.round(y+5000)}}><PerformanceArt kind={scene.kind} variant={scene.variant}/><b>{scene.line}</b></div>
  {scene.kind!=="bench"&&<svg className={"pg-scene-effect effect-"+scene.kind} aria-hidden="true" viewBox="0 0 100 80" fill="none" stroke="#2B2B2B" strokeWidth="2.5" style={{left:scene.px,top:scene.py,zIndex:Math.round(scene.py+2000)}}>
- {scene.kind==="plant"?<><path d="M5 8h34v27H5Z" fill="#7B9CC4"/><path d="M7 10Q-8-8 2 21m37 0 31 8-3 8-28-7"/><path className="pg-scene-drops" d="m67 39 1 8m8-5 2 8m-13 3 2 8" stroke="#5286AA"/></>:scene.kind==="notice"?<>{[10,38,66].map((x,i)=><g key={x} className="pg-scene-sheet"><path d={`M${x} 18h20v26q-10 5-20 0Z`} fill={["#8FA67A","#F78B6B","#7B9CC4"][i]}/><path d={`M${x+20} 23q14-1 0 12`}/><path d={`M${x+5} 33q5 5 10 0`}/></g>)}</>:<g className="pg-scene-sheet"><path d="M29 8h43v58H29Z" fill="#FFF8E9"/><path d="M37 22h27m-27 9h24m-24 9h26" stroke="#A59C88"/><path d="m23 51 55-9 2 17-55 9Z" fill="#FFD36B"/><text x="51" y="58" fontSize="6" textAnchor="middle" fill="#B23B2E" stroke="none">{scene.kind==="lounge"?"APPROVED?":"FILED. WHY?"}</text></g>}
+ {scene.kind==="plant"?<WateringCanArt/>:scene.kind==="notice"?<>{[10,38,66].map((x,i)=><g key={x} className="pg-scene-sheet"><path d={`M${x} 18h20v26q-10 5-20 0Z`} fill={["#8FA67A","#F78B6B","#7B9CC4"][i]}/><path d={`M${x+20} 23q14-1 0 12`}/><path d={`M${x+5} 33q5 5 10 0`}/></g>)}</>:<g className="pg-scene-sheet"><path d="M29 8h43v58H29Z" fill="#FFF8E9"/><path d="M37 22h27m-27 9h24m-24 9h26" stroke="#A59C88"/><path d="m23 51 55-9 2 17-55 9Z" fill="#FFD36B"/><text x="51" y="58" fontSize="6" textAnchor="middle" fill="#B23B2E" stroke="none">{scene.kind==="lounge"?"APPROVED?":"FILED. WHY?"}</text></g>}
  </svg>}
  </>;}
 function FieldGuide({onGo,onBingo,onClose}){return <><div className="pg-stamp">Unofficial employee orientation</div><p className="pg-big">Your job is mostly a cover story.</p><p>Earn Busywork at your desk. Between the paperwork, try something ridiculous.</p><div className="pg-field-guide">
