@@ -56,7 +56,7 @@ CREATE TEMP TABLE photo_before AS SELECT row_to_json(p)::jsonb AS value FROM pub
 DO $photo_tests$
 DECLARE p public.players; rejected boolean:=false;
 BEGIN
- IF (SELECT value FROM photo_before)<>(SELECT row_to_json(p)::jsonb FROM public.players p) THEN RAISE EXCEPTION 'Photo installation changed a player'; END IF;
+ IF (SELECT value FROM photo_before)<>(SELECT row_to_json(employee_row)::jsonb FROM public.players employee_row) THEN RAISE EXCEPTION 'Photo installation changed a player'; END IF;
  IF has_function_privilege('anon','public.set_look(jsonb)','EXECUTE') OR NOT has_function_privilege('authenticated','public.set_look(jsonb)','EXECUTE') THEN RAISE EXCEPTION 'Photo migration changed grants'; END IF;
  p:=public.set_look('{"head":"photo","clothing":"blazer"}');
  IF p.look->>'head'<>'photo' OR p.pp<>0 OR NOT p.wardrobe_owned ? 'blazer' THEN RAISE EXCEPTION 'Photo persistence changed progress'; END IF;
