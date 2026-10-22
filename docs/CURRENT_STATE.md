@@ -1,3 +1,11 @@
+# Build 179 — local watering (2026-10-22)
+
+Fixes the planter beside Dave’s office sending the player to the couch-side plant. Scenery inspection now preserves the selected object ID through routing, arrival, watering-can placement and punchline/camera framing. Dave’s planter has a distinct inspection label/description and independent persisted joke rotation. Existing field-guide/default destinations and their saved rotations remain compatible. Both plants still report the same existing server-authoritative cosmetic `plant` activity; no new rewards, cooldowns, RPCs or database changes.
+
+Fixture browser checks cover keyboard/touch activation, both planters in succession, independent rotation before/after reload, exact actor/effect locations, bubble clearance and short-viewport caption fallback at desktop, phone and short landscape. No production-player data changes. CI browser setup now uses Ubuntu’s standard HTTPS archive when the runner mirror list points at the Azure mirror; repeated Azure font/library download timeouts prevented tests from starting. Every existing test and gate remains. Final CI, merge/deployment SHA and live screenshot evidence are tracked in the release PR/report. Rollback: revert frontend only.
+
+---
+
 # Build 178 — clearly you (2026-10-22)
 
 Custom faces now retain transparent and translucent pixels: the existing 256px square crop is encoded/uploaded as PNG with a matching `.png` path and MIME type, and the shared ink frame has a transparent background. Existing JPG avatar URLs continue rendering; JPEG and other accepted inputs remain supported. Previously flattened photos need to be uploaded again from the original to recover transparency. No storage policy, database, economy or player-progress change.

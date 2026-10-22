@@ -45,3 +45,7 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 ## Transparent custom photos
 - [ ] Sample fully transparent, half-alpha and opaque pixels before upload and after reload in HUD/world at desktop/phone sizes; fixture storage must serve actual uploaded bytes.
 - [ ] Verify PNG MIME/path, opaque JPEG inputs, existing JPG URLs, upload failure/retry and no progress mutation; review screenshots before merge.
+
+## Per-planter watering
+- [ ] Activate Dave’s planter by keyboard/touch, then the couch-side planter; verify exact actor/effect anchors and independent rotations across reload.
+- [ ] Test desktop/phone/short landscape, bubble/actor/prop clearance or caption fallback, preserved field-guide destination and unchanged player progress/shared plant activity.

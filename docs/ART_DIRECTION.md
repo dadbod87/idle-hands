@@ -87,3 +87,7 @@ Keep transient panel feedback in a reserved 56px slot above the independently sc
 ## Build 178 transparent custom faces
 
 Preserve alpha through the 256px crop and PNG upload. The shared custom-head ink frame has no opaque backing so the office/body remains visible through translucent pixels. Keep the border, crop, dimensions, body and wardrobe layers unchanged. Older flattened uploads require re-uploading the original.
+
+## Build 179 per-planter watering
+
+Carry scenery identity through inspection, walking and performance so each plant uses its own world anchor and local joke rotation. Preserve shared plant art, watering-can design and server activity kind. Bubbles must clear the selected prop and actor; short viewports keep the feedback-caption fallback.
