@@ -41,3 +41,6 @@ BEGIN
   IS DISTINCT FROM ROW(k.kit,k.vanity,k.spent,k.wardrobe_owned,k.extras,k.pin,k.pet,k.cow,k.achievements,k.trophies)) THEN RAISE EXCEPTION 'Permanent cosmetics or collections lost'; END IF;
  RAISE NOTICE 'PASS: installation never resets players; real season function preserves cosmetics/spending/collections while seasonal earnings reset';
 END $tests$;
+
+-- Premium TV shares the permanent kit contract; stays isolated from Production.
+\i tests/premium-tv-contract.sql

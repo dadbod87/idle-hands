@@ -1589,6 +1589,13 @@ body{background:#D9CDC0}
 .pg-card:has(.pg-community-card),.pg-card:has(.pg-field-guide){width:min(760px,calc(100vw - 24px));max-width:min(760px,calc(100vw - 24px))}
 
 .pg-scene-effect{position:absolute;width:90px;height:72px;transform:translate(-50%,-50%);pointer-events:none}
+
+/* Premium wall-mounted TV: same ink silhouette as the office furniture. */
+.pg-office-tv{position:absolute;right:14px;top:32px;width:138px;height:96px;z-index:6;padding:0;border:0;background:none;color:inherit;cursor:pointer;touch-action:manipulation}
+.pg-office-tv:focus-visible{outline:3px solid #F78B6B;outline-offset:3px;border-radius:5px}
+.pg-office-tv svg,.pg-tv-art{display:block;width:100%;height:100%}
+.pg-fitting-preview .pg-tv-art{width:100%;height:100%}
+.pg-tv-credit{font-size:11px;line-height:1.5;margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -3387,7 +3394,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 173 · you found nothing";
+const BUILD = "build 174 · conflict-resolution training";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4271,10 +4278,12 @@ function OfficeFloor() {
     ? Math.abs(pos.x - myOffice.cx) < 150 && Math.abs(pos.y - myOffice.cy) < 170 : false;
   atDeskRef.current = atDesk;
   officeRef.current = myOffice;
+  const [propBubbleHeight,setPropBubbleHeight]=useState(0);
   const cam = {
     x: ROOM.w <= view.w ? 0 : clamp(pos.x - view.w / 2, 0, ROOM.w - view.w),
     y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h / 2, 0, ROOM.h - view.h),
   };
+  if(propScene)cam.y=propCameraY(cam.y,propScene,pos,view,propBubbleHeight,ROOM.h);
   const jamClaim = office?.printer || null;
   const jamFixedBy = jam && jamClaim && jamClaim.window === jam.window ? jamClaim.by : null;
   const printerBox = FIXTURES.find((x) => x.id === "printer");
@@ -4573,7 +4582,7 @@ function OfficeFloor() {
           <div className="pg-carpet" style={{ top: WALL_H }} />
           <OfficeEnvironment variant={officeSceneAt(funTick)} celebrating={!!office?.hit} onInspect={kind=>setPanel("prop:"+kind)}/>
           {propScene&&<PropPerformance scene={propScene}/>}
-          {propScene&&<PropPunchline scene={propScene} cam={cam} view={view} pos={pos}/>}
+          {propScene&&<PropPunchline scene={propScene} cam={cam} view={view} pos={pos} onHeight={setPropBubbleHeight}/>}
           <LoungeWorld play={play}/>
 
           {DECOR.map((d, i) => d.t === "kitchenfloor" ? (
@@ -4625,6 +4634,7 @@ function OfficeFloor() {
                             zIndex: Math.round(o.y) }}>
                 <div className={"pg-officefloor" + (p?.kit?.rug ? " has-rug rug-" + p.kit.rug : "")}>{p?.kit?.rug&&<OfficeRugArt tier={p.kit.rug}/>}</div>
                 {p?.kit?.art && <div className={"pg-officeart art-" + p.kit.art}><OfficeWallArt tier={p.kit.art}/></div>}
+                {p?.kit?.tv==="tv1"&&<OfficeTelevision owner={p.name}/>}
 
                 <div className="pg-officedoor"
                      style={{ left: o.doorX - o.x, width: DOOR_W }}><i /><span /><i /></div>
@@ -5899,6 +5909,48 @@ function OfficeRugArt({tier="r1"}){
  {n===4&&[18,30,42,54,66,78,90,102,114].map(x=><path key={x} d={`M${x} 20v50`} stroke="#4C684D"/>)}
  {[18,29,40,51,62,73,84,95,106,117].map(x=><path key={x} d={`M${x} 6v6m0 66v6`} stroke="#C7B48D" strokeWidth="3"/>)}</svg>;
 }
+const SPRINGER_SCREENS = [
+ {src:"assets/tv/springer-host.webp",label:"Jerry on the brick-wall set"},
+ {src:"assets/tv/springer-guests.webp",label:"Jerry talking with guests"},
+ {src:"assets/tv/springer-stage.webp",label:"Jerry greeting the studio"},
+ {src:"assets/tv/springer-audience.webp",label:"Jerry in the audience"}
+];
+const OFFICE_TV_ITEM={id:"tv1",name:"The Productivity Flatscreen",slot:"tv",tier:1,secs:259200,min_cost:50000000,
+ note:"One channel. Four Springer moments. HR has classified it as conflict-resolution training."};
+function SpringerTVArt({screen=0}){
+ const frame=SPRINGER_SCREENS[((screen%4)+4)%4],clip="tv-screen-"+React.useId().replace(/:/g,"");
+ return <svg className="pg-tv-art" data-tv-screen={screen%4} viewBox="0 0 180 124" role="img" aria-label={"Flatscreen TV — "+frame.label} fill="none" stroke="#2B2B2B" strokeWidth="3" strokeLinejoin="round">
+  <defs><clipPath id={clip}><rect x="14" y="12" width="152" height="86" rx="2"/></clipPath></defs>
+  <path d="M69 105h42v10H69Z" fill="#59636D"/><path d="M56 116h68" stroke="#2B2B2B" strokeWidth="5"/>
+  <rect x="6" y="7" width="170" height="101" rx="5" fill="#2F3840" opacity=".22" stroke="none"/>
+  <rect x="3" y="3" width="174" height="103" rx="5" fill="#414C56"/><path d="M9 7h162" stroke="#8998A1" strokeWidth="2"/>
+  <rect x="12" y="10" width="156" height="90" rx="2" fill="#1A272E"/>
+  <text x="90" y="49" fill="#A9C3D6" fontSize="17" fontWeight="900" fontFamily="Arial,sans-serif" textAnchor="middle" stroke="none">JERRY</text>
+  <text x="90" y="69" fill="#FFD36B" fontSize="17" fontWeight="900" fontFamily="Arial,sans-serif" textAnchor="middle" stroke="none">SPRINGER</text>
+  <image key={frame.src} href={frame.src} x="14" y="12" width="152" height="86" preserveAspectRatio="xMidYMid slice" clipPath={"url(#"+clip+")"} onError={e=>{e.currentTarget.style.display="none";}}/>
+  <path d="M17 14h55l-48 81h-7Z" fill="#EAF1E9" opacity=".08" stroke="none"/>
+  <rect x="17" y="80" width="56" height="15" rx="2" fill="#263F57" stroke="#93A8B7" strokeWidth=".7"/>
+  <text x="45" y="90.5" fill="#FFF7E5" fontSize="8.5" fontWeight="900" textAnchor="middle" fontFamily="Arial,sans-serif" stroke="none">SPRINGER</text>
+  <circle cx="163" cy="103" r="1.8" fill="#8FA67A" stroke="none"/>
+  <text x="90" y="104" fill="#C8D0D2" fontSize="4.5" letterSpacing="1.5" textAnchor="middle" fontFamily="monospace" stroke="none">PRODUCTIVITY SERIES</text>
+ </svg>;
+}
+function OfficeTelevision({owner}){
+ const [screen,setScreen]=useState(()=>Math.floor(Date.now()/10000)%4),button=useRef(null);
+ useEffect(()=>{
+  let visible=false;const media=window.matchMedia("(prefers-reduced-motion: reduce)");
+  const observer=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting||false;});
+  if(button.current)observer.observe(button.current);
+  const timer=setInterval(()=>{if(visible&&!document.hidden&&!media.matches)setScreen(n=>(n+1)%4);},10000);
+  return()=>{clearInterval(timer);observer.disconnect();};
+ },[]);
+ return <button ref={button} className="pg-office-tv" data-testid="office-tv" data-owner={owner}
+   title="Jerry Springer · tap for the next screen · no productivity whatsoever"
+   aria-label={"Jerry Springer TV in "+owner+"'s office. Next screen"}
+   onKeyDown={e=>{if(["Enter"," "].includes(e.key))e.stopPropagation();}}
+   onClick={e=>{e.stopPropagation();setScreen(n=>(n+1)%4);}}><SpringerTVArt screen={screen}/></button>;
+}
+
 function OfficeWallArt({tier="w1"}){
  const n=Number(tier.slice(1))||1;
  return <svg viewBox="0 0 120 90" data-art-tier={tier} className="pg-wall-art" aria-hidden="true" stroke="#2B2B2B" strokeWidth="2" strokeLinejoin="round">
@@ -5912,7 +5964,7 @@ function OfficeWallArt({tier="w1"}){
 function FittingPreview({item,kind,player,large=false}){
  const office=kind==="office_kit";
  return <div className={"pg-fitting-preview"+(large?" large":"")} data-fitting-preview={item.id} role="img" aria-label={item.name+" preview"}>
- {office?(item.slot==="desk"?<OfficeDeskArt tier={item.id}/>:item.slot==="chair"?<OfficeChairArt tier={item.id}/>:item.slot==="rug"?<OfficeRugArt tier={item.id}/>:<OfficeWallArt tier={item.id}/>):item.slot==="held"?<HeldItemArt id={item.id}/>:<div className="pg-fitting-avatar"><Body p={{name:player?.name||"Employee",look:normalizedAvatar(lookFor(player)),vanity:{[item.slot]:item.id}}}/></div>}
+ {office?(item.slot==="desk"?<OfficeDeskArt tier={item.id}/>:item.slot==="chair"?<OfficeChairArt tier={item.id}/>:item.slot==="rug"?<OfficeRugArt tier={item.id}/>:item.slot==="tv"?<SpringerTVArt/>:<OfficeWallArt tier={item.id}/>):item.slot==="held"?<HeldItemArt id={item.id}/>:<div className="pg-fitting-avatar"><Body p={{name:player?.name||"Employee",look:normalizedAvatar(lookFor(player)),vanity:{[item.slot]:item.id}}}/></div>}
  </div>;
 }
 
@@ -5935,7 +5987,7 @@ function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear, preview=
   const slots = [...new Set(list.map((x) => x.slot))];
   const tierOf = (id) => (list.find((x) => x.id === id) || {}).tier || 0;
   const priceOf = (x) => quote?.prices?.[x.id]
-    ?? Math.max(1000, (rate || 0) * (x.secs || 0));
+    ?? Math.max(1000, x.min_cost || 0, (rate || 0) * (x.secs || 0));
   const spell = (secs) => secs >= 86400 ? Math.round(secs / 86400) + "d of output"
                         : secs >= 3600  ? Math.round(secs / 3600) + "h of output"
                         : Math.round(secs / 60) + " min of output";
@@ -5994,7 +6046,7 @@ function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear, preview=
 
 const SLOT_NAMES = { glow: "Glow", size: "Presence", held: "Something To Carry",
                      aura: "Atmosphere", desk: "The Desk", chair: "The Chair",
-                     rug: "The Floor", art: "The Wall" };
+                     rug: "The Floor", art: "The Wall", tv: "Conflict-Resolution Training" };
 
 function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure,
                 onFitting, pins, onPin, onWear, guard, flash }) {
@@ -6236,9 +6288,22 @@ function PerformanceArt({kind,variant=0}){
  {kind==="plant"?<><g transform="translate(0 5) scale(1.05)"><WateringCanArt/></g><path d="M104 85h30l-4 12h-22Z" fill="#C58E69"/><path d="M119 85V53q-22-8-21-22 22 0 21 22 23-15 22-28-22 6-22 28" fill="#8FA67A"/></>:kind==="bench"?<><rect x="13" y="35" width="124" height="48" rx="10" fill="#7B9CC4"/><path d="M17 65h116m-72-27v27M20 83v10m110-10v10"/><path d="M72 50h49v20H72Z" fill="#FFD36B"/><text x="97" y="63" textAnchor="middle" fontSize="8" fill="#2B2B2B" stroke="none">ON BREAK</text></>:kind==="lounge"?<><path d="M22 12v80m106-80v80" stroke="#9B714B" strokeWidth="7"/><path d="M18 38h114v16H18Z" fill="#B23B2E"/><path d="m65 27 12 40m7-40-17 40" stroke="#F8F1E3"/><rect x="35" y="66" width="80" height="27" rx="3" fill="#FFD36B"/><text x="75" y="83" textAnchor="middle" fill="#2B2B2B" fontSize="9" stroke="none">PLANNING</text></>:<><path className="pg-scene-sheet" d="M42 8h67v81H42Z" fill="#F8F1E3"/><path d="M54 30h43m-43 10h34m-34 10h43m-43 10h36" stroke="#A59C88" strokeWidth="2"/><g transform={"rotate("+(variant%2?8:-8)+" 77 72)"}><rect x="47" y="65" width="60" height="19" fill="#FFE6A1" stroke="#B23B2E"/><text x="77" y="78" textAnchor="middle" fill="#B23B2E" fontSize="8" stroke="none">{kind==="calendar"?"RECURRING":kind==="shelf"?"VERY URGENT":"UNHELPFUL"}</text></g></>}
  </svg>;
 }
-function PropPunchline({scene,cam,view,pos}){
+function propCameraY(current,scene,pos,view,height,roomHeight){
+ // Frame the whole performance, rather than centering only on the actor.
+ // If the bubble, prop and actor cannot fit together, preserve the caption fallback.
+ if(height<=0)return current;
+ const top=Math.min(scene.top-16,pos.y-110)-height-10;
+ const foot=Math.max(pos.y+40,scene.py*2-scene.top+24);
+ const low=Math.max(0,foot+10-view.h),high=Math.min(roomHeight-view.h,top);
+ return low<=high?clamp(current,low,high):current;
+}
+function PropPunchline({scene,cam,view,pos,onHeight}){
  const ref=useRef(null),[height,setHeight]=useState(0),width=Math.min(260,view.w-24),bottom=Math.min(scene.top-16,pos.y-110);
- React.useLayoutEffect(()=>{setHeight(ref.current?.offsetHeight||0);},[scene.line,width]);
+ React.useLayoutEffect(()=>{
+  const el=ref.current,measure=()=>{const h=el?.offsetHeight||0;setHeight(h);onHeight(h);};
+  measure();const observer=new ResizeObserver(measure);if(el)observer.observe(el);
+  return()=>observer.disconnect();
+ },[scene.line,width,onHeight]);
  const fits=height>0&&bottom-height>=cam.y+10&&bottom+8<=cam.y+view.h-10;
  return <div ref={ref} className="pg-deskbubble pg-prop-bubble" data-testid="prop-bubble" aria-hidden="true" style={{left:clamp(scene.px,cam.x+width/2+12,cam.x+view.w-width/2-12),top:bottom,width,visibility:fits?"visible":"hidden",zIndex:Math.round(scene.py+3000)}}>{scene.line}</div>;
 }
@@ -7995,6 +8060,8 @@ function Onboard({ user, code, onDone, preview=false }) {
 const ART_FITTINGS={"office_kit":[{"id":"d1","name":"A Desk Without A Wobble","note":"Four legs, all touching the floor. This was not always true.","secs":400,"slot":"desk","tier":1},{"id":"d2","name":"Glass Top","note":"Shows every fingerprint. Worth it.","secs":2400,"slot":"desk","tier":2},{"id":"d3","name":"Walnut, Or Close Enough","note":"Veneer. Convincing veneer. Nobody is going to check.","secs":14400,"slot":"desk","tier":3},{"id":"d4","name":"Actual Marble","note":"The floor beneath it has been surveyed. It was fine. Probably.","secs":86400,"slot":"desk","tier":4},{"id":"d5","name":"Something Black And Seamless","note":"No drawers. No edges. No explanation.","secs":518400,"slot":"desk","tier":5},{"id":"c1","name":"A Chair That Goes Up","note":"The lever works. It has never worked before.","secs":700,"slot":"chair","tier":1},{"id":"c2","name":"Lumbar Support","note":"You have opinions about it now. You share them.","secs":4900,"slot":"chair","tier":2},{"id":"c3","name":"The Mesh One From The Catalogue","note":"The one everybody looked at and nobody ordered.","secs":34300,"slot":"chair","tier":3},{"id":"c4","name":"Leather. Reclining. Silent.","note":"It makes no sound at all. This unsettles visitors.","secs":240000,"slot":"chair","tier":4},{"id":"r1","name":"A Rug, Finally","note":"Covers the stain. Everyone knows about the stain.","secs":500,"slot":"rug","tier":1},{"id":"r2","name":"Something With A Pattern","note":"Geometric. Inoffensive. Chosen by committee.","secs":3500,"slot":"rug","tier":2},{"id":"r3","name":"A Rug People Comment On","note":"Two people have asked where it is from. You have not told them.","secs":24500,"slot":"rug","tier":3},{"id":"r4","name":"Handwoven, Allegedly","note":"The invoice said handwoven. The invoice said a lot of things.","secs":171500,"slot":"rug","tier":4},{"id":"w1","name":"A Motivational Print","note":"PERSEVERANCE. A canoe. Nobody has looked at it twice.","secs":1200,"slot":"art","tier":1},{"id":"w2","name":"A Framed Certificate","note":"Completion, not achievement. The distinction is not visible from the door.","secs":8400,"slot":"art","tier":2},{"id":"w3","name":"An Actual Painting","note":"Nobody knows who chose it. It has grown on everybody.","secs":58800,"slot":"art","tier":3},{"id":"w4","name":"The Founder Portrait","note":"It is not Dave. Nobody will say who it is.","secs":411600,"slot":"art","tier":4}],"vanity":[{"id":"g1","name":"A Faint Warmth","note":"Barely there. You know it is there.","secs":300,"slot":"glow","tier":1},{"id":"g2","name":"Employee Of The Month Sheen","note":"The particular gold of a laminated certificate.","secs":1500,"slot":"glow","tier":2},{"id":"g3","name":"Executive Blue","note":"The colour of a screensaver in a room nobody books.","secs":7500,"slot":"glow","tier":3},{"id":"g4","name":"Fire Drill Red","note":"People instinctively file toward the exit when you walk past.","secs":37500,"slot":"glow","tier":4},{"id":"g5","name":"Server Room Green","note":"You hum slightly. Nobody has mentioned it.","secs":187500,"slot":"glow","tier":5},{"id":"g6","name":"Unapproved Purple","note":"Not in the brand guidelines. Not addressed by the brand guidelines.","secs":937500,"slot":"glow","tier":6},{"id":"s1","name":"Good Posture","note":"You are not taller. You simply take up more of the room.","secs":900,"slot":"size","tier":1},{"id":"s2","name":"Presence","note":"People stop talking slightly before you arrive.","secs":6000,"slot":"size","tier":2},{"id":"s3","name":"Corner Office Energy","note":"Doorways are now a consideration.","secs":40000,"slot":"size","tier":3},{"id":"h1","name":"A Mug You Never Wash","note":"It has a ring in it older than most of the staff.","secs":450,"slot":"held","tier":1},{"id":"h2","name":"A Clipboard","note":"You carry it everywhere. Nobody asks what is on it. That is the trick.","secs":2700,"slot":"held","tier":2},{"id":"h3","name":"A Briefcase With Nothing In It","note":"Weightless. Convincing.","secs":16000,"slot":"held","tier":3},{"id":"h4","name":"A Trophy For Something","note":"The plaque has been buffed smooth. Nobody remembers the category.","secs":96000,"slot":"held","tier":4},{"id":"h5","name":"The Golden Stapler","note":"It does not staple. It has not stapled in years. It is beyond stapling.","secs":576000,"slot":"held","tier":5},{"id":"a1","name":"Perpetual Dust Motes","note":"Lit from somewhere. There is no window on that side.","secs":1800,"slot":"aura","tier":1},{"id":"a2","name":"A Faint Shimmer","note":"Facilities have inspected it twice and filed nothing.","secs":12000,"slot":"aura","tier":2},{"id":"a3","name":"Small Contained Flames","note":"Signed off by nobody. Questioned by nobody.","secs":80000,"slot":"aura","tier":3}]};
 
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
+ART_FITTINGS.office_kit.push(OFFICE_TV_ITEM);
+
 function ArtPreview(){
  const [demoEmote,setDemoEmote]=useState(null);
  const qaSchedule={timezone:"America/Los_Angeles",server_now:"2026-10-21T17:00:00Z",ends_at:"2026-10-23T23:00:00Z",received_at:Date.now()};
@@ -8059,6 +8126,8 @@ function ArtPreview(){
   <section data-testid="fittings-qa" style={{maxWidth:760,margin:"0 auto 18px",border:"2px solid #2B2B2B"}}>
     <Catalogue cat={ART_FITTINGS} me={{id:"fittings-qa",name:"Preview Employee",look:demoAvatar}} pp={0} rate={0} preview onFitting={()=>{}}/>
   </section>
+  <h2>5c.1 Premium flatscreen · four stills, one questionable purchase</h2>
+  <div className="ar-grid" data-testid="tv-qa">{SPRINGER_SCREENS.map((frame,i)=><div className="ar-cell" key={frame.src}><div style={{width:180,height:124}}><SpringerTVArt screen={i}/></div><strong>{frame.label}</strong></div>)}</div>
   <h2>5d. Shared break table · donuts for everyone</h2>
   <div data-testid="break-table-qa" style={{width:240,height:195,margin:"0 auto"}}><FixtureIllustration kind="coffee"/></div>
   <h2>5e. Actual personnel file · cosmetic commendations</h2>

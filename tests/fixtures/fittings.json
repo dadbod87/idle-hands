@@ -152,6 +152,15 @@
       "secs": 411600,
       "slot": "art",
       "tier": 4
+    },
+    {
+      "id": "tv1",
+      "name": "The Productivity Flatscreen",
+      "slot": "tv",
+      "tier": 1,
+      "secs": 259200,
+      "min_cost": 50000000,
+      "note": "One channel. Four Springer moments. HR has classified it as conflict-resolution training."
     }
   ],
   "vanity": [
