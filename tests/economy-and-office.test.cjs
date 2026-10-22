@@ -102,3 +102,6 @@ assert.equal(cameraContext.frame(1090,plantScene,actorPosition,{h:180},54,1700),
 assert.equal(cameraContext.frame(0,{top:30,py:70},{y:130},{h:400},54,1700),0,'No false headroom above room edge');
 assert.equal(cameraContext.frame(980,plantScene,actorPosition,{h:400},0,1700),980,'Wait for actual text measurement');
 console.log('PASS: prop camera frames measured bubble, tall prop and actor; short/edge fallback retained');
+
+// Presentation contract runs in the existing regression job; no workflow change needed.
+require('./active-effects.test.cjs');
