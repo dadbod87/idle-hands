@@ -41,3 +41,7 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Test custom face selection, preview, invalid/decode/upload failure, retry, save/reload, HUD/world rendering, illustrated/photo switching and unchanged progress using intercepted fixtures.
 - [ ] Execute the photo extension through the isolated wardrobe SQL suite; verify the guarded additive migration live before frontend deployment.
 - [ ] Inspect head-picker and in-game screenshots at phone/desktop and preserve prior HUD, wardrobe, TV and prop gates.
+
+## Transparent custom photos
+- [ ] Sample fully transparent, half-alpha and opaque pixels before upload and after reload in HUD/world at desktop/phone sizes; fixture storage must serve actual uploaded bytes.
+- [ ] Verify PNG MIME/path, opaque JPEG inputs, existing JPG URLs, upload failure/retry and no progress mutation; review screenshots before merge.

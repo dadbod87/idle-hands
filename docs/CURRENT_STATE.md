@@ -1,3 +1,11 @@
+# Build 178 — clearly you (2026-10-22)
+
+Custom faces now retain transparent and translucent pixels: the existing 256px square crop is encoded/uploaded as PNG with a matching `.png` path and MIME type, and the shared ink frame has a transparent background. Existing JPG avatar URLs continue rendering; JPEG and other accepted inputs remain supported. Previously flattened photos need to be uploaded again from the original to recover transparency. No storage policy, database, economy or player-progress change.
+
+Browser fixtures now serve the actual captured upload bytes on reload. Tests sample alpha values (0, 128, 255) in preview and persisted HUD/world images at desktop/phone sizes, verify opaque JPEG compatibility and old `.jpg` URLs, and retain failure/retry and stable-purchase coverage. All Supabase HTTP/WebSocket/storage traffic is intercepted; no real photos or player records are changed. Required checks, production SHA and live screenshot evidence are recorded in the release PR/report. Rollback: revert frontend only; retain uploaded PNGs.
+
+---
+
 # Build 177 — badge approved (2026-10-22)
 
 Completes the build 176 custom-photo flow by passing the selected image into the onboarding ID-badge preview as well as the body preview. The final visual review caught the missing image binding; upload/save/world rendering and stable purchase targets remain unchanged. The browser validation now checks the actual badge image has loaded. No database or progress change. Build 176 feature release: PR #32, merge db3679df5c234d18b0fbf8d3ea2a4ddf92940cb2; additive photo validation installed and independently read back with unchanged grants. Rollback this frontend correction only. Final checks, deployment and screenshot evidence are recorded in the release PR/report.

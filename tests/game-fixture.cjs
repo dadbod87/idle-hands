@@ -17,7 +17,7 @@ async function installGameFixture(page,options={}) {
  wardrobe_owned:['hoodie','cardigan','blazer','hawaiian','hoodie_gold','friday'],pet:'pig',pets:['pig','calf','moth','pigeon','balloon','dragon'],
  look:{build:'regular',bottom:'trousers',gender:'neutral',hair:'messy',hairColor:1,skin:0,eyes:'tired',expression:'deadpan',top:0,legs:0,clothing:'starter'},
  extras:options.ownedPins||[],pin:options.pin||null,vanity:{},kit:{desk:'d3',chair:'c2',rug:'r2'},streak:0,goodwill:0,notoriety:0};
- const uploads=[];const calls=[];const officePlay=options.playStore||makeOfficePlayFixture();officePlay.people[player.id]=player.name;for(const p of options.coworkers||[])officePlay.people[p.id]=p.name;
+ const uploads=[];const storedPhotos=new Map();const calls=[];const officePlay=options.playStore||makeOfficePlayFixture();officePlay.people[player.id]=player.name;for(const p of options.coworkers||[])officePlay.people[p.id]=p.name;
  await page.addInitScript(({id})=>{
   const exp=Math.floor(Date.now()/1000)+3600;
   const token=btoa(JSON.stringify({alg:'HS256',typ:'JWT'}))+'.'+btoa(JSON.stringify({sub:id,role:'authenticated',exp}))+'.fixture';
@@ -29,9 +29,14 @@ async function installGameFixture(page,options={}) {
   const req=route.request(),url=new URL(req.url());
   let result=null;
   if(url.pathname.startsWith('/storage/v1/object/')){
-   if(req.method()==='GET'){await route.fulfill({status:200,contentType:'image/png',body:require('node:fs').readFileSync(require('node:path').join(__dirname,'fixtures/custom-face.png'))});return;}
+   if(req.method()==='GET'){const image=storedPhotos.get(url.pathname.replace('/public/','/'));await route.fulfill({status:200,headers:{'access-control-allow-origin':'*'},contentType:image?.contentType||'image/png',body:image?.bytes||require('node:fs').readFileSync(require('node:path').join(__dirname,'fixtures/custom-face.png'))});return;}
    if(options.failRpcs?.includes('badge_upload')){await route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({statusCode:400,error:'Fixture upload declined',message:'Fixture upload declined'})});return;}
-   uploads.push({path:url.pathname,body:req.postDataBuffer()});result={Key:'badges/'+player.id+'.jpg'};
+   // Store the actual multipart image, so reload tests verify uploaded pixels.
+   const body=req.postDataBuffer(),boundary=req.headers()['content-type'].match(/boundary=(?:"([^"]+)"|([^;]+))/);
+   const parts=body.toString('latin1').split('--'+(boundary[1]||boundary[2]));
+   const part=parts.find(p=>/filename=/.test(p)),split=part.indexOf('\r\n\r\n');
+   const image={bytes:Buffer.from(part.slice(split+4,-2),'latin1'),contentType:part.slice(0,split).match(/Content-Type: ([^\r\n]+)/i)[1]};
+   storedPhotos.set(url.pathname,image);uploads.push({path:url.pathname,body,...image});result={Key:url.pathname.replace('/storage/v1/object/','')};
   }else if(url.pathname.includes('/auth/'))result={id:player.id,is_anonymous:false};
   else if(url.pathname.includes('/rpc/')){
    const rpc=url.pathname.split('/').pop(),args=req.postDataJSON()||{};
