@@ -1,3 +1,15 @@
+# Build 174 — conflict-resolution training (2026-10-22, candidate)
+
+Adds The Productivity Flatscreen in Your Desk → Catalogue → Your Office, with its own permanent TV slot. Original inked TV art is shared by the purchase thumbnail, free preview and office wall. Four self-hosted Springer stills rotate every 10 seconds only while visible and the tab is active; reduced motion holds the still, and tap/keyboard advances it without a popup or currency effect. Existing desk, chair, rug, wall art and paths are preserved. Source credits/third-party provenance: assets/tv/SOURCES.md.
+
+Price is server-authoritative: max(50,000,000 BW, three days of current effective output). Migration 20261022170845_premium_springer_tv changes only the existing fitting quote/purchase formula to honor optional per-item min_cost, then appends tv1 to office_kit. Existing items have no min_cost and retain exactly their old prices. No player writes, schema, grants, multiplier, reset or capacity changes. TV uses existing kit persistence through restructuring and weekly rollover. SQL guard aborts if function implementations have changed unexpectedly or tv1 conflicts.
+
+Local parser/name checks and all eight isolated PostgreSQL fixture suites passed, including actual TV quote/purchase bodies. Eight focused desktop/Pixel 7 browser checks passed: previews, failure/success charging, all screens, reload/old decor, affordability, four WebP responses, automatic rotation, reduced motion and hidden-tab pause. World/gallery screenshots visually reviewed. Required CI and production evidence belong in the release PR. No production test accounts or purchases. Physical-phone gameplay remains unverified. CLI generated the migration filename, then automatic approval review rejected its PostHog analytics contact; no retry/bypass. Deployment uses the existing native database connection.
+
+Rollback: revert frontend; additive catalog TV can remain installed. Avoid removing a purchased TV's catalog ID; retain stored kit.tv. SQL price changes are no-ops for pre-existing items.
+
+---
+
 # Build 173 — you found nothing (2026-10-22)
 
 The invite-door joke now has its own warm-gold, readable line instead of disappearing into 10px low-opacity fine print. Supporting copy is 12px opaque text. Invite validation, account creation and gameplay are unchanged. Frontend rollback: revert this release.

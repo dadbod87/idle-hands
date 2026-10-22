@@ -14,7 +14,7 @@ for(const mode of ['desktop','mobile']){
   const panel=page.locator('.pg-panel');
   for(const [label,key] of [['Yourself','vanity'],['Your Office','office_kit']]){
    await panel.getByRole('button',{name:label,exact:true}).click();
-   await expect(panel.locator('[data-fitting-entry]')).toHaveCount(17);
+   await expect(panel.locator('[data-fitting-entry]')).toHaveCount(fittings[key].length);
    for(const item of fittings[key]){
     const entry=panel.locator(`[data-fitting-entry="${item.id}"]`);
     await entry.getByRole('button',{name:'Preview '+item.name,exact:true}).click();
@@ -57,7 +57,7 @@ for(const mode of ['desktop','mobile']){
   const gallery=page.getByTestId('fittings-qa');
   for(const [label,key] of [['Yourself','vanity'],['Your Office','office_kit']]){
    await gallery.getByRole('button',{name:label,exact:true}).click();
-   await expect(gallery.locator('[data-fitting-entry]')).toHaveCount(17);
+   await expect(gallery.locator('[data-fitting-entry]')).toHaveCount(fittings[key].length);
    // Even locked/unaffordable items must have a usable preview.
    const item=fittings[key][0];await gallery.getByRole('button',{name:'Preview '+item.name,exact:true}).click();
    await expect(gallery.getByTestId('fitting-detail')).toBeVisible();

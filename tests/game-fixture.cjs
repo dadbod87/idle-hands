@@ -51,8 +51,8 @@ async function installGameFixture(page,options={}) {
    else if(rpc==='office_perform')result=officePlay.perform(player.id,args.p_kind);
    else if(rpc==='office_state')result=options.officeState||{total:0,target:10000000,tiers:0,streak:0,tz:'America/Los_Angeles'};
    else if(rpc==='all_prices')result={vending:100,deeds:{},fittings:{}};
-   else if(rpc==='fitting_prices')result={prices:Object.fromEntries(Object.values(options.fittings||{}).flat().map(x=>[x.id,1000]))};
-   else if(rpc==='buy_fitting'){const item=(options.fittings?.[args.p_key]||[]).find(x=>x.id===args.p_id);const key=args.p_key==='vanity'?'vanity':'kit';player[key]={...player[key],[item.slot]:item.id};player.pp-=1000;result=player;}
+   else if(rpc==='fitting_prices')result={prices:Object.fromEntries(Object.values(options.fittings||{}).flat().map(x=>[x.id,options.fittingPrices?.[x.id]??Math.max(1000,x.min_cost||0)]))};
+   else if(rpc==='buy_fitting'){const item=(options.fittings?.[args.p_key]||[]).find(x=>x.id===args.p_id);const key=args.p_key==='vanity'?'vanity':'kit';player[key]={...player[key],[item.slot]:item.id};player.pp-=options.fittingPrices?.[item.id]??Math.max(1000,item.min_cost||0);result=player;}
    else if(rpc==='claim_office_awards'){player.achievements=[...new Set([...player.achievements,...(options.officeAwards||[])])];result=player;}
    else if(['claim_incoming','weekly_pins','spend_board','beta_testers'].includes(rpc))result=[];
   }else if(url.pathname.endsWith('/catalog'))result=Object.entries({items:[{id:'intern',name:'Office Intern',cost:100,rate:1,desc:'An isolated test hire.'}],upgrades:[],deeds:{},tuning:{growth:1.35},drinks:[],costumes:options.costumes||[],special_pins:[{id:'beta',name:'Beta Tester',hue:'#8A6A2A',glyph:'β',note:'Here before it worked.'}],weekly_pins:[{id:'p01',name:'Five Year Pin',hue:'#C9A253',glyph:'★',note:'Nobody can confirm the five years.'}],office_kit:options.fittings?.office_kit||[],vanity:options.fittings?.vanity||[]}).map(([key,data])=>({key,data}));
