@@ -45,6 +45,6 @@ test('photo input rejects invalid/undecodable images, supports retry, and appear
  const input=creator.getByLabel('Upload custom face',{exact:true});await input.setInputFiles({name:'not-a-photo.txt',mimeType:'text/plain',buffer:Buffer.from('test')});await expect(creator.locator('.pg-err')).toContainText('Choose a JPG');
  await input.setInputFiles({name:'large.png',mimeType:'image/png',buffer:Buffer.alloc(10*1024*1024+1)});await expect(creator.locator('.pg-err')).toContainText('smaller than 10 MB');
  await input.setInputFiles({name:'broken.png',mimeType:'image/png',buffer:Buffer.from('not an image')});await expect(creator.locator('.pg-err')).toContainText('could not be opened');
- await input.setInputFiles(photo);await expect(creator.getByRole('button',{name:'Custom photo',exact:true})).toHaveAttribute('aria-pressed','true');await expect(creator.locator('.pg-avatar-preview [data-head="photo"] img')).toBeVisible();await expect(creator.locator('.pg-err')).toHaveCount(0);
+ await input.setInputFiles(photo);await expect(creator.getByRole('button',{name:'Custom photo',exact:true})).toHaveAttribute('aria-pressed','true');await expect(creator.locator('.pg-avatar-preview [data-head="photo"] img')).toBeVisible();await expect(creator.locator('.pg-badgephoto [data-head="photo"] img')).toBeVisible();expect(await creator.locator('.pg-badgephoto img').evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);await expect(creator.locator('.pg-err')).toHaveCount(0);
  await creator.screenshot({path:'test-results/custom-face-onboarding.png'});
 });

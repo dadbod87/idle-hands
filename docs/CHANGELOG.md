@@ -1,3 +1,9 @@
+# Build 177 — badge approved (2026-10-22)
+
+Completes the build 176 custom-photo flow by passing the selected image into the onboarding ID-badge preview as well as the body preview. The final visual review caught the missing image binding; upload/save/world rendering and stable purchase targets remain unchanged. The browser validation now checks the actual badge image has loaded. No database or progress change. Build 176 feature release: PR #32, merge db3679df5c234d18b0fbf8d3ea2a4ddf92940cb2; additive photo validation installed and independently read back with unchanged grants. Rollback this frontend correction only. Final checks, deployment and screenshot evidence are recorded in the release PR/report.
+
+---
+
 # Build 176 — hold that pose (2026-10-22)
 
 Fixes purchase click targets shifting when temporary confirmations appear/disappear. Every panel keeps a fixed 56px receipt slot above its scrollable content; shop/mirror dialogs have stable viewport-sized frames. Requisitions and Approvals retain fixed row/price-column geometry and reserve summary height so changing earnings, unlocked descriptions or repeated clicks cannot re-center the panel or move neighboring rows. Full row text remains accessible even when visually clamped. Existing confirmations and server purchase rules remain.
