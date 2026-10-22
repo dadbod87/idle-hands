@@ -1623,7 +1623,7 @@ body{background:#D9CDC0}
 .pg-shop-earnbar{height:64px;min-height:64px;overflow:auto}
 .pg-purchase-list>.pg-row{height:88px;min-height:88px}.pg-purchase-list .pg-main b,.pg-purchase-list .pg-main span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .pg-purchase-list .pg-right{width:96px;min-width:96px}.pg-purchase-list .pg-ct{overflow:hidden}
-.pg-photo-head{display:grid;place-items:center;padding:4%;background:#F8F1E3;border:2px solid #2B2B2B;border-radius:5px;box-shadow:2px 2px 0 #2B2B2B33;overflow:hidden;line-height:1}
+.pg-photo-head{display:grid;place-items:center;padding:4%;background:transparent;border:2px solid #2B2B2B;border-radius:5px;box-shadow:2px 2px 0 #2B2B2B33;overflow:hidden;line-height:1}
 .pg-photo-head img{display:block;width:100%;height:100%;object-fit:cover;border-radius:2px}.pg-photo-head>span{font:700 12px var(--mono)}
 .pg-head-options .pg-custom-photo{background:#FFF0C6}.pg-photo-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:9px}.pg-photo-actions .pg-btn{min-height:44px}.pg-photo-message{font:11px/1.5 var(--sans);margin:8px 0;overflow-wrap:anywhere}
 @media(max-width:540px){.pg-shop-earnbar{height:90px;min-height:90px}.pg-purchase-list>.pg-row{height:104px;min-height:104px}.pg-purchase-list .pg-right{width:76px;min-width:76px}.pg-purchase-list .pg-main b{font-size:12px}.pg-panel-receipt{font-size:11px}}
@@ -2619,7 +2619,7 @@ function AvatarControls({value,onChange,photoSrc,onUpload,photoBusy=false,photoE
  const select=(title,key,opts)=> <label className="pg-avatar-field"><span>{title}</span><select aria-label={title} value={a[key]} onChange={e=>set(key,e.target.value)}>{opts.map(v=><option value={v} key={v}>{v}</option>)}</select></label>;
  const colors=(title,key,opts)=> <div className="pg-avatar-field"><span>{title}</span><div className="pg-avatar-swatches">{opts.map((color,i)=><button type="button" key={i} className={a[key]===i?"chosen":""} aria-pressed={a[key]===i} onClick={()=>set(key,i)} style={{background:color}} aria-label={title+" "+(i+1)} />)}</div></div>;
  return <div className="pg-avatar-controls">
- <fieldset className="pg-head-picker"><legend>Face & head · free to be weird</legend><button type="button" className="pg-btn pg-shuffle" onClick={shuffle}>Surprise me</button><div className="pg-head-options">{onUpload&&<button type="button" className={"pg-custom-photo"+(a.head==="photo"?" chosen":"")} aria-label="Custom photo" aria-pressed={a.head==="photo"} disabled={photoBusy} onClick={()=>photoSrc?set("head","photo"):onUpload()}><PhotoHead src={photoSrc} size={44}/><span>Custom photo</span></button>}{AVATAR_HEADS.map(h=><button type="button" key={h.id} aria-label={h.name} aria-pressed={a.head===h.id} className={a.head===h.id?"chosen":""} onClick={()=>set("head",h.id)}><AvatarHead look={{...a,head:h.id}} size={44}/><span>{h.name}</span></button>)}</div><p className="pg-fine" aria-live="polite">{a.head==="photo"?"Your uploaded face, framed for office life.":AVATAR_HEADS.find(h=>h.id===a.head).note} All heads work with every outfit. {!hasHair&&"This head has its own silhouette; your hair choice is kept for human heads."}</p>{onUpload&&<div className="pg-photo-actions"><button className="pg-btn" type="button" disabled={photoBusy} onClick={onUpload}>{photoBusy?"Preparing photo…":photoSrc?"Replace custom photo":"Upload custom photo"}</button><span className="pg-fine">JPG, PNG, WebP or GIF · up to 10 MB · square crop</span></div>}{photoError&&<p className="pg-photo-message pg-err" role="alert">{photoError}</p>}{photoMessage&&<p className="pg-photo-message" role="status">{photoMessage}</p>}</fieldset>
+ <fieldset className="pg-head-picker"><legend>Face & head · free to be weird</legend><button type="button" className="pg-btn pg-shuffle" onClick={shuffle}>Surprise me</button><div className="pg-head-options">{onUpload&&<button type="button" className={"pg-custom-photo"+(a.head==="photo"?" chosen":"")} aria-label="Custom photo" aria-pressed={a.head==="photo"} disabled={photoBusy} onClick={()=>photoSrc?set("head","photo"):onUpload()}><PhotoHead src={photoSrc} size={44}/><span>Custom photo</span></button>}{AVATAR_HEADS.map(h=><button type="button" key={h.id} aria-label={h.name} aria-pressed={a.head===h.id} className={a.head===h.id?"chosen":""} onClick={()=>set("head",h.id)}><AvatarHead look={{...a,head:h.id}} size={44}/><span>{h.name}</span></button>)}</div><p className="pg-fine" aria-live="polite">{a.head==="photo"?"Your uploaded face, framed for office life.":AVATAR_HEADS.find(h=>h.id===a.head).note} All heads work with every outfit. {!hasHair&&"This head has its own silhouette; your hair choice is kept for human heads."}</p>{onUpload&&<div className="pg-photo-actions"><button className="pg-btn" type="button" disabled={photoBusy} onClick={onUpload}>{photoBusy?"Preparing photo…":photoSrc?"Replace custom photo":"Upload custom photo"}</button><span className="pg-fine">JPG, PNG, WebP or GIF · up to 10 MB · square crop · transparency kept</span></div>}{photoError&&<p className="pg-photo-message pg-err" role="alert">{photoError}</p>}{photoMessage&&<p className="pg-photo-message" role="status">{photoMessage}</p>}</fieldset>
  {select("Body style","gender",["masculine","feminine","neutral"])}
  {select("Build","build",BUILD_LIST)}
  {hasHair&&select("Hair","hair",AVATAR_HAIR)}
@@ -3329,16 +3329,17 @@ async function prepareBadgePhoto(file) {
  const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(Error("Could not read that photo. Try another file."));r.readAsDataURL(file);});
  const im=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error("That image could not be opened. Try another photo."));image.src=data;});
  const cv=document.createElement("canvas");cv.width=cv.height=256;const ctx=cv.getContext("2d"),side=Math.min(im.naturalWidth,im.naturalHeight);
- ctx.fillStyle="#F8F1E3";ctx.fillRect(0,0,256,256);ctx.drawImage(im,(im.naturalWidth-side)/2,(im.naturalHeight-side)/2,side,side,0,0,256,256);
- return cv.toDataURL("image/jpeg",0.85);
+ ctx.drawImage(im,(im.naturalWidth-side)/2,(im.naturalHeight-side)/2,side,side,0,0,256,256);
+ // PNG retains fully transparent and translucent pixels through the square crop.
+ return cv.toDataURL("image/png");
 }
 
 async function uploadBadge(userId, dataUrl) {
   const blob = await (await fetch(dataUrl)).blob();
-  const path = `${userId}.jpg`;
+  const path = `${userId}.png`;
   const { error } = await supabase.storage
     .from("badges")
-    .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
+    .upload(path, blob, { upsert: true, contentType: "image/png" });
   if (error) throw error;
   const { data } = supabase.storage.from("badges").getPublicUrl(path);
   // same filename every time, so bust the cache or everyone keeps seeing the old face
@@ -3441,7 +3442,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 177 · badge approved";
+const BUILD = "build 178 · clearly you";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;

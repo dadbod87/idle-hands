@@ -83,3 +83,7 @@ Use the warm-paper/sage/coral and thick ink contract for the single HUD status s
 ## Build 176 stable purchasing and custom photos
 
 Keep transient panel feedback in a reserved 56px slot above the independently scrolling body. Purchasing dialogs and row geometry remain stable during confirmation arrival/expiry, number changes and unlock descriptions. Use the existing warm paper/ink style. Custom photo is an explicit head choice beside the illustrations, sharing a bold ink frame in Mirror previews, HUD and the moving character rig; preserve body, wardrobe, costumes and pin layers. Decode/crop photos locally before upload, show errors beside the picker and retain uploaded photos when selecting illustrated heads.
+
+## Build 178 transparent custom faces
+
+Preserve alpha through the 256px crop and PNG upload. The shared custom-head ink frame has no opaque backing so the office/body remains visible through translucent pixels. Keep the border, crop, dimensions, body and wardrobe layers unchanged. Older flattened uploads require re-uploading the original.
