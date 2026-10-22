@@ -65,3 +65,9 @@ Phone work/directory/emotes stay visible. Secondary tools are under More; notifi
 ## Build 166 prop scale and discoverability
 
 World prop art must read at a consistent scale beside the player and neighboring fixtures. The printer apology is a small sheet without the oversized blue mounting slab; the break-room notice is smaller than a vending machine. The water cooler uses a tight, centered SVG viewBox so its bottle and cabinet fill its world footprint. Keep decorative plants clear of fixture labels. All seven substantial scenery props are free inspection buttons; couch/notice readings also offer the real walking route to break-table activities. Keep arrow movement working after closing a reading; stop only activation keys from triggering the nearby fixture. The HUD Sound button opens Sound & feel without toggling mute/volume. Sound controls remain available through mobile More, while the directory is for destinations.
+
+## Build 169 interactive office satire
+
+`PerformanceArt` and `PropPerformance` use original warm-paper/ink SVGs for watering, couch breaks, absurd paperwork and ceremonial lounge planning. Free actions route to the world prop, then show a short pointer-transparent scene with a rotating punchline; sit/water poses use the existing body rig. Walking cancels those poses, and reduced motion stops decorative animation. Keep cards inside floor edges. `LoungeWorld` stays inside the existing lounge fixture footprint and reflects real server-counted participation; it does not open the locked lounge or alter its secrets.
+
+Polls and commendations use readable cards, minimum 44px action controls, honest ties and explicit cosmetic-only descriptions. Certificates scroll into view after creation. The optional Office field guide is reachable through More (desktop directly) and Help. Performance art also appears in the read-only QA gallery.

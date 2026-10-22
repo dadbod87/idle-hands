@@ -19,6 +19,8 @@ for(const mode of ['desktop','mobile'])test(mode+': distant good chair renders a
  expect(await chair.evaluate(el=>({x:parseFloat(el.style.left),y:parseFloat(el.style.top)}))).toEqual({x:point.x,y:point.y});
  async function walk(axis,target){const initial=await actor.evaluate((el,k)=>parseFloat(el.style[k]),axis);if(Math.abs(initial-target)<20)return;const key=axis==='left'?(initial<target?'ArrowRight':'ArrowLeft'):(initial<target?'ArrowDown':'ArrowUp');
   try{await page.keyboard.down(key);await expect.poll(()=>actor.evaluate((el,k)=>parseFloat(el.style[k]),axis),{timeout:20000,intervals:[50]})[initial<target?'toBeGreaterThan':'toBeLessThan'](target);}finally{await page.keyboard.up(key);}}
+ // A far click routes toward the chair without sending an RPC.
+ const far=await chair.boundingBox();if(far&&far.x>0&&far.x+far.width<1440){await page.mouse.click(far.x+far.width/2,far.y+far.height/2);expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);}
  await walk('left',point.x+(mode==='desktop'?100:-60));await walk('top',point.y+60);
  await expect(chair).toBeInViewport();await page.screenshot({path:'test-results/'+mode+'-distant-good-chair.png',fullPage:true});
  const box=await chair.boundingBox();if(mode==='mobile')await page.touchscreen.tap(box.x+box.width/2,box.y+box.height/2);else await page.mouse.click(box.x+box.width/2,box.y+box.height/2);

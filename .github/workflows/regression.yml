@@ -20,6 +20,7 @@ jobs:
       - run: node tests/sound-contract.test.cjs
       - run: node tests/social-moments.test.cjs
       - run: node tests/chair-spawns.test.cjs
+      - run: node tests/comedy-contract.test.cjs
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -73,3 +74,4 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f tests/pacific-week-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/permanent-cosmetics-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/restore-names-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/shared-office-contract.sql

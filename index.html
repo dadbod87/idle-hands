@@ -1568,6 +1568,26 @@ body{background:#D9CDC0}
 .pg-prop-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pg-prop-card{cursor:pointer;background:#FFFAEF;border:1.5px solid #A79B82;border-radius:6px;padding:7px;color:#2B2B2B;text-align:center}.pg-prop-card svg{width:100%;height:105px}.pg-prop-card b{display:block;font-size:11px;line-height:1.4}.pg-prop-card.selected{border-color:#A74135;background:#FFEAC1}.pg-prop-card:focus-visible{outline:3px solid #3C6C87;outline-offset:2px}.pg-prop-stories>.pg-prop-punchline{color:#2B2B2B;font:13px/1.5 var(--sans);background:#FFE9B0;padding:12px;border-left:3px solid #A74135;margin:12px 0 0}.pg-kindness-heading{font-size:15px;padding:15px 16px 0;margin:0}
 @media(max-width:540px){.pg-break-hero{padding:12px;gap:9px}.pg-break-hero>svg{width:65px;height:90px}.pg-break-hero h3{font-size:15px}.pg-break-actions{margin-left:-74px;padding-top:5px}.pg-break-actions .pg-btn{font-size:10px}.pg-break-hero small{margin-left:-74px}.pg-prop-card svg{height:83px}.pg-prop-card b{font-size:10px}.pg-prop-cards{gap:6px}.pg-live-break{padding:5px 7px}.pg-live-break b{font-size:11px}.pg-live-break .pg-btn{font-size:10px;padding:6px}.pg-live-break>.pg-utility-icon{display:none}.pg-live-break .pg-x{min-width:32px}}
 
+
+/* Office performances are local, short and pointer-transparent. */
+.pg-prop-performance{position:absolute;width:240px;transform:translate(-50%,-100%);pointer-events:none;text-align:center;background:#FFF8E9;border:2px solid var(--ink);box-shadow:3px 4px 0 #2B2B2B44;padding:8px;max-width:70vw;font:700 12px var(--mono)}
+.pg-prop-performance svg{display:block;width:110px;height:74px;margin:auto}.pg-prop-performance b{display:block}
+.pg-scene-sheet{animation:scene-paper .6s ease-out}.pg-scene-drops{animation:scene-water .8s linear infinite}
+@keyframes scene-paper{from{transform:translateY(18px)}to{transform:translateY(0)}}@keyframes scene-water{50%{transform:translateY(5px);opacity:.4}}
+.pg-body.em-sit .pg-leg{transform:rotate(-65deg);transform-origin:top center}.pg-body.em-sit .pg-rig{transform:translateY(13px)}
+.pg-body.em-water .pg-arm.right{transform:rotate(-65deg);transform-origin:top center}
+.pg-field-guide{display:grid;gap:9px}.pg-guide-card{display:flex;gap:12px;align-items:center;text-align:left;background:#FFF8E9;border:2px solid var(--ink);padding:12px;cursor:pointer;color:var(--ink);font:inherit}.pg-guide-card small{display:block;margin-top:5px;line-height:1.45}.pg-guide-card>span:last-child{margin-left:auto;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.pg-scene-sheet,.pg-scene-drops{animation:none}}
+
+
+.pg-guide-new{font:700 9px var(--mono);text-transform:uppercase;background:#FFD36B;color:#2B2B2B;border:1px solid #2B2B2B;padding:2px 4px;margin-left:4px}
+.pg-community-card{border:2px solid var(--ink);background:#FFF8E9;padding:16px;margin:14px 0}.pg-community-card .pg-btn{min-height:44px}
+.pg-community-card h3{margin:4px 0 10px}.pg-community-card p{line-height:1.5}.pg-community-card>svg{width:140px;height:94px}.pg-community-card meter{width:100%;height:18px}.pg-poll-options{display:grid;gap:8px}.pg-poll-options button.selected{background:#DCE9CF;box-shadow:inset 4px 0 #597449}.pg-last-verdict{border-top:1px dashed #A59C88;margin-top:14px;padding-top:14px}.pg-form-label{display:block;font-weight:bold;margin:12px 0}.pg-form-label select{display:block;width:100%;padding:10px;margin-top:6px;min-height:44px;border:2px solid var(--ink);background:#FFF8E9;color:var(--ink);font:inherit}.pg-commendation-result{display:flex;gap:12px;padding:14px 0;border-top:1px solid #C9BDA5}.pg-commendation-result>div{min-width:0}.pg-commendation-result .pg-btn{display:block;margin-top:8px}.pg-certificate{border:3px double #8A6A2A;background:#FFEDB3;text-align:center;padding:16px;margin-top:12px}.pg-certificate svg{width:110px}.pg-lounge-milestone{position:absolute;left:40px;top:660px;width:110px;height:100px;z-index:800;pointer-events:none}.pg-lounge-milestone svg{width:100%;height:100%}
+
+
+.pg-card:has(.pg-community-card),.pg-card:has(.pg-field-guide){width:min(760px,calc(100vw - 24px));max-width:min(760px,calc(100vw - 24px))}
+
+.pg-scene-effect{position:absolute;width:90px;height:72px;transform:translate(-50%,-50%);pointer-events:none}
 </style>
 </head>
 <body>
@@ -3172,6 +3192,10 @@ const api = {
   pineapple: () => rpc("say_pineapple"),
   restructure: () => rpc("restructure"),
   grabChair: () => rpc("grab_chair"),
+  officePlay:()=>rpc("office_play_state"),
+  officeVote:(choice,week)=>rpc("office_vote",{p_choice:choice,p_week:week}),
+  officeNominate:(category,recipient,week)=>rpc("office_nominate",{p_category:category,p_recipient:recipient,p_week:week}),
+  officePerform:(kind)=>rpc("office_perform",{p_kind:kind}),
   saveAchievements: (list) => rpc("save_achievements", { p_list: list }),
   claimOfficeAwards: () => rpc("claim_office_awards"),
   weekSchedule: () => rpc("weekly_schedule"),
@@ -3315,22 +3339,54 @@ const OFFICE_GAGS=[
  "Kyle has driven Dave somewhere. Location undisclosed.",
  "Avah received four calls about the same lightbulb.",
  "Rilie stopped by to keep everything fluid.",
- "Nick moved a button two pixels. Leadership calls it innovation."
+ "Nick moved a button two pixels. Leadership calls it innovation.",
+ "The thermostat election has entered a recount. Somebody brought a cardigan as evidence.",
+ "A mug was returned to its owner. Facilities is treating this as a pilot program.",
+ "The printer has requested a performance review of the people using it.",
+ "The urgent tray has applied for historical landmark status.",
+ "The snack committee has eaten the supporting documentation.",
+ "A meeting ended early. The remaining time has been placed in a secure envelope.",
+ "The plastic plant was watered. Its annual growth target remains zero.",
+ "Someone wrote 'no action required' and the whole office panicked.",
+ "The couch has been promoted to Director of Taking a Minute.",
+ "A reply-all thread now has a steering committee and a commemorative mug.",
+ "The folder called Archive contains a folder called New Archive. Nobody is going in.",
+ "An email marked FINAL has arrived. A sequel is expected shortly.",
+ "A meeting invite has accepted itself. Attendance is now one.",
+ "The printer apology has been rejected for insufficient remorse.",
+ "The break-room treaty recognizes both the Cold Coalition and the Sweater Lobby.",
+ "The whiteboard marker has run dry. Its strategic vision remains bold.",
+ "A chair was moved three feet. An organizational restructure has been announced.",
+ "The binder labeled Procedures contains instructions for opening the binder.",
+ "Someone finished a task without calling it a journey. HR is investigating.",
+ "The office has acquired a new cable. Nobody knows which problem it belongs to.",
+ "The lounge ribbon-cutting has been postponed until the ribbon arrives.",
+ "The coffee pot has requested an assistant. Its workload is objectively unfair.",
+ "The microwave beeped once. Four people said 'not mine' without looking up.",
+ "A calendar reminder has sent a reminder that its reminder is overdue.",
+ "The suggestion box has suggested a larger suggestion box.",
+ "An empty donut box has been left open to preserve hope.",
+ "The committee to reduce committees has requested two subcommittees."
 ];
 const BINGO_WORDS=["circle back","synergies","low-hanging fruit","operating agreement","in theory","please hold","question for you","bingo","life partner"];
 const OFFICE_AWARDS=["Outstanding Achievement in Looking Busy","Most Likely to Reply All","Excellence in Unscheduled Meetings","Employee of the Minute","Best Use of a Stapler","Least Likely to Finish a Cigar Lounge"];
 const officeHash=(n)=>{let x=n|0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);return(x^(x>>>16))>>>0;};
+function rumorIndex(slot){
+ const n=OFFICE_GAGS.length,round=Math.floor(slot/n),turn=((slot%n)+n)%n;
+ const orderFor=block=>{const order=Array.from({length:n},(_,i)=>i);for(let i=n-1;i>0;i--){const j=officeHash(block*8191+i*131)% (i+1);[order[i],order[j]]=[order[j],order[i]];}return order;};
+ const order=orderFor(round),priorLast=orderFor(round-1)[n-1];if(n>2&&order[0]===priorLast)[order[0],order[1]]=[order[1],order[0]];return order[turn];
+}
 function officeFunAt(ts=Date.now()){
  const slot=Math.floor(ts/240000),day=Math.floor(ts/86400000),week=Math.floor(ts/604800000);
- const index=officeHash(slot)%OFFICE_GAGS.length;
- const rumors=Array.from({length:8},(_,i)=>({slot:slot-i,text:OFFICE_GAGS[officeHash(slot-i)%OFFICE_GAGS.length]}));
+ const index=rumorIndex(slot);
+ const rumors=Array.from({length:8},(_,i)=>({slot:slot-i,text:OFFICE_GAGS[rumorIndex(slot-i)]}));
  const lounge=(week%7+7)%7;
  return {slot,day,rumors,rumor:rumors[0].text,award:OFFICE_AWARDS[officeHash(Math.floor(ts/1800000))%OFFICE_AWARDS.length],lounge,
   loungeStatus:["Materials delivered","Awaiting permit","Architect changed plan","Foundation reconsidered","New boards ordered","Inspection postponed","Back to drawing board"][lounge]};
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 168 · musical chairs";
+const BUILD = "build 169 · questionable responsibilities";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3362,14 +3418,14 @@ function OfficeFloor() {
   useEffect(()=>{const id=setInterval(()=>setFunTick(Date.now()),15000);return()=>clearInterval(id);},[]);
   useEffect(()=>{if(!me?.id)return;const key="ih-office-fun-"+me.id;
     const d=officeFunAt().day,prior=safeOfficeLoad(key,{day:d,bingo:[],visits:0,work:0,hires:0});
-    setFunProgress(prior.day===d?prior:{day:d,bingo:[],visits:0,work:0,hires:0});
+    bingoCount.current=prior.day===d?prior.bingo.length:0;setFunProgress(prior.day===d?prior:{day:d,bingo:[],visits:0,work:0,hires:0});
   },[me?.id]);
   const recordOfficeFun=(kind,line="")=>{
     if(!meRef.current?.id)return;
     setFunProgress(prev=>{
       const d=officeFunAt().day;
-      const next=prev.day===d?{...prev}:{day:d,bingo:[],visits:0,work:0,hires:0};
-      if(kind==="visitor"){next.visits++;
+      const next=prev.day===d?{...prev,bingo:[...prev.bingo]}:{day:d,bingo:[],visits:0,work:0,hires:0};
+      if(kind==="visitor"||kind==="speech"){if(kind==="visitor")next.visits++;
         for(const word of BINGO_WORDS)if(line.toLowerCase().includes(word)&&!next.bingo.includes(word))next.bingo.push(word);
       }
       if(kind==="work")next.work++;
@@ -3378,6 +3434,8 @@ function OfficeFloor() {
       return next;
     });
   };
+  const bingoCount=useRef(null);
+  useEffect(()=>{const count=funProgress.bingo.length;if(bingoCount.current!==null&&count>bingoCount.current){flash(count===9?"BINGO · Corporate fluency achieved. No raise forthcoming.":"OVERHEARD · "+count+"/9 bingo phrases");}bingoCount.current=count;},[funProgress.bingo.length]);
   const [report, setReport] = useState(null);
   const [toast, setToast] = useState(null);
   const [moreOpen,setMoreOpen]=useState(false);
@@ -3389,6 +3447,16 @@ function OfficeFloor() {
     clearTimeout(reactionTimer.current);reactionTimer.current=setTimeout(()=>setReaction(null),2400);
   },[]);
   useEffect(()=>()=>clearTimeout(reactionTimer.current),[]);
+  const [play,setPlay]=useState(null),[playError,setPlayError]=useState(null),[playBusy,setPlayBusy]=useState(false);
+  const playVersion=useRef(0),playLock=useRef(false);
+  const refreshPlay=async()=>{if(playLock.current)return;const version=playVersion.current;try{const result=await api.officePlay();if(!result?.poll)throw Error("The committee records are unavailable.");if(version===playVersion.current){setPlay(result);setPlayError(null);}}catch(e){if(version===playVersion.current)setPlayError(prettyError(e));}};
+  useEffect(()=>{if(phase!=="play")return;let active=true;const refresh=()=>{if(active&&!document.hidden)refreshPlay();};refresh();const timer=setInterval(refresh,30000);window.addEventListener("focus",refresh);document.addEventListener("visibilitychange",refresh);return()=>{active=false;clearInterval(timer);window.removeEventListener("focus",refresh);document.removeEventListener("visibilitychange",refresh);};},[phase]);
+  const filePlay=async(fn,message)=>{if(playLock.current)return false;playLock.current=true;setPlayBusy(true);const version=++playVersion.current;try{const result=await fn();if(!result?.poll)throw Error("The committee did not confirm that filing.");if(version===playVersion.current){setPlay(result);setPlayError(null);}if(message)flash(message);return true;}catch(e){setPlayError(prettyError(e));flash(prettyError(e));return false;}finally{playLock.current=false;setPlayBusy(false);}};
+  const [propScene,setPropScene]=useState(null),[guideOpen,setGuideOpen]=useState(false),[guideSeen,setGuideSeen]=useState(()=>safeOfficeLoad("ih-field-guide-seen",false));
+  const openGuide=()=>{setMoreOpen(false);setGuideSeen(true);try{localStorage.setItem("ih-field-guide-seen","true");}catch{}setGuideOpen(true);};
+  const sceneSerial=useRef({}),sceneTimer=useRef(null),scenePerformRef=useRef(null);
+  useEffect(()=>()=>clearTimeout(sceneTimer.current),[]);
+  useEffect(()=>{if(me?.id){const saved=safeOfficeLoad("ih-scenes-"+me.id,{});sceneSerial.current=saved&&typeof saved==="object"&&!Array.isArray(saved)?saved:{};}},[me?.id]);
   const [chair, setChair] = useState(null);
   const [pos, setPos] = useState({ x: 1500, y: 860 });   // middle of the hall
   const [near, setNear] = useState(null);
@@ -3724,10 +3792,10 @@ function OfficeFloor() {
     return () => { clearInterval(sweep); live.leave(); liveRef.current = null; };
   }, [phase, me?.id]);
 
-  const doEmote = (id) => {
-    setEmote({ id, until: Date.now() + 2600 });
+  const doEmote = (id,duration=2600) => {
+    setEmote({ id, until: Date.now() + duration });
     sfx("pop");
-    setTimeout(() => setEmote((e) => (e && e.until <= Date.now() ? null : e)), 2700);
+    setTimeout(() => setEmote((e) => (e && e.until <= Date.now() ? null : e)), duration+100);
     if (liveRef.current) {
       const p = posRef.current;
       liveRef.current.send({ id: me?.id, x: Math.round(p.x), y: Math.round(p.y),
@@ -3857,7 +3925,7 @@ function OfficeFloor() {
       }
       if(ch&&guest&&guest.id==="nora"&&guest.line.startsWith("Chancellor")) { ch.line="Nope. I am out of here."; ch.leaving=true; ch.x=Math.min(ROOM.w-75,ch.x+180); }
       if(guest&&visitorSeen.current!==guest.id+":"+guest.bucket){
-        recordOfficeFun("visitor",guest.line);
+        recordOfficeFun("visitor",[guest.line,partner?.line,ch?.line,dv?.line].filter(Boolean).join(" "));
        visitorSeen.current=guest.id+":"+guest.bucket;say(guest.name+" is making the rounds.","sys");
       }
       const call=dougCallNow(now);setDougCall(call);
@@ -3899,7 +3967,8 @@ function OfficeFloor() {
             goRef.current = null;
             if (g.then) {
               const id = g.then;
-              if (id === "desk") setTimeout(() => setPanel("shop"), 40);
+              if(id.startsWith("scene:"))scenePerformRef.current?.(id.slice(6));
+              else if (id === "desk") setTimeout(() => setPanel("shop"), 40);
               else setTimeout(() => openFixture(FIXTURES.find((f) => f.id === id)), 40);
             }
           }
@@ -3918,6 +3987,7 @@ function OfficeFloor() {
       }
       const dx2 = p.x - prevX;
       const went = Math.abs(dx2) + Math.abs(p.y - prevY);
+      if(went>.4&&["sit","water"].includes(emoteRef.current))setEmote(null);
       const dir = Math.abs(dx2) > 0.4 ? (dx2 > 0 ? 1 : -1) : facingRef.current;
       facingRef.current = dir;
       if (Math.abs(dx2) > 0.4) setFacing(dir);
@@ -4038,7 +4108,8 @@ function OfficeFloor() {
       if (!pool.length) return;
       const who = pick(pool);
       const lines = CATCHPHRASES.concat(catRef.current.catchphrases_extra || []);
-      setChatter({ id: who.id, text: pick(lines) });
+      const line=pick(lines);setChatter({ id: who.id, text: line });
+      recordOfficeFun("speech",line);
       setTimeout(() => setChatter((c) => (c && c.id === who.id ? null : c)), 5200);
     }, 17000);
     return () => clearInterval(t);
@@ -4152,7 +4223,19 @@ function OfficeFloor() {
     setFloor(await loadFloor());
   };
 
+  const performScene=(kind)=>{
+    const action=PROP_ACTIONS[kind];if(!action)return;const prop=SCENERY.find(p=>p.kind===kind);const anchor=prop||FIXTURES.find(f=>f.id===(kind==="lounge"?"lounge":"printer"));
+    const stored=sceneSerial.current[kind],variant=Number.isSafeInteger(stored)&&stored>=0?stored:0;sceneSerial.current[kind]=(variant+1)%action.lines.length;try{localStorage.setItem("ih-scenes-"+meRef.current.id,JSON.stringify(sceneSerial.current));}catch{}const line=action.lines[variant%action.lines.length];
+    setPropScene({kind,variant,line,x:clamp(anchor.x+anchor.w/2,150,ROOM.w-150),y:Math.max(165,anchor.y-12),px:anchor.x+anchor.w/2,py:anchor.y+anchor.h*.5});clearTimeout(sceneTimer.current);sceneTimer.current=setTimeout(()=>setPropScene(null),6500);
+    doEmote(action.emote,6000);say(line,"sys");sfx(kind==="plant"?"break":"pop");
+    filePlay(()=>api.officePerform(kind),null);
+  };
+  scenePerformRef.current=performScene;
+  const startPropScene=(kind)=>{const prop=SCENERY.find(p=>p.kind===kind)||FIXTURES.find(f=>f.id===(kind==="lounge"?"lounge":"printer"));if(!prop)return;setPanel(null);routeTo(prop.x+prop.w/2,kind==="bench"?prop.y+prop.h-20:prop.y+prop.h+40,"scene:"+kind);};
+
   const grabChair = async () => {
+    const current=chairAt();if(!current){flash("The good chair has moved on. Emotionally, so have we.");return;}
+    if(dist(posRef.current,{x:current.x+23,y:current.y+27})>REACH){routeTo(current.x+23,current.y+70,null);flash("Walk up to the chair, then grab it. HR insists on the walking part.");return;}
     const row = await guard(() => api.grabChair());
     loadOffice().then(setOffice).catch(() => {});
     if (row) {
@@ -4488,6 +4571,8 @@ function OfficeFloor() {
           <div className="pg-wall" style={{ height: WALL_H }} />
           <div className="pg-carpet" style={{ top: WALL_H }} />
           <OfficeEnvironment variant={officeSceneAt(funTick)} celebrating={!!office?.hit} onInspect={kind=>setPanel("prop:"+kind)}/>
+          {propScene&&<PropPerformance scene={propScene}/>}
+          <LoungeWorld play={play}/>
 
           {DECOR.map((d, i) => d.t === "kitchenfloor" ? (
             <div key={"d" + i} className="pg-kitchenfloor pg-kitchenfloor-legacy"
@@ -4574,7 +4659,7 @@ function OfficeFloor() {
             if (!live || (me && p.id === me.id)) return null;
             return (
               <div key={"live" + p.id} className="pg-me"
-                   style={{ left: live.x, top: live.y, zIndex: Math.round(live.y) }}>
+                   style={{ left: live.x, top: live.y, zIndex: Math.round(live.y+(live.e==="sit"?60:0)) }}>
                 {chatter?.id === p.id && <div className="pg-mumble said">{chatter.text}</div>}
                 <Body p={p} src={p.avatar_url} moving={live.m} facing={live.f || 1} emote={live.e} />
                 <div className="pg-peername">{p.name}</div>
@@ -4648,7 +4733,7 @@ function OfficeFloor() {
             </div>
           )}
 
-          <div className="pg-me" style={{ left: pos.x, top: pos.y, zIndex: Math.round(pos.y) }}>
+          <div className="pg-me" style={{ left: pos.x, top: pos.y, zIndex: Math.round(pos.y+(emote?.id==="sit"?60:0)) }}>
             {reaction&&<FloorReaction key={reaction.k} kind={reaction.kind} label={reaction.label}/>}
             <Body p={me || { name: me?.name }} src={me?.avatar_url} me
                   moving={moving} facing={facing}
@@ -4681,7 +4766,8 @@ function OfficeFloor() {
         <div className={"pg-more"+(moreOpen?" open":"")}>
           <button className="pg-btn pg-more-toggle" aria-expanded={moreOpen} aria-controls="office-more-actions" onClick={()=>setMoreOpen(v=>!v)}><span aria-hidden="true">•••</span>More</button>
           <div id="office-more-actions" className="pg-more-content">
-            <button className="pg-btn" title="Office rumors, bingo, assignments, the cigar lounge and awards" onClick={()=>{setMoreOpen(false);setFunOpen(true);}}><OfficeIcon kind="paper" compact/> Office Nonsense</button>
+            <button className="pg-btn" title="Office votes, bingo, assignments, the cigar lounge and commendations" onClick={()=>{setMoreOpen(false);setFunOpen(true);}}><OfficeIcon kind="paper" compact/> Office Nonsense</button>
+            <button className="pg-btn" aria-label="Office field guide" onClick={openGuide}><UtilityIcon kind="help"/>Office field guide{!guideSeen&&<b className="pg-guide-new">new</b>}</button>
             <button className="pg-btn pg-sound-shortcut" onClick={()=>{setMoreOpen(false);setPanel("sound");}}><UtilityIcon kind="sound"/>Sound &amp; feel</button>
           </div>
         </div>
@@ -4703,12 +4789,12 @@ function OfficeFloor() {
         <div className="pg-build">The Patron Group · {BUILD}</div>
       </div>
 
-      {showHelp && <Help onClose={() => setShowHelp(false)} rate={rate} />}
+      {showHelp && <Help onClose={() => setShowHelp(false)} rate={rate} onGuide={()=>{setShowHelp(false);openGuide();}} />}
 
       {panel && (
         <Panel onClose={() => setPanel(null)} title={panel.startsWith("prop:")?PROP_LABELS[panel.slice(5)]:PANEL_TITLES[panel]}>
           {reaction&&!["work","filed"].includes(reaction.kind)&&<div className="pg-panel-receipt" role="status"><OfficeIcon kind={reaction.kind==="kind"?"mug":"paper"} compact/><span>{reaction.label}</span></div>}
-          {panel.startsWith("prop:")&&<PropInspection kind={panel.slice(5)} variant={officeSceneAt(funTick)} onCoffee={joinCoffeeBreak}/> }
+          {panel.startsWith("prop:")&&<PropInspection kind={panel.slice(5)} variant={officeSceneAt(funTick)} onCoffee={joinCoffeeBreak} onPerform={startPropScene}/> }
           {panel === "shop" && (
             <Shop cat={cat} me={me} pp={pp} rate={rate}
               pins={pins}
@@ -4821,8 +4907,8 @@ function OfficeFloor() {
             <SuggestionBox sugg={sugg} me={me} admin={cat.admin_id}
               onSend={async (t) => {
                 try { await api.suggestMemo(t); setSugg(await loadSuggestions());
-                      flash("Filed. It goes up if it's approved."); }
-                catch (e) { flash(prettyError(e)); }
+                      flash("Filed. It goes up if it's approved."); return true; }
+                catch (e) { flash(prettyError(e)); return false; }
               }}
               onJudge={async (id, ok) => {
                 try { await api.approveSuggestion(id, ok); setSugg(await loadSuggestions()); }
@@ -4836,7 +4922,7 @@ function OfficeFloor() {
               if (row) {
                 sfx("fixed");
                 say("You fixed the printer. Nobody will ever know how.", "good");
-                flash("Printer fixed");
+                flash("Printer fixed");performScene("printer");
                 setPanel(null);
                 loadOffice().then(setOffice).catch(() => {});
               }
@@ -4925,28 +5011,29 @@ function OfficeFloor() {
         </Modal>
       )}
 
+      {guideOpen&&<Modal onClose={()=>setGuideOpen(false)}><FieldGuide onClose={()=>setGuideOpen(false)} onBingo={()=>{setGuideOpen(false);setFunTab("bingo");setFunOpen(true);}} onGo={id=>{setGuideOpen(false);if(id==="plant")startPropScene("plant");else walkTo(FIXTURES.find(f=>f.id===id));}}/></Modal>}
       {funOpen && (
         <Modal onClose={()=>setFunOpen(false)}>
-          <div className="pg-stamp">Department of Office Nonsense</div>
+          <div className="pg-stamp">Department of Office Nonsense</div><p className="pg-small">Daily has the weekly office vote. Awards has real coworker commendations. Lounge tracks our collective failure to finish a lounge.</p>
           <div className="pg-nonsense-tabs" role="group" aria-label="Office Nonsense sections">
             {["incidents","rumors","bingo","daily","lounge","awards"].map(t=>
               <button key={t} className={"pg-btn"+(funTab===t?" on":"")} aria-pressed={funTab===t} onClick={()=>setFunTab(t)}>{t==="incidents"?"Office log":t}</button>)}
           </div>
+          {["daily","lounge","awards"].includes(funTab)&&(!play||playError)&&<div className="pg-note" role="status">{playError||"Retrieving the committee records…"}{play&&" Showing the last confirmed records."}<button className="pg-btn" disabled={playBusy} onClick={refreshPlay}>Refresh office records</button></div>}
           {funTab==="incidents"&&<><p className="pg-small">The existing “While you were out” popup tracks BW earned. This is a separate, purely comedic record of what the office was allegedly doing.</p>
             {officeFunAt(funTick).rumors.map((e,i)=><div className="pg-recaprow" key={e.slot}><b>{new Date(e.slot*240000).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</b><span>{e.text}</span></div>)}</>}
           {funTab==="rumors"&&<><p className="pg-big">Rumor mill</p><p>{officeFunAt(funTick).rumor}</p><p className="pg-small">New allegedly confidential information every four minutes. Fact checking is not permitted.</p></>}
           {funTab==="bingo"&&<><p className="pg-small">Listen for these phrases during NPC visits. Nine squares; no actual meetings required.</p>
             <div className="pg-bingogrid">{BINGO_WORDS.map(w=><div key={w} className={"pg-bingosquare"+(funProgress.bingo.includes(w)?" on":"")}>{funProgress.bingo.includes(w)?"✓ ":""}{w}</div>)}</div>
             <p className="pg-small">{funProgress.bingo.length}/9 phrases overheard today. Bragging rights only.</p></>}
-          {funTab==="daily"&&<><p className="pg-big">HR's Daily To-Do List</p>
+          {funTab==="daily"&&<>{play&&<OfficePoll play={play} busy={playBusy} onVote={choice=>filePlay(()=>api.officeVote(choice,play.week),"Ballot filed. Democracy has entered the break room.")}/>}<p className="pg-big">HR's Daily To-Do List</p>
             {[["Clock in and do actual work",funProgress.work>=1],["Observe a roaming coworker",funProgress.visits>=1],["Approve a new hire",funProgress.hires>=1]].map(([label,done])=><div className="pg-recaprow" key={label}><span>{done?"☑":"☐"} {label}</span></div>)}
+            {funProgress.work>=1&&funProgress.visits>=1&&funProgress.hires>=1&&<p className="pg-stamp" role="status">Executive Assistant to the Assistant · duties questionably fulfilled</p>}
             <p className="pg-small">Resets each UTC day. Completing everything earns the unofficial title “Executive Assistant to the Assistant.” No economic advantage.</p></>}
-          {funTab==="lounge"&&<><p className="pg-big">Joey's Cigar Lounge</p>
-            <p>🏗️ {officeFunAt(funTick).loungeStatus}</p>
-            <div className="pg-loungebar"><div style={{width:(8+officeFunAt(funTick).lounge*9)+"%"}}/></div>
-            <p className="pg-small">Project completion is not anticipated. Weekly redesigns reset the progress to “material acquisition.”</p></>}
+          {funTab==="lounge"&&<><p className="pg-big">Joey's Cigar Lounge</p>{play&&<LoungeReport play={play} onPerform={kind=>{setFunOpen(false);startPropScene(kind);}}/>}
+            <p className="pg-small">Joey's unofficial update: {officeFunAt(funTick).loungeStatus}. Actual recorded participation appears above. The story starts a fresh planning cycle every Friday.</p></>}
           {funTab==="awards"&&<><p className="pg-big">🏆 Employee of the Minute</p>
-            <p>{officeFunAt(funTick).award}</p><p className="pg-small">Issued by HR every 30 minutes. This award carries no salary adjustment, title change or parking privileges.</p></>}
+            <p>{officeFunAt(funTick).award}</p>{play&&<Commendations play={play} board={board} meId={me?.id} busy={playBusy} onNominate={(category,recipient)=>filePlay(()=>api.officeNominate(category,recipient,play.week),"Commendation filed. The honor is real. The authority is imaginary.")}/>}<p className="pg-small">Issued by HR every 30 minutes. This award carries no salary adjustment, title change or parking privileges.</p></>}
           <button className="pg-btn" onClick={()=>setFunOpen(false)}>Return to actual work</button>
         </Modal>
       )}
@@ -5750,7 +5837,7 @@ function Tabsy({ tabs, children }) {
   );
 }
 
-function Help({ onClose, rate }) {
+function Help({ onClose, rate, onGuide }) {
   return (
     <Modal onClose={onClose}>
       <div className="pg-stamp">Idle Hands</div>
@@ -5768,6 +5855,7 @@ function Help({ onClose, rate }) {
         your account, scaled to what the office has earned. Spend it at your desk — starting from
         nothing against a week-old leaderboard would be no fun for anybody.</p>
 
+      <div className="pg-helpsub">Your unofficial duties</div><p className="pg-small">Water the plastic plant. Take a seat on the couch. Invite a coffee break, try a costume, or vote on a deeply unnecessary office issue. Office Nonsense keeps the ballots, bingo and commendations.</p>{onGuide&&<button className="pg-btn" onClick={onGuide}>Show me the fun stuff</button>}
       <div className="pg-helpsub">The floor</div>
       <ul className="pg-helplist">
         <li><b>Whiteboard</b> — the leaderboard. This week by default; all time is a tab.</li>
@@ -6095,6 +6183,56 @@ function Standings({ board, me, fund, feuds = [], schedule }) {
   );
 }
 
+const COMMENDATIONS={glue:{title:"Office Glue",line:"For holding the place together without scheduling a meeting."},snacks:{title:"Emergency Snack Diplomat",line:"For services to morale, crumbs and international biscuit relations."},escape:{title:"Meeting Escape Artist",line:"For leaving a meeting with both dignity and the rest of the afternoon."}};
+function OfficePoll({play,busy,onVote}){
+ const poll=play.poll,prior=play.previous_poll,counts=poll.counts||[0,0,0],max=Math.max(...(prior?.counts||[0]));const winners=prior?.options?.filter((_,i)=>prior.counts[i]===max)||[];
+ return <section className="pg-community-card" data-testid="office-poll"><div className="pg-stamp">The office has opinions</div><h3>{poll.question}</h3><p>One real ballot per person. Change your mind any time before Friday, 4pm Pacific. Nobody has to be online together.</p><div className="pg-poll-options">{poll.options.map((option,i)=><button className={"pg-guide-card"+(poll.mine===i?" selected":"")} key={option} disabled={busy} aria-pressed={poll.mine===i} onClick={()=>onVote(i)}><span>{poll.mine===i?"✓":"○"}</span><span><b>{option}</b><small>{counts[i]} vote{counts[i]===1?"":"s"}</small></span></button>)}</div><p className="pg-small">{poll.total} recorded ballot{poll.total===1?"":"s"}. {poll.mine==null?"Your opinion is conspicuously absent.":"Your ballot is filed. You may change it. HR loves extra paperwork."} No points, penalties or actual thermostat authority.</p>
+ {prior?.total>0&&<div className="pg-last-verdict"><b>Last week's verdict</b><p>{prior.question}</p><strong>{winners.join(" / ")}{winners.length>1?" · tied":""}</strong><p className="pg-small">{prior.total} ballots. {winners.length>1?"The committee has formed a committee to resolve the tie.":"The committee voted. Nobody is legally required to agree."}</p></div>}
+ </section>;
+}
+function Commendations({play,board,meId,busy,onNominate}){
+ const [category,setCategory]=useState("glue"),[recipient,setRecipient]=useState(""),[certificate,setCertificate]=useState("");
+ const certificateRef=useRef(null);useEffect(()=>{if(certificate)certificateRef.current?.scrollIntoView({block:"nearest"});},[certificate]);
+ const others=board.filter(p=>p.id!==meId),rows=play.nominations||[];
+ return <section className="pg-community-card" data-testid="office-commendations"><h3>Give somebody a questionable honor.</h3><p>Real coworkers. Real nominations. Absolutely imaginary authority. One changeable nomination per category each week.</p><label className="pg-form-label">Commendation<select aria-label="Commendation" value={category} onChange={e=>setCategory(e.target.value)}>{Object.entries(COMMENDATIONS).map(([id,a])=><option value={id} key={id}>{a.title}</option>)}</select></label><p className="pg-small">{COMMENDATIONS[category].line}</p>
+ <label className="pg-form-label">Coworker<select aria-label="Commendation recipient" value={recipient} onChange={e=>setRecipient(e.target.value)}><option value="">Choose a coworker</option>{others.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
+ <button className="pg-btn primary" disabled={busy||!recipient} onClick={()=>onNominate(category,recipient)}>File commendation</button>{!others.length&&<p className="pg-small">Another coworker needs to badge in first. Self-nominations have been sent to the shredder.</p>}
+ {play.my_nominations?.[category]&&<p className="pg-small">Your current nomination: {board.find(p=>p.id===play.my_nominations[category])?.name||"a coworker"}. Change it by filing another.</p>}
+ {Object.entries(COMMENDATIONS).map(([id,a])=>{const entries=rows.filter(r=>r.category===id),top=Math.max(0,...entries.map(r=>r.votes)),leaders=entries.filter(r=>r.votes===top);return <article className="pg-commendation-result" key={id}><OfficeIcon kind="star"/><div><b>{a.title}</b>{!leaders.length?<p>No nominations yet. An astonishing vacancy in leadership.</p>:<><p>{leaders.map(r=>r.name).join(" & ")}{leaders.length>1?" · tied leaders":" · current leader"}</p><small>{top} nomination{top===1?"":"s"} each · provisional until Friday, 4pm Pacific</small><button className="pg-btn" onClick={()=>setCertificate(leaders.map(r=>r.name).join(" & ")+" — "+a.title+" · "+a.line+" Unofficial office commendation, week "+play.week+". No salary adjustment.")}>Make a certificate</button></>}</div></article>;})}
+ {!!play.previous_nominations?.length&&<div className="pg-last-verdict"><h3>Last week's honors</h3>{Object.entries(COMMENDATIONS).map(([id,a])=>{const entries=play.previous_nominations.filter(r=>r.category===id),top=Math.max(0,...entries.map(r=>r.votes));return top>0?<p key={id}><b>{a.title}</b> — {entries.filter(r=>r.votes===top).map(r=>r.name).join(" & ")} · {top} nomination{top===1?"":"s"} each</p>:null;})}</div>}
+ {!!play.hydrators?.length&&<p className="pg-note"><b>Chief Hydration Officer, by actual plant watering:</b> {play.hydrators.map(p=>p.name+" ("+p.visits+")").join(", ")}. The plants remain plastic.</p>}
+ {certificate&&<div className="pg-certificate" ref={certificateRef} role="status" aria-label="Unofficial commendation certificate"><PerformanceArt kind="shelf"/><p>{certificate}</p><small>Screenshot this certificate to share it. HR has declined to provide a frame.</small><button className="pg-btn" onClick={()=>setCertificate("")}>Put it in the drawer</button></div>}
+ </section>;
+}
+function LoungeReport({play,onPerform}){const story=loungeStory(play);return <section className="pg-community-card" data-testid="lounge-story"><PerformanceArt kind="lounge" variant={story.stage}/><h3>{story.title}</h3><p>{story.line}</p><meter aria-label="Lounge story progress" min="0" max="15" value={Math.min(15,story.total)}/><p>{story.total} recorded prop performances from {play.contributors} coworker{play.contributors===1?"":"s"} this week.</p><p className="pg-small">{story.next?"Next development at "+story.next+" performances.":"The planning plaque is complete. The actual lounge remains an ambitious concept."} Free prop scenes across the office count toward this shared story, up to six per person per activity each Pacific day. No Busywork bonus or construction budget is involved.</p><button className="pg-btn primary" onClick={()=>onPerform("lounge")}>Contribute to the planning phase</button></section>;}
+function LoungeWorld({play}){if(!play)return null;const story=loungeStory(play);return <div className={"pg-lounge-milestone stage-"+story.stage} data-testid="lounge-milestone" aria-label={story.title}><svg viewBox="0 0 110 100" fill="none" stroke="#2B2B2B" strokeWidth="2"><path d="M7 90h96"/>{story.stage>=1&&<><path d="M15 31h26v39H15Z" fill="#7B9CC4"/><path d="M12 69h32v8H12Zm5 8v15m22-15v15" fill="#526D87"/></>}{story.stage>=2&&<><path d="M7 20v70m96-70v70" strokeWidth="4"/><path d="M4 40h102v13H4Z" fill="#B23B2E"/><path d="m50 34 9 26m6-26-17 26" stroke="#F8F1E3"/></>}{story.stage>=3&&<><rect x="48" y="64" width="55" height="26" fill="#FFD36B"/><text x="76" y="75" textAnchor="middle" fontSize="5" stroke="none" fill="#2B2B2B">PLANNING PHASE</text><text x="76" y="83" textAnchor="middle" fontSize="5" stroke="none" fill="#2B2B2B">COMMEMORATED</text></>}{story.stage===0&&<><path d="m12 83 70-14 4 9-70 14Z" fill="#B88A5A"/><path d="M20 63h62v27H20Z" fill="#FFE3A0"/><text x="51" y="80" textAnchor="middle" fontSize="8" fill="#2B2B2B" stroke="none">SOON-ish</text></>}</svg></div>;}
+
+const PROP_ACTIONS={
+ plant:{label:"Water the plastic plant",emote:"water",lines:["Growth: administrative. Moisture: unnecessary.","The plant has declined to comment. It is plastic.","You watered the rota. The plant seems relieved.","Facilities has promoted you to Assistant Regional Waterer.","The soil is decorative. Your commitment is real.","A leaf fell off. It has been stapled back on."]},
+ bench:{label:"Sit and do absolutely nothing",emote:"sit",lines:["Management has requested the minutes of your sitting.","Your out-of-office is now out-of-chair. No, wait.","The couch sighs first. It has seniority.","You have joined the Department of Horizontal Strategy.","A short break. No deliverables were harmed.","The cushion has accepted your resignation from standing."]},
+ apology:{label:"Print an unnecessary apology",emote:"type",lines:["THIS PAGE INTENTIONALLY UNHELPFUL.","We apologize for the previous apology. This apology is final_v7.","Your apology is number 38 in the apology queue.","ERROR 404: REMORSE NOT FOUND.","The printer has printed a form requesting fewer forms.","Please sign here to confirm you received this signature request."]},
+ calendar:{label:"Schedule a meeting about meetings",emote:"panic",lines:["The agenda is to agree on an agenda. Bring an agenda.","You booked a follow-up to the follow-up. It conflicts with itself.","All attendees declined. Attendance is excellent.","Meeting cancelled. A debrief has been scheduled.","This could have been an email about another email.","Room booked. Purpose pending. Catering confirmed."]},
+ shelf:{label:"File the urgent folder",emote:"type",lines:["Filed under U for Unclear. Please retain indefinitely.","The urgent tray is now a historical landmark.","Form 27B requests permission to request form 27A.","You found final_FINAL_really_final_2. It is a draft.","The binder contains a smaller binder. Escalating.","Nobody knows what you filed. Excellent continuity."]},
+ notice:{label:"Declare a mug amnesty",emote:"wave",lines:["Return the mugs. No questions. One spreadsheet.","Three mugs surrendered. One demanded legal counsel.","The microwave has accepted a cease-fish agreement.","Please return this minute. Other people need it.","A treaty has been signed between lunch and the fridge.","All unclaimed forks are now communal leadership."]},
+ lounge:{label:"Contribute to the planning phase",emote:"shrug",lines:["You measured a board. The measurement requires approval.","A ribbon-cutting has been scheduled for the ribbon.","The lounge is one meeting closer to another meeting.","You have installed a commemorative planning plaque.","Two chairs. No door. Strategic ventilation.","Joey says this is basically finished. Joey has left."]},
+ printer:{label:"Printer fixed",emote:"type",lines:["THIS PAGE INTENTIONALLY UNHELPFUL.","SUCCESS. PLEASE DO NOT INTERPRET THIS AS A PRECEDENT.","You opened the tray. The tray has opened an investigation."]}
+};
+function loungeStory(play){const actions=play?.actions||{},total=Object.values(actions).reduce((n,v)=>n+Number(v||0),0);const stage=total>=15?3:total>=8?2:total>=3?1:0;return {total,stage,next:[3,8,15,null][stage],title:["Materials awaiting a committee","A chair. For the planning committee.","Grand opening of the ribbon","Commemorative planning plaque installed"][stage],line:["Every free prop performance helps. Joey is counting this as teamwork.","The office has achieved somewhere to sit while discussing somewhere to sit.","The ribbon is open. The lounge remains closed. Please respect the distinction.","A plaque commemorates the progress. Work will resume after the plaque ceremony."][stage]};}
+function PerformanceArt({kind,variant=0}){
+ return <svg viewBox="0 0 150 100" role="img" aria-label={kind==="bench"?"A couch with a reserved break cushion":kind==="plant"?"Watering can and plastic leaf":kind==="lounge"?"A ceremonial ribbon and planning plaque":"Officially unnecessary paperwork"} fill="none" stroke="#2B2B2B" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
+ {kind==="plant"?<><path d="M20 42h45v40H20Z" fill="#7B9CC4"/><path d="M23 44q-23-30-15 9m56 3 31-15 6 8-35 24"/><path className="pg-scene-drops" d="m100 49 4 10m8-6 4 10m-14 5 3 8" stroke="#7B9CC4"/><path d="M104 85h30l-4 12h-22Z" fill="#C58E69"/><path d="M119 85V53q-22-8-21-22 22 0 21 22 23-15 22-28-22 6-22 28" fill="#8FA67A"/></>:kind==="bench"?<><rect x="13" y="35" width="124" height="48" rx="10" fill="#7B9CC4"/><path d="M17 65h116m-72-27v27M20 83v10m110-10v10"/><path d="M72 50h49v20H72Z" fill="#FFD36B"/><text x="97" y="63" textAnchor="middle" fontSize="8" fill="#2B2B2B" stroke="none">ON BREAK</text></>:kind==="lounge"?<><path d="M22 12v80m106-80v80" stroke="#9B714B" strokeWidth="7"/><path d="M18 38h114v16H18Z" fill="#B23B2E"/><path d="m65 27 12 40m7-40-17 40" stroke="#F8F1E3"/><rect x="35" y="66" width="80" height="27" rx="3" fill="#FFD36B"/><text x="75" y="83" textAnchor="middle" fill="#2B2B2B" fontSize="9" stroke="none">PLANNING</text></>:<><path className="pg-scene-sheet" d="M42 8h67v81H42Z" fill="#F8F1E3"/><path d="M54 30h43m-43 10h34m-34 10h43m-43 10h36" stroke="#A59C88" strokeWidth="2"/><g transform={"rotate("+(variant%2?8:-8)+" 77 72)"}><rect x="47" y="65" width="60" height="19" fill="#FFE6A1" stroke="#B23B2E"/><text x="77" y="78" textAnchor="middle" fill="#B23B2E" fontSize="8" stroke="none">{kind==="calendar"?"RECURRING":kind==="shelf"?"VERY URGENT":"UNHELPFUL"}</text></g></>}
+ </svg>;
+}
+function PropPerformance({scene}){return <>
+ <div className={"pg-prop-performance scene-"+scene.kind} data-testid="prop-performance" style={{left:scene.x,top:scene.y,zIndex:Math.round(scene.y+5000)}}><PerformanceArt kind={scene.kind} variant={scene.variant}/><b>{scene.line}</b></div>
+ {scene.kind!=="bench"&&<svg className={"pg-scene-effect effect-"+scene.kind} aria-hidden="true" viewBox="0 0 100 80" fill="none" stroke="#2B2B2B" strokeWidth="2.5" style={{left:scene.px,top:scene.py,zIndex:Math.round(scene.py+2000)}}>
+ {scene.kind==="plant"?<><path d="M5 8h34v27H5Z" fill="#7B9CC4"/><path d="M7 10Q-8-8 2 21m37 0 31 8-3 8-28-7"/><path className="pg-scene-drops" d="m67 39 1 8m8-5 2 8m-13 3 2 8" stroke="#5286AA"/></>:scene.kind==="notice"?<>{[10,38,66].map((x,i)=><g key={x} className="pg-scene-sheet"><path d={`M${x} 18h20v26q-10 5-20 0Z`} fill={["#8FA67A","#F78B6B","#7B9CC4"][i]}/><path d={`M${x+20} 23q14-1 0 12`}/><path d={`M${x+5} 33q5 5 10 0`}/></g>)}</>:<g className="pg-scene-sheet"><path d="M29 8h43v58H29Z" fill="#FFF8E9"/><path d="M37 22h27m-27 9h24m-24 9h26" stroke="#A59C88"/><path d="m23 51 55-9 2 17-55 9Z" fill="#FFD36B"/><text x="51" y="58" fontSize="6" textAnchor="middle" fill="#B23B2E" stroke="none">{scene.kind==="lounge"?"APPROVED?":"FILED. WHY?"}</text></g>}
+ </svg>}
+ </>;}
+function FieldGuide({onGo,onBingo,onClose}){return <><div className="pg-stamp">Unofficial employee orientation</div><p className="pg-big">Your job is mostly a cover story.</p><p>Earn Busywork at your desk. Between the paperwork, try something ridiculous.</p><div className="pg-field-guide">
+ {[["plant","Make the props worse","Water the plastic plant. Sit on the couch. Schedule a meeting about meetings.","plant"],["mug","Invite actual coworkers","Start a free coffee break at the break table, or leave somebody a coffee.","coffee"],["costume","Dress for the job nobody requested","Preview a costume for yourself or a coworker. The closet shows the price before you buy.","wardrobe"],["paper","Let the office write the jokes","File a suggestion. Approved memos join the office rotation.","suggestion"]].map(([icon,title,line,id])=><button className="pg-guide-card" key={id} onClick={()=>onGo(id)}><OfficeIcon kind={icon}/><span><b>{title}</b><small>{line}</small></span><span>Go →</span></button>)}
+ <button className="pg-guide-card" onClick={onBingo}><OfficeIcon kind="notice"/><span><b>Become fluent in corporate</b><small>Collect nine bingo phrases as people talk. No actual meeting attendance required.</small></span><span>Open →</span></button></div><p className="pg-small">Votes, commendations and lounge progress live in Office Nonsense. All optional. HR will pretend otherwise.</p><button className="pg-btn" onClick={onClose}>I accept these questionable responsibilities</button></>;}
+
 const PROP_PUNCHLINES={
  plant:["The plant is plastic. The rota is mandatory.","Facilities watered it twice. It remains emotionally unavailable.","The plant has formed a watering committee. The committee is plastic too."],
  apology:["The printer printed an apology for the paper jam. It jammed halfway through.","A second apology has been printed for the first apology. Please recycle responsibly.","The apology is low on toner. Its remorse is now light grey."],
@@ -6103,10 +6241,10 @@ const PROP_PUNCHLINES={
  bench:["You sit down. The couch sighs first. It has been in more meetings than you.","The lunch bag is holding this seat for someone who works from home.","You have successfully done nothing for a moment. Management has requested the minutes."],
  notice:["Please take a minute. Please return it when finished. We are running low.","Return the good mugs. No questions asked. Several very pointed looks provided.","Your fish may be delicious. The microwave does not need to meet it."]
 };
-function PropInspection({kind,variant=0,onCoffee}){
+function PropInspection({kind,variant=0,onCoffee,onPerform}){
  const phase=((variant%3)+3)%3;
  if(!PROP_STORIES[kind])return null;
- return <section className="pg-prop-inspection" data-testid="prop-inspection"><SceneryArt kind={kind} variant={phase}/><h3>{PROP_STORIES[kind][phase]}</h3><p>{({apology:"Facilities posted this beside the printer after its latest paper jam.",calendar:"Management's meeting calendar. Every slot has a slot to discuss it.",plant:"The office watering rota. It applies even to this plastic plant.",shelf:"The office reference shelf. Five binders, one suspiciously permanent urgent tray.",bench:"The break-room couch. A perfectly respectable place to stop looking productive.",notice:"The break-room noticeboard. Small notices. Strong opinions. Officially optional."})[kind]}</p><p className="pg-note">{PROP_PUNCHLINES[kind][phase]}</p><small>Office nonsense. No cost, no reward, no meeting to attend.</small>{onCoffee&&["bench","notice"].includes(kind)&&<p><button className="pg-btn" onClick={onCoffee}>Head to the break table</button></p>}</section>;
+ return <section className="pg-prop-inspection" data-testid="prop-inspection"><SceneryArt kind={kind} variant={phase}/><h3>{PROP_STORIES[kind][phase]}</h3><p>{({apology:"Facilities posted this beside the printer after its latest paper jam.",calendar:"Management's meeting calendar. Every slot has a slot to discuss it.",plant:"The office watering rota. It applies even to this plastic plant.",shelf:"The office reference shelf. Five binders, one suspiciously permanent urgent tray.",bench:"The break-room couch. A perfectly respectable place to stop looking productive.",notice:"The break-room noticeboard. Small notices. Strong opinions. Officially optional."})[kind]}</p><p className="pg-note">{PROP_PUNCHLINES[kind][phase]}</p><small>Office nonsense. No cost, no reward, no meeting to attend.</small>{onPerform&&PROP_ACTIONS[kind]&&<p><button className="pg-btn primary" onClick={()=>onPerform(kind)}>{PROP_ACTIONS[kind].label}</button></p>}{onCoffee&&["bench","notice"].includes(kind)&&<p><button className="pg-btn" onClick={onCoffee}>Head to the break table</button></p>}</section>;
 }
 function KindnessBoard({wire}){
  const notes=(wire||[]).filter(d=>DEED_TEXT[d.kind]?.good&&!DEED_TEXT[d.kind]?.office).slice(0,3);
@@ -7287,6 +7425,7 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
 
 function SuggestionBox({ sugg, me, admin, onSend, onJudge }) {
   const [t, setT] = useState("");
+  const [filing,setFiling]=useState(false);
   const isAdmin = me && admin && me.id === admin;
   const mine = (sugg || []).filter((x) => x.author === me?.id);
   const pending = (sugg || []).filter((x) => !x.approved);
@@ -7309,8 +7448,8 @@ function SuggestionBox({ sugg, me, admin, onSend, onJudge }) {
                   }}
                   placeholder="The microwave has been beeping since Tuesday. Nobody opened it." />
         <div className="pg-fine">{t.length}/160 · five a day, keep them office-safe</div>
-        <button className="pg-btn" disabled={t.trim().length < 4}
-                onClick={() => { onSend(t.trim()); setT(""); }}>File it</button>
+        <button className="pg-btn" disabled={filing||t.trim().length < 4}
+                onClick={async () => {if(filing)return;const draft=t.trim();setFiling(true);try{if(await onSend(draft))setT(current=>current.trim()===draft?"":current);}finally{setFiling(false);}}}>{filing?"Filing…":"File it"}</button>
       </div>
       {isAdmin && pending.length > 0 && (
         <>
@@ -7909,6 +8048,8 @@ function ArtPreview(){
   <div data-testid="weekly-board-qa"><Standings board={[]} schedule={qaSchedule}/></div>
   <h2>5g. Worn beta pin · shared animated character rig</h2>
   <div data-testid="worn-pin-qa" className="ar-grid">{[null,"trex"].map((outfit,i)=><div className="ar-cell" key={i}><div style={{position:"relative",height:145}}><Body p={{name:"Pin preview",pin:"beta",look:demoAvatar,outfit:outfit?{id:outfit,until:"2099-01-01T00:00:00Z"}:null}} emote="wave"/></div><strong>{outfit?"Over a costume":"On your shirt"}</strong></div>)}</div>
+  <h2>5l. Free prop performances · original scene art</h2>
+  <div data-testid="performance-qa" className="ar-grid">{Object.entries(PROP_ACTIONS).map(([kind,a])=><div className="ar-cell" key={kind}><PerformanceArt kind={kind}/><b>{a.label}</b><p>{a.lines[0]}</p></div>)}</div>
   <h2>5k. Office moments · read-only shared stories and kindness board</h2>
   <div data-testid="moments-qa"><OfficeMoments variant={1} office={{total:5000,target:10000}} wire={[{id:"qa-kindness",kind:"coffee",from:"A coworker",toName:"Another coworker",created_at:new Date().toISOString()}]} onWave={()=>setDemoEmote("wave")}/></div>
   <h2>5j. Action feedback · confirmation stamps and kind gestures</h2>

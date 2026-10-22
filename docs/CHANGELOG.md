@@ -2,6 +2,12 @@
 
 This is a concise human-readable chronology, not a substitute for Git history or SQL migrations. Update this in every behavior-changing PR with date, outcome, PR/commit and test evidence.
 
+## 2026-10-22: Build 169 — questionable responsibilities
+- Fixed ambient/partner bingo collection, memo failure draft retention/pending sends, and chair approach interaction.
+- Added free original animated prop performances, rotating punchlines, sitting/watering poses, optional field guide, Help discoveries, and 36 non-adjacent-repeat log gags. Successful real printer fixes get a confirmed visual joke.
+- Added persistent weekly office votes, named cosmetic commendations/certificates with honest ties and past results, actual watering leaders, and shared lounge milestones. Pacific Friday 4pm cycle; no Busywork rewards or player-row changes.
+- Additive restricted/RLS migration, actual SQL contracts and desktop/phone/two-player fixtures cover data preservation and failure cases. Acceptance and evidence in COMEDY_RELEASE_2026-10-22.md and release PR.
+
 ## 2026-10-21: Build 168 — musical chairs
 - Good chair can appear throughout usable map space, with equally weighted safe locations outside all private offices, fixtures and solid scenery. Shared deterministic window selection preserves one location for every client.
 - Timing/claims/rewards unchanged; backend inspected read-only, no migration/player writes. Distribution, geometry, connectivity and desktop/phone fixture interaction evidence tracked in PR.
