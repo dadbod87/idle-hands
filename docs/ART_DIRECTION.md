@@ -75,3 +75,7 @@ Polls and commendations use readable cards, minimum 44px action controls, honest
 ## Build 174 premium office television
 
 `SpringerTVArt` shares an original thick-ink flatscreen, reflection, power light and mounting silhouette across catalog and world. Four sourced photographic show stills sit within the screen, with an illustrated fallback title if an image fails; source provenance is in assets/tv/SOURCES.md. `OfficeTelevision` occupies the upper-right interior wall separately from existing art and desks; it must retain a 44px-plus action target, stop event propagation on activation, and never open a character-obscuring card. Pause automatic changes for reduced motion, hidden tabs and off-camera TVs. Test four image responses, all frames, successful/failed purchase, persistent decor, phone placement and old catalog compatibility.
+
+## Build 175 active-effect badges
+
+Use the warm-paper/sage/coral and thick ink contract for the single HUD status strip. Benefits use ▲ with solid borders; penalties use ▼ with dashed borders. Badges and detail close controls have 44px touch targets. Keep the row bounded and horizontally scrollable; never wrap an unbounded stack over the office. Full names, multiplier, time and provenance remain accessible on hover, focus and tap. Detail cards must remain inside the HUD width and stop activation keys from moving/opening floor fixtures.

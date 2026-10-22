@@ -1,3 +1,15 @@
+# Build 175 — status report (2026-10-22)
+
+Consolidates active effects in the top HUD between identity and Busywork on wide screens. The bounded badge row moves below identity on narrow screens and stays inline in short landscape views. Scroll horizontally or tab to reach every effect; no fixed two-effect limit. Names, actual multiplier benefit/penalty, remaining time and provenance are available on hover, focus and tap, including a dismissible detail card. Positive triangle/solid border and negative down-triangle/dashed border distinguish effects beyond color. Long names truncate only on the badge; details and accessible names retain the full text.
+
+Read-only live function/catalog inspection confirmed player buffs (including legacy delayed starts), frenzy_until (7× for 77 seconds), heat review (0.75×), Jess's four-minute 1.2× window and shared event schedule. The display projection never mutates player state; a separate one-second clock also refreshes on focus/visibility, so expiry works even with zero earnings. All existing earning calculations, RPCs, timers, progress and server authority remain unchanged. Permanent Seniority/raise summaries, pre-review heat warnings, Dave's settlement action, event explanation and alert controls remain. Duplicate temporary tags in the balance and toolbar are removed. TV slot/screens and prop/camera behavior are unchanged.
+
+Validation: existing parser/economy/name/sound/social/chair/comedy checks and new projection boundary/immutability contract. Browser fixture coverage includes empty, single, multiple positive/negative, delayed crash and legacy starts, expiry, Jess/event windows, keyboard/hover/tap details, long names, no overlap and office height at 1440×900, 1024×768, 390×844, 320×568 and 844×390. Supabase HTTP/WebSocket traffic is intercepted for browser testing; no real player, currency or progress is changed. Physical devices and real authenticated production writes are not tested. Exact final checks, merge SHA, production artifact and screenshots are recorded in the release PR/report.
+
+Baseline: current main f12464baca13184271e09c7ddc7b9f91c455f897 (PR #30/build 174); supersedes the old blocked-recovery notes below. GitHub main was observed without branch protection; release is manually held for all three regression jobs on the final PR commit. Vercel connector team scope returned 403, but the documented CLI fallback independently verified the exact project/team and current production deployment. No database migration needed. Rollback: revert this frontend release.
+
+---
+
 # Build 174 — conflict-resolution training (2026-10-22, candidate)
 
 Adds The Productivity Flatscreen in Your Desk → Catalogue → Your Office, with its own permanent TV slot. Original inked TV art is shared by the purchase thumbnail, free preview and office wall. Four self-hosted Springer stills rotate every 10 seconds only while visible and the tab is active; reduced motion holds the still, and tap/keyboard advances it without a popup or currency effect. Existing desk, chair, rug, wall art and paths are preserved. Source credits/third-party provenance: assets/tv/SOURCES.md.

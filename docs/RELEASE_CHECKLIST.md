@@ -29,3 +29,9 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] CI browser-smoke produces desktop/mobile art gallery and wardrobe screenshots; review screenshots visually before merge.
 - [ ] Check no overlapping labels/buttons in hiring, approvals, costumes, personnel, bar, and Seniority screens in an authenticated test session when available.
 - [ ] If actual in-game navigation cannot be verified, mark it unverified explicitly, not 'passed'.
+
+## Active-effect HUD presentation
+- [ ] Run `node tests/active-effects.test.cjs` and `tests/active-effects.spec.cjs`; inspect desktop, narrow-phone and short-landscape screenshots.
+- [ ] Check zero-income expiry, future starts (including timestamp-valued legacy `from`), multiple benefits/penalties, full long-name details, keyboard/tap/hover, no duplicate status badges and retained settlement/notification controls.
+- [ ] Preserve build 174 TV/four-screen and prop/camera tests.
+- [ ] Confirm the served production HTML matches the merged artifact, capture production desktop/mobile in-game screenshots, and disclose intercepted fixture data.

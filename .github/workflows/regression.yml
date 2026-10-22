@@ -21,6 +21,7 @@ jobs:
       - run: node tests/social-moments.test.cjs
       - run: node tests/chair-spawns.test.cjs
       - run: node tests/comedy-contract.test.cjs
+      - run: node tests/active-effects.test.cjs
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 12
