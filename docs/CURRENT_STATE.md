@@ -1,3 +1,11 @@
+# Build 172 — above the paperwork (2026-10-22)
+
+Prop jokes now also appear in a small text-only bubble matching the existing cigar-lounge/desk speech style. Its bottom stays above both the prop and character; its horizontal position stays inside the camera. Actual text height is measured before showing it. When a short viewport has no headroom, keep the bubble hidden and retain the readable feedback-strip caption instead of moving text over the action. No illustration card returns. Couch pose, can beside the plant, small effects, saved scripts, shared participation and all gameplay remain. No backend/data/economy change. Rollback: revert this frontend release.
+
+Focused desktop/phone tests explicitly check that plant/couch bubbles contain no art and clear both prop and actor; short landscape checks the unobstructed fallback. CI/deployment evidence is recorded in the PR; physical-phone gameplay remains unverified.
+
+---
+
 # Build 171 — let the office perform (2026-10-22)
 
 Removed the large illustrated world popup from every prop performance, including couch, plant, paperwork, printer and lounge. Rotating punchlines now appear as plain text in the existing feedback strip below the floor, alongside any confirmation/error message. The floor shows only character poses and small prop effects. The watering can sits beside the plant rather than over it. Inspection dialogs remain deliberate actions; illustration gallery/certificates remain intact. No data, inventory, economy, RPC or sound changes. Rollback: revert this frontend release.
