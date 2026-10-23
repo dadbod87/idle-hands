@@ -1,3 +1,11 @@
+# Build 182 — badge on the tab (2026-10-23)
+
+Adds an Idle Hands browser-tab icon instead of the generic globe. The static SVG reuses the existing Office original illustrated head on a warm-paper tile. Raster PNG fallbacks at 16/32/48px, a multi-size ICO and a 180px Apple touch icon support browser tabs and saved shortcuts. Explicit head links select the new assets. No avatar component, player appearance, game state, economy, Auth or database change.
+
+Validation: inspect icon silhouettes at actual 16/32px sizes and enlarged preview; verify asset HTTP types, PNG/ICO dimensions and Chrome image decoding; render the existing art gallery at desktop/phone. Required Node suites and full regression checks must pass before merge. Production commit, deployed asset checks and screenshots are recorded in the release PR/report. No real player data is used for QA. Rollback: revert this frontend/assets release.
+
+---
+
 # Build 181 — fresh badge (2026-10-23)
 
 Fixes character creation using a cached session whose Auth account was removed by the owner-authorized launch reset. Startup and intake now verify the account with Auth rather than trusting the user embedded in local session storage. Confirmed missing accounts clear only this browser’s Auth session and return to the sign-in/new-character choices. Auth recovery events are validated outside the SDK callback lock before booting. Intake checks again before uploading or creating a character; a deletion racing the player insert is verified before recovering. Network/service errors preserve saved sessions and offer retry. No automatic account creation on page load, database migration, economy change or progress mutation.
