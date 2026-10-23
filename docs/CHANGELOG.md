@@ -1,3 +1,11 @@
+# Build 183 — paper badge (2026-10-23)
+
+Replaces the browser-tab and saved-shortcut icon with the existing Paper bag head shown beside the player's name. The gold bag silhouette uses a transparent background and a tighter viewBox for legibility at 16/32px. Regenerates SVG, PNG, ICO and Apple assets; versioned head URLs refresh the previous icon cache. No character component, game layout, Auth, economy or player-data change.
+
+Validation: inspect the actual 16/32px icon and enlarged render; check asset types, dimensions, decoding, head links and desktop/phone art gallery. Required Node suites and regression jobs must pass before merge. Production SHA, exact asset matches and screenshots are recorded in the release PR/report. Browser gameplay uses intercepted fixtures only. Rollback: revert this assets/head-link release.
+
+---
+
 # Build 182 — badge on the tab (2026-10-23)
 
 Adds an Idle Hands browser-tab icon instead of the generic globe. The static SVG reuses the existing Office original illustrated head on a warm-paper tile. Raster PNG fallbacks at 16/32/48px, a multi-size ICO and a 180px Apple touch icon support browser tabs and saved shortcuts. Explicit head links select the new assets. No avatar component, player appearance, game state, economy, Auth or database change.
