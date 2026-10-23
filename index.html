@@ -3329,7 +3329,8 @@ async function loadCatalog() {
 }
 
 async function loadCard() {
-  const { data } = await supabase.rpc("card_state");
+  const { data, error } = await supabase.rpc("card_state");
+  if (error) throw error;
   return data || null;
 }
 
@@ -3471,7 +3472,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 183 · paper badge";
+const BUILD = "build 184 · signed and seen";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3801,6 +3802,16 @@ function OfficeFloor() {
     refresh();const timer=setInterval(visible,30000);document.addEventListener("visibilitychange",visible);
     return()=>{active=false;clearInterval(timer);document.removeEventListener("visibilitychange",visible);};
   },[phase,me?.id]);
+
+  // Refresh the read-only contribution quote on entry and while the card is open.
+  useEffect(() => {
+    if (phase !== "play" || panel !== "fund") return;
+    let active = true;
+    const refresh = async () => { try { const st = await loadCard(); if (active) setCard(st); } catch { /* Keep the last snapshot; signing still validates on the server. */ } };
+    refresh();
+    const timer = setInterval(refresh, 10000);
+    return () => { active = false; clearInterval(timer); };
+  }, [phase, panel]);
 
   /* ------------------------- live + heartbeat --------------------- */
   useEffect(() => {
@@ -5095,9 +5106,13 @@ function OfficeFloor() {
                 try {
                   const st = await api.signCard();
                   setCard(st);
-                  applyServer(await api.getMe());
-                  flash(st?.paid ? "Everybody signed. Cake." : "You signed the card.");
-                } catch (e) { flash(prettyError(e)); }
+                  // A failed balance refresh must not turn a saved signature into a failed one.
+                  try { applyServer(await api.getMe()); } catch { /* Heartbeat retries. */ }
+                  return st;
+                } catch (e) {
+                  try { setCard(await loadCard()); } catch { /* Keep the last snapshot. */ }
+                  throw e;
+                }
               }} />
           )}
         </Panel>
@@ -6808,6 +6823,12 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
   const [prize, setPrize] = useState(null);
   const [vending, setVending] = useState(false);
   const [reel, setReel] = useState("?");
+  const [signing, setSigning] = useState(false);
+  const signLock = useRef(false);
+  const [cardMessage, setCardMessage] = useState("");
+  const contribution = Number.isFinite(card?.contribution) ? card.contribution : null;
+  const short = contribution !== null && pp < contribution;
+  useEffect(() => { setCardMessage(""); }, [card?.week]);
   const vendPrice = quote?.vend ?? 0;
   const signed = !!card?.mine;
   const need = Math.max(0, (card?.staff || 0) - (card?.signers?.length || 0));
@@ -6912,9 +6933,27 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
                 ? "Everyone has signed. Something is about to happen."
                 : `${card.signers?.length || 0} of ${card.staff} have signed. ${need} to go.`}
           </p>
-          <button className="pg-btn pg-wide" onClick={onSign} disabled={signed || card.paid}>
-            {card.paid ? "Already done" : signed ? "You signed it" : "Sign the card"}
+          <p className="pg-note" id="card-contribution">
+            {contribution !== null
+              ? `Your contribution: ${fmt(contribution)} BW — four minutes of current earnings (minimum 50 BW).`
+              : "Signing costs four minutes of current earnings (minimum 50 BW)."}
+            {short && !signed && !card.paid && ` You need ${fmt(contribution - pp)} more BW.`}
+            {" "}Cost can change as your earnings change.
+          </p>
+          <button className="pg-btn pg-wide" aria-describedby="card-contribution card-feedback"
+            disabled={signing || signed || card.paid || short}
+            onClick={async () => {
+              if (signLock.current) return;
+              signLock.current = true; setSigning(true); setCardMessage("");
+              try {
+                const st = await onSign();
+                setCardMessage(st?.paid ? "Everybody signed. Cake for the office!" : "You signed the card. Your contribution is in the pot.");
+              } catch (e) { setCardMessage(prettyError(e)); }
+              finally { signLock.current = false; setSigning(false); }
+            }}>
+            {card.paid ? "Already done" : signed ? "You signed it" : signing ? "Signing…" : short ? "Not enough Busywork" : "Sign the card"}
           </button>
+          <div id="card-feedback" className="pg-fine" role="status" aria-live="polite" style={{ minHeight: "2.8em" }}>{cardMessage}</div>
           <div className="pg-fine">Everyone chips in. When the last person signs the pot doubles,
             splits, and there's cake for half an hour. One holdout stops everybody.</div>
         </>

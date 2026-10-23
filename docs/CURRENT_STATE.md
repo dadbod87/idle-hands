@@ -1,3 +1,13 @@
+# Build 184 — signed and seen (2026-10-23)
+
+Fixes silent Birthday Card failures in Office fund. The server requires four minutes of current earnings (minimum 50 BW); the old UI hid that contribution and displayed errors at the top of a scrolled modal. The card now shows the read-only server quote and any shortfall, disables unaffordable/duplicate/pending actions, and keeps persistent success/error feedback beside the button. A failed balance refresh after a saved signature does not report signing as failed. The quote refreshes on entry and every ten seconds while open.
+
+The guarded additive card_state migration uses the same Pacific week_key as sign_card and exposes its existing contribution formula. It changes no card/player rows, signing costs, payout/cake calculations, timers or grants. The unchanged deployed sign_card body is captured for isolated contract tests and rollback reference. Install the projection before deploying this frontend; older clients accept the extra field. Rollback: revert frontend and restore only card_state from the captured baseline if needed; never replay test signatures or reset cards/players.
+
+Validation: six focused browser fixtures cover insufficient funds, signing/pending, keyboard activation, saved state on reopen/reload, visible rejection/retry, network failure, post-save refresh failure and final cake at desktop/phone/short sizes. SQL tests execute the actual sign_card body and replacement projection with synthetic accrual/rate dependencies: current-week routing, matching quote/charge, 50 BW minimum, insufficient/duplicate no-charge behavior, payout/cake, no-player quote, unchanged data on install and grants. No production signing is used for QA. Required Node suites, final-head CI, migration verification, production SHA and live screenshots are recorded in the release PR/report. Browser data is intercepted; it does not certify a real-player signature.
+
+---
+
 # Build 183 — paper badge (2026-10-23)
 
 Replaces the browser-tab and saved-shortcut icon with the existing Paper bag head shown beside the player's name. The gold bag silhouette uses a transparent background and a tighter viewBox for legibility at 16/32px. Regenerates SVG, PNG, ICO and Apple assets; versioned head URLs refresh the previous icon cache. No character component, game layout, Auth, economy or player-data change.

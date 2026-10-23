@@ -60,3 +60,8 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Confirm the fresh signup uses its newly issued identity; retain invite and sound preferences.
 - [ ] Temporary Auth/network failure must preserve the saved session and retry the same account.
 - [ ] Confirm normal signed-in/magic-link behavior still boots after validating Auth events outside the SDK callback lock.
+
+## Birthday Card feedback
+- [ ] Run six card browser fixtures at desktop, phone and short sizes; inspect the cost, shortfall and persistent feedback beside the button.
+- [ ] Execute the actual sign_card body and guarded projection in isolated PostgreSQL; verify quote/charge, Pacific week, minimum, insufficient/duplicate no-charge, final payout/cake, unchanged installation data/grants.
+- [ ] Apply and independently verify the read-only card_state projection before frontend deployment; confirm sign_card hash remains unchanged. Never sign or spend real player Busywork for QA.
