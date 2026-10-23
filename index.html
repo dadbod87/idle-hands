@@ -4520,9 +4520,11 @@ function OfficeFloor() {
       <CodeDoor onOk={async (c) => {
         setCode(c);
         try { localStorage.setItem("ih_code", c); } catch { /* private mode */ }
-        const u = await getUser();
-        if (u) { setUser(u); setCat(await loadCatalog().catch(() => cat)); setPhase("hire"); }
-        else setPhase("gate");
+        try {
+          const u = await getUser();
+          if (u) { setUser(u); setCat(await loadCatalog().catch(() => cat)); setPhase("hire"); }
+          else setPhase("gate");
+        } catch (e) { setErr("Couldn't check your sign-in. Check your connection and try again."); setPhase("error"); }
       }} />
     </div>
   );
