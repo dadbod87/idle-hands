@@ -30,7 +30,7 @@ for(const width of [1440,390]){
   expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();expect(signups).toBe(0);expect(f.calls.some(c=>c.rpc==='upsert_player')).toBe(false);
   expect(await page.evaluate(()=>localStorage.getItem('ih_sound_level'))).toBe('0.22');
   await start.click();await expect(page.getByRole('heading',{name:'Badge in',exact:true})).toBeVisible();await page.getByPlaceholder('e.g. Dana R.').fill('Fresh Hire');await page.getByRole('button',{name:'Start the shift',exact:true}).click();
-  await expect.poll(()=>created).toBe(true);await expect(page.getByText("Couldn't badge in",{exact:false})).toHaveCount(0);expect(signups).toBe(1);
+  await expect.poll(()=>created).toBe(true);await expect(page.getByText('Before you generate Busywork',{exact:true})).toBeVisible();expect(f.calls.some(c=>c.rpc==='set_look')).toBe(true);await expect(page.getByText("Couldn't badge in",{exact:false})).toHaveCount(0);expect(signups).toBe(1);
   await page.screenshot({path:`test-results/deleted-session-fresh-${width}.png`,fullPage:true});await context.close();
  });
  test(width+': deletion while intake is open returns to sign-in without an invalid player write',async({browser})=>{
