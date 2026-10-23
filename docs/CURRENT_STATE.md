@@ -1,6 +1,6 @@
 # Build 185 — meeting on the map (2026-10-23)
 
-Adds the existing Meeting Room to Office directory using the established paper/agenda icon and card style. Selecting it uses the existing walking route and opens the existing Meeting room actions panel on arrival. The directory now has twelve destinations. No room geometry, game actions, economy, timers, account data or backend changes.
+Adds the existing Meeting Room to Office directory using the established paper/agenda icon and card style. Selecting it uses the existing walking route and opens the existing Meeting room actions panel on arrival. The directory now has twelve destinations. No room geometry, game actions, economy, timers, account data or backend changes. The initial CI run stalled at spawn in the existing secret-entry test after reload. Its held-key gesture now focuses the page and sends keyboard repeats, preserving the same movement deadline and server-claim/replay assertions; secret-level game code is unchanged.
 
 Validation: extend the existing desktop/mobile directory walkthrough to activate Meeting Room by keyboard/touch, confirm walking and the correct destination panel, then return to the desk with unchanged player progress. Review directory and arrival screenshots plus the existing art gallery. Required Node and final-head regression checks must pass before merge. Production artifact, screenshots and release evidence are recorded in the release PR/report; browser Supabase data is intercepted fixtures. Rollback: revert this frontend release.
 
