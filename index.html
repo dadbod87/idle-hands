@@ -3472,7 +3472,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 184 · signed and seen";
+const BUILD = "build 185 · meeting on the map";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -5556,6 +5556,7 @@ const DIRECTORY_STOPS=[
  {id:"vending",kind:"snack",purpose:"Help the office reach its shared goal",note:"Teamwork, itemized."},
  {id:"suggestion",kind:"paper",purpose:"Send an idea to the suggestion box",note:"Have a thought. Leave a paper trail."},
  {id:"printer",kind:"paper",purpose:"Clear a jam or read its latest apology",note:"It has prepared a statement."},
+ {id:"meeting",kind:"paper",purpose:"Office pranks and recurring meetings",note:"Could have been an email."},
  {id:"owner",kind:"binder",purpose:"Raises, reviews and office politics",note:"Knock with confidence. Leave with paperwork."},
 ];
 function OfficeDirectory({onGo}) {

@@ -1,3 +1,11 @@
+# Build 185 — meeting on the map (2026-10-23)
+
+Adds the existing Meeting Room to Office directory using the established paper/agenda icon and card style. Selecting it uses the existing walking route and opens the existing Meeting room actions panel on arrival. The directory now has twelve destinations. No room geometry, game actions, economy, timers, account data or backend changes.
+
+Validation: extend the existing desktop/mobile directory walkthrough to activate Meeting Room by keyboard/touch, confirm walking and the correct destination panel, then return to the desk with unchanged player progress. Review directory and arrival screenshots plus the existing art gallery. Required Node and final-head regression checks must pass before merge. Production artifact, screenshots and release evidence are recorded in the release PR/report; browser Supabase data is intercepted fixtures. Rollback: revert this frontend release.
+
+---
+
 # Build 184 — signed and seen (2026-10-23)
 
 Fixes silent Birthday Card failures in Office fund. The server requires four minutes of current earnings (minimum 50 BW); the old UI hid that contribution and displayed errors at the top of a scrolled modal. The card now shows the read-only server quote and any shortfall, disables unaffordable/duplicate/pending actions, and keeps persistent success/error feedback beside the button. A failed balance refresh after a saved signature does not report signing as failed. The quote refreshes on entry and every ten seconds while open.
