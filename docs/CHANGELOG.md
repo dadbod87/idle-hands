@@ -1,3 +1,15 @@
+# Build 181 — fresh badge (2026-10-23)
+
+Fixes character creation using a cached session whose Auth account was removed by the owner-authorized launch reset. Startup and intake now verify the account with Auth rather than trusting the user embedded in local session storage. Confirmed missing accounts clear only this browser’s Auth session and return to the sign-in/new-character choices. Auth recovery events are validated outside the SDK callback lock before booting. Intake checks again before uploading or creating a character; a deletion racing the player insert is verified before recovering. Network/service errors preserve saved sessions and offer retry. No automatic account creation on page load, database migration, economy change or progress mutation.
+
+Validation: isolated browser fixtures cover old cached accounts, explicit fresh signup with a different identity, deletion during intake, the exact players_id_fkey race, valid-account continuity and temporary Auth failure/retry at desktop/phone sizes. All Supabase requests in these tests are intercepted. Required Node/browser/PostgreSQL checks, final merge and production artifact evidence are recorded in the release PR/report; these fixtures do not certify real email delivery.
+
+Owner-authorized launch reset earlier on October 23 removed 3 accounts/characters after a restricted database recovery snapshot, with independent zero-count checks. Capacity 12, invite code, weekly full resets and Friday 4 PM Pacific boundary were preserved. The owner has since created the first new character; a read-only check confirmed administrator points to that character and an existing Auth account. Eight old badge image objects remain in Storage. No account reset is part of this release.
+
+Rollback: revert the frontend only. Do not replay the one-time reset or restore deleted account sessions.
+
+---
+
 # Build 180 — out of the box (2026-10-22)
 
 Removes the border, padding, corner clipping and shadow from custom-photo heads in world avatars, HUD and previews. PNG transparency and existing uploaded images remain supported; picker selection outlines remain visible controls. The head keeps its existing dimensions and wardrobe/body placement.

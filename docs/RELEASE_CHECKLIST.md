@@ -54,3 +54,9 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Check photo-head computed border/shadow/padding/clipping and alpha in preview/HUD/world; review desktop/phone screenshots.
 - [ ] Execute actual scheduler/claim SQL with 1,000 draws, reset/DST/year boundaries, stable same-week time, stale pins, one shared claim and unchanged progress/grants.
 - [ ] Verify the guarded function migration and existing claim remain intact before frontend release; never trigger a real secret claim for QA.
+
+## Deleted-account session recovery
+- [ ] Test stale cached JWTs, account deletion during intake and the exact players_id_fkey race without production writes.
+- [ ] Confirm the fresh signup uses its newly issued identity; retain invite and sound preferences.
+- [ ] Temporary Auth/network failure must preserve the saved session and retry the same account.
+- [ ] Confirm normal signed-in/magic-link behavior still boots after validating Auth events outside the SDK callback lock.

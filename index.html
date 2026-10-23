@@ -3168,9 +3168,26 @@ const supabase = SB.createClient(
  * user on every page load, someone opening the game on a second device would
  * silently get a brand new empty desk instead of a chance to sign in.
  */
+function missingAuthAccount(error) {
+  return ["user_not_found", "session_not_found", "refresh_token_not_found"].includes(error?.code)
+    || error?.name === "AuthSessionMissingError"
+    || /^User from sub claim in JWT does not exist$/i.test(error?.message || "");
+}
+
 async function getUser() {
-  const { data } = await supabase.auth.getSession();
-  return data.session?.user || null;
+  const cached = await supabase.auth.getSession();
+  if (cached.error && !missingAuthAccount(cached.error)) throw cached.error;
+  if (!cached.error && !cached.data.session) return null;
+  // A cached JWT can outlive an administrator-deleted account. Check Auth,
+  // rather than treating the JWT's embedded user as a current account.
+  const verified = cached.error ? cached : await supabase.auth.getUser();
+  if (verified.error && !missingAuthAccount(verified.error)) throw verified.error;
+  if (verified.error || !verified.data.user) {
+    const { error } = await supabase.auth.signOut({ scope: "local" });
+    if (error) throw error;
+    return null;
+  }
+  return verified.data.user;
 }
 
 /** New player, no email yet. Their desk lives in this browser until they save it. */
@@ -3207,8 +3224,16 @@ async function signOutAll() {
 }
 
 function onAuthChange(cb) {
-  const { data } = supabase.auth.onAuthStateChange((_e, s) => cb(s?.user || null));
-  return () => data.subscription.unsubscribe();
+  let active = true;
+  const { data } = supabase.auth.onAuthStateChange((event, s) => {
+    // Recovery can emit SIGNED_IN for a cached JWT too. Validate it outside
+    // the Auth callback's lock before letting it open a character form.
+    if (event !== "INITIAL_SESSION" && s?.user) setTimeout(async () => {
+      try { const user = await getUser(); if (active && user) cb(user); }
+      catch { /* startup/intake checks show retryable failures */ }
+    }, 0);
+  });
+  return () => { active = false; data.subscription.unsubscribe(); };
 }
 
 
@@ -3442,7 +3467,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 180 · out of the box";
+const BUILD = "build 181 · fresh badge";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3497,6 +3522,7 @@ function ActiveEffects({player,cat}) {
 function OfficeFloor() {
   const [phase, setPhase] = useState("boot");
   const [user, setUser] = useState(null);
+  const [authNotice, setAuthNotice] = useState(null);
   const [catRaw, setCatRaw] = useState({ items: [], upgrades: [], deeds: {} });
   const cat = catRaw;
   // index the pin pool wherever the catalogue lands, so no call site can miss it
@@ -3732,16 +3758,18 @@ function OfficeFloor() {
 
   useEffect(() => {
     (async () => {
-      const u = await getUser();
-      if (u) { boot(u); return; }
-      // No account yet: nobody gets past the door without the code.
-      const held = typeof localStorage !== "undefined" ? localStorage.getItem("ih_code") : null;
-      if (held && (await checkCode(held).catch(() => false))) {
-        setCode(held);
-        setPhase("gate");
-      } else {
-        setPhase("code");
-      }
+      try {
+        const u = await getUser();
+        if (u) { boot(u); return; }
+        // No account yet: nobody gets past the door without the code.
+        const held = typeof localStorage !== "undefined" ? localStorage.getItem("ih_code") : null;
+        if (held && (await checkCode(held).catch(() => false))) {
+          setCode(held);
+          setPhase("gate");
+        } else {
+          setPhase("code");
+        }
+      } catch (e) { setErr("Couldn't check your sign-in. Check your connection and try again."); setPhase("error"); }
     })();
     // A magic link lands back here with a session in the URL. When that
     // resolves, pick it up without making anyone reload.
@@ -4483,8 +4511,8 @@ function OfficeFloor() {
       <div className="pg-eyebrow">The Patron Group</div>
       <h1 className="pg-h1">The floor is closed</h1>
       <p className="pg-lede">{err}</p>
-      <p className="pg-fine">Usually this means the environment variables are missing or the SQL
-      hasn't been run yet. Check README step 2 and step 5.</p>
+      <p className="pg-fine">Try again in a moment. If this continues, ask whoever runs the office.</p>
+      <button className="pg-btn" onClick={() => location.reload()}>Try again</button>
     </div></div>
   );
   if (phase === "code") return (
@@ -4506,12 +4534,12 @@ function OfficeFloor() {
   );
   if (phase === "gate") return (
     <div className="pg-root pg-marble">
-      <Gate onNew={async () => { try { boot(await startAnonymous()); } catch (e) { setErr(e.message); setPhase("error"); } }} />
+      <Gate notice={authNotice} onNew={async () => { try { boot(await startAnonymous()); } catch (e) { setErr(e.message); setPhase("error"); } }} />
     </div>
   );
   if (phase === "hire") return (
     <div className="pg-root pg-marble">
-      <Onboard user={user} code={code} onDone={(row) => { applyServer(row); setPhase("sign"); }} />
+      <Onboard user={user} code={code} onSessionReset={() => { setUser(null); setAuthNotice("Your old badge is no longer active. Start a new character, or sign in with your current account."); setPhase("gate"); }} onDone={(row) => { applyServer(row); setPhase("sign"); }} />
     </div>
   );
 
@@ -7901,7 +7929,7 @@ function EquityShop({ me, cat, onBuy }) {
   );
 }
 
-function Gate({ onNew }) {
+function Gate({ onNew, notice }) {
   const [mode, setMode] = useState(null);
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
@@ -7937,6 +7965,7 @@ function Gate({ onNew }) {
       </ul>
       <p className="pg-fine">Takes a minute to learn. Check in twice a day and you're playing it right.</p>
 
+      {notice && <p className="pg-fine" role="status">{notice}</p>}
       {!mode && (
         <>
           <button className="pg-work big" onClick={onNew}>I'm new — badge in</button>
@@ -8026,7 +8055,7 @@ function Account({ user, onLinked }) {
   );
 }
 
-function Onboard({ user, code, onDone, preview=false }) {
+function Onboard({ user, code, onDone, onSessionReset, preview=false }) {
   const [name, setName] = useState("");
   const [img, setImg] = useState(null);
   const [look,setLook] = useState(normalizedAvatar({build:"regular",bottom:"trousers",top:0,legs:0,gender:"neutral",hair:"messy"}));
@@ -8041,13 +8070,21 @@ function Onboard({ user, code, onDone, preview=false }) {
     if (preview || !name.trim() || busy) return;
     setBusy(true);
     try {
+      // Recheck just before intake too: a reset can happen with this form open.
+      const current = await getUser();
+      if (!current || current.id !== user.id) { onSessionReset?.(); setBusy(false); return; }
       let url = null;
-      if (img) url = await uploadBadge(user.id, img);
+      if (img) url = await uploadBadge(current.id, img);
       if (!code) throw new Error("missing office code — reload and enter it at the door");
       const row = await api.upsertPlayer(name.trim().slice(0, 12), url, code);
       const saved=await api.setLook(look);
       onDone(saved || row);
     } catch (e) {
+      // Cover a deletion between the Auth check and upsert without hiding other
+      // foreign-key errors or signing out healthy accounts on a network failure.
+      if (e.code === "23503" && /players_id_fkey/.test(e.message || "")) {
+        try { if (!await getUser()) { onSessionReset?.(); setBusy(false); return; } } catch { /* retryable validation failure */ }
+      }
       const m = (e.message || "").toLowerCase();
       setErr(m.includes("code") ? "That's not the office code."
         : m.includes("full") ? "The office is full. Ask whoever runs it to add a desk."
