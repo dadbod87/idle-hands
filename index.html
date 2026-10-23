@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Idle Hands — a Patron Group production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
 <style>
 :root{
   --paper:#F3F5EC; --bar:#DEE8D5; --ink:#18261D; --soft:#5D6C5B; --rule:#A9BFA6;
@@ -3467,7 +3471,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 181 · fresh badge";
+const BUILD = "build 182 · badge on the tab";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
