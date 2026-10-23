@@ -47,3 +47,5 @@ BEGIN
  IF EXISTS((SELECT snapshot FROM comedy_players_before EXCEPT SELECT to_jsonb(p) FROM public.players p) UNION ALL (SELECT to_jsonb(p) FROM public.players p EXCEPT SELECT snapshot FROM comedy_players_before)) THEN RAISE EXCEPTION 'existing player data modified'; END IF;
 END $test$;
 ROLLBACK;
+
+\i tests/birthday-card-contract.sql
