@@ -4,6 +4,8 @@ Corrects contradictory Seniority wording. Department Restructure no longer calls
 
 The current production season_wipe clears equity/perks and the season configuration enables weekly wipes; restructure preserves existing equity/perks and adds the earned amount. These rules were verified read-only. This release changes copy and documentation only: no formulas, reset timing, migrations, agreement version, stored signatures or player progress change. Rollback: revert frontend copy/docs.
 
+CI setup correction: the moving ubuntu-latest label became Ubuntu 26.04, which the pinned Playwright 1.56.1 cannot install on. Pin only the browser job to supported Ubuntu 24.04; retain all suites and assertions.
+
 Validation: required Node and exact-head regression gate must pass before merge. Focused desktop/phone fixture walkthroughs check the restructure warning, amounts, perks text, confirmation/cancel and unchanged progress/no restructure RPC; live artifact and screenshots are recorded in the release PR/report. Browser Supabase data is intercepted fixtures; no real restructure is executed.
 
 ---
