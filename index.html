@@ -2984,7 +2984,7 @@ const PAPERS = [
       ["4. Allocation",
         "Busywork can be spent on upgrades, office favors, and other questionable productivity initiatives. Nobody is required to explain the purchase order."],
       ["5. Reorganization",
-        "A player may restructure, exchanging their current Busywork for Seniority. Seniority is a permanent game bonus. The paperwork for this process is longer than the process."],
+        "A player may restructure, exchanging their current Busywork for Seniority. Seniority survives restructuring but resets every Friday at 4 PM Pacific. The paperwork for this process is longer than the process."],
       ["6. Acknowledgment",
         "Busywork and Seniority exist only inside Idle Hands. They have no cash value, employment status, ownership rights, or connection to the company's actual operations."]
     ]
@@ -3472,7 +3472,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 185 · meeting on the map";
+const BUILD = "build 186 · read the fine print";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4586,7 +4586,7 @@ function OfficeFloor() {
             )}
             {me?.equity > 0 && (
               <span className="pg-tag good"
-                    data-tip={`+${(me.equity * 3).toFixed(0)}% output from ${me.equity} Seniority (3% each). Resets at the end of the week.`}>
+                    data-tip={`+${(me.equity * 3).toFixed(0)}% output from ${me.equity} Seniority (3% each). Resets every Friday at 4 PM Pacific.`}>
                 ▲ {me.equity} Seniority
               </span>
             )}
@@ -4954,7 +4954,7 @@ function OfficeFloor() {
               }} clickPow={clickPow} lifetime={lifetime}
                   onBuy={buy} onUp={buyUp} guard={guard} flash={flash}
                   onRestructure={async () => {
-                    if(!window.confirm("HR FORM SR-404: Trade this cycle's Busywork, hires, approvals and temporary boosts for Seniority? Lifetime progress and existing Seniority stay."))return;
+                    if(!window.confirm("HR FORM SR-404: Trade this cycle's Busywork, hires, approvals and temporary boosts for Seniority? Lifetime progress and existing Seniority survive this restructure. All Seniority and purchased perks reset every Friday at 4 PM Pacific."))return;
                     const row=await guard(() => api.restructure(), "HR has approved your fresh start.");
                     if(row){ setPrices(null); api.allPrices().then(setPrices).catch(() => {}); }
                   }} />
@@ -6250,11 +6250,11 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
             <div className="pg-seniority-stamp">
               <strong>Human Resources · Department Restructure</strong>
               Form SR-404: Approval to voluntarily start over
-              <p>You receive <b>{avail} Seniority</b>. Your current Busywork, staff, upgrades and temporary bonuses reset. Permanent Seniority and lifetime earnings remain.</p>
+              <p>You receive <b>{avail} Seniority</b>. Your current Busywork, staff, upgrades and temporary bonuses reset. Existing Seniority and lifetime earnings survive this restructure.</p>
             </div>
-            <p>Restructuring wipes your desk: points, hires and approvals all go. Your lifetime BW
-              and your place on the whiteboard stay exactly where they are.</p>
-            <p>You keep <b>Seniority</b> — a permanent <b>+3%</b> to everything, per point, forever.</p>
+            <p>Your lifetime BW and weekly whiteboard score stay unchanged when you restructure.</p>
+            <p>Each unspent <b>Seniority</b> point adds <b>+3% output</b> for the rest of this game week.</p>
+            <p><b>Weekly reset: all Seniority and purchased Seniority perks are cleared every Friday at 4 PM Pacific.</b></p>
             <p className="pg-big">{avail} Seniority available</p>
             <p className="pg-small">You hold {me?.equity || 0} Seniority. Next point at {fmt(Math.pow(10, (avail + 1) / 1.6) * 1e9)} BW this cycle.</p>
             <button className="pg-btn danger" disabled={avail < 1} onClick={onRestructure}>
@@ -7955,8 +7955,8 @@ function EquityShop({ me, cat, onBuy }) {
   return (
     <div className="pg-equity">
       <div className="pg-mailhead">Spend Seniority</div>
-      <p className="pg-small">Seniority is the only thing that survives a restructure. You can hold it
-        for the multiplier, or spend it here on things that change how the job works.</p>
+      <p className="pg-small">Keep Seniority for its +3% output bonus per point, or spend it here on perks.
+        Both Seniority and these perks survive restructuring but reset every Friday at 4 PM Pacific.</p>
       <div className="pg-list">
         {perks.map((k, i) => {
           const n = have(k.id), maxed = n >= k.max;

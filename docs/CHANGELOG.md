@@ -1,3 +1,13 @@
+# Build 186 — read the fine print (2026-11-04)
+
+Corrects contradictory Seniority wording. Department Restructure no longer calls Seniority permanent or promises a bonus forever: it distinguishes keeping existing Seniority/lifetime BW/weekly score during a restructure from clearing Seniority and purchased perks at Friday 4 PM Pacific weekly reset. The reset warning appears before the action, in its confirmation, in the perks explanation, in the HUD tooltip and in onboarding paperwork. Agent guidance now makes the same distinction.
+
+The current production season_wipe clears equity/perks and the season configuration enables weekly wipes; restructure preserves existing equity/perks and adds the earned amount. These rules were verified read-only. This release changes copy and documentation only: no formulas, reset timing, migrations, agreement version, stored signatures or player progress change. Rollback: revert frontend copy/docs.
+
+Validation: required Node and exact-head regression gate must pass before merge. Focused desktop/phone fixture walkthroughs check the restructure warning, amounts, perks text, confirmation/cancel and unchanged progress/no restructure RPC; live artifact and screenshots are recorded in the release PR/report. Browser Supabase data is intercepted fixtures; no real restructure is executed.
+
+---
+
 # Build 185 — meeting on the map (2026-10-23)
 
 Adds the existing Meeting Room to Office directory using the established paper/agenda icon and card style. Selecting it uses the existing walking route and opens the existing Meeting room actions panel on arrival. The directory now has twelve destinations. No room geometry, game actions, economy, timers, account data or backend changes. The initial CI run stalled at spawn in the existing secret-entry test after reload. Its held-key gesture now focuses the page and sends keyboard repeats, preserving the same movement deadline and server-claim/replay assertions; secret-level game code is unchanged.
