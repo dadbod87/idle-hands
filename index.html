@@ -7965,7 +7965,7 @@ function EquityShop({ me, cat, onBuy }) {
             <button key={k.id} className={"pg-row" + (i % 2 ? " alt" : "") + (maxed || !afford ? " poor" : "")}
                     disabled={maxed || !afford} onClick={() => onBuy(k.id)}>
               <OfficeIcon kind={k.name+" senior badge"} compact/><span className="pg-ct">{n}/{k.max}</span>
-              <span className="pg-main"><b>{k.name}</b><span>{k.note}</span></span>
+              <span className="pg-main"><b>{k.name}</b><span>{k.note?.replace(", permanently, each.", " per level until the weekly reset.")}</span></span>
               <span className="pg-right"><b>{maxed ? "maxed" : k.cost + " eq"}</b></span>
             </button>
           );

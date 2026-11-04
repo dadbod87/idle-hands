@@ -1,6 +1,6 @@
 # Build 186 — read the fine print (2026-11-04)
 
-Corrects contradictory Seniority wording. Department Restructure no longer calls Seniority permanent or promises a bonus forever: it distinguishes keeping existing Seniority/lifetime BW/weekly score during a restructure from clearing Seniority and purchased perks at Friday 4 PM Pacific weekly reset. The reset warning appears before the action, in its confirmation, in the perks explanation, in the HUD tooltip and in onboarding paperwork. Agent guidance now makes the same distinction.
+Corrects contradictory Seniority wording. Department Restructure no longer calls Seniority permanent or promises a bonus forever: it distinguishes keeping existing Seniority/lifetime BW/weekly score during a restructure from clearing Seniority and purchased perks at Friday 4 PM Pacific weekly reset. The reset warning appears before the action, in its confirmation, in the perks explanation, in the HUD tooltip and in onboarding paperwork. The stale Compounding Interest catalog note is corrected for display without changing the stored catalog or its numbers. Agent guidance now makes the same distinction.
 
 The current production season_wipe clears equity/perks and the season configuration enables weekly wipes; restructure preserves existing equity/perks and adds the earned amount. These rules were verified read-only. This release changes copy and documentation only: no formulas, reset timing, migrations, agreement version, stored signatures or player progress change. Rollback: revert frontend copy/docs.
 
