@@ -22,7 +22,7 @@ Read **this file first**, followed by `docs/CURRENT_STATE.md`, `docs/CHANGELOG.m
 
 ## Strict game invariants
 - Busywork/earnings, purchases, account/auth, Seniority/restructure and achievements are server-authoritative (Supabase); front-end display must reflect backend, not invent awards.
-- Purchases: item price = ceil(base cost * growth^(owned units) * Resale discount [0.9 for resale]); default growth comes from catalog (currently 1.35; verify live). Ownership resets on restructuring, permanent Seniority does not.
+- Purchases: item price = ceil(base cost * growth^(owned units) * Resale discount [0.9 for resale]); default growth comes from catalog (currently 1.35; verify live). Ownership resets on restructuring; existing Seniority and purchased perks survive restructuring but are cleared by the weekly reset every Friday at 4 PM Pacific.
 - Current server idle accrual integrates time-dependent bonuses; check events, buffs, Jess 20% window, chair frenzy 77 seconds, work-hour modifier and offline cap before modifying.
 - Avoid duplicate or competing popups: `While you were out` shows offline BW, `Incident report` covers targeted player actions, `Recap` covers weekly summary. `Office Incident Log` is a separate optional simulated history.
 - Eight rotating office guests shuffle without replacement: Jess, John, Kyle, Matt, Avah, Nick, Rilie, Joey; Chance and Dave are independent. Keep at most 3 NPC avatars, including paired Nick/Matt gag.

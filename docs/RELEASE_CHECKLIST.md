@@ -7,6 +7,7 @@
 - [ ] Confirm no production-player reset or destructive test.
 
 ## Automated gate
+- [ ] Keep the browser job on Ubuntu 24.04 while Playwright is pinned at 1.56.1; Ubuntu 26.04 is unsupported by this version.
 - [ ] Run `npm install --no-save --no-package-lock @babel/parser@7` then `node tests/economy-and-office.test.cjs`.
 - [ ] PR created to main; GitHub `Idle Hands regression gate` jobs **economy-and-office**, **browser-smoke**, **isolated-postgres** all completed **success**, not just started.
 - [ ] Test any altered economy formula both client and server; SQL hypothetical samples must be read-only on prod.
