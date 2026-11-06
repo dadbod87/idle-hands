@@ -1,3 +1,21 @@
+# Build 190 — room for improvement (2026-11-06)
+
+Corrects raises to +2% until Friday at 4 PM Pacific in Dave’s Office and the HUD. The actual raise action/reset rules are unchanged. Office Fund now uses the server’s weekly total and authoritative milestone thresholds, matching the real weekly +3%-per-tier bonus rather than the old lifetime/static display. Its weekly reset is explicit; an exhausted ladder says all milestones are unlocked rather than pointing at a completed goal.
+
+Preserves all eight real server fund thresholds and appends twelve milestones through 250 duodecillion BW. At the read-only audit total (~13.15 undecillion weekly BW), the new ladder has 13 of 20 unlocked and the next goal is 25 undecillion. The complete list is collapsible so the machine stays easy to reach on phones. No prior bonus is removed, no earned totals are rewritten, and no reset/backfill is executed. Existing live multiplier/accrual and Margarita target/streak rules remain unchanged; additional tiers use the existing +3% formula and accrual behavior.
+
+All compact number displays extend beyond octillions through vigintillions, then use scientific notation. Boundary formatting no longer loses a scale through repeated floating-point division. Customization totals, fees, available balance, shortfall and confirmation buttons share those abbreviations; expanded amounts and a label key are optional. Twelve natural presets (woods, warm neutrals, greens and muted blue/rose) join the twelve playful presets.
+
+Paid color/design changes now each cost eight hours of current output (28,800 seconds), or sixteen hours for both, with the existing 1,000 BW floor per paid component. Preview/equip/unchanged choices/design removal stay free. Only the quote coefficient changes; atomic payment, ownership, idempotency and reset persistence remain intact. Unconfirmed old-price quotes expire during migration; payment validation also rejects an old-price quote that finishes late after the change. Accepted receipts and saved items are preserved.
+
+Vending Machine now reads authenticated server status, anchors its mm:ss countdown to server time, disables Pull while pending/on cooldown, and refreshes after attempts/reopen/visibility changes. Errors remain beside the machine; status failure blocks pulling until retry. A saved prize survives a balance-refresh failure. The server’s ten-minute cooldown, price and prize table are unchanged.
+
+Validation uses actual migration/action/reset bodies in disposable PostgreSQL, synthetic browser requests, formatter/timer boundary tests, desktop/phone/short walkthroughs, huge quote and natural-tone checks, and the complete exact-head regression gate. No real player pull, purchase, currency grant or reset is used for QA. Apply guarded migration 20261106221939 before frontend deployment; verify unchanged core functions, original tier prefix, quote invalidation and grants. Production SHA/artifact/screenshots are recorded in the release report/PR.
+
+Rollback must retain saved styles/accepted receipts and already earned higher tiers. Prefer a forward fix; do not remove unlocked bonuses or restore expired higher-price quotes. A frontend revert retains compatible additive server metadata and the lower quote price.
+
+---
+
 # Build 189 — interior affairs (2026-11-06)
 
 Adds Catalogue → Customize owned items. Owned desks, chairs, rugs, frames, TV casings, carried accessories, wardrobe tops (including Standard Issue) and owned pins support twelve presets, a custom color picker, and solid/stripe/check/dot/static sparkle/confetti finishes. The full-item preview uses the same material renderers as the world. Desks repaint tops and drawer cabinets. Screens, photos, artwork contents, hardware, actor geometry and existing chair/rug placement stay intact. A read-only gallery renders every physical tier and the editor.

@@ -7,7 +7,7 @@ async function installStyleFixture(page,options={}){
  const fixture=await installGameFixture(page,{items:[{id:'intern',name:'Office Intern',cost:100,rate:50,desc:'Isolated style preview staff'}],fittings,ownedPins:['beta'],handleRpc:async(rpc,a,p)=>{
   if(rpc==='quote_style'){
    if(options.failQuote)return {status:400,body:{message:'Quote temporarily unavailable'}};
-   const old=p.cosmetic_styles[a.p_item]||{color:null,design:'solid'},color_fee=old.color!==a.p_color?8640000:0,design_fee=old.design!==a.p_design&&a.p_design!=='solid'?8640000:0;
+   const old=p.cosmetic_styles[a.p_item]||{color:null,design:'solid'},color_fee=old.color!==a.p_color?2880000:0,design_fee=old.design!==a.p_design&&a.p_design!=='solid'?2880000:0;
    quote={id:'00000000-0000-4000-8000-'+String(++serial).padStart(12,'0'),item:a.p_item,color:a.p_color,design:a.p_design,color_fee,design_fee,total:color_fee+design_fee,balance:p.pp,rate:100,expires_at:new Date(Date.now()+(options.ttl||120000)).toISOString()};return {body:quote};
   }
   if(rpc==='apply_style'){

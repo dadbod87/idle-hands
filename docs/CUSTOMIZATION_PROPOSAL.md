@@ -1,6 +1,6 @@
 # Interior Affairs — implementation contract, November 6
 
-Build 189 implements the approved concept. Earlier offline HTML demos remain design artifacts and are not connected to game accounts.
+Build 189 implemented the approved concept; build 190 adds natural palettes, compact prices and the approved eight-hour fees. Earlier offline HTML demos remain design artifacts and are not connected to game accounts.
 
 ## Scope and ownership
 
@@ -12,7 +12,9 @@ Highest-tier `kit`/`vanity` remain authoritative sequential unlocks. `cosmetic_e
 
 ## Prices and confirmation
 
-Each changed color costs `max(1000,ceil(calc_rate(player)*live_mult(player)*86400))` BW. Adding/changing a non-solid design costs that same unit independently. Changing both costs two units. Removing a design is free, unchanged components cost zero, and restoring an older color/design is a new change. Previews/cancellation/equipping have no charge. The live multiplier intentionally matches existing catalogue pricing, including boosts, penalties and time-of-day rules. These are output coefficients, not waiting timers or guaranteed offline earning times.
+Each changed color costs eight hours of output: `max(1000,ceil(calc_rate(player)*live_mult(player)*28800))` BW. Adding/changing a non-solid design costs that same eight-hour unit independently. Changing both costs sixteen hours (two units). Removing a design is free, unchanged components cost zero, and restoring an older color/design is a new change. Previews/cancellation/equipping have no charge. The live multiplier intentionally matches existing catalogue pricing, including boosts, penalties and time-of-day rules. These are output coefficients, not waiting timers or guaranteed offline earning times.
+
+Build 190 expires only unconfirmed quotes at the former one-day price; payment validation also rejects old-price quotes completing after migration. Already accepted receipts and saved styles remain intact. The palette has twelve playful and twelve natural presets plus the custom picker. Large totals/shortfalls are abbreviated, with optional expanded amounts.
 
 The player requests a server quote only after choosing Review price. It displays exact color fee, design fee, total, and any shortfall. Quote expires after two minutes and is tied to player, desired style, appearance revision, week and rate. Applying locks the player's current accrued row, validates quote/ownership/version/week/rate/balance again, and atomically deducts BW, increases spent, stores the style and marks the quote accepted. Retrying that accepted quote returns the current player without another payment. Quotes are bounded to one per player; a newer quote replaces an older one. No raw color, price or arbitrary player ID is accepted by the apply RPC.
 

@@ -73,3 +73,10 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Check exact review amounts, free preview/cancel/equip, expiry/shortfall/decline/retry, save/reload and full desk material at desktop/phone/short sizes.
 - [ ] Review all physical tier/material gallery images, preserve TV screens and prop/camera regressions.
 - [ ] Verify additive migration, RLS/grants and unchanged economy/reset function hashes before frontend publication. Never spend/grant real player BW for QA.
+
+## Weekly progression and vending
+- [ ] Execute actual vending/status/quote functions in disposable PostgreSQL: ten-minute boundary, no-charge cooldown/insufficient rejection, read-only status, eight-hour split fee and invalidation of old unconfirmed quotes.
+- [ ] Verify the original eight fund thresholds are unchanged, twenty boundary counts and weekly reset behavior, and office_state exposes matching thresholds.
+- [ ] Check no permanent raise/fund copy; desktop/phone/short cooldown, reopen/reload, clock skew, errors, double clicks, saved prize refresh failure and all-unlocked state.
+- [ ] Check huge money values across scales, short quote/available/shortfall/confirm, optional expanded amounts and both natural/playful palettes.
+- [ ] Record full exact-head CI, migration/core-function checks, Vercel commit/served artifact and disclosed live fixture screenshots.

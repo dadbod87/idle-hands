@@ -105,3 +105,5 @@ console.log('PASS: prop camera frames measured bubble, tall prop and actor; shor
 
 // Presentation contract runs in the existing regression job; no workflow change needed.
 require('./active-effects.test.cjs');
+
+require('./large-numbers.test.cjs');
