@@ -1,3 +1,9 @@
+# Build 191 — until friday (2026-11-06)
+
+Completes build 190’s weekly-raise wording: the success feedback now says “+2% until Friday, 4 PM Pacific” instead of “+2% forever”. The action, rate calculation, cooldown, reset and player data are unchanged. The existing synthetic raise walkthrough checks the wording both before a request and after a fixture approval. Required Node checks and the complete exact-head release gate must pass before merge; production artifact/commit and screenshot evidence are recorded in the release report and PR. No real account request or currency change is used for QA.
+
+---
+
 # Build 190 — room for improvement (2026-11-06)
 
 Corrects raises to +2% until Friday at 4 PM Pacific in Dave’s Office and the HUD. The actual raise action/reset rules are unchanged. Office Fund now uses the server’s weekly total and authoritative milestone thresholds, matching the real weekly +3%-per-tier bonus rather than the old lifetime/static display. Its weekly reset is explicit; an exhausted ladder says all milestones are unlocked rather than pointing at a completed goal.

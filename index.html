@@ -3563,7 +3563,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 190 · room for improvement";
+const BUILD = "build 191 · until friday";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -5067,7 +5067,7 @@ function OfficeFloor() {
             <Owner me={me} board={board} lifetime={lifetime} pp={pp} cool={cool} cat={cat}
                    prices={prices}
                    onMeeting={() => guard(() => api.takeMeeting(), "File cleared")}
-                   onRaise={async () => { const r = await guard(() => api.askRaise(), "+2% forever");
+                   onRaise={async () => { const r = await guard(() => api.askRaise(), "+2% until Friday, 4 PM Pacific");
                                           if (r) sfx("raise"); }}
                    onBlame={commit} />
           )}
