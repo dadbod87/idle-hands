@@ -1,3 +1,13 @@
+# Build 187 — cold storage (2026-11-06)
+
+Office directory removes Your desk and Suggestion Box, and adds The Fridge using the existing drink icon, walking route and drink panel. Eleven destinations remain, including Meeting Room. The work shortcut and owned desk remain available outside the directory; the suggestion-box floor fixture is preserved. No costs, drinks, timers, room geometry or player progress change.
+
+Existing browser fixtures now open the owned desk through the work shortcut/floor desk instead of its removed directory entry. The directory walkthrough checks missing entries, keyboard/touch Fridge routing and arrival, Meeting Room, desk access and unchanged progress at desktop/phone sizes. Required Node and exact-head full regression checks must pass before merge; production SHA/screenshots are recorded in the release PR/report. Browser game data is intercepted fixtures.
+
+Read-only catalogue audit and a concrete paid-recolor design proposal are recorded in CATALOGUE_AUDIT_2026-11-06.md. The largest coefficient is 10.85 days, with other long items at 6.67 and 6 days. Dynamic quote rates, prior permanent ownership, minimum prices and offline caps prevent treating the duration label as a guaranteed waiting time. The audit flags normal-play affordability and proposes balance changes; this release does not alter live catalogue prices or add paid recoloring. Rollback: revert this frontend release.
+
+---
+
 # Build 186 — read the fine print (2026-11-04)
 
 Corrects contradictory Seniority wording. Department Restructure no longer calls Seniority permanent or promises a bonus forever: it distinguishes keeping existing Seniority/lifetime BW/weekly score during a restructure from clearing Seniority and purchased perks at Friday 4 PM Pacific weekly reset. The reset warning appears before the action, in its confirmation, in the perks explanation, in the HUD tooltip and in onboarding paperwork. The stale Compounding Interest catalog note is corrected for display without changing the stored catalog or its numbers. Agent guidance now makes the same distinction.

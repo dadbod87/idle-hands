@@ -1,5 +1,5 @@
 const {test,expect,devices}=require('@playwright/test');
-const {installGameFixture}=require('./game-fixture.cjs');
+const {installGameFixture,openOwnDesk}=require('./game-fixture.cjs');
 const base=process.env.NAV_BASE_URL||'http://127.0.0.1:8765/';
 for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and directory keep real walking and emotes',async({browser})=>{
  test.setTimeout(90000);
@@ -13,8 +13,16 @@ for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and dir
  }
  await page.screenshot({path:'test-results/'+mode+'-polish-controls.png',fullPage:true});
  await page.getByRole('button',{name:'Office directory',exact:true}).click();const directory=page.getByTestId('office-directory');
- await expect(directory.getByRole('button',{name:/^Walk to /})).toHaveCount(12);
- await page.screenshot({path:'test-results/'+mode+'-office-directory.png',fullPage:true});
+ await expect(directory.getByRole('button',{name:/^Walk to /})).toHaveCount(11);
+ await expect(directory.getByRole('button',{name:'Walk to Your desk',exact:true})).toHaveCount(0);
+ await expect(directory.getByRole('button',{name:'Walk to Suggestion Box',exact:true})).toHaveCount(0);
+ const fridge=directory.getByRole('button',{name:'Walk to The Fridge',exact:true});
+ await fridge.scrollIntoViewIfNeeded();await page.screenshot({path:'test-results/'+mode+'-office-directory.png',fullPage:true});
+ if(mode==='mobile')await fridge.tap();else{await fridge.focus();await page.keyboard.press('Enter');}
+ await expect(page.locator('.pg-body.me')).toHaveClass(/walking/);
+ await expect(page.locator('.pg-panelhead')).toContainText('The fridge',{timeout:25000});
+ await expect(directory).toHaveCount(0);await page.screenshot({path:'test-results/'+mode+'-fridge-arrival.png',fullPage:true});
+ await page.locator('.pg-panel .pg-x').click();await page.getByRole('button',{name:'Office directory',exact:true}).click();
  await directory.getByRole('button',{name:'Walk to HR Cabinet',exact:true}).click();
  await expect(page.locator('.pg-body.me')).toHaveClass(/walking/);
  await expect(page.locator('.pg-panelhead')).toContainText('Personnel file',{timeout:20000});
@@ -27,15 +35,15 @@ for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and dir
  await expect(page.locator('.pg-panelhead')).toContainText('Meeting room',{timeout:25000});
  await expect(page.getByTestId('office-directory')).toHaveCount(0);
  await page.screenshot({path:'test-results/'+mode+'-meeting-room-arrival.png',fullPage:true});
- await page.locator('.pg-panel .pg-x').click();await page.getByRole('button',{name:'Office directory',exact:true}).click();
- await directory.getByRole('button',{name:'Walk to Your desk',exact:true}).click();
+ await page.locator('.pg-panel .pg-x').click();
+ await openOwnDesk(page);
  await expect(page.locator('.pg-panelhead')).toContainText('Your desk',{timeout:20000});
  await expect(page.getByRole('button',{name:/Do actual work/})).toBeVisible();
  await page.locator('.pg-panel .pg-x').click();await page.locator('.pg-hudbtns').getByRole('button',{name:'Sound & feel',exact:true}).click();
  await page.getByRole('button',{name:'Enable sound',exact:true}).click();await expect(page.getByRole('button',{name:'Mute all sound',exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Mute all sound',exact:true}).click();await page.locator('.pg-panel .pg-x').click();
  expect(fixture.player.pp).toBe(500000);expect(fixture.player.equity).toBe(2);expect(fixture.player.owned.intern).toBe(2);
- expect(fixture.calls.some(x=>['buy_item','buy_fitting','set_look','restructure','do_deed'].includes(x.rpc))).toBe(false);
+ expect(fixture.calls.some(x=>['buy_item','buy_fitting','set_look','restructure','do_deed','take_break'].includes(x.rpc))).toBe(false);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
  await page.goto(new URL('?art-preview=1',base).href);await expect(page.getByTestId('polish-controls-qa').getByTestId('office-directory')).toBeVisible();
  await context.close();
