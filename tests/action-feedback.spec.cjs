@@ -21,7 +21,7 @@ for(const mode of ['desktop','mobile'])test(mode+': sound settings persist and o
  await page.reload();await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});await expect(page.locator('.pg-hudbtns').getByRole('button',{name:'Sound & feel',exact:true})).toBeVisible();
  await page.locator('.pg-hudbtns').getByRole('button',{name:'Sound & feel',exact:true}).click();await expect(page.getByRole('slider',{name:'Effects volume'})).toHaveValue('22');
  await page.screenshot({path:'test-results/'+mode+'-sound-settings.png',fullPage:true});
- await page.goto('http://127.0.0.1:8765/?art-preview=1');const gallery=page.getByTestId('reaction-qa');await expect(gallery.locator('[data-reaction]')).toHaveCount(6);
+ await page.goto(new URL('?art-preview=1',base).href);const gallery=page.getByTestId('reaction-qa');await expect(gallery.locator('[data-reaction]')).toHaveCount(6);
  expect(await gallery.locator('[data-reaction]').evaluateAll(els=>els.every(el=>getComputedStyle(el).animationName==='none'))).toBe(true);
  await gallery.screenshot({path:'test-results/'+mode+'-action-reactions.png'});await context.close();
 });
