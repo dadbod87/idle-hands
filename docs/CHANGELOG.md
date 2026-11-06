@@ -8,6 +8,8 @@ New player JSON fields separate equipped physical items/styles from highest-tier
 
 Migration 20261106213809 is additive and must be applied/read-only verified before frontend publication. The quote table is RLS-enabled with no client grants; helpers are internal and three authenticated RPCs enforce ownership. Installation performs no player backfill, currency grant or reset. SQL coverage runs actual RPC/migration/reset bodies in disposable PostgreSQL, with synthetic rate/accrual dependencies; browser gameplay is intercepted fixtures, not real-account purchases. Required Node suites, full exact-head CI, local concurrency test, phone/desktop/short walkthroughs and art QA gate the release. Exact production commit, migration verification and screenshots are recorded in the release report/PR.
 
+CI caught a pre-existing desk-helper assumption during Doug’s scheduled 60-second phone pause. The helper now waits through that real pause, with a focused clock-controlled regression; all walking, appearance and unchanged-progress assertions remain. Game phone behavior is unchanged.
+
 Rollback: revert frontend first; keep additive style columns/records and migration to preserve paid purchases. Do not drop styles or replay test SQL on Production. Full pricing/ownership details: CUSTOMIZATION_PROPOSAL.md (now implementation contract).
 
 ---

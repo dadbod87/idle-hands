@@ -77,11 +77,19 @@ async function installGameFixture(page,options={}) {
 }
 // Use the persistent work shortcut and actual owned desk instead of a directory entry.
 async function openOwnDesk(page){
- const {expect}=require('@playwright/test');
- const go=page.getByRole('button',{name:/Go to your desk/});
- if(await go.isVisible())await go.click();
- await expect(page.getByRole('button',{name:/Do actual work/})).toBeVisible({timeout:25000});
+ const {expect,test}=require('@playwright/test');
+ const work=page.locator('.pg-bar>.pg-work'),info=test.info();
+ // Doug's real 60-second pause may start before navigation or during the walk.
+ // The stable away class distinguishes navigation from earning a work point.
+ info.setTimeout(info.timeout+65000);
+ await expect(work).toBeEnabled({timeout:65000});
+ const go=page.locator('.pg-bar>.pg-work.away');
+ if(await go.isVisible())await go.click({timeout:65000});
+ await expect(work).not.toHaveClass(/\baway\b/,{timeout:25000});
+ await expect(work).toBeEnabled({timeout:65000});
+ await expect(page.getByRole('button',{name:/Do actual work/})).toBeVisible();
  await page.locator('.pg-officedesk.mine').click();
  await expect(page.locator('.pg-panelhead')).toContainText('Your desk',{timeout:25000});
 }
+
 module.exports={installGameFixture,makeOfficePlayFixture,openOwnDesk};
