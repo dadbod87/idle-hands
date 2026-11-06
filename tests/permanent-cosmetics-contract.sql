@@ -44,3 +44,5 @@ END $tests$;
 
 -- Premium TV shares the permanent kit contract; stays isolated from Production.
 \i tests/premium-tv-contract.sql
+
+\i tests/customization-contract.sql

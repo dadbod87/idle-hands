@@ -1,3 +1,17 @@
+# Build 189 — interior affairs (2026-11-06)
+
+Adds Catalogue → Customize owned items. Owned desks, chairs, rugs, frames, TV casings, carried accessories, wardrobe tops (including Standard Issue) and owned pins support twelve presets, a custom color picker, and solid/stripe/check/dot/static sparkle/confetti finishes. The full-item preview uses the same material renderers as the world. Desks repaint tops and drawer cabinets. Screens, photos, artwork contents, hardware, actor geometry and existing chair/rug placement stay intact. A read-only gallery renders every physical tier and the editor.
+
+Color changes cost one day of current server output; adding or changing a non-solid design costs a separate day. Both together cost two days. Each paid component has a 1,000 BW floor, matching the catalogue's minimum-price convention. Removing a design is free. Exact line items and total appear before confirmation; previews, cancellation and keeping a choice are free. Reapplying an older choice is charged as a new change. Rate is calc_rate × live_mult, including current boosts/penalties/work hours, as for existing catalogue quotes. Two-minute quotes reject changed rates, revisions or weeks. Accepted-request retries are idempotent and payments/styles commit atomically.
+
+New player JSON fields separate equipped physical items/styles from highest-tier unlocks. Earlier owned tiers may be equipped free; original purchase progression and prices are unchanged. A material-only trigger restores automatic display of a newly bought higher tier, including old clients. All styles/selections survive restructuring and weekly resets. Nonphysical effects, living companions/mounts and prank costumes are not repainted.
+
+Migration 20261106213809 is additive and must be applied/read-only verified before frontend publication. The quote table is RLS-enabled with no client grants; helpers are internal and three authenticated RPCs enforce ownership. Installation performs no player backfill, currency grant or reset. SQL coverage runs actual RPC/migration/reset bodies in disposable PostgreSQL, with synthetic rate/accrual dependencies; browser gameplay is intercepted fixtures, not real-account purchases. Required Node suites, full exact-head CI, local concurrency test, phone/desktop/short walkthroughs and art QA gate the release. Exact production commit, migration verification and screenshots are recorded in the release report/PR.
+
+Rollback: revert frontend first; keep additive style columns/records and migration to preserve paid purchases. Do not drop styles or replay test SQL on Production. Full pricing/ownership details: CUSTOMIZATION_PROPOSAL.md (now implementation contract).
+
+---
+
 # Build 188 — room to sit (2026-11-06)
 
 Chairs now stand fully behind the desk rather than being swallowed by its monitors. Owned rugs fill more of the office floor, leaving a visible border at the front and sides of the desk. Desk positions, clickable bounds, walking routes, office walls, TV slot/screens, inventory, prices and server state remain unchanged. The chair depth follows its new visual position; actors still share world depth sorting.

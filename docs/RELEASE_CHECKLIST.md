@@ -66,3 +66,10 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Run six card browser fixtures at desktop, phone and short sizes; inspect the cost, shortfall and persistent feedback beside the button.
 - [ ] Execute the actual sign_card body and guarded projection in isolated PostgreSQL; verify quote/charge, Pacific week, minimum, insufficient/duplicate no-charge, final payout/cake, unchanged installation data/grants.
 - [ ] Apply and independently verify the read-only card_state projection before frontend deployment; confirm sign_card hash remains unchanged. Never sign or spend real player Busywork for QA.
+
+## Owned-item styles
+- [ ] Run actual customization SQL contract through the permanent cosmetics suite in disposable PostgreSQL; test auth/ownership/atomic split charges/minimum/replay/stale quotes and both real reset bodies.
+- [ ] Run concurrent duplicate application in two isolated sessions; verify one payment.
+- [ ] Check exact review amounts, free preview/cancel/equip, expiry/shortfall/decline/retry, save/reload and full desk material at desktop/phone/short sizes.
+- [ ] Review all physical tier/material gallery images, preserve TV screens and prop/camera regressions.
+- [ ] Verify additive migration, RLS/grants and unchanged economy/reset function hashes before frontend publication. Never spend/grant real player BW for QA.

@@ -41,6 +41,7 @@ async function installGameFixture(page,options={}) {
   else if(url.pathname.includes('/rpc/')){
    const rpc=url.pathname.split('/').pop(),args=req.postDataJSON()||{};
    calls.push({rpc,args});
+   if(options.handleRpc){const handled=await options.handleRpc(rpc,args,player);if(handled!==undefined){await route.fulfill({status:handled.status||200,contentType:'application/json',body:JSON.stringify(handled.body)});return;}}
    if(options.failRpcs?.includes(rpc)){await route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({message:'Fixture request declined',code:'P0001'})});return;}
    if(rpc==='cow_try')result=options.onCowTry?options.onCowTry(player):null;
    else if(rpc==='upsert_player'){player.name=args.p_name;if(args.p_avatar)player.avatar_url=args.p_avatar;result=player;}

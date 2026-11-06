@@ -95,3 +95,7 @@ Carry scenery identity through inspection, walking and performance so each plant
 ## Build 180 custom faces without frames
 
 Custom-photo heads render their own silhouette: no added border, padding, shadow or corner clipping. Preserve PNG alpha and shared avatar dimensions. Keep the picker tile’s selected/focus outline as a control affordance. This owner request supersedes the earlier ink-framed-photo direction.
+
+## Build 189 physical material finishes
+
+Use the shared material paint helper for physical furniture, held items, wardrobe tops and pins. Every instance needs a unique SVG pattern ID, static sparkle/confetti and readable original ink. Desk top and drawer cabinets share the chosen finish; photos, TV programs, picture contents and electronics keep their original detail. Costume layers override purchased wardrobe color as before. The read-only style gallery covers every physical tier and editor; no payment RPC may run in art QA. Preserve chair/rug placement and actor/camera geometry.

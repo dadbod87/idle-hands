@@ -1,21 +1,27 @@
-# Interior Affairs — revised concept, November 6
+# Interior Affairs — implementation contract, November 6
 
-Status: reviewable offline concept, not an implemented purchase system. Build 188 only changes live chair/rug placement. No paid finish, new ownership record or pricing change is deployed.
+Build 189 implements the approved concept. Earlier offline HTML demos remain design artifacts and are not connected to game accounts.
 
-## Scope and appearance
+## Scope and ownership
 
-Every owned physical item should support its own saved style: all desk/chair/rug tiers, wall-art frames, TV casings, held accessories, and purchased clothing. This is not limited to the currently equipped item or the three original preview examples. Unlocking an item and equipping it must be tracked separately, so earlier purchases can be selected. Nonphysical auras/glow/size effects, living companions, player photos, picture contents and TV program images are not repainted. Physical materials remain outlined and readable.
+All physical catalogue tiers: desk/chair/rug, wall-art frame, TV casing, held accessory; all purchased wardrobe tops plus Standard Issue; owned pins. Nonphysical glow/size/atmosphere effects, living companions/mounts and temporary prank costumes retain their original systems. Photos, TV programs and picture contents are not repainted. Standard desk/chair are eligible because every employee already sees them; other items require ownership.
 
-Offer a custom color picker plus pinks, purples, lavender, neon lime/cyan/orange, gold and quiet neutrals. Solid, stripes, checker, polka dots, confetti and static sparkle provide playful designs without motion/flashing. Preview pattern scale on each material; keep meaningful artwork, screens and hardware intact. Desk finish covers the top and drawer cabinets together, with material shading. All tiers, garment layers, carried items and other players must use the same renderer as catalogue previews. A full-item inspection pane complements the office composition so nothing is hidden while choosing.
+Highest-tier `kit`/`vanity` remain authoritative sequential unlocks. `cosmetic_equipped` stores an earlier selected physical tier without lowering those unlocks. Sequential history means earlier tiers are owned. `wardrobe_owned` and `extras` remain the clothing/pin ownership sources. Equipping is free; buying the next tier still uses the original purchase RPC/formula. The before-update trigger clears only the affected selection when a highest-tier fitting changes. No existing player rows are backfilled.
 
-The offline sample covers seven representative item types. The furniture SVGs come from the game; other drawings illustrate scope rather than claiming complete production-tier art coverage. No persistence beyond the open demo page is claimed.
+`cosmetic_styles` stores a separate `{color,design}` per item ID; pin keys use `pin:`. Color is null (original) or an exact six-digit hex; design is one of solid, stripe, check, dots, sparkle, confetti. Original outlines/material details remain. Each renderer uses unique SVG pattern IDs. Wardrobe sleeves use corresponding static CSS patterns. Styles and selected items persist through both reset functions because those columns are not reset.
 
-## Proposed price
+## Prices and confirmation
 
-One day of current authoritative output per applied color/design change: 86,400 seconds times the server's quoted output. At 100 BW/sec the example is 8,640,000 BW. This is a price coefficient, not a 24-hour cooldown or guaranteed waiting period. Offline caps and competing spending still matter. Previewing/cancelling is free, and an identical saved style cannot be charged again. Color and design changed together are one application, not two charges. Saved finishes should survive restructuring and weekly resets, since the underlying cosmetics survive.
+Each changed color costs `max(1000,ceil(calc_rate(player)*live_mult(player)*86400))` BW. Adding/changing a non-solid design costs that same unit independently. Changing both costs two units. Removing a design is free, unchanged components cost zero, and restoring an older color/design is a new change. Previews/cancellation/equipping have no charge. The live multiplier intentionally matches existing catalogue pricing, including boosts, penalties and time-of-day rules. These are output coefficients, not waiting timers or guaranteed offline earning times.
 
-Before implementation, specify the exact server rate basis (temporary boosts/work-hour treatment), minimum fee at zero/low output, quote lifetime, and whether restoring an old finish is charged. Do not silently use a zero-cost quote or the previous ten-minute example. No live affordability rebalance is approved by this proposal.
+The player requests a server quote only after choosing Review price. It displays exact color fee, design fee, total, and any shortfall. Quote expires after two minutes and is tied to player, desired style, appearance revision, week and rate. Applying locks the player's current accrued row, validates quote/ownership/version/week/rate/balance again, and atomically deducts BW, increases spent, stores the style and marks the quote accepted. Retrying that accepted quote returns the current player without another payment. Quotes are bounded to one per player; a newer quote replaces an older one. No raw color, price or arbitrary player ID is accepted by the apply RPC.
 
-## Implementation gate
+## Access and validation
 
-Add validated per-item style records and separate equipped/owned selection; migrate existing highest-tier ownership safely. Validate exact ownership and a bounded color/finish vocabulary server-side. Server must quote and atomically deduct, reject stale/duplicate requests, and apply no productivity benefit. Keep renderers and all resets consistent. Run actual RPC bodies in isolated PostgreSQL and intercepted browser fixtures before any deployment; no real player purchases for QA. The broader feature needs a separate implementation/release, not just front-end demo buttons.
+Private quote table: RLS enabled, no PUBLIC/anon/authenticated grants or policies. Three authenticated, auth.uid-checked SECURITY DEFINER entry points with empty search_path; ownership/material trigger helpers are not client-executable. Existing players RLS provides read-only access to public appearance data, with no write policies. Server data remains authoritative. Response failures refresh saved state before another reviewed attempt; errors remain beside the controls.
+
+Tests execute actual style functions and existing reset/progression bodies in isolated PostgreSQL; browser HTTP uses synthetic fixtures. A local two-session test proves one charge for concurrent duplicate application. Every supported physical tier is rendered in read-only art QA at phone/desktop, with current-game purchase/preview/reload/equip/expiry/funds/error checks at desktop, phone and short sizes. No real player purchases/grants are used for testing.
+
+## Deployment and rollback
+
+Apply the additive migration after checks, verify schema/grants/function hashes without player writes, then publish the tested frontend. A frontend rollback leaves persisted paid styles/columns intact. Removing the storage or reverting paid records is not part of rollback.
