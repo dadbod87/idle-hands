@@ -12,6 +12,8 @@ Vending Machine now reads authenticated server status, anchors its mm:ss countdo
 
 Validation uses actual migration/action/reset bodies in disposable PostgreSQL, synthetic browser requests, formatter/timer boundary tests, desktop/phone/short walkthroughs, huge quote and natural-tone checks, and the complete exact-head regression gate. No real player pull, purchase, currency grant or reset is used for QA. Apply guarded migration 20261106221939 before frontend deployment; verify unchanged core functions, original tier prefix, quote invalidation and grants. Production SHA/artifact/screenshots are recorded in the release report/PR.
 
+CI found a legacy mobile pin test depending on held-key focus after reload. Its navigation now uses the real Office Directory/HR walking route; all equip, persistence, containment and unchanged-progress assertions remain. Game movement and pin behavior are unchanged.
+
 Rollback must retain saved styles/accepted receipts and already earned higher tiers. Prefer a forward fix; do not remove unlocked bonuses or restore expired higher-price quotes. A frontend revert retains compatible additive server metadata and the lower quote price.
 
 ---
