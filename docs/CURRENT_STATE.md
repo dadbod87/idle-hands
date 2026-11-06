@@ -1,6 +1,6 @@
 # Build 191 — until friday (2026-11-06)
 
-Completes build 190’s weekly-raise wording: the success feedback now says “+2% until Friday, 4 PM Pacific” instead of “+2% forever”. The action, rate calculation, cooldown, reset and player data are unchanged. The existing synthetic raise walkthrough checks the wording both before a request and after a fixture approval. Required Node checks and the complete exact-head release gate must pass before merge; production artifact/commit and screenshot evidence are recorded in the release report and PR. No real account request or currency change is used for QA.
+Completes build 190’s weekly-raise wording: the success feedback now says “+2% until Friday, 4 PM Pacific” instead of “+2% forever”. The action, rate calculation, cooldown, reset and player data are unchanged. The existing synthetic raise walkthrough checks the wording both before a request and after a fixture approval. Required Node checks and the complete exact-head release gate must pass before merge; production artifact/commit and screenshot evidence are recorded in the release report and PR. No real account request or currency change is used for QA. CI exposed a fixture teardown race from reading browser time inside a pending RPC callback. Its synthetic server now owns an independent clock; the skew/expiry test advances both clocks explicitly and preserves every timing/no-spend assertion.
 
 ---
 
