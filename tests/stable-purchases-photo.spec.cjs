@@ -9,7 +9,10 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
   const f=await installGameFixture(page,{items:[{id:'intern',name:'Office Intern',cost:100,rate:1,note:'A deliberately long explanation that wraps to multiple lines without moving neighboring purchase targets.'},{id:'poster',name:'Motivational Poster',cost:100,rate:1,note:'Do not accidentally buy this.'}],upgrades:[{id:'up1',name:'An extremely official productivity improvement',cost:100,mult:2,t:'all',req:['intern',0],note:'Keep this row still after approval.'},{id:'up2',name:'Second approval',cost:100,mult:2,t:'all',req:['intern',0],note:'Do not accidentally approve this.'}]});
   await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();await openDesk(page);
   const row=page.getByRole('button',{name:/Office Intern/}),other=page.getByRole('button',{name:/Motivational Poster/});
-  const before=await row.boundingBox(),next=await other.boundingBox();await page.clock.install();
+  await page.clock.install();
+  // Establish a visible, stable, enabled target before measuring the fixed click position.
+  await expect(row).toBeEnabled();await row.click({trial:true});
+  const before=await row.boundingBox(),next=await other.boundingBox();
   for(let i=0;i<5;i++){await page.mouse.click(before.x+before.width/2,before.y+before.height/2);await expect.poll(()=>f.player.owned.intern).toBe(3+i);const after=await row.boundingBox();expect(Math.abs(after.y-before.y)).toBeLessThan(1);expect(Math.abs((await other.boundingBox()).y-next.y)).toBeLessThan(1);await page.clock.fastForward(i%2?2600:300);}
   await expect(page.locator('.pg-panel-receipt')).toHaveCount(1);expect(f.player.owned.poster||0).toBe(0);
   const body=await page.locator('.pg-panelbody').boundingBox();await page.locator('.pg-panel').getByRole('button',{name:'Approvals',exact:true}).click();

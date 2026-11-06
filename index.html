@@ -4290,7 +4290,9 @@ function OfficeFloor() {
       const root=el.parentElement;
       const chrome=[".pg-bar",".pg-feedback-rail",".pg-wirestrip"].reduce((sum,sel)=>sum+(root.querySelector(sel)?.offsetHeight||0),0)+16;
       const avail = window.innerHeight - top - chrome;
-      const h = clamp(Math.round(avail), 180, Math.min(ROOM.h, 820));
+      // Keep a usable floor on portrait phones; let the page scroll if bulletins need more room.
+      const minimum = window.innerHeight >= 600 ? 240 : 180;
+      const h = clamp(Math.round(avail), minimum, Math.min(ROOM.h, 820));
       setStage((v) => (v.w === w && v.h === h ? v : { w, h }));
     };
     fit();
