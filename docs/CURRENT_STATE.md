@@ -1,3 +1,13 @@
+# Build 188 — room to sit (2026-11-06)
+
+Chairs now stand fully behind the desk rather than being swallowed by its monitors. Owned rugs fill more of the office floor, leaving a visible border at the front and sides of the desk. Desk positions, clickable bounds, walking routes, office walls, TV slot/screens, inventory, prices and server state remain unchanged. The chair depth follows its new visual position; actors still share world depth sorting.
+
+The revised offline customization concept covers owned physical furniture, clothing and accessories, with bright pink/purple/neon palettes, patterns and static sparkle. Proposed applied-change pricing is one day of output (86,400 seconds), with free previews. Desk examples recolor both top and drawers. Paid recoloring remains a proposal, not a deployed economy feature; see CUSTOMIZATION_PROPOSAL.md.
+
+Validation: required Node suites, focused desktop/phone/short-view furniture and gallery checks, and exact-head regression CI must pass before merge. Production artifact and fixture screenshots are recorded in the release report. All browser game data is intercepted; no real player writes or purchases. Rollback: revert this presentation release.
+
+---
+
 # Build 187 — cold storage (2026-11-06)
 
 Office directory removes Your desk and Suggestion Box, and adds The Fridge using the existing drink icon, walking route and drink panel. Eleven destinations remain, including Meeting Room. The work shortcut and owned desk remain available outside the directory; the suggestion-box floor fixture is preserved. No costs, drinks, timers, room geometry or player progress change.
