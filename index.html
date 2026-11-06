@@ -1521,7 +1521,7 @@ body{background:#D9CDC0}
 .pg-held svg,.pg-aura svg{display:block;width:100%;height:100%;overflow:visible}
 .pg-aura:is(.aura-a1,.aura-a2,.aura-a3){background:none}
 .pg-officefloor.has-rug::after{display:none}
-.pg-officefloor>.pg-rug-art{position:absolute;left:22%;top:33%;width:56%;height:58%;opacity:.82}
+.pg-officefloor>.pg-rug-art{position:absolute;left:8%;top:46%;width:84%;height:52%;opacity:.82}
 .pg-officeart:is(.art-w1,.art-w2,.art-w3,.art-w4){background:none;border:0;box-shadow:none}
 .pg-officeart::before{display:none}
 .pg-officeart>.pg-wall-art{width:100%;height:100%;display:block}
@@ -3472,7 +3472,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 187 · cold storage";
+const BUILD = "build 188 · room to sit";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4776,7 +4776,7 @@ function OfficeFloor() {
                         : <b className="pg-vacant">Vacant</b>}
                 </div>
               </div>
-              <div className={"pg-officechair chair-"+(p?.kit?.chair||"c1")} style={{position:"absolute",left:o.cx,top:o.y+o.h*.42,zIndex:Math.round(o.y+o.h*.42+58)}}><OfficeChairArt tier={p?.kit?.chair||"c1"}/></div>
+              <div className={"pg-officechair chair-"+(p?.kit?.chair||"c1")} style={{position:"absolute",left:o.cx,top:o.deskY-76,zIndex:Math.round(o.deskY-18)}}><OfficeChairArt tier={p?.kit?.chair||"c1"}/></div>
                 <div className={"pg-officedesk" + (mine ? " mine" : "") + (chances ? " ghost" : "")}
                      style={{ left:o.deskX,top:o.deskY,zIndex:Math.round(o.deskY+o.deskH*.7),
                               width: o.deskW, height: o.deskH }}
