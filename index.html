@@ -1632,6 +1632,11 @@ body{background:#D9CDC0}
 .pg-head-options .pg-custom-photo{background:#FFF0C6}.pg-photo-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:9px}.pg-photo-actions .pg-btn{min-height:44px}.pg-photo-message{font:11px/1.5 var(--sans);margin:8px 0;overflow-wrap:anywhere}
 @media(max-width:540px){.pg-shop-earnbar{height:90px;min-height:90px}.pg-purchase-list>.pg-row{height:104px;min-height:104px}.pg-purchase-list .pg-right{width:76px;min-width:76px}.pg-purchase-list .pg-main b{font-size:12px}.pg-panel-receipt{font-size:11px}}
 
+
+/* Interior Affairs: controls never overlap preview or review totals. */
+.pg-catswitch{flex-wrap:wrap}.pg-catswitch>button{min-width:0;flex:1 1 130px}
+.pg-style-gallery .pg-wornpin{position:static;width:48px;height:48px}.pg-style-editor{padding:12px;background:#F8F1E3;color:#2B2B2B}.pg-style-heading{padding:14px;background:#343B44;color:#FFF8E8;border:2px solid #2B2B2B;border-radius:6px}.pg-style-heading h3{margin:5px 0;font-size:22px}.pg-style-heading p{margin:0}.pg-style-editor select{width:100%;max-width:100%;min-height:44px}.pg-style-preview{display:grid;grid-template-columns:1fr;gap:12px;border:2px solid #B6AA96;border-radius:6px;padding:12px;margin:12px 0;background:#EEE4D1}.pg-style-preview .pg-fitting-preview.large{width:100%;height:180px;border:0;margin:auto}.pg-style-preview .pg-wornpin{position:static;width:100px;height:100px}.pg-style-preview .pg-fitting-avatar{height:175px}.pg-style-preview .pg-fitting-avatar>.pg-body{transform:translateX(-50%) scale(1.35);top:15px}.pg-style-editor fieldset{min-width:0;margin:12px 0;padding:12px;border:2px solid #B6AA96;border-radius:6px}.pg-style-editor legend{font:700 12px var(--mono);padding:0 5px}.pg-style-swatches{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.pg-style-swatches button{height:44px;min-width:0;border:2px solid #2B2B2B;border-radius:5px;color:#fff;font-size:22px;text-shadow:0 1px 2px #000;cursor:pointer}.pg-style-editor [aria-pressed=true]{outline:3px solid #A74135;outline-offset:2px}.pg-style-editor button:focus-visible,.pg-style-editor input:focus-visible,.pg-style-editor select:focus-visible{outline:3px solid #385D81;outline-offset:3px}.pg-style-color{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}.pg-style-color label{display:flex;align-items:center;gap:10px}.pg-style-color input{width:60px;height:44px;border:2px solid #2B2B2B;background:#F8F1E3}.pg-style-designs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.pg-style-designs button{min-height:44px;padding:8px 3px}.pg-style-review-btn,.pg-style-reset{width:100%;min-height:44px;margin:6px 0}.pg-style-quote{border:2px dashed #9A7640;padding:12px;margin:12px 0;background:#F4E7CA}.pg-style-quote h4{margin:0 0 10px}.pg-style-quote dl{margin:0}.pg-style-quote dl>div{display:flex;justify-content:space-between;gap:10px;padding:7px 0}.pg-style-quote dd{margin:0;font-weight:700;font-family:var(--mono);overflow-wrap:anywhere}.pg-style-quote .total{border-top:2px solid;font-weight:700}.pg-style-actions{display:flex;gap:10px;flex-wrap:wrap}.pg-style-actions button{flex:1 1 150px;min-height:44px}.pg-style-feedback{min-height:38px;font-size:13px;overflow-wrap:anywhere}@media(max-width:420px){.pg-style-swatches{grid-template-columns:repeat(4,minmax(0,1fr))}.pg-style-preview .pg-fitting-preview.large{height:150px}.pg-style-designs button{font-size:12px}}
+
 </style>
 </head>
 <body>
@@ -3298,6 +3303,9 @@ const api = {
   useVending: () => rpc("use_vending"),
   buyFitting: (key, id) => rpc("buy_fitting", { p_key: key, p_id: id }),
   fittingPrices: () => rpc("fitting_prices"),
+  quoteStyle:(item,color,design)=>rpc("quote_style",{p_item:item,p_color:color,p_design:design}),
+  applyStyle:id=>rpc("apply_style",{p_quote:id}),
+  equipStyle:item=>rpc("equip_style_item",{p_item:item}),
   weeklyPins: () => rpc("weekly_pins"),
   buyPin: (id) => rpc("buy_pin", { p_id: id }),
   setPin: (id) => rpc("set_pin", { p_id: id }),
@@ -3472,7 +3480,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 188 · room to sit";
+const BUILD = "build 189 · interior affairs";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4759,9 +4767,9 @@ function OfficeFloor() {
               <React.Fragment key={"o"+o.i}><div className={"pg-office " + o.door + (mine ? " mine" : "")}
                    style={{ left: o.x, top: o.y, width: o.w, height: o.h,
                             zIndex: Math.round(o.y) }}>
-                <div className={"pg-officefloor" + (p?.kit?.rug ? " has-rug rug-" + p.kit.rug : "")}>{p?.kit?.rug&&<OfficeRugArt tier={p.kit.rug}/>}</div>
-                {p?.kit?.art && <div className={"pg-officeart art-" + p.kit.art}><OfficeWallArt tier={p.kit.art}/></div>}
-                {p?.kit?.tv==="tv1"&&<OfficeTelevision owner={p.name}/>}
+                <div className={"pg-officefloor" + (physicalId(p,"rug") ? " has-rug rug-" + physicalId(p,"rug") : "")}>{physicalId(p,"rug")&&<OfficeRugArt tier={physicalId(p,"rug")} style={itemStyle(p,physicalId(p,"rug"))}/>}</div>
+                {physicalId(p,"art") && <div className={"pg-officeart art-" + physicalId(p,"art")}><OfficeWallArt tier={physicalId(p,"art")} style={itemStyle(p,physicalId(p,"art"))}/></div>}
+                {p?.kit?.tv==="tv1"&&<OfficeTelevision owner={p.name} style={itemStyle(p,"tv1")}/>}
 
                 <div className="pg-officedoor"
                      style={{ left: o.doorX - o.x, width: DOOR_W }}><i /><span /><i /></div>
@@ -4776,17 +4784,17 @@ function OfficeFloor() {
                         : <b className="pg-vacant">Vacant</b>}
                 </div>
               </div>
-              <div className={"pg-officechair chair-"+(p?.kit?.chair||"c1")} style={{position:"absolute",left:o.cx,top:o.deskY-76,zIndex:Math.round(o.deskY-18)}}><OfficeChairArt tier={p?.kit?.chair||"c1"}/></div>
+              <div className={"pg-officechair chair-"+(physicalId(p,"chair"))} style={{position:"absolute",left:o.cx,top:o.deskY-76,zIndex:Math.round(o.deskY-18)}}><OfficeChairArt tier={physicalId(p,"chair")} style={itemStyle(p,physicalId(p,"chair"))}/></div>
                 <div className={"pg-officedesk" + (mine ? " mine" : "") + (chances ? " ghost" : "")}
                      style={{ left:o.deskX,top:o.deskY,zIndex:Math.round(o.deskY+o.deskH*.7),
                               width: o.deskW, height: o.deskH }}
-                   data-desk={p?.kit?.desk || ""}
+                   data-desk={physicalId(p,"desk")}
                      onClick={(e) => {
                        e.stopPropagation();
                        if (mine) routeTo(o.cx, o.cy + 40, "desk", o);
                        else if (chances) sayAt(o.cx, o.deskY - 6, pick(GHOST_DESK.lines));
                      }}>
-                  <OfficeDeskArt tier={p?.kit?.desk || "d1"}/>
+                  <OfficeDeskArt tier={physicalId(p,"desk")} style={itemStyle(p,physicalId(p,"desk"))}/>
                   {mine && <div className="pg-fxlabel">Your Desk</div>}
                 </div>
               </React.Fragment>
@@ -4944,6 +4952,7 @@ function OfficeFloor() {
                 try { applyServer(await api.setPin(id)); setFloor(await loadFloor()); }
                 catch (e) { flash(prettyError(e)); }
               }}
+              onStyled={row=>{applyServer(row);loadFloor().then(setFloor).catch(()=>{});}}
               onFitting={async (which, x) => {
                 try {
                   applyServer(await api.buyFitting(which, x.id));
@@ -5411,12 +5420,34 @@ function Face({ src, name, size = 40, look }) {
   );
 }
 
-function WornPin({id}) {
+const STYLE_COLORS=[["Hot pink","#ff55b0"],["Bubblegum","#f5a8d6"],["Royal purple","#8b4cdd"],["Lavender","#c4a3ef"],["Neon lime","#c6ff38"],["Electric cyan","#35e6ee"],["Neon orange","#ff8c36"],["Midnight","#343b55"],["Sage","#8fa67a"],["Patron blue","#597b9d"],["Gold","#e7b84c"],["Ivory","#f3e8d1"]];
+const STYLE_DESIGNS=[["solid","Solid"],["stripe","Stripes"],["check","Checker"],["dots","Polka dots"],["sparkle","Sparkle"],["confetti","Confetti"]];
+function itemStyle(p,id){return p?.cosmetic_styles?.[id]||{color:null,design:"solid"};}
+function physicalId(p,slot){return p?.cosmetic_equipped?.[slot]||(slot==="held"?p?.vanity?.held:p?.kit?.[slot])||(slot==="desk"?"d1":slot==="chair"?"c1":null);}
+function styleColor(style,fallback){return /^#[0-9a-f]{6}$/i.test(style?.color||"")?style.color:fallback;}
+function useMaterialPaint(style,fallback,size=12){
+ const id="material-"+React.useId().replace(/[^a-z0-9]/gi,"");
+ const color=styleColor(style,fallback),design=STYLE_DESIGNS.some(([k])=>k===style?.design)?style.design:"solid";
+ if(design==="solid")return [color,null];
+ const mark=design==="stripe"?<path d="M-8 8L8-8M0 16L16 0M8 24L24 8" stroke="white" opacity=".48" strokeWidth="4"/>:design==="check"?<path d="M0 0h8v8H0ZM8 8h8v8H8Z" fill="white" opacity=".35"/>:design==="dots"?<circle cx="5" cy="5" r="2" fill="white" opacity=".7"/>:design==="sparkle"?<><path d="M8 1l1.6 5.4L15 8l-5.4 1.6L8 15 6.4 9.6 1 8l5.4-1.6Z" fill="#fff8d5"/><circle cx="1" cy="1" r="1" fill="white"/></>:<><path d="M1 2l4 3M10 12l4 2" stroke="#ffe166" strokeWidth="2"/><path d="M12 2l-2 3M3 10l2 4" stroke="white" strokeWidth="2"/></>;
+ return ["url(#"+id+")",<defs key={id}><pattern id={id} width={size} height={size} viewBox="0 0 16 16" patternUnits="userSpaceOnUse" stroke="none"><rect width="16" height="16" fill={color}/>{mark}</pattern></defs>];
+}
+function materialBackground(style,fallback){
+ const color=styleColor(style,fallback),d=style?.design;
+ if(d==="stripe")return "repeating-linear-gradient(135deg,transparent 0 3px,#ffffff77 3px 5px),"+color;
+ if(d==="check")return "repeating-conic-gradient(#ffffff66 0% 25%,transparent 0% 50%) 0 0/8px 8px,"+color;
+ if(d==="dots")return "radial-gradient(circle,#ffffffbb 1px,transparent 1.5px) 0 0/6px 6px,"+color;
+ if(d==="sparkle"||d==="confetti")return "url(\"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path d="'+(d==="sparkle"?'M5 0L6 4 10 5 6 6 5 10 4 6 0 5 4 4Z':'M1 1L4 4M7 6L9 9')+'" fill="'+(d==="sparkle"?'#fff8d5':'none')+'" stroke="white" stroke-width="1"/></svg>')+"\"),"+color;
+ return color;
+}
+
+function WornPin({id,style}) {
   const pin=PIN_INDEX[id];
+  const [paint,material]=useMaterialPaint(style,pin?.hue||"#8FA67A",9);
   if(!pin)return null;
   return <svg className="pg-wornpin" data-worn-pin={id} viewBox="0 0 24 24" role="img" aria-label={pin.name+" pin"}>
-    <title>{pin.name+" — "+pin.note}</title>
-    <circle cx="12" cy="12" r="10.5" fill={pin.hue} stroke="#2B2B2B" strokeWidth="2"/>
+    {material}<title>{pin.name+" — "+pin.note}</title>
+    <circle cx="12" cy="12" r="10.5" fill={paint} stroke="#2B2B2B" strokeWidth="2"/>
     <circle cx="12" cy="12" r="8" fill="none" stroke={isSpecialPin(id)?"#FFD36B":"#FFF8E6"} strokeWidth="1"/>
     <text x="12" y="16.5" textAnchor="middle" fontSize="14" fontFamily="Arial, sans-serif" fontWeight="700" fill="#FFF8E6">{pin.glyph}</text>
   </svg>;
@@ -5426,12 +5457,15 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const worn = wearing(p);
   const c = worn ? COSTUMES[worn.id] : null;
   const L = lookFor(p);
-  const v = p?.vanity || {};
+  const v = {...(p?.vanity||{}),held:physicalId(p,"held")};
   const nickOn = p?.nickname && new Date(p.nickname.until) > new Date();
   const nick = nickOn ? p.nickname.text : null;
   const B = avatarBody(L);
   const wardrobeItem=WARDROBE.find(x=>x.id===L.clothing);
   const shirt = c?.shirt || ({nora:"#343B43",gus:"#F8F1E3",theo:"#F8F1E3",iris:"#AD9AC1",wren:"#4A5260",hal:"#E3C878"}[p?.cast]) || wardrobeItem?.shirt || TOPS[L.top % TOPS.length];
+  const clothingStyle=c?null:itemStyle(p,L.clothing||"starter");
+  const [shirtPaint,shirtMaterial]=useMaterialPaint(clothingStyle,shirt,10);
+  const shirtBackground=materialBackground(clothingStyle,shirt);
   const pants = LEGS[L.legs % LEGS.length];
   const bottom = c ? "trousers" : L.bottom;      // costumes override the outfit
   const cls = [
@@ -5458,7 +5492,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
         <span className="pg-avatar-head" style={{width:48,height:52}}><AvatarHead look={{...L,head:!p?.look?.build&&(src||p?.avatar_url)?"photo":L.head,expression:emote==="panic"?"surprised":emote==="dance"?"happy":L.expression}} src={src||p?.avatar_url} size={48}/></span>
         {c?.art && <CostumeSuit art={c.art} layer="front" />}
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
-          <path className="pg-body-outline" d={B.torso} fill={shirt} />
+          {shirtMaterial}<path className="pg-body-outline" d={B.torso} fill={shirtPaint} />
           {wardrobeItem&&<>
             {(L.clothing==="hoodie"||L.clothing==="hoodie_gold")&&<><path d="M21 0Q30 13 39 0" stroke="#263446" strokeWidth="4" fill="none"/><path d="M30 15v23" stroke="#DCE7EA" strokeWidth="1.5"/><path d="M20 24q10 4 20 0v10H20Z" fill="rgba(0,0,0,.13)" stroke="#2B2B2B" strokeWidth="1.5"/><path d="M26 7v9M34 7v9" stroke="#F8F1E3" strokeWidth="1.5"/></>}
             {(L.clothing==="cardigan")&&<><path d="M21 1l9 14 9-14M30 12v26" fill="none" stroke="#F4DFCE" strokeWidth="4"/><circle cx="30" cy="19" r="1.6" fill="#2B2B2B"/><circle cx="30" cy="29" r="1.6" fill="#2B2B2B"/></>}
@@ -5482,11 +5516,11 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
             <path d="M14 0h32l7 24H7Z" fill={pants} />
           </svg>
         )}
-        <span className="pg-arm left"  style={{ background: shirt, "--skin":AVATAR_SKIN[normalizedAvatar(L).skin], width: B.arm, left: 30 - B.legX - 4 }} />
-        <span className="pg-arm right" style={{ background: shirt, "--skin":AVATAR_SKIN[normalizedAvatar(L).skin], width: B.arm, right: 30 - B.legX - 4 }} />
+        <span className="pg-arm left"  style={{ background: shirtBackground, "--skin":AVATAR_SKIN[normalizedAvatar(L).skin], width: B.arm, left: 30 - B.legX - 4 }} />
+        <span className="pg-arm right" style={{ background: shirtBackground, "--skin":AVATAR_SKIN[normalizedAvatar(L).skin], width: B.arm, right: 30 - B.legX - 4 }} />
         <span className="pg-leg left"  style={{ background: pants, width: B.legW, left: B.legX }} />
         <span className="pg-leg right" style={{ background: pants, width: B.legW, right: B.legX }} />
-        <WornPin id={p?.pin}/>
+        <WornPin id={p?.pin} style={itemStyle(p,"pin:"+p?.pin)}/>
         {p?.cast&&<CastAccessory id={p.cast}/>}
         {c?.sign && (
           <div className="pg-sign" style={{
@@ -5497,7 +5531,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       </div>
       <span className="pg-shadow" />
       {v.aura && <i className={"pg-aura aura-" + v.aura}><AuraArt id={v.aura}/></i>}
-      {v.held && <i className={"pg-held held-" + v.held}><HeldItemArt id={v.held}/></i>}
+      {v.held && <i className={"pg-held held-" + v.held}><HeldItemArt id={v.held} style={itemStyle(p,v.held)}/></i>}
       {PETS[p?.pet] && (
         <span className="pg-pet"><svg viewBox="0 0 34 34">{PETS[p.pet].art}</svg></span>
       )}
@@ -6018,13 +6052,15 @@ function Help({ onClose, rate, onGuide }) {
 }
 
 /** Mail order. None of it earns you anything. That is the entire appeal. */
-function HeldItemArt({id}){
+function HeldItemArt({id,style}){
+ const bases={h1:"#FFF6DE",h2:"#BD9661",h3:"#805E44",h4:"#E2B94D",h5:"#EAC65B"};
+ const [paint,material]=useMaterialPaint(style,bases[id]||"#8FA67A",10);
  return <svg viewBox="0 0 64 64" data-held-item={id} aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.8" strokeLinejoin="round" strokeLinecap="round">
- {id==="h1"&&<><path d="M12 19h32v31q-16 9-32 0Z" fill="#FFF6DE"/><path d="M44 25h7q12 10-7 17"/><ellipse cx="28" cy="19" rx="16" ry="5" fill="#79523C"/><path d="M19 42q9 5 17-1" stroke="#B59A72"/><path d="M23 10q-5-5 0-9m10 10q5-5 0-9" stroke="#9C9280"/></>}
- {id==="h2"&&<><rect x="13" y="9" width="39" height="51" rx="3" fill="#BD9661"/><path d="M19 15h27v38H19Z" fill="#FFF6E3"/><path d="M25 4h16v13H25Z" fill="#8D9695"/><path d="M24 25h17m-17 8h17m-17 8h11" stroke="#7D8B98"/></>}
- {id==="h3"&&<><path d="M24 20V9h18v11"/><rect x="7" y="20" width="51" height="35" rx="4" fill="#805E44"/><path d="M8 30q25 12 49 0"/><rect x="28" y="31" width="10" height="11" rx="1" fill="#D8BD70"/></>}
- {id==="h4"&&<><path d="M19 8h27v15q0 17-13 17T19 23Z" fill="#E2B94D"/><path d="M19 12H8q-3 20 17 21m21-21h10q3 20-17 21M33 39v12"/><path d="M21 50h24v10H21Z" fill="#75533D"/><path d="M29 18l4-5 4 5-2 6h-4Z" fill="#FFF2AD"/></>}
- {id==="h5"&&<><path d="M8 39h49v15H8Z" fill="#AC873D"/><path d="M10 35l39-19 9 11-44 19Z" fill="#EAC65B"/><path d="M15 34l32-14" stroke="#FFF0AE"/><path d="M18 50h27" stroke="#5C4D34"/></>}
+ {material}{id==="h1"&&<><path d="M12 19h32v31q-16 9-32 0Z" fill={paint}/><path d="M44 25h7q12 10-7 17"/><ellipse cx="28" cy="19" rx="16" ry="5" fill="#79523C"/><path d="M19 42q9 5 17-1" stroke="#B59A72"/><path d="M23 10q-5-5 0-9m10 10q5-5 0-9" stroke="#9C9280"/></>}
+ {id==="h2"&&<><rect x="13" y="9" width="39" height="51" rx="3" fill={paint}/><path d="M19 15h27v38H19Z" fill="#FFF6E3"/><path d="M25 4h16v13H25Z" fill="#8D9695"/><path d="M24 25h17m-17 8h17m-17 8h11" stroke="#7D8B98"/></>}
+ {id==="h3"&&<><path d="M24 20V9h18v11"/><rect x="7" y="20" width="51" height="35" rx="4" fill={paint}/><path d="M8 30q25 12 49 0"/><rect x="28" y="31" width="10" height="11" rx="1" fill="#D8BD70"/></>}
+ {id==="h4"&&<><path d="M19 8h27v15q0 17-13 17T19 23Z" fill={paint}/><path d="M19 12H8q-3 20 17 21m21-21h10q3 20-17 21M33 39v12"/><path d="M21 50h24v10H21Z" fill="#75533D"/><path d="M29 18l4-5 4 5-2 6h-4Z" fill="#FFF2AD"/></>}
+ {id==="h5"&&<><path d="M8 39h49v15H8Z" fill={paint}/><path d="M10 35l39-19 9 11-44 19Z" fill={paint}/><path d="M15 34l32-14" stroke="#FFF0AE"/><path d="M18 50h27" stroke="#5C4D34"/></>}
  </svg>;
 }
 function AuraArt({id}){
@@ -6034,13 +6070,15 @@ function AuraArt({id}){
  {id==="a3"&&[15,35,60,81].map((x,i)=><path key={x} d={`M${x} 90q-13-10 1-27-2 12 6 15 4-5 2-10 14 19-1 24Z`} fill="#F78B6B" stroke="#B4583F" strokeWidth="1.2"/>)}
  </svg>;
 }
-function OfficeRugArt({tier="r1"}){
+function OfficeRugArt({tier="r1",style}){
  const n=Number(tier.slice(1))||1,fill=["#B1A080","#AA99B7","#C37C6B","#8FA67A"][n-1]||"#B1A080";
+ const [paint,material]=useMaterialPaint(style,fill);
+ const customized=style?.color||style?.design&&style.design!=="solid";
  return <svg viewBox="0 0 140 90" data-rug-tier={tier} className="pg-rug-art" aria-hidden="true" fill="none" stroke="#4C5145" strokeWidth="2.4">
- <path d="M7 12h126v66H7Z" fill={fill}/><path d="M13 18h114v54H13Z" stroke="#F4E8CD"/>
- {n===2&&[23,48,73,98].map(x=><path key={x} d={`M${x} 24l16 21-16 21-16-21Z`} stroke="#716081" strokeWidth="3"/>)}
- {n===3&&<><path d="M36 45l34-24 34 24-34 24Z" fill="#E2BC86" stroke="#87514B"/><path d="M52 45l18-13 18 13-18 13Z" fill="#87514B"/></>}
- {n===4&&[18,30,42,54,66,78,90,102,114].map(x=><path key={x} d={`M${x} 20v50`} stroke="#4C684D"/>)}
+ {material}<path d="M7 12h126v66H7Z" fill={paint}/><path d="M13 18h114v54H13Z" stroke="#F4E8CD"/>
+ {!customized&&n===2&&[23,48,73,98].map(x=><path key={x} d={`M${x} 24l16 21-16 21-16-21Z`} stroke="#716081" strokeWidth="3"/>)}
+ {!customized&&n===3&&<><path d="M36 45l34-24 34 24-34 24Z" fill="#E2BC86" stroke="#87514B"/><path d="M52 45l18-13 18 13-18 13Z" fill="#87514B"/></>}
+ {!customized&&n===4&&[18,30,42,54,66,78,90,102,114].map(x=><path key={x} d={`M${x} 20v50`} stroke="#4C684D"/>)}
  {[18,29,40,51,62,73,84,95,106,117].map(x=><path key={x} d={`M${x} 6v6m0 66v6`} stroke="#C7B48D" strokeWidth="3"/>)}</svg>;
 }
 const SPRINGER_SCREENS = [
@@ -6051,13 +6089,14 @@ const SPRINGER_SCREENS = [
 ];
 const OFFICE_TV_ITEM={id:"tv1",name:"The Productivity Flatscreen",slot:"tv",tier:1,secs:259200,min_cost:50000000,
  note:"One channel. Four Springer moments. HR has classified it as conflict-resolution training."};
-function SpringerTVArt({screen=0}){
+function SpringerTVArt({screen=0,style}){
  const frame=SPRINGER_SCREENS[((screen%4)+4)%4],clip="tv-screen-"+React.useId().replace(/:/g,"");
+ const [paint,material]=useMaterialPaint(style,"#414C56");
  return <svg className="pg-tv-art" data-tv-screen={screen%4} viewBox="0 0 180 124" role="img" aria-label={"Flatscreen TV — "+frame.label} fill="none" stroke="#2B2B2B" strokeWidth="3" strokeLinejoin="round">
-  <defs><clipPath id={clip}><rect x="14" y="12" width="152" height="86" rx="2"/></clipPath></defs>
-  <path d="M69 105h42v10H69Z" fill="#59636D"/><path d="M56 116h68" stroke="#2B2B2B" strokeWidth="5"/>
+  {material}<defs><clipPath id={clip}><rect x="14" y="12" width="152" height="86" rx="2"/></clipPath></defs>
+  <path d="M69 105h42v10H69Z" fill={style?.color||style?.design&&style.design!=="solid"?paint:"#59636D"}/><path d="M56 116h68" stroke="#2B2B2B" strokeWidth="5"/>
   <rect x="6" y="7" width="170" height="101" rx="5" fill="#2F3840" opacity=".22" stroke="none"/>
-  <rect x="3" y="3" width="174" height="103" rx="5" fill="#414C56"/><path d="M9 7h162" stroke="#8998A1" strokeWidth="2"/>
+  <rect x="3" y="3" width="174" height="103" rx="5" fill={paint}/><path d="M9 7h162" stroke="#8998A1" strokeWidth="2"/>
   <rect x="12" y="10" width="156" height="90" rx="2" fill="#1A272E"/>
   <text x="90" y="49" fill="#A9C3D6" fontSize="17" fontWeight="900" fontFamily="Arial,sans-serif" textAnchor="middle" stroke="none">JERRY</text>
   <text x="90" y="69" fill="#FFD36B" fontSize="17" fontWeight="900" fontFamily="Arial,sans-serif" textAnchor="middle" stroke="none">SPRINGER</text>
@@ -6069,7 +6108,7 @@ function SpringerTVArt({screen=0}){
   <text x="90" y="104" fill="#C8D0D2" fontSize="4.5" letterSpacing="1.5" textAnchor="middle" fontFamily="monospace" stroke="none">PRODUCTIVITY SERIES</text>
  </svg>;
 }
-function OfficeTelevision({owner}){
+function OfficeTelevision({owner,style}){
  const [screen,setScreen]=useState(()=>Math.floor(Date.now()/10000)%4),button=useRef(null);
  useEffect(()=>{
   let visible=false;const media=window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -6082,13 +6121,14 @@ function OfficeTelevision({owner}){
    title="Jerry Springer · tap for the next screen · no productivity whatsoever"
    aria-label={"Jerry Springer TV in "+owner+"'s office. Next screen"}
    onKeyDown={e=>{if(["Enter"," "].includes(e.key))e.stopPropagation();}}
-   onClick={e=>{e.stopPropagation();setScreen(n=>(n+1)%4);}}><SpringerTVArt screen={screen}/></button>;
+   onClick={e=>{e.stopPropagation();setScreen(n=>(n+1)%4);}}><SpringerTVArt screen={screen} style={style}/></button>;
 }
 
-function OfficeWallArt({tier="w1"}){
+function OfficeWallArt({tier="w1",style}){
  const n=Number(tier.slice(1))||1;
+ const [paint,material]=useMaterialPaint(style,n===4?"#C9A253":"#805E44");
  return <svg viewBox="0 0 120 90" data-art-tier={tier} className="pg-wall-art" aria-hidden="true" stroke="#2B2B2B" strokeWidth="2" strokeLinejoin="round">
- <path d="M3 3h114v84H3Z" fill={n===4?"#C9A253":"#805E44"}/><path d="M10 10h100v70H10Z" fill="#F8F1E3"/>
+ {material}<path d="M3 3h114v84H3Z" fill={paint}/><path d="M10 10h100v70H10Z" fill="#F8F1E3"/>
  {n===1&&<><path d="M15 15h90v47H15Z" fill="#A7C0CC"/><path d="M15 46h90v16H15Z" fill="#7B9C91"/><path d="M38 46h42l-9 9H49Z" fill="#BA8153"/><path d="M59 27l12 20" fill="none"/><text x="60" y="73" textAnchor="middle" fontSize="7" fill="#2B2B2B" stroke="none">PERSEVERANCE</text></>}
  {n===2&&<><text x="60" y="27" textAnchor="middle" fontSize="8" fill="#2B2B2B" stroke="none">COMPLETED</text><path d="M28 35h64m-64 7h64m-64 7h39" stroke="#A09376"/><circle cx="78" cy="62" r="9" fill="#D9B654"/><path d="M73 69l-3 10 8-4 7 4-3-10" fill="#AA6654"/></>}
  {n===3&&<><path d="M16 16h88v58H16Z" fill="#7B9CC4"/><circle cx="78" cy="33" r="11" fill="#FFD36B"/><path d="M16 59l29-26 25 25 19-14 15 19v11H16Z" fill="#8FA67A"/><path d="M16 71l44-19 44 22" fill="#A86D57"/></>}
@@ -6096,13 +6136,56 @@ function OfficeWallArt({tier="w1"}){
  </svg>;
 }
 function FittingPreview({item,kind,player,large=false}){
- const office=kind==="office_kit";
+ const office=kind==="office_kit",style=itemStyle(player,item.id);
  return <div className={"pg-fitting-preview"+(large?" large":"")} data-fitting-preview={item.id} role="img" aria-label={item.name+" preview"}>
- {office?(item.slot==="desk"?<OfficeDeskArt tier={item.id}/>:item.slot==="chair"?<OfficeChairArt tier={item.id}/>:item.slot==="rug"?<OfficeRugArt tier={item.id}/>:item.slot==="tv"?<SpringerTVArt/>:<OfficeWallArt tier={item.id}/>):item.slot==="held"?<HeldItemArt id={item.id}/>:<div className="pg-fitting-avatar"><Body p={{name:player?.name||"Employee",look:normalizedAvatar(lookFor(player)),vanity:{[item.slot]:item.id}}}/></div>}
+ {kind==="wardrobe"?<div className="pg-fitting-avatar"><Body p={{...player,look:{...normalizedAvatar(lookFor(player)),clothing:item.id},vanity:{},cosmetic_equipped:{}}}/></div>:kind==="pin"?<WornPin id={item.id.slice(4)} style={style}/>:office?(item.slot==="desk"?<OfficeDeskArt tier={item.id} style={style}/>:item.slot==="chair"?<OfficeChairArt tier={item.id} style={style}/>:item.slot==="rug"?<OfficeRugArt tier={item.id} style={style}/>:item.slot==="tv"?<SpringerTVArt style={style}/>:<OfficeWallArt tier={item.id} style={style}/>):item.slot==="held"?<HeldItemArt id={item.id} style={style}/>:<div className="pg-fitting-avatar"><Body p={{...player,name:player?.name||"Employee",look:normalizedAvatar(lookFor(player)),vanity:{[item.slot]:item.id}}}/></div>}
  </div>;
 }
 
-function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear, preview=false }) {
+function ownedPhysicalItems(cat,me){
+ const list=[];
+ for(const kind of ['office_kit','vanity'])for(const item of cat[kind]||[]){
+  if(!['desk','chair','rug','art','tv','held'].includes(item.slot))continue;
+  const have=(kind==='office_kit'?me?.kit:me?.vanity)?.[item.slot],highest=(cat[kind]||[]).find(x=>x.id===have)?.tier||0;
+  if(item.tier<=highest||['d1','c1'].includes(item.id))list.push({...item,kind});
+ }
+ list.push({id:'starter',name:'Standard Issue Outfit',slot:'clothing',kind:'wardrobe'});
+ for(const item of WARDROBE)if(me?.wardrobe_owned?.includes(item.id))list.push({...item,slot:'clothing',kind:'wardrobe'});
+ for(const id of me?.extras||[])if(PIN_INDEX[id])list.push({id:'pin:'+id,name:PIN_INDEX[id].name+' · pin',slot:'pin',kind:'pin'});
+ return list;
+}
+function styleMoney(n){return Number(n).toLocaleString("en-US",{maximumFractionDigits:0});}
+function Customization({cat,me,pp,onSaved,preview=false}){
+ const items=ownedPhysicalItems(cat,me),[selected,setSelected]=useState(()=>items[0]?.id||'starter');
+ const item=items.find(x=>x.id===selected)||items[0],saved=itemStyle(me,item?.id),[color,setColor]=useState(saved.color),[design,setDesign]=useState(saved.design||'solid');
+ const [quote,setQuote]=useState(null),[busy,setBusy]=useState(false),[feedback,setFeedback]=useState(''),[clock,setClock]=useState(Date.now()),revision=useRef(0),feedbackRef=useRef(null);
+ useEffect(()=>{const v=itemStyle(me,item?.id);setColor(v.color);setDesign(v.design||'solid');setQuote(null);revision.current++;},[item?.id,me?.cosmetic_revision]);
+ useEffect(()=>{if(!quote)return;const t=setInterval(()=>setClock(Date.now()),1000);return()=>clearInterval(t);},[quote]);
+ const draftPlayer={...me,cosmetic_styles:{...me?.cosmetic_styles,[item?.id]:{color,design}}};
+ const dirty=color!==(saved.color||null)||design!==(saved.design||'solid'),expired=quote&&new Date(quote.expires_at).getTime()<=clock;
+ const equipped=item?.kind==='wardrobe'?(lookFor(me).clothing||'starter')===item.id:item?.kind==='pin'?('pin:'+me?.pin)===item.id:physicalId(me,item?.slot)===item?.id;
+ const invalidate=()=>{setQuote(null);revision.current++;setFeedback('');};
+ const review=async()=>{const token=++revision.current;setBusy(true);setFeedback('');try{const q=await api.quoteStyle(item.id,color,design);if(token===revision.current){setQuote(q);setClock(Date.now());}}catch(e){setFeedback(prettyError(e));}finally{setBusy(false);}};
+ const apply=async()=>{setBusy(true);setFeedback('');try{const row=await api.applyStyle(quote.id);onSaved?.(row);setQuote(null);setFeedback('Style saved. Your office has opinions now.');}catch(e){try{const current=await api.sync();onSaved?.(current);}catch{}setFeedback(prettyError(e)+' Check the saved style and review a fresh price before retrying.');setQuote(null);}finally{setBusy(false);}};
+ const equip=async()=>{setBusy(true);setFeedback('');try{const row=await api.equipStyle(item.id);onSaved?.(row);setQuote(null);setFeedback('Equipped. No Busywork charged.');}catch(e){setFeedback(prettyError(e));}finally{setBusy(false);}};
+ useEffect(()=>{if(feedback)feedbackRef.current?.scrollIntoView({block:'nearest'});},[feedback]);
+ return <section className="pg-style-editor" data-testid="style-editor" aria-label="Interior Affairs customization">
+  <div className="pg-style-heading"><span className="pg-stamp">INTERIOR AFFAIRS · FORM CO-02</span><h3>Make the office yours.</h3><p>Owned items. Questionable taste. Your call.</p></div>
+  <label className="pg-form-label">Choose an owned item<select aria-label="Customize owned item" value={item?.id} disabled={busy} onChange={e=>{setSelected(e.target.value);invalidate();}}>{items.map(it=><option key={it.id} value={it.id}>{it.name}</option>)}</select></label>
+  <div className="pg-style-preview"><FittingPreview item={item} kind={item.kind} player={draftPlayer} large/><div><b>{item.name}</b><p className="pg-fine">Full item preview · no Busywork spent. {item.slot==='desk'?'Top and drawer cabinets change together.':''}</p><button className="pg-btn" disabled={busy||equipped||preview} onClick={equip}>{equipped?'Currently equipped':'Equip this owned item · free'}</button></div></div>
+  <fieldset disabled={busy}><legend>Color</legend><div className="pg-style-swatches">{STYLE_COLORS.map(([name,hex])=><button type="button" key={hex} style={{background:hex}} aria-label={name} title={name} aria-pressed={color===hex} onClick={()=>{setColor(hex);invalidate();}}>{color===hex?'✓':''}</button>)}</div><div className="pg-style-color"><label>Mix your own <input type="color" aria-label="Custom item color" value={color||'#8fa67a'} onChange={e=>{setColor(e.target.value);invalidate();}}/></label><button className="pg-btn" aria-pressed={color===null} onClick={()=>{setColor(null);invalidate();}}>Original color</button></div></fieldset>
+  <fieldset disabled={busy}><legend>Design</legend><div className="pg-style-designs">{STYLE_DESIGNS.map(([id,name])=><button type="button" className="pg-btn" key={id} aria-pressed={design===id} onClick={()=>{setDesign(id);invalidate();}}>{name}</button>)}</div></fieldset>
+  <p className="pg-fine">Color change: 1 day of current output. Add/change a design: +1 day. Both: 2 days. Minimum 1,000 BW per paid change. Removing a design is free. Unchanged choices cost nothing. Reapplying an old choice is a new change.</p>
+  <p className="pg-fine">Styles stay with each item through restructuring and weekly resets. Screens, photos and original outlines stay intact. Sparkle is static. Cosmetic only—no productivity bonus.</p>
+  <button className="pg-btn primary pg-style-review-btn" disabled={busy||!dirty||preview} onClick={review}>{busy?'Filing paperwork…':dirty?'Review price':'Choose a different style'}</button>
+  {preview&&<p className="pg-note">Art QA only · saving and payments are disabled.</p>}
+  {quote&&<div className="pg-style-quote" role="group" aria-label="Review style purchase"><h4>Review this purchase</h4><dl><div><dt>Color change</dt><dd>{styleMoney(quote.color_fee)} BW</dd></div><div><dt>Design change</dt><dd>{styleMoney(quote.design_fee)} BW</dd></div><div className="total"><dt>Total</dt><dd title={quote.total.toLocaleString()}>{styleMoney(quote.total)} BW</dd></div></dl><p className="pg-fine">Based on current server output, including active boosts and penalties. {expired?'This quote expired. Review a fresh price.':'Quote valid for up to two minutes; output or week changes require a new quote.'}</p>{pp<quote.total&&<p role="status">Need {fmt(quote.total-pp)} more BW.</p>}<div className="pg-style-actions"><button className="pg-btn primary" disabled={busy||expired||pp<quote.total||preview} onClick={apply}>Confirm style · {styleMoney(quote.total)} BW</button><button className="pg-btn" disabled={busy} onClick={()=>setQuote(null)}>Keep previewing</button></div></div>}
+  <button className="pg-btn pg-style-reset" disabled={busy||!dirty} onClick={()=>{setColor(saved.color||null);setDesign(saved.design||'solid');invalidate();setFeedback('Preview cancelled. No Busywork charged.');}}>Cancel this preview</button>
+  <p ref={feedbackRef} className="pg-style-feedback" role="status" aria-live="polite">{feedback}</p>
+ </section>;
+}
+
+function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear, onStyled, preview=false }) {
   const [inspected,setInspected]=useState(null);
   const [which, setWhich] = useState("vanity");
   // The server quotes the price; quotes refresh on changing rates or on reopen.
@@ -6137,9 +6220,10 @@ function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear, preview=
                 onClick={() => setWhich("vanity")}>Yourself</button>
         <button className={"pg-btn" + (which === "office_kit" ? " on" : "")}
                 onClick={() => setWhich("office_kit")}>Your Office</button>
+        <button className={"pg-btn"+(which==="style"?" on":"")} onClick={()=>setWhich("style")}>Customize owned items</button>
       </div>
 
-      {slots.map((slot) => {
+      {which==="style"?<Customization cat={cat} me={me} pp={pp} onSaved={onStyled} preview={preview}/>:slots.map((slot) => {
         const tiers = list.filter((x) => x.slot === slot).sort((a, b) => a.tier - b.tier);
         const owned = tierOf(have[slot]);
         return (
@@ -6183,7 +6267,7 @@ const SLOT_NAMES = { glow: "Glow", size: "Presence", held: "Something To Carry",
                      rug: "The Floor", art: "The Wall", tv: "Conflict-Resolution Training" };
 
 function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure,
-                onFitting, pins, onPin, onWear, guard, flash }) {
+                onFitting, pins, onPin, onWear, onStyled, guard, flash }) {
   const owned = me?.owned || {}, ups = me?.upgrades || [];
   const cycle = me?.cycle || 0;
   const avail = cycle <= 1e9 ? 0 : Math.floor(1.6 * Math.log10(cycle / 1e9));
@@ -6197,7 +6281,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
                     ["today", "Today"], ["restr", "Seniority"], ["cat", "Catalogue"]]}>
         {(t) => t === "cat" ? (
           <Catalogue cat={cat} me={me} pp={pp} rate={rate} onFitting={onFitting}
-                     pins={pins} onPin={onPin} onWear={onWear} />
+                     pins={pins} onPin={onPin} onWear={onWear} onStyled={onStyled} />
         ) : t === "hire" ? (
           <div className="pg-list pg-purchase-list">
             {(cat.items || []).map((it, i) => {
@@ -6965,10 +7049,11 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
 
 
 /** Actual player-office illustrations: inked desk objects that grow with purchased kit. */
-function OfficeDeskArt({tier="d1"}){
+function OfficeDeskArt({tier="d1",style}){
  const n=Math.max(1,Math.min(5,Number(String(tier).replace("d",""))||1));
- const wood=["#BEA17B","#C8E3E7","#865436","#F0EDE1","#343A40"][n-1];
- const cabinet=n===5?"#597B9D":n===4?"#D4D3C9":"#777E80";
+ const baseWood=["#BEA17B","#C8E3E7","#865436","#F0EDE1","#343A40"][n-1];
+ const [wood,material]=useMaterialPaint(style,baseWood);
+ const cabinet=style?.color||style?.design&&style.design!=="solid"?wood:n===5?"#597B9D":n===4?"#D4D3C9":"#777E80";
  const screen=(x,w,kind)=><g key={x}>
   <path d={`M${x+w/2} 39v9m-11 0h22`} strokeWidth="3"/>
   <rect x={x} y="4" width={w} height="35" rx="2" fill="#343B44"/>
@@ -6977,8 +7062,8 @@ function OfficeDeskArt({tier="d1"}){
   {kind===0?<><path d={`M${x+11} 17h15v15h-15Z`} fill="#FFD36B" strokeWidth="1"/><path d={`M${x+15} 23h1m4 0h1m-7 4q4 4 7 0`} strokeWidth="1"/></>:<path d={`M${x+8} 17h${w-17}m-${w-17} 5h${w-22}m-${w-22} 5h${w-14}`} stroke="#CDE2CF" strokeWidth="1.3"/>}
  </g>;
  return <svg className="pg-desk-svg" viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round">
-  <ellipse cx="101" cy="95" rx="96" ry="4" fill="#504435" stroke="none" opacity=".17"/>
-  {n===5?<path d="M10 54h24v42H10Zm156 0h24v42h-24Z" fill="#343A40"/>:<>
+  {material}<ellipse cx="101" cy="95" rx="96" ry="4" fill="#504435" stroke="none" opacity=".17"/>
+  {n===5?<path d="M10 54h24v42H10Zm156 0h24v42h-24Z" fill={style?.color||style?.design&&style.design!=="solid"?wood:"#343A40"}/>:<>
   <path d="M9 54h39v39H9ZM150 54h39v39h-39Z" fill={cabinet}/>
   <path d="M15 62h27m-27 13h27m-27 10h27M156 62h27m-27 13h27m-27 10h27" strokeWidth="1.2"/>
   <path d="M27 65h6m-6 13h6m131-13h6m-6 13h6" strokeWidth="2"/>
@@ -6998,16 +7083,17 @@ function OfficeDeskArt({tier="d1"}){
   {n===5&&<g><rect x="53" y="62" width="16" height="30" rx="2" fill="#3A4149" strokeWidth="1.5"/><path d="M57 67h8m-8 4h8" stroke="#A1AAA8" strokeWidth="1"/><circle cx="61" cy="85" r="2" fill="#FFD36B" strokeWidth="1"/></g>}
  </svg>;
 }
-function OfficeChairArt({tier="c1"}){
+function OfficeChairArt({tier="c1",style}){
  const n=Number(tier.slice(1))||1,c=["#718BAD","#6F7B83","#77857B","#343C4D"][n-1]||"#718BAD";
+ const [paint,material]=useMaterialPaint(style,c,10);
  return <svg viewBox="0 0 60 80" aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2.3" strokeLinejoin="round">
-  <path d="M30 57v15m-21 4 21-7 21 7M30 69v8"/><circle cx="9" cy="76" r="2" fill="#2B2B2B"/><circle cx="51" cy="76" r="2" fill="#2B2B2B"/>
-  <rect x="13" y="3" width="34" height="43" rx={n===3?10:6} fill={c}/>
+  {material}<path d="M30 57v15m-21 4 21-7 21 7M30 69v8"/><circle cx="9" cy="76" r="2" fill="#2B2B2B"/><circle cx="51" cy="76" r="2" fill="#2B2B2B"/>
+  <rect x="13" y="3" width="34" height="43" rx={n===3?10:6} fill={paint}/>
   <path d="M18 8q12-4 24 0v28H18Z" stroke="#F8F1E3" strokeOpacity=".2" strokeWidth="1.2"/>
-  <path d="M8 42h44l-4 14H12Z" fill={c}/><path d="M8 42v-9H4m48 9v-9h4" strokeWidth="4"/>
-  {n===2&&<path d="M17 30q13-7 26 0v8H17Z" fill="#52646E"/>}
+  <path d="M8 42h44l-4 14H12Z" fill={paint}/><path d="M8 42v-9H4m48 9v-9h4" strokeWidth="4"/>
+  {n===2&&<path d="M17 30q13-7 26 0v8H17Z" fill={styleColor(style,"#52646E")}/>}
   {n===3&&<g stroke="#D2D8CB" strokeWidth="1">{[20,26,32,38].map(x=><path key={x} d={`M${x} 10v26`}/>)}{[13,19,25,31].map(y=><path key={y} d={`M18 ${y}h24`}/>)}</g>}
-  {n===4&&<><rect x="16" y="1" width="28" height="12" rx="4" fill="#343C4D"/><path d="M19 20l22 19m0-19L19 39" stroke="#66717D" strokeWidth="1"/></>}
+  {n===4&&<><rect x="16" y="1" width="28" height="12" rx="4" fill={paint}/><path d="M19 20l22 19m0-19L19 39" stroke="#66717D" strokeWidth="1"/></>}
  </svg>;
 }
 function DecorArt({kind}){
@@ -8195,6 +8281,13 @@ const ART_FITTINGS={"office_kit":[{"id":"d1","name":"A Desk Without A Wobble","n
 /** QA-only component gallery: non-authenticated, no RPC calls, no player mutations. */
 ART_FITTINGS.office_kit.push(OFFICE_TV_ITEM);
 
+function StyleArtQA({look}){
+ const me={id:"style-art-qa",name:"Preview Employee",look,kit:{desk:"d5",chair:"c4",rug:"r4",art:"w4",tv:"tv1"},vanity:{held:"h5"},wardrobe_owned:WARDROBE.map(x=>x.id),extras:["beta"],cosmetic_revision:0};
+ const cat=ART_FITTINGS,items=ownedPhysicalItems(cat,me);
+ me.cosmetic_styles=Object.fromEntries(items.map((item,i)=>[item.id,{color:STYLE_COLORS[i%STYLE_COLORS.length][1],design:STYLE_DESIGNS[(i%5)+1][0]}]));
+ return <section data-testid="style-art-qa"><h2>Interior Affairs · owned physical materials</h2><div className="ar-grid pg-style-gallery">{items.map(item=><div className="ar-cell" key={item.id}><FittingPreview item={item} kind={item.kind} player={me}/><strong>{item.name}</strong></div>)}</div><Customization cat={cat} me={me} pp={0} preview/></section>;
+}
+
 function ArtPreview(){
  const [demoEmote,setDemoEmote]=useState(null);
  const qaSchedule={timezone:"America/Los_Angeles",server_now:"2026-10-21T17:00:00Z",ends_at:"2026-10-23T23:00:00Z",received_at:Date.now()};
@@ -8265,6 +8358,7 @@ function ArtPreview(){
   <div data-testid="break-table-qa" style={{width:240,height:195,margin:"0 auto"}}><FixtureIllustration kind="coffee"/></div>
   <h2>5e. Actual personnel file · cosmetic commendations</h2>
   <section data-testid="personnel-qa" style={{maxWidth:760,margin:"0 auto 18px",border:"2px solid #2B2B2B"}}><Personnel me={{id:"personnel-qa",achievements:["oa_welcome","oa_glue"],look:demoAvatar}} lifetime={0} cat={{depts:[]}}/></section>
+  <StyleArtQA look={demoAvatar}/>
   <h2>5f. Weekly whiteboard · read-only clock fixture</h2>
   <div data-testid="weekly-board-qa"><Standings board={[]} schedule={qaSchedule}/></div>
   <h2>5g. Worn beta pin · shared animated character rig</h2>

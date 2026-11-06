@@ -16,3 +16,9 @@ for(const [mode,options] of [['desktop',{viewport:{width:1440,height:900}}],['ph
 for(const [mode,viewport] of [['desktop',{width:1440,height:900}],['phone',{width:390,height:844}]])test(mode+': furniture gallery remains readable',async({page})=>{
  await page.setViewportSize(viewport);await page.goto(new URL('?art-preview=1',base).href);const gallery=page.getByTestId('fittings-qa');await expect(gallery).toBeVisible();await gallery.getByRole('button',{name:'Your Office',exact:true}).click();await gallery.scrollIntoViewIfNeeded();await expect(gallery.locator('[data-fitting-preview="d3"]')).toBeVisible();await expect(gallery.locator('[data-fitting-preview="c2"]')).toBeVisible();await expect(gallery.locator('[data-fitting-preview="r2"]')).toBeVisible();await page.screenshot({path:'test-results/furniture-gallery-'+mode+'.png',fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
 });
+
+test('desk helper waits through Doug’s scheduled call without earning or changing progress',async({page})=>{
+ test.setTimeout(60000);const period=83*60000,offset=31*60000,at=Math.floor((Date.now()-offset)/period)*period+offset+20000;
+ await page.clock.install({time:new Date(at)});const fixture=await installGameFixture(page);await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();await expect(page.getByRole('button',{name:/Doug is on the phone/})).toBeDisabled();
+ const opening=openOwnDesk(page);await page.clock.fastForward(61000);await opening;await expect(page.locator('.pg-panelhead')).toContainText('Your desk');expect(fixture.player.pp).toBe(500000);expect(fixture.calls.some(x=>x.rpc==='do_work')).toBe(false);
+});
