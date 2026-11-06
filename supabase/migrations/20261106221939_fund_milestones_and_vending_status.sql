@@ -95,7 +95,7 @@ BEGIN
  ON CONFLICT(player_id) DO UPDATE SET id=gen_random_uuid(),item=excluded.item,color=excluded.color,design=excluded.design,
  color_fee=excluded.color_fee,design_fee=excluded.design_fee,rate=excluded.rate,revision=excluded.revision,week=excluded.week,expires_at=excluded.expires_at,applied=false
  RETURNING * INTO q;
- RETURN jsonb_build_object('id',q.id,'item',q.item,'color',q.color,'design',q.design,'color_fee',cf,'design_fee',df,'total',cf+df,'rate',r,'expires_at',q.expires_at,'balance',p.pp);
+ RETURN jsonb_build_object('id',q.id,'item',q.item,'color',q.color,'design',q.design,'color_fee',cf,'design_fee',df,'total',cf+df,'rate',r,'seconds_per_change',28800,'expires_at',q.expires_at,'balance',p.pp);
 END $function$
 ;
 DO $apply_guard$ BEGIN

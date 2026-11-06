@@ -37,7 +37,7 @@ BEGIN
  -- Simulate an old in-flight quote landing after migration: even a fresh expiry cannot revive its old price.
  UPDATE public.style_quotes SET expires_at=now()+interval '2 minutes' WHERE player_id=uid;
  rejected:=false;BEGIN PERFORM public.apply_style(((SELECT value FROM old_style_quote)->>'id')::uuid);EXCEPTION WHEN others THEN rejected:=true;END;IF NOT rejected THEN RAISE EXCEPTION 'Late old-price quote charged';END IF;
- state:=public.quote_style('d1','#ff55b0','sparkle');IF (state->>'color_fee')::float8<>2880000 OR (state->>'design_fee')::float8<>2880000 OR (state->>'total')::float8<>5760000 THEN RAISE EXCEPTION 'Eight-hour split fee wrong';END IF;
+ state:=public.quote_style('d1','#ff55b0','sparkle');IF (state->>'seconds_per_change')::int<>28800 OR (state->>'color_fee')::float8<>2880000 OR (state->>'design_fee')::float8<>2880000 OR (state->>'total')::float8<>5760000 THEN RAISE EXCEPTION 'Eight-hour split fee wrong';END IF;
  p:=public.apply_style((state->>'id')::uuid);IF p.pp<>994240000 OR p.cosmetic_styles->'d1'->>'design'<>'sparkle' THEN RAISE EXCEPTION 'Eight-hour payment/save failed';END IF;
  p:=public.apply_style((state->>'id')::uuid);IF p.pp<>994240000 THEN RAISE EXCEPTION 'Eight-hour accepted retry double charged';END IF;
  IF (SELECT jsonb_array_length(data) FROM public.catalog WHERE key='fund_tiers')<>20 THEN RAISE EXCEPTION 'Wrong tier count';END IF;
