@@ -1637,6 +1637,7 @@ body{background:#D9CDC0}
 .pg-catswitch{flex-wrap:wrap}.pg-catswitch>button{min-width:0;flex:1 1 130px}
 .pg-style-gallery .pg-wornpin{position:static;width:48px;height:48px}.pg-style-editor{padding:12px;background:#F8F1E3;color:#2B2B2B}.pg-style-heading{padding:14px;background:#343B44;color:#FFF8E8;border:2px solid #2B2B2B;border-radius:6px}.pg-style-heading h3{margin:5px 0;font-size:22px}.pg-style-heading p{margin:0}.pg-style-editor select{width:100%;max-width:100%;min-height:44px}.pg-style-preview{display:grid;grid-template-columns:1fr;gap:12px;border:2px solid #B6AA96;border-radius:6px;padding:12px;margin:12px 0;background:#EEE4D1}.pg-style-preview .pg-fitting-preview.large{width:100%;height:180px;border:0;margin:auto}.pg-style-preview .pg-wornpin{position:static;width:100px;height:100px}.pg-style-preview .pg-fitting-avatar{height:175px}.pg-style-preview .pg-fitting-avatar>.pg-body{transform:translateX(-50%) scale(1.35);top:15px}.pg-style-editor fieldset{min-width:0;margin:12px 0;padding:12px;border:2px solid #B6AA96;border-radius:6px}.pg-style-editor legend{font:700 12px var(--mono);padding:0 5px}.pg-style-swatches{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.pg-style-swatches button{height:44px;min-width:0;border:2px solid #2B2B2B;border-radius:5px;color:#fff;font-size:22px;text-shadow:0 1px 2px #000;cursor:pointer}.pg-style-editor [aria-pressed=true]{outline:3px solid #A74135;outline-offset:2px}.pg-style-editor button:focus-visible,.pg-style-editor input:focus-visible,.pg-style-editor select:focus-visible{outline:3px solid #385D81;outline-offset:3px}.pg-style-color{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}.pg-style-color label{display:flex;align-items:center;gap:10px}.pg-style-color input{width:60px;height:44px;border:2px solid #2B2B2B;background:#F8F1E3}.pg-style-designs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.pg-style-designs button{min-height:44px;padding:8px 3px}.pg-style-review-btn,.pg-style-reset{width:100%;min-height:44px;margin:6px 0}.pg-style-quote{border:2px dashed #9A7640;padding:12px;margin:12px 0;background:#F4E7CA}.pg-style-quote h4{margin:0 0 10px}.pg-style-quote dl{margin:0}.pg-style-quote dl>div{display:flex;justify-content:space-between;gap:10px;padding:7px 0}.pg-style-quote dd{margin:0;font-weight:700;font-family:var(--mono);overflow-wrap:anywhere}.pg-style-quote .total{border-top:2px solid;font-weight:700}.pg-style-actions{display:flex;gap:10px;flex-wrap:wrap}.pg-style-actions button{flex:1 1 150px;min-height:44px}.pg-style-feedback{min-height:38px;font-size:13px;overflow-wrap:anywhere}@media(max-width:420px){.pg-style-swatches{grid-template-columns:repeat(4,minmax(0,1fr))}.pg-style-preview .pg-fitting-preview.large{height:150px}.pg-style-designs button{font-size:12px}}
 
+.pg-fund-milestones>summary{min-height:44px;padding:12px;font:700 12px var(--mono);cursor:pointer;border-top:1px solid #B6AA96;border-bottom:1px solid #B6AA96}.pg-style-palette h4{font-size:12px;margin:12px 0 8px}.pg-style-palette:first-child h4{margin-top:0}.pg-vend-status{display:flex;flex-direction:column;gap:4px;min-height:56px;padding:10px 12px;background:#EEE4D1;border-top:2px solid #B6AA96;font:12px var(--mono)}.pg-vend-status span{font-size:10px;color:#625B50}.pg-vend-feedback{min-height:30px;margin:8px 12px;font-size:12px;color:#A74135;overflow-wrap:anywhere}.pg-expanded-quote p{overflow-wrap:anywhere}.pg-number-key{margin:10px 0}.pg-number-key summary,.pg-expanded-quote summary{cursor:pointer;min-height:32px;padding:6px 0}.pg-style-quote dd{max-width:65%;text-align:right}
 </style>
 </head>
 <body>
@@ -2041,15 +2042,91 @@ const WORK_VERBS = ["circled back", "touched base", "moved the needle", "took it
   "closed the loop", "boiled the ocean", "unpacked the ask"];
 
 const FUND_TIERS = [
-  { at: 7.86e12, label: "Replace the flickering hallway bulb" },
-  { at: 8.83e17, label: "Second coffee machine (the good one)" },
-  { at: 6.99e20, label: "Bagel Friday, indefinitely" },
-  { at: 5.95e22, label: "Chairs that go up AND down" },
-  { at: 1.16e24, label: "A door on the phone booth" },
-  { at: 1.75e25, label: "Office dog (part-time, salaried)" },
-  { at: 1.27e26, label: "The nap room they said we'd never get" },
-  { at: 5.12e26, label: "Buy the building. Evict the landlord." },
+  {
+    "at": 10000000000000000,
+    "label": "Replace the flickering hallway bulb"
+  },
+  {
+    "at": 550000000000000000,
+    "label": "Second coffee machine (the good one)"
+  },
+  {
+    "at": 30000000000000000000,
+    "label": "Bagel Friday, indefinitely"
+  },
+  {
+    "at": 1.7e+21,
+    "label": "Chairs that go up AND down"
+  },
+  {
+    "at": 9.5e+22,
+    "label": "A door on the phone booth"
+  },
+  {
+    "at": 5.2e+24,
+    "label": "Office dog (part-time, salaried)"
+  },
+  {
+    "at": 2.9e+26,
+    "label": "The nap room they said we\u2019d never get"
+  },
+  {
+    "at": 1.6e+28,
+    "label": "Buy the building. Evict the landlord."
+  },
+  {
+    "at": 1e+30,
+    "label": "A printer with an apology department"
+  },
+  {
+    "at": 5e+31,
+    "label": "The parking lot is ours now"
+  },
+  {
+    "at": 2e+33,
+    "label": "An annex for meetings nobody attends"
+  },
+  {
+    "at": 1e+35,
+    "label": "A cafeteria with actual forks"
+  },
+  {
+    "at": 5e+36,
+    "label": "A four-day week, under review"
+  },
+  {
+    "at": 2.5e+37,
+    "label": "The corporate campus nobody requested"
+  },
+  {
+    "at": 1e+38,
+    "label": "A shuttle between the coffee machines"
+  },
+  {
+    "at": 5e+38,
+    "label": "An entire building for archived emails"
+  },
+  {
+    "at": 2.5e+39,
+    "label": "A regional headquarters for stationery"
+  },
+  {
+    "at": 1e+40,
+    "label": "International offices. Same printer jam."
+  },
+  {
+    "at": 5e+40,
+    "label": "The intercontinental break room"
+  },
+  {
+    "at": 2.5e+41,
+    "label": "A global empire of questionable productivity"
+  }
 ];
+function fundTierList(raw){
+ if(!Array.isArray(raw)||!raw.length||!raw.every((n,i)=>Number.isFinite(n)&&n>0&&(i===0||n>raw[i-1])))return FUND_TIERS;
+ return raw.map((at,i)=>({at,label:FUND_TIERS[i]?.label||"Office improvement "+(i+1)}));
+}
 
 const FIXTURES = [
   { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 760, y: 22, w: 216, h: 86 },
@@ -2666,14 +2743,19 @@ function randomLook() {
 
 /* ------------------------------ utils ---------------------------- */
 
-const SUF = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc"];
+const SUF = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "Ud", "Dd", "Td", "Qad", "Qid", "Sxd", "Spd", "Ocd", "Nod", "Vg"];
 function fmt(n) {
-  if (!isFinite(n) || n < 0) return "0";
-  if (n < 1000) return n < 10 ? String(Math.round(n * 10) / 10) : String(Math.floor(n));
-  let t = 0;
-  while (n >= 1000 && t < SUF.length - 1) { n /= 1000; t++; }
-  return (n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : Math.floor(n)) + SUF[t];
+  n=Number(n);
+  if(!Number.isFinite(n)||n<0)return "0";
+  if(n<1000)return n<10?String(Math.round(n*10)/10):String(Math.floor(n));
+  // Shortest decimal decomposition avoids engine-dependent pow/log boundaries.
+  const [leading,power]=n.toExponential().split("e"),exponent=Number(power);
+  if(exponent>=SUF.length*3)return n.toExponential(2);
+  const tier=Math.floor(exponent/3),remainder=exponent-tier*3;
+  const scaled=Number(leading)*(remainder===0?1:remainder===1?10:100);
+  return (scaled<10?scaled.toFixed(2):scaled<100?scaled.toFixed(1):Math.floor(scaled))+SUF[tier];
 }
+
 /* Per-unit growth is set in the catalogue so the climb can be tuned without a
    deploy. Must match item_growth() in Postgres. */
 let ITEM_GROWTH = 1.15;
@@ -3301,6 +3383,7 @@ const api = {
   giveNickname: (id, text) => rpc("give_nickname", { p_target: id, p_text: text }),
   setOoo: (text) => rpc("set_ooo", { p_text: text }),
   useVending: () => rpc("use_vending"),
+  vendingState: () => rpc("vending_state"),
   buyFitting: (key, id) => rpc("buy_fitting", { p_key: key, p_id: id }),
   fittingPrices: () => rpc("fitting_prices"),
   quoteStyle:(item,color,design)=>rpc("quote_style",{p_item:item,p_color:color,p_design:design}),
@@ -3480,7 +3563,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 189 · interior affairs";
+const BUILD = "build 190 · room for improvement";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3644,7 +3727,6 @@ function OfficeFloor() {
   const [spend, setSpend] = useState(null);
   const [testers, setTesters] = useState(null);
   const [prices, setPrices] = useState(null);   // server quotes; lifetime-based sums drift
-  const vendQuote = { vend: prices?.vending ?? 0 };
   const [mascotReal, setMascotReal] = useState(false);
   const [jam, setJam] = useState(null);
   const [streakCard, setStreakCard] = useState(null);
@@ -4208,7 +4290,9 @@ function OfficeFloor() {
       const root=el.parentElement;
       const chrome=[".pg-bar",".pg-feedback-rail",".pg-wirestrip"].reduce((sum,sel)=>sum+(root.querySelector(sel)?.offsetHeight||0),0)+16;
       const avail = window.innerHeight - top - chrome;
-      const h = clamp(Math.round(avail), 180, Math.min(ROOM.h, 820));
+      // Keep a usable floor on portrait phones; let the page scroll if bulletins need more room.
+      const minimum = window.innerHeight >= 600 ? 240 : 180;
+      const h = clamp(Math.round(avail), minimum, Math.min(ROOM.h, 820));
       setStage((v) => (v.w === w && v.h === h ? v : { w, h }));
     };
     fit();
@@ -4409,9 +4493,10 @@ function OfficeFloor() {
     me && p.id === me.id ? { ...me, pp, lifetime } : p)
     .sort((a, b) => (b.lifetime || 0) - (a.lifetime || 0));
   const names = Object.fromEntries(board.map((p) => [p.id, p.name]));
-  const fund = board.reduce((s, p) => s + (p.lifetime || 0), 0);
-  const nextTier = FUND_TIERS.find((t) => t.at > fund) || FUND_TIERS[FUND_TIERS.length - 1];
-  const prevTier = [...FUND_TIERS].reverse().find((t) => t.at <= fund);
+  const fund = Number.isFinite(office?.total)?office.total:board.reduce((sum,p)=>sum+(p.week_pp||0),0);
+  const fundTiers=fundTierList(office?.fund_thresholds||cat.fund_tiers);
+  const nextTier = fundTiers.find((t) => t.at > fund)||null;
+  const prevTier = [...fundTiers].reverse().find((t) => t.at <= fund);
   const wire = (floor.deeds || []).map((d) => ({
     ...d, from: d.hush ? "Someone" : (names[d.actor] || "Someone"), toName: names[d.target] || "someone",
   }));
@@ -4587,7 +4672,7 @@ function OfficeFloor() {
             </span>
             {me?.raises > 0 && (
               <span className="pg-tag good"
-                    data-tip={`+${me.raises * 2}% output, permanent. ${me.raises} raise${
+                    data-tip={`+${me.raises * 2}% output until the Friday 4 PM Pacific reset. ${me.raises} raise${
                       me.raises === 1 ? "" : "s"} on your file.`}>
                 +{me.raises * 2}% raises
               </span>
@@ -4752,7 +4837,7 @@ function OfficeFloor() {
                  style={{ left: f.x, top: f.y, width: f.w, height: f.h,
                           zIndex: Math.round(f.y + f.h) }}
                  onClick={(e) => walkTo(f, e)}>
-              <FixtureArt id={f.id} board={board} schedule={weekSchedule} celebrating={!!office?.hit} tierPct={Math.min(100, (fund / nextTier.at) * 100)} />
+              <FixtureArt id={f.id} board={board} schedule={weekSchedule} celebrating={!!office?.hit} tierPct={nextTier?Math.min(100,(fund/nextTier.at)*100):100} />
               <div className="pg-fxlabel">{f.label}</div>
             </div>
           ))}
@@ -5101,15 +5186,15 @@ function OfficeFloor() {
                       onCommit={() => guard(() => api.commitToBit(), "+25% for the duration")} />
           )}
           {panel === "fund" && (
-            <Fund fund={fund} nextTier={nextTier} prevTier={prevTier} office={office} card={card}
-              pp={pp} quote={vendQuote}
+            <Fund fund={fund} tiers={fundTiers} nextTier={nextTier} prevTier={prevTier} office={office} card={card} me={me}
+              pp={pp}
               onVend={async () => {
                 try {
                   const prize = await api.useVending();
-                  applyServer(await api.getMe());
+                  try { applyServer(await api.getMe()); } catch { /* Saved pull remains valid; status/heartbeat recover. */ }
                   sfx("good");
                   return prize;                      // the panel shows it; the floor can't
-                } catch (e) { flash(prettyError(e)); return null; }
+                } catch (e) { throw e; }
               }}
               onSign={async () => {
                 try {
@@ -5421,6 +5506,7 @@ function Face({ src, name, size = 40, look }) {
 }
 
 const STYLE_COLORS=[["Hot pink","#ff55b0"],["Bubblegum","#f5a8d6"],["Royal purple","#8b4cdd"],["Lavender","#c4a3ef"],["Neon lime","#c6ff38"],["Electric cyan","#35e6ee"],["Neon orange","#ff8c36"],["Midnight","#343b55"],["Sage","#8fa67a"],["Patron blue","#597b9d"],["Gold","#e7b84c"],["Ivory","#f3e8d1"]];
+const STYLE_NATURAL_COLORS=[["Walnut","#704a32"],["Oak","#b98a5c"],["Chestnut","#955e43"],["Sandstone","#c9b591"],["Linen","#e8ddc7"],["Cream","#f4e9d5"],["Olive","#7b8456"],["Forest green","#43634b"],["Stone","#97958d"],["Charcoal","#484b48"],["Slate blue","#617787"],["Dusty rose","#b98882"]];
 const STYLE_DESIGNS=[["solid","Solid"],["stripe","Stripes"],["check","Checker"],["dots","Polka dots"],["sparkle","Sparkle"],["confetti","Confetti"]];
 function itemStyle(p,id){return p?.cosmetic_styles?.[id]||{color:null,design:"solid"};}
 function physicalId(p,slot){return p?.cosmetic_equipped?.[slot]||(slot==="held"?p?.vanity?.held:p?.kit?.[slot])||(slot==="desk"?"d1":slot==="chair"?"c1":null);}
@@ -6154,7 +6240,9 @@ function ownedPhysicalItems(cat,me){
  for(const id of me?.extras||[])if(PIN_INDEX[id])list.push({id:'pin:'+id,name:PIN_INDEX[id].name+' · pin',slot:'pin',kind:'pin'});
  return list;
 }
-function styleMoney(n){return Number(n).toLocaleString("en-US",{maximumFractionDigits:0});}
+function styleMoney(n){return fmt(n);}
+function expandedMoney(n){return Number(n).toLocaleString("en-US",{maximumFractionDigits:0});}
+function LargeNumberKey(){return <details className="pg-fine pg-number-key"><summary>Number abbreviations</summary><p>Each label is 1,000 times the previous: Oc = octillion (10²⁷), No = nonillion (10³⁰), Dc = decillion (10³³), Ud = undecillion (10³⁶), Dd = duodecillion (10³⁹), Td = tredecillion (10⁴²). Larger labels continue through Vg (10⁶³), then use scientific notation.</p></details>;}
 function Customization({cat,me,pp,onSaved,preview=false}){
  const items=ownedPhysicalItems(cat,me),[selected,setSelected]=useState(()=>items[0]?.id||'starter');
  const item=items.find(x=>x.id===selected)||items[0],saved=itemStyle(me,item?.id),[color,setColor]=useState(saved.color),[design,setDesign]=useState(saved.design||'solid');
@@ -6165,7 +6253,7 @@ function Customization({cat,me,pp,onSaved,preview=false}){
  const dirty=color!==(saved.color||null)||design!==(saved.design||'solid'),expired=quote&&new Date(quote.expires_at).getTime()<=clock;
  const equipped=item?.kind==='wardrobe'?(lookFor(me).clothing||'starter')===item.id:item?.kind==='pin'?('pin:'+me?.pin)===item.id:physicalId(me,item?.slot)===item?.id;
  const invalidate=()=>{setQuote(null);revision.current++;setFeedback('');};
- const review=async()=>{const token=++revision.current;setBusy(true);setFeedback('');try{const q=await api.quoteStyle(item.id,color,design);if(token===revision.current){setQuote(q);setClock(Date.now());}}catch(e){setFeedback(prettyError(e));}finally{setBusy(false);}};
+ const review=async()=>{const token=++revision.current;setBusy(true);setFeedback('');try{const q=await api.quoteStyle(item.id,color,design);if(q?.seconds_per_change!==28800)throw Error("New eight-hour pricing is not available yet. Refresh the game and review again.");if(token===revision.current){setQuote(q);setClock(Date.now());}}catch(e){setFeedback(prettyError(e));}finally{setBusy(false);}};
  const apply=async()=>{setBusy(true);setFeedback('');try{const row=await api.applyStyle(quote.id);onSaved?.(row);setQuote(null);setFeedback('Style saved. Your office has opinions now.');}catch(e){try{const current=await api.sync();onSaved?.(current);}catch{}setFeedback(prettyError(e)+' Check the saved style and review a fresh price before retrying.');setQuote(null);}finally{setBusy(false);}};
  const equip=async()=>{setBusy(true);setFeedback('');try{const row=await api.equipStyle(item.id);onSaved?.(row);setQuote(null);setFeedback('Equipped. No Busywork charged.');}catch(e){setFeedback(prettyError(e));}finally{setBusy(false);}};
  useEffect(()=>{if(feedback)feedbackRef.current?.scrollIntoView({block:'nearest'});},[feedback]);
@@ -6173,13 +6261,13 @@ function Customization({cat,me,pp,onSaved,preview=false}){
   <div className="pg-style-heading"><span className="pg-stamp">INTERIOR AFFAIRS · FORM CO-02</span><h3>Make the office yours.</h3><p>Owned items. Questionable taste. Your call.</p></div>
   <label className="pg-form-label">Choose an owned item<select aria-label="Customize owned item" value={item?.id} disabled={busy} onChange={e=>{setSelected(e.target.value);invalidate();}}>{items.map(it=><option key={it.id} value={it.id}>{it.name}</option>)}</select></label>
   <div className="pg-style-preview"><FittingPreview item={item} kind={item.kind} player={draftPlayer} large/><div><b>{item.name}</b><p className="pg-fine">Full item preview · no Busywork spent. {item.slot==='desk'?'Top and drawer cabinets change together.':''}</p><button className="pg-btn" disabled={busy||equipped||preview} onClick={equip}>{equipped?'Currently equipped':'Equip this owned item · free'}</button></div></div>
-  <fieldset disabled={busy}><legend>Color</legend><div className="pg-style-swatches">{STYLE_COLORS.map(([name,hex])=><button type="button" key={hex} style={{background:hex}} aria-label={name} title={name} aria-pressed={color===hex} onClick={()=>{setColor(hex);invalidate();}}>{color===hex?'✓':''}</button>)}</div><div className="pg-style-color"><label>Mix your own <input type="color" aria-label="Custom item color" value={color||'#8fa67a'} onChange={e=>{setColor(e.target.value);invalidate();}}/></label><button className="pg-btn" aria-pressed={color===null} onClick={()=>{setColor(null);invalidate();}}>Original color</button></div></fieldset>
+  <fieldset disabled={busy}><legend>Color</legend><div className="pg-style-palettes">{[["Bright & playful",STYLE_COLORS],["Natural tones",STYLE_NATURAL_COLORS]].map(([label,colors])=><div className="pg-style-palette" key={label}><h4>{label}</h4><div className="pg-style-swatches" role="group" aria-label={label+" colors"}>{colors.map(([name,hex])=><button type="button" key={hex} style={{background:hex}} aria-label={name} title={name} aria-pressed={color===hex} onClick={()=>{setColor(hex);invalidate();}}>{color===hex?"✓":""}</button>)}</div></div>)}</div><div className="pg-style-color"><label>Mix your own <input type="color" aria-label="Custom item color" value={color||'#8fa67a'} onChange={e=>{setColor(e.target.value);invalidate();}}/></label><button className="pg-btn" aria-pressed={color===null} onClick={()=>{setColor(null);invalidate();}}>Original color</button></div></fieldset>
   <fieldset disabled={busy}><legend>Design</legend><div className="pg-style-designs">{STYLE_DESIGNS.map(([id,name])=><button type="button" className="pg-btn" key={id} aria-pressed={design===id} onClick={()=>{setDesign(id);invalidate();}}>{name}</button>)}</div></fieldset>
-  <p className="pg-fine">Color change: 1 day of current output. Add/change a design: +1 day. Both: 2 days. Minimum 1,000 BW per paid change. Removing a design is free. Unchanged choices cost nothing. Reapplying an old choice is a new change.</p>
+  <p className="pg-fine">Color change: 8 hours of current output. Add/change a design: +8 hours. Both: 16 hours. Minimum 1,000 BW per paid change. Removing a design is free. Unchanged choices cost nothing. Reapplying an old choice is a new change.</p>
   <p className="pg-fine">Styles stay with each item through restructuring and weekly resets. Screens, photos and original outlines stay intact. Sparkle is static. Cosmetic only—no productivity bonus.</p>
   <button className="pg-btn primary pg-style-review-btn" disabled={busy||!dirty||preview} onClick={review}>{busy?'Filing paperwork…':dirty?'Review price':'Choose a different style'}</button>
   {preview&&<p className="pg-note">Art QA only · saving and payments are disabled.</p>}
-  {quote&&<div className="pg-style-quote" role="group" aria-label="Review style purchase"><h4>Review this purchase</h4><dl><div><dt>Color change</dt><dd>{styleMoney(quote.color_fee)} BW</dd></div><div><dt>Design change</dt><dd>{styleMoney(quote.design_fee)} BW</dd></div><div className="total"><dt>Total</dt><dd title={quote.total.toLocaleString()}>{styleMoney(quote.total)} BW</dd></div></dl><p className="pg-fine">Based on current server output, including active boosts and penalties. {expired?'This quote expired. Review a fresh price.':'Quote valid for up to two minutes; output or week changes require a new quote.'}</p>{pp<quote.total&&<p role="status">Need {fmt(quote.total-pp)} more BW.</p>}<div className="pg-style-actions"><button className="pg-btn primary" disabled={busy||expired||pp<quote.total||preview} onClick={apply}>Confirm style · {styleMoney(quote.total)} BW</button><button className="pg-btn" disabled={busy} onClick={()=>setQuote(null)}>Keep previewing</button></div></div>}
+  {quote&&<div className="pg-style-quote" role="group" aria-label="Review style purchase"><h4>Review this purchase</h4><dl><div><dt>Color change</dt><dd>{styleMoney(quote.color_fee)} BW</dd></div><div><dt>Design change</dt><dd>{styleMoney(quote.design_fee)} BW</dd></div><div className="total"><dt>Total</dt><dd title={quote.total.toLocaleString()}>{styleMoney(quote.total)} BW</dd></div></dl><p className="pg-fine">Available: {fmt(pp)} BW. Rounded for display.</p><details className="pg-fine pg-expanded-quote"><summary>Expanded amounts</summary><p>Color: {expandedMoney(quote.color_fee)} BW</p><p>Design: {expandedMoney(quote.design_fee)} BW</p><p>Total: {expandedMoney(quote.total)} BW</p><p>Available: {expandedMoney(pp)} BW</p></details><LargeNumberKey/><p className="pg-fine">Based on current server output, including active boosts and penalties. {expired?'This quote expired. Review a fresh price.':'Quote valid for up to two minutes; output or week changes require a new quote.'}</p>{pp<quote.total&&<p role="status">Need {fmt(quote.total-pp)} more BW.</p>}<div className="pg-style-actions"><button className="pg-btn primary" disabled={busy||expired||pp<quote.total||preview} onClick={apply}>Confirm style · {styleMoney(quote.total)} BW</button><button className="pg-btn" disabled={busy} onClick={()=>setQuote(null)}>Keep previewing</button></div></div>}
   <button className="pg-btn pg-style-reset" disabled={busy||!dirty} onClick={()=>{setColor(saved.color||null);setDesign(saved.design||'solid');invalidate();setFeedback('Preview cancelled. No Busywork charged.');}}>Cancel this preview</button>
   <p ref={feedbackRef} className="pg-style-feedback" role="status" aria-live="polite">{feedback}</p>
  </section>;
@@ -6658,7 +6746,7 @@ function Owner({ me, board, lifetime, pp, cool, cat, prices, onMeeting, onRaise,
                 disabled={heat > 0 || (me?.goodwill || 0) < 3 || pp < raiseCost} onClick={onRaise}>
           <span className="pg-dot good" />
           <span className="pg-main"><b>Ask for a raise</b>
-            <span>+2% output permanently. Needs a clean file and 3 goodwill.</span></span>
+            <span>+2% output until Friday, 4 PM Pacific. Resets each week. Needs a clean file and 3 goodwill.</span></span>
           <span className="pg-right"><b>{fmt(raiseCost)}</b><span>BW</span></span>
         </button>
       </div>
@@ -6903,7 +6991,14 @@ function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear, onPet, onCl
 
 const FACES = ["$", "+", "—", "?", "*", "!"];
 
-function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSign }) {
+function vendingSeconds(status,clientNow){
+ if(!status)return null;if(!status.ready_at)return 0;
+ const server=Date.parse(status.server_now),ready=Date.parse(status.ready_at);
+ if(!Number.isFinite(server)||!Number.isFinite(ready))return null;
+ return Math.max(0,Math.ceil((ready-(server+clientNow-status.received_at))/1000));
+}
+function clockText(seconds){return Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0");}
+function Fund({ fund, tiers=FUND_TIERS, nextTier, prevTier, office, card, pp, me, onVend, onSign }) {
   const [prize, setPrize] = useState(null);
   const [vending, setVending] = useState(false);
   const [reel, setReel] = useState("?");
@@ -6913,10 +7008,17 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
   const contribution = Number.isFinite(card?.contribution) ? card.contribution : null;
   const short = contribution !== null && pp < contribution;
   useEffect(() => { setCardMessage(""); }, [card?.week]);
-  const vendPrice = quote?.vend ?? 0;
+  const [vendState,setVendState]=useState(null),[vendError,setVendError]=useState(""),[vendStatusError,setVendStatusError]=useState(""),[vendTick,setVendTick]=useState(Date.now());
+  const vendLive=useRef(true),vendSeq=useRef(0),vendLock=useRef(false),vendSpin=useRef(null),vendFeedback=useRef(null),previousVend=useRef(me?.last_vend);
+  const refreshVend=useCallback(async()=>{const seq=++vendSeq.current;try{const state=await api.vendingState();if(!state||!Number.isFinite(state.price))throw Error("Machine status unavailable. Try again.");if(vendLive.current&&seq===vendSeq.current){setVendState({...state,received_at:Date.now()});setVendTick(Date.now());setVendStatusError("");}}catch(e){if(vendLive.current&&seq===vendSeq.current)setVendStatusError(prettyError(e));}},[]);
+  useEffect(()=>{vendLive.current=true;refreshVend();const tick=setInterval(()=>setVendTick(Date.now()),1000),poll=setInterval(()=>{if(!document.hidden)refreshVend();},15000);const visible=()=>{if(!document.hidden)refreshVend();};document.addEventListener("visibilitychange",visible);return()=>{vendLive.current=false;vendSeq.current++;clearInterval(tick);clearInterval(poll);clearInterval(vendSpin.current);document.removeEventListener("visibilitychange",visible);};},[refreshVend]);
+  useEffect(()=>{if(previousVend.current!==me?.last_vend){previousVend.current=me?.last_vend;refreshVend();}},[me?.last_vend,refreshVend]);
+  useEffect(()=>{if(vendError)vendFeedback.current?.scrollIntoView({block:"nearest"});},[vendError]);
+  const vendPrice=vendState?.price??null,vendLeft=vendingSeconds(vendState,vendTick);
+  const pull=async()=>{if(vendLock.current||vendLeft!==0||vendPrice===null||vendStatusError||pp<vendPrice)return;vendLock.current=true;setVending(true);setPrize(null);setVendError("");vendSpin.current=setInterval(()=>setReel(FACES[Math.floor(Math.random()*FACES.length)]),90);try{const got=await onVend();if(!got)throw Error("Could not confirm the pull. Check the machine status before retrying.");await new Promise(resolve=>setTimeout(resolve,1100));if(vendLive.current)setPrize({text:got.text||"Something fell out.",glyph:got.kind==="pp"?"$":got.mult?"+":"—"});}catch(e){if(vendLive.current)setVendError(prettyError(e));}finally{clearInterval(vendSpin.current);await refreshVend();vendLock.current=false;if(vendLive.current)setVending(false);}};
   const signed = !!card?.mine;
   const need = Math.max(0, (card?.staff || 0) - (card?.signers?.length || 0));
-  const unlocked = FUND_TIERS.filter((t) => fund >= t.at).length;
+  const unlocked = Number.isInteger(office?.tiers)?office.tiers:tiers.filter((t)=>fund>=t.at).length;
   const g = office?.goal || {};
   const pct = office ? Math.min(100, (office.total / office.target) * 100) : 0;
   return (
@@ -6940,23 +7042,21 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
         </div>
       </div>
       <div className="pg-earnbar">
-        Everyone's lifetime Busywork, pooled. Nobody spends it — it decides what the office
-        gets. <b>Every tier the office passes gives every single person a permanent +3% to
-        output.</b> Nine people earning slowly beats one person earning fast.
+        This week’s Busywork, pooled. Nobody spends it — it decides what the office
+        gets. <b>Each unlocked tier adds +3% output for everyone this week.</b>
+        Tiers and their bonuses reset Friday at 4 PM Pacific. Lifetime totals and permanent cosmetics stay.
       </div>
       <div className="pg-stats">
         <div><b>{unlocked}</b><span>tiers unlocked</span></div>
-        <div><b>+{unlocked * 3}%</b><span>on every desk, forever</span></div>
+        <div><b>+{unlocked * 3}%</b><span>on every desk this week</span></div>
       </div>
       <div className="pg-pad">
-        <div className="pg-progress">
-          <i style={{ width: Math.min(100, (fund / nextTier.at) * 100) + "%" }} />
-        </div>
-        <p className="pg-small"><b>{fmt(fund)}</b> of {fmt(nextTier.at)} BW toward
-          <b> {nextTier.label}</b></p>
+        {nextTier?<><div className="pg-progress"><i style={{width:Math.min(100,(fund/nextTier.at)*100)+"%"}}/></div><p className="pg-small" data-testid="fund-progress"><b>{fmt(fund)}</b> of {fmt(nextTier.at)} BW toward <b>{nextTier.label}</b></p></>:<p className="pg-note" data-testid="fund-progress">All {tiers.length} office milestones unlocked this week. The committee is out of paperwork.</p>}
+        <LargeNumberKey/>
       </div>
-      <div className="pg-list">
-        {FUND_TIERS.map((t, i) => {
+      <details className="pg-fund-milestones"><summary>View all {tiers.length} office milestones</summary>
+      <div className="pg-list" data-testid="fund-tier-list">
+        {tiers.map((t, i) => {
           const got = fund >= t.at;
           return (
             <div key={t.at} className={"pg-row static" + (i % 2 ? " alt" : "") + (got ? "" : " poor")}>
@@ -6973,6 +7073,7 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
           );
         })}
       </div>
+      </details>
       {prevTier && <div className="pg-note">Most recently unlocked: {prevTier.label}. Everybody
         felt that, whether they noticed or not.</div>}
 
@@ -6989,22 +7090,13 @@ function Fund({ fund, nextTier, prevTier, office, card, pp, quote, onVend, onSig
         </div>
       </div>
 
-      <button className="pg-btn pg-wide danger" disabled={vending || pp < vendPrice}
-              onClick={async () => {
-                setVending(true); setPrize(null);
-                const spin = setInterval(() => setReel(FACES[Math.floor(Math.random() * FACES.length)]), 90);
-                const got = await onVend();
-                setTimeout(() => {
-                  clearInterval(spin);
-                  setPrize(got ? { text: got.text || "Something fell out.",
-                                   glyph: got.kind === "pp" ? "$" : got.mult ? "+" : "—" } : null);
-                  setVending(false);
-                }, 1100);
-              }}>
-        {vending ? "..." : pp < vendPrice ? "Not enough for a pull" : "Pull — " + fmt(vendPrice) + " BW"}
+      <div className="pg-vend-status" data-testid="vending-status"><b>{vending?"Checking the tray…":vendStatusError?"Machine status unavailable":vendLeft===null?"Checking machine status…":vendLeft>0?"Next pull in "+clockText(vendLeft):"Ready for the next pull"}</b><span>Server-enforced · one pull every 10 minutes</span></div>
+      <button className="pg-btn pg-wide danger" disabled={vending||vendPrice===null||!!vendStatusError||vendLeft===null||vendLeft>0||pp<vendPrice} onClick={pull}>
+        {vending?"Pulling…":vendStatusError?"Machine status unavailable":vendLeft>0?"Cooling down · "+clockText(vendLeft):vendPrice===null?"Checking machine…":pp<vendPrice?"Not enough for a pull":"Pull — "+fmt(vendPrice)+" BW"}
       </button>
-      <div className="pg-fine">One pull every ten minutes. Nine things can come out and one of
-        them is nothing at all. The machine does not negotiate.</div>
+      <p className="pg-fine">Nine things can come out and one is nothing at all. The machine does not negotiate. A rejected pull does not restart your cooldown.</p>
+      <p ref={vendFeedback} className="pg-vend-feedback" id="vending-feedback" role="status">{vendError}</p>
+      {vendStatusError&&<div className="pg-note"><p>{vendStatusError}</p><button className="pg-btn" onClick={refreshVend}>Retry machine status</button></div>}
 
       {card && (
         <>

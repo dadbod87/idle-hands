@@ -1,7 +1,9 @@
 const {test,expect}=require('@playwright/test');const {installGameFixture}=require('./game-fixture.cjs');
 for(const size of [{width:390,height:640},{width:393,height:851},{width:844,height:390}])test(`controls and modal focus at ${size.width}x${size.height}`,async({browser})=>{
  const context=await browser.newContext({viewport:size,isMobile:true,hasTouch:true}),page=await context.newPage();await installGameFixture(page);
- await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});
+ // Reproduce the crowded scheduled-status HUD layout rather than depend on CI wall time.
+ await page.clock.setFixedTime(new Date('2026-11-06T22:56:29Z'));
+ await page.goto(process.env.PROFILE_BASE_URL||'http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});
  const metrics=await page.evaluate(()=>{
   const r=s=>document.querySelector(s).getBoundingClientRect();return {stage:r('.pg-stage').height,bar:r('.pg-bar'),rail:r('.pg-feedback-rail'),width:document.documentElement.scrollWidth,statusHeight:[...document.querySelectorAll('.pg-bar>.pg-drinkboost,.pg-bar>.pg-statusboost')].reduce((sum,el)=>sum+el.getBoundingClientRect().height+6,0)};
  });

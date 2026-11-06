@@ -99,3 +99,7 @@ Custom-photo heads render their own silhouette: no added border, padding, shadow
 ## Build 189 physical material finishes
 
 Use the shared material paint helper for physical furniture, held items, wardrobe tops and pins. Every instance needs a unique SVG pattern ID, static sparkle/confetti and readable original ink. Desk top and drawer cabinets share the chosen finish; photos, TV programs, picture contents and electronics keep their original detail. Costume layers override purchased wardrobe color as before. The read-only style gallery covers every physical tier and editor; no payment RPC may run in art QA. Preserve chair/rug placement and actor/camera geometry.
+
+## Build 190 natural palette
+
+Keep the playful colors and add a separate Natural tones group: walnut, oak, chestnut, sandstone, linen, cream, olive, forest green, stone, charcoal, slate blue and dusty rose. They use the same existing material masks, preview/save flow and prices; no outlines, photos, TV screens or furniture geometry change. Preserve named accessible buttons and keyboard focus.
