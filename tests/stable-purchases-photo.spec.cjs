@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
-const {installGameFixture}=require('./game-fixture.cjs');const path=require('node:path');
+const {installGameFixture,openOwnDesk}=require('./game-fixture.cjs');const path=require('node:path');
 const base=process.env.PROFILE_BASE_URL||'http://127.0.0.1:8765',photo=path.join(__dirname,'fixtures/custom-face.png');
-async function openDesk(page){await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:'Walk to Your desk',exact:true}).click();await expect(page.locator('.pg-panelhead')).toContainText('Your desk',{timeout:20000});}
+const openDesk=openOwnDesk;
 async function openMirror(page){await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:'Walk to The Mirror',exact:true}).click();await expect(page.locator('.pg-panelhead')).toContainText(/The mirror/i,{timeout:20000});}
 for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844,height:390}]){
  test(viewport.width+': repeated fixed-coordinate purchases never move the target when receipts arrive or expire',async({browser})=>{

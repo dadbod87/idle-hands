@@ -74,4 +74,13 @@ async function installGameFixture(page,options={}) {
  });
  return {player,calls,uploads};
 }
-module.exports={installGameFixture,makeOfficePlayFixture};
+// Use the persistent work shortcut and actual owned desk instead of a directory entry.
+async function openOwnDesk(page){
+ const {expect}=require('@playwright/test');
+ const go=page.getByRole('button',{name:/Go to your desk/});
+ if(await go.isVisible())await go.click();
+ await expect(page.getByRole('button',{name:/Do actual work/})).toBeVisible({timeout:25000});
+ await page.locator('.pg-officedesk.mine').click();
+ await expect(page.locator('.pg-panelhead')).toContainText('Your desk',{timeout:25000});
+}
+module.exports={installGameFixture,makeOfficePlayFixture,openOwnDesk};
