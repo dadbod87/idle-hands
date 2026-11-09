@@ -3962,7 +3962,7 @@ function OfficeFloor() {
       } finally { metadataBusy = false; }
     };
     const heartbeat = async () => {
-      if (!active || document.hidden || heartbeatBusy) return;
+      if (!active || heartbeatBusy) return;
       heartbeatBusy = true;
       try {
         try {

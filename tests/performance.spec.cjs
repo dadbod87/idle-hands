@@ -47,12 +47,14 @@ for(const width of [1440,390]) test(`${width}: update bursts stay bounded and pu
  expect(f.calls.filter(x=>x.rpc==='buy_upgrade')).toHaveLength(1);expect(f.player.upgrades).toEqual(['qa_up']);
  await page.getByRole('button',{name:'Requisitions',exact:true}).click();
  await page.screenshot({path:`test-results/performance-${width}.png`,fullPage:true});
- // Hidden tabs make no sync/claim/price/metadata/notification reads. Resume catches up.
+ // Hidden tabs keep the existing earnings heartbeat but suppress auxiliary reads.
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});
  await page.waitForTimeout(2500);const hiddenStart=f.calls.length;
  await page.evaluate(()=>{for(let i=0;i<100;i++)window.__floorChanged();});
  await page.waitForTimeout(12000);
- expect(f.calls.slice(hiddenStart).filter(x=>['sync','claim_incoming','all_prices','weekly_pins','spend_board','beta_testers','office_state'].includes(x.rpc))).toHaveLength(0);
+ expect(f.calls.slice(hiddenStart).filter(x=>['all_prices','weekly_pins','spend_board','beta_testers','office_state'].includes(x.rpc))).toHaveLength(0);
+ expect(f.calls.slice(hiddenStart).filter(x=>x.rpc==='sync').length).toBeGreaterThanOrEqual(1);
+ expect(f.calls.slice(hiddenStart).filter(x=>x.rpc==='sync').length).toBeLessThanOrEqual(2);
  const shown=f.calls.length;await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>false});document.dispatchEvent(new Event('visibilitychange'));});
  await expect.poll(()=>f.calls.slice(shown).some(x=>x.rpc==='sync')).toBe(true);
  await expect.poll(()=>f.calls.slice(shown).some(x=>x.rpc==='all_prices')).toBe(true);
