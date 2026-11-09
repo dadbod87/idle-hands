@@ -1,3 +1,7 @@
+## Development toolkit — 2026-11-09
+
+Added pinned, repository-local OpenAI Game Studio skills with complete references/scripts, upstream provenance/license notices and an offline integrity verifier. Added an isolated, lockfile-pinned Playwright/axe accessibility and browser diagnostic tool for synthetic desktop/mobile states. Default audit mode collects findings rather than declaring accessibility compliance; strict mode is explicit. Dated GitHub metadata and fit decisions distinguish installed tools from engine/framework candidates, including RPGJS. Root README, AGENTS and 2.0 planning home link to the toolkit. No game runtime, production data, engine, root dependency/build configuration or server changes; build remains 194. Required release checks gate the setup merge.
+
 ## Future-game planning — 2026-11-09
 
 [Idle Hands 2.0 planning home](idle-hands-2/README.md) records the approved separate-game direction, persistent town/creative-work principle, gradual roadmap and researched reuse candidates. This is planning documentation; the live game remains build 194 with no runtime, data, economy or deployment-configuration changes in this update.

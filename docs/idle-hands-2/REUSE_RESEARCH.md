@@ -1,6 +1,10 @@
 # Reusable art, tools and systems
 
-Researched 2026-11-09 from the primary project/publisher sources linked below. **Shortlist only: nothing adopted, purchased, imported or installed.** This is a record of published terms and fit for evaluation, not a completed audit of downloaded releases. Recheck the exact release/archive and its included licenses before use. License-free hosting and free operation are different questions.
+Researched 2026-11-09 from the primary project/publisher sources linked below. **This art/engine shortlist remains an evaluation list; no art or game engine is adopted.** The later [development toolkit](../DEVELOPMENT_TOOLKIT.md) records the actual installed authoring skills and development-only QA tools separately. This is a record of published terms and fit for evaluation, not a completed audit of downloaded releases. Recheck the exact release/archive and its included licenses before use. License-free hosting and free operation are different questions.
+
+## Further repository evaluation
+
+The [development toolkit](../DEVELOPMENT_TOOLKIT.md) adds a dated popularity/maintenance/source snapshot, RPGJS as a more complete framework candidate, and the installed skills/QA tooling. Compare RPGJS with a custom Phaser route before rebuilding maps, inventory, dialogue and multiplayer plumbing ourselves. Engine choice remains open; built-in systems still need testing against persistent cooperative town rules.
 
 ## Recommended first comparison
 

@@ -8,6 +8,7 @@ Idle Hands 2.0 is a **separate game**: a humorous shared company town combining 
 
 - [Vision, experience and first playable neighborhood](VISION.md)
 - [Reusable art, tools and systems: researched shortlist](REUSE_RESEARCH.md)
+- [Installed development toolkit and popular-repository comparison](../DEVELOPMENT_TOOLKIT.md)
 - Current game: [state](../CURRENT_STATE.md), [art direction](../ART_DIRECTION.md), [history](../CHANGELOG.md)
 
 ## Confirmed decisions

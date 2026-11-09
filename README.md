@@ -10,6 +10,10 @@ Start with the **[2.0 planning home](docs/idle-hands-2/README.md)** for the appr
 
 These documents live here for discovery while 2.0 is being planned. They do not turn the current game into 2.0 or authorize a new deployment, account migration or infrastructure purchase.
 
+## Development tools
+
+See the **[development toolkit](docs/DEVELOPMENT_TOOLKIT.md)** for installed game-development skills, local browser/accessibility diagnostics, and evaluated GitHub projects for both games.
+
 ## Working on the current game
 
 Read [AGENTS.md](AGENTS.md) first, then the current-state, changelog and release-checklist documents it references. Keep current-game fixes separate from sequel design.

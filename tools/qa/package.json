@@ -1,0 +1,15 @@
+{
+  "name": "idle-hands-qa-tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local, fixture-only Idle Hands accessibility and browser diagnostics",
+  "engines": {"node": ">=22.12.0"},
+  "scripts": {
+    "audit": "playwright test --config=playwright.config.cjs",
+    "report": "playwright show-report ../../playwright-report/qa"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.56.1"
+  }
+}
