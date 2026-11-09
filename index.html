@@ -4544,6 +4544,13 @@ function OfficeFloor() {
   const chairTakenBy = chair && chairClaim && chairClaim.window === chair.window
     ? chairClaim.by : null;
 
+  // Countdown must advance even when passive income is zero.
+  const [,setActionClock]=useState(0);
+  useEffect(()=>{
+    if(!me?.last_deed||deedCooldownMs(me)<=0)return;
+    const id=setInterval(()=>{setActionClock(n=>n+1);if(deedCooldownMs(me)<=0)clearInterval(id);},1000);
+    return ()=>clearInterval(id);
+  },[me?.last_deed,me?.perks?.silver_tongue]);
   const cool = deedCooldownMs(me);
 
   /**
