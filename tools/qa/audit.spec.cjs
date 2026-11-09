@@ -3,6 +3,8 @@ const {test,expect}=require('@playwright/test');
 const AxeBuilder=require('@axe-core/playwright').default;
 const fs=require('node:fs/promises');
 const {installGameFixture}=require('../../tests/game-fixture.cjs');
+// Only the observed read/fixture-boot calls are allowed; unknown actions fail closed.
+const allowedRpcs=new Set(['all_prices','beta_testers','check_in','claim_incoming','office_play_state','office_state','save_achievements','spend_board','sync','weekly_pins','weekly_schedule','who_approves']);
 for(const width of [1440,390])test.describe(`${width}px`,()=>{
  test.use({viewport:{width,height:900},isMobile:width<600,hasTouch:width<600});
  test('fixture-only accessibility and browser diagnostic audit',async({page,baseURL},info)=>{
@@ -36,7 +38,7 @@ for(const width of [1440,390])test.describe(`${width}px`,()=>{
   info.annotations.push({type:'accessibility-mode',description:`${summary.strict?'Strict':'Report only'}: ${groups} rule/state groups; manual review still required`});
   console.log(`${width}px ${summary.strict?'STRICT':'REPORT ONLY'}: ${groups} accessibility rule/state groups recorded. Audit completion is not accessibility compliance.`);
   expect(errors).toEqual([]);
-  expect(fixture.calls.filter(c=>/^(buy_|quote_style|apply_style|equip_style|do_deed|do_work|restructure|use_vending|sign_card)/.test(c.rpc))).toEqual([]);
+  expect(fixture.calls.filter(c=>!allowedRpcs.has(c.rpc))).toEqual([]);
   // Boot can update synthetic achievement metadata; economic fields must stay untouched.
   const original=JSON.parse(before);for(const key of ['pp','lifetime','equity','owned','upgrades','kit','wardrobe_owned'])expect(fixture.player[key]).toEqual(original[key]);
   if(process.env.QA_A11Y_STRICT==='1')expect(scans.flatMap(s=>s.violations)).toEqual([]);

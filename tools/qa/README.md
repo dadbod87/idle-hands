@@ -41,6 +41,6 @@ For a deliberate zero-violation check after addressing the baseline:
 QA_A11Y_STRICT=1 QA_BROWSER=chrome npm --prefix tools/qa run audit
 ```
 
-Strict mode fails on detected violations. Both modes still fail on navigation errors, uncaught page errors, accidental economy-action calls or changed synthetic economic fields. This tool does not replace the existing regression/release gate. No production purchasing, server load testing, account creation or progress changes are involved.
+Strict mode fails on detected violations. Both modes still fail on navigation errors, uncaught page errors, any RPC outside the explicit read/fixture-boot allowlist or changed synthetic economic fields. This tool does not replace the existing regression/release gate. No production purchasing, server load testing, account creation or progress changes are involved.
 
 Dependencies: Playwright / @playwright/test (Apache-2.0), axe-core / @axe-core/playwright (MPL-2.0). See lockfile and package notices.
