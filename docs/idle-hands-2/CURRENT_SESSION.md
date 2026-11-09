@@ -1,7 +1,7 @@
-# Current sequel handoff — follow separate source
+# Current sequel handoff — use private GitHub source
 
-Updated 2026-11-09. **Implementation/planning authority moved**: read [SEQUEL_SOURCE.md](SEQUEL_SOURCE.md) for exact local repository, branch and checkpoint. No sequel remote exists yet. Do not implement 2.0 in this repository.
+Updated 2026-11-09. **Source/planning authority: [dadbod87/idle-hands-2](https://github.com/dadbod87/idle-hands-2), private, branch main.** See [SEQUEL_SOURCE.md](SEQUEL_SOURCE.md) for exact discovery/CI review links and the local checkout. Fetch it, inspect open PRs/current task, and read its handoff before acting. This directory is a historical discovery snapshot, not a second writable roadmap.
 
-IH2-010 local engine pilot is complete. Next: IH2-015 private GitHub source and CI checkpoint; then IH2-020 coherent visual kit. Run the tracker in the separate repository and follow its AGENTS/hand-off. The copied roadmap here is a discovery snapshot, not a second writable authority.
+Prototype feedback through the doorway exit correction is in that source. IH2-015 establishes private source/CI, followed by IH2-020 visual kit. The authoritative task/acceptance/status and final CI/merge evidence are maintained there. Do not rely on the old local-only branch/checkpoint here.
 
-Latest priorities: slower long-term progression; humor, deep systems and teamwork; acquire/design/upgrade/decorate personal homes. Preferred GitHub/Vercel/Supabase, modest extra hosting may be considered after an estimate. No paid assets or unbounded spending. The existing live game stays build 194; no accounts/data/runtime changed.
+Existing Idle Hands remains independent build 194. No real account or hosted sequel is created by publishing private source.
