@@ -13,7 +13,7 @@ for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and dir
  }
  await page.screenshot({path:'test-results/'+mode+'-polish-controls.png',fullPage:true});
  await page.getByRole('button',{name:'Office directory',exact:true}).click();const directory=page.getByTestId('office-directory');
- await expect(directory.getByRole('button',{name:/^Walk to /})).toHaveCount(11);
+ await expect(directory.getByRole('button',{name:/^Walk to /})).toHaveCount(12);
  await expect(directory.getByRole('button',{name:'Walk to Your desk',exact:true})).toHaveCount(0);
  await expect(directory.getByRole('button',{name:'Walk to Suggestion Box',exact:true})).toHaveCount(0);
  const fridge=directory.getByRole('button',{name:'Walk to The Fridge',exact:true});
@@ -22,6 +22,12 @@ for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and dir
  await expect(page.locator('.pg-body.me')).toHaveClass(/walking/);
  await expect(page.locator('.pg-panelhead')).toContainText('The fridge',{timeout:25000});
  await expect(directory).toHaveCount(0);await page.screenshot({path:'test-results/'+mode+'-fridge-arrival.png',fullPage:true});
+ await page.locator('.pg-panel .pg-x').click();await page.getByRole('button',{name:'Office directory',exact:true}).click();
+ const bulletin=directory.getByRole('button',{name:'Walk to Bulletin Board',exact:true});
+ if(mode==='mobile')await bulletin.tap();else{await bulletin.focus();await page.keyboard.press('Enter');}
+ await expect(page.locator('.pg-body.me')).toHaveClass(/walking/);
+ await expect(page.locator('.pg-panelhead')).toContainText('Bulletin board',{timeout:25000});
+ await page.screenshot({path:'test-results/'+mode+'-bulletin-arrival.png',fullPage:true});
  await page.locator('.pg-panel .pg-x').click();await page.getByRole('button',{name:'Office directory',exact:true}).click();
  await directory.getByRole('button',{name:'Walk to HR Cabinet',exact:true}).click();
  await expect(page.locator('.pg-body.me')).toHaveClass(/walking/);
