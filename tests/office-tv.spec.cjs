@@ -39,7 +39,9 @@ for(const mode of ['desktop','mobile'])test(mode+': premium TV preview, failed p
  await context.close();
 });
 test('premium TV cannot be bought under the server quote and gallery loads all four self-hosted stills',async({page})=>{
- const f=await installGameFixture(page,{fittings});f.player.pp=49999999;
+ // Keep the one-BW shortfall fixed while walking; this case tests affordability, not accrual.
+ await page.clock.setFixedTime(new Date('2026-10-24T12:34:00Z'));
+ const f=await installGameFixture(page,{fittings});f.player.pp=49999999;f.player.owned={};
  await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible();
  const row=await openCatalogue(page);await expect(row.locator('button.pg-row')).toBeDisabled();
  await row.getByRole('button',{name:'Preview The Productivity Flatscreen',exact:true}).click();expect(f.calls.some(c=>c.rpc==='buy_fitting')).toBe(false);
