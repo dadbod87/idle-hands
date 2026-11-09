@@ -90,3 +90,9 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Run `python3 tools/verify-game-skills.py` after any bundled skill change; preserve upstream provenance and license notices.
 - [ ] New QA tools must use isolated fixture data, pinned development dependencies and local-only defaults. Keep them out of the game runtime/build detection.
 - [ ] Diagnostic completion is not an accessibility or performance pass; disclose findings, incomplete results, browser emulation and scope.
+
+## Sequel planning / continuity updates
+- [ ] Run `python3 tools/idle-hands-2.py check` and `python3 tests/idle-hands-2-tracker.test.py`; inspect the generated continuation prompt and evidence links.
+- [ ] Reconcile roadmap, decisions, current handoff and next task; source-review statements must not become runtime/device claims.
+- [ ] Keep separate-game/free-assets boundaries; no new runtime under the current deploy root, no billing or player-data operations.
+- [ ] Existing three CI jobs must pass before merging planning changes; verify unchanged current-game artifact after auto-deployment.

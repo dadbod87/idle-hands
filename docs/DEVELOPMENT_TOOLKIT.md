@@ -1,6 +1,6 @@
 # Idle Hands development toolkit
 
-Updated 2026-11-09. This setup supports maintenance of the current game and preparation for a **separate** Idle Hands 2.0. The [approved sequel decisions](idle-hands-2/README.md) remain authoritative. Engine choice is open.
+Updated 2026-11-09. This setup supports maintenance of the current game and preparation for a **separate** Idle Hands 2.0. The [approved sequel decisions](idle-hands-2/README.md) remain authoritative. Later the same day, the user delegated the engine choice: [Phaser was selected as the working sequel engine](idle-hands-2/ENGINE_DECISION.md), with a separate local pilot required. The comparison table below preserves the earlier shortlist snapshot.
 
 ## What is actually added
 
@@ -58,12 +58,12 @@ GitHub metadata checked 2026-11-09; stars are a dated popularity signal, not a s
 | [Superpowers](https://github.com/obra/superpowers) | 315,056 | MIT | **Reviewed, not bootstrapped.** Useful root-cause/verification ideas; a wholesale agent-workflow installation would overlap existing instructions and bring additional skill dependencies/process defaults. Keep this project's release/authorization workflow coherent. |
 | [OpenAI skills](https://github.com/openai/skills) | 28,614 | Per-skill | **Catalog reviewed.** Current game-specific examples moved to OpenAI plugins. Do not install a third-party mirror of the missing develop-web-game skill. Existing host browser/Vercel/Supabase skills already cover much of this setup. |
 
-The RPGJS [engine README](https://github.com/RSamaium/RPG-JS/tree/v5) describes its built-in systems; this is not a verified complete cooperative idle-city implementation. Its own skill auto-scaffolds a non-RPGJS workspace, so that skill is **not installed here** while the current game is not an RPGJS project and engine selection remains open. This prevents accidental conversion of 1.0 during a future agent task.
+The RPGJS [engine README](https://github.com/RSamaium/RPG-JS/tree/v5) describes its built-in systems; this is not a verified complete cooperative idle-city implementation. Its own skill auto-scaffolds a non-RPGJS workspace, so that skill is **not installed here** while the current game is not an RPGJS project and the sequel uses a separate Phaser pilot. This prevents accidental conversion of 1.0 during a future agent task.
 
 ## Clean path to 2.0
 
 1. Use the [experience/first-neighborhood brief](idle-hands-2/VISION.md) to define a small comparison task.
-2. Compare RPGJS against Phaser + optional Colyseus with the same map walk, interaction, inventory item, save/reload and shared contribution. Include a late join, disconnect and concurrent contribution.
+2. Follow the [sequel build system](idle-hands-2/BUILD_SYSTEM.md) and dependency roadmap. Source review chose Phaser; validate its tiny pilot first, then durable shared play. Reopen RPGJS only if evidence changes the decision, rather than building two complete prototypes.
 3. Measure effort, source clarity, phone controls/loading, save semantics and operational cost. Include Godot if the editor/native path is a genuine contender.
 4. Select one coherent route, pin exact versions, and record the decision. Do not combine engines or create a new game server merely to collect tools.
 5. Use the existing asset/license research and representative art sample; preserve town/creative work across competition cycles.

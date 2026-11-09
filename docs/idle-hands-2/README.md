@@ -1,56 +1,45 @@
-# Idle Hands 2.0 — planning home
+# Idle Hands 2.0 — planning and build home
 
-Status: **approved direction; preproduction only**. Recorded 2026-11-09 from Nick's conversation. Working title, not a final product name. No sequel code, repository, infrastructure, assets or paid services have been created or acquired by this planning update.
+Status: **preproduction setup complete; engine pilot next** (2026-11-09). Working title. Separate game; no sequel runtime, hosted service or asset purchase exists yet. Current game remains build 194.
 
-Idle Hands 2.0 is a **separate game**: a humorous shared company town combining idle production, personal creativity, cooperative construction and exploration. People should be able to return and see both their own progress and the visible impact of the community.
+Nick has delegated routine design and technical choices, asked for free assets and a system that can progress one prompt at a time. The agent selects reasonable defaults, tests them and records decisions. No large upfront questionnaire is required.
 
-## Start here
+## Start / resume
 
-- [Vision, experience and first playable neighborhood](VISION.md)
-- [Reusable art, tools and systems: researched shortlist](REUSE_RESEARCH.md)
-- [Installed development toolkit and popular-repository comparison](../DEVELOPMENT_TOOLKIT.md)
+1. Read [current handoff](CURRENT_SESSION.md) and the latest dated closeout it links.
+2. Read [build protocol](BUILD_SYSTEM.md), [decision log](DECISIONS.md), [first-session brief](EXPERIENCE_BRIEF.md) and [free-assets policy](FREE_ASSETS.md).
+3. Run `python3 tools/idle-hands-2.py status`, `check` and `prompt` from the repository root. Say **“Continue Idle Hands 2.0”** to work on the next ready task. This is an on-demand workflow, not unattended background execution.
+
+The [machine-readable roadmap](ROADMAP.json) is authoritative for task status/dependencies/acceptance/evidence. The script is read-only and validates the records; an agent must inspect the actual evidence and update them honestly. A fresh session must fetch current source and reconcile remote PRs/worktrees before acting.
+
+## Chosen direction
+
+- [Engine comparison and decision](ENGINE_DECISION.md): **Phaser 4 + TypeScript + Vite + DOM UI**, selected after current source/documentation review; validate desktop/phone in IH2-010. RPGJS offers more built-in RPG systems and remains the fallback if the pilot changes the tradeoff. Neither engine has been runtime-tested here.
+- A humorous shared company town: personal workshop/home, cooperative visible construction and modest exploration. [Experience brief](EXPERIENCE_BRIEF.md) defines the first five/twenty minutes and persistence boundaries.
+- Original or verified CC0 assets first; $0 asset purchases. No mandatory monetization in the first release. Free hosting feasibility remains unproven and has its own measured gate.
+- Separate local sequel repository at the pilot; no sequel runtime inside 1.0. Its exact location/authority pointer will be recorded here when created. No account imports or new cloud resources assumed.
+
+## Stages
+
+| Task | Reviewable result | Gate |
+|---|---|---|
+| IH2-000 | Comparison, defaults, brief and build/continuity system | Source-reviewed documents and tracker tests; complete |
+| IH2-010 | Separate local engine pilot | Walk/interact/transition, desktop/narrow/short screenshots and measured budgets |
+| IH2-020 | One coherent visual kit | Comparable samples, licensed asset inventory, phone readability |
+| IH2-030 | Fun local workshop loop | Gather/craft/decorate, saved synthetic state, deterministic idle tests |
+| IH2-040 | Durable two-player bridge loop | Transactions, replay/concurrency, restart/reconnect and rollover safety |
+| IH2-050 | Polished neighborhood | Small content scope, first-session playtest and phone usability |
+| IH2-060 | Private-preview readiness package | Measured 20-client cost/performance, permissions, backup/restore, hosting decision |
+| IH2-070 | Invited beta | Approved isolated target, actual deployed artifact and device verification |
+| IH2-080 | Public launch | Beta issues resolved, concrete launch package and explicit launch authorization |
+
+These are dependency gates, not promised dates. The task file contains full acceptance criteria and exclusions; update it rather than maintaining another checkbox list here. Expansion comes after the first neighborhood proves its value.
+
+## Background and discovery
+
+- [Original vision](VISION.md)
+- [Historical reusable-art/system research](REUSE_RESEARCH.md) — paid options are now excluded
+- [Installed development toolkit](../DEVELOPMENT_TOOLKIT.md)
 - Current game: [state](../CURRENT_STATE.md), [art direction](../ART_DIRECTION.md), [history](../CHANGELOG.md)
 
-## Confirmed decisions
-
-These are user-approved direction, not tentative feature suggestions.
-
-| ID | Decision | Why it matters |
-|---|---|---|
-| D-001 | Build 2.0 as a separate game. | Keep current players and the live game stable; plan a separate runtime, data and release boundary. Sharing accounts or importing anything is a future decision, not assumed. |
-| D-002 | The town and players' creative work persist. | Homes, decoration and community construction must feel worth investing in. |
-| D-003 | Weekly competitions may reset scores/objectives without erasing the town. | Competition can renew without destroying creative investment. Exact seasons, currencies and reward rules remain undecided. |
-| D-004 | Develop the idea and art direction deliberately, design the systems, and validate a small playable neighborhood before building a whole city. | Use early concept art and representative assets, then test rough gameplay before finishing the entire art library. |
-| D-005 | Research reusable graphics and systems to accelerate development. | Evaluate licensing, visual fit and practical integration; research is not adoption or a purchase. |
-
-The three-layer structure—your place, our town, beyond town—is the working concept. Specific businesses, characters, resources, combat and activities remain proposals.
-
-## Gradual roadmap
-
-| Stage | Concrete result | Ready to move on when |
-|---|---|---|
-| 1. Experience brief | A five-minute visit, first-session journey, core loop and tone; initial scope exclusions. | We can explain what is fun before listing more features. |
-| 2. Visual exploration | Two or three coherent directions; camera, palette, scale and character/prop sheets; phone and desktop interface examples. | Nick chooses a direction; representative characters, buildings and controls read clearly on a phone. |
-| 3. Systems and rough prototype | Resource flows, production, ownership, shared contributions and saving; one loop with placeholder art. | The loop is enjoyable, reconnects safely and cannot double-spend or erase progress. |
-| 4. One polished neighborhood | A personal property, a few useful businesses, one shared project and one exploration area. | It is fun with several people, usable on desktop/phone, and survives reloads and concurrent contributions. |
-| 5. Expand in small releases | More locations, professions, stories and personalization. | Each addition earns its place through playtesting, cost and performance evidence. |
-
-## Next work queue
-
-Unchecked items are planning tasks, not promises or approved spending.
-
-- [ ] Write the five-minute visit and first twenty minutes of play.
-- [ ] Decide the initial audience: office group, invited communities or broader public.
-- [ ] Sketch the first neighborhood and its resource/project/exploration loop.
-- [ ] Produce comparable art-direction boards with the same scene and characters.
-- [ ] Test readability, movement and interaction on a narrow phone before producing bulk art.
-- [ ] Compare one browser-first engine approach with one editor-first approach using the same tiny scene; do not select a stack from screenshots alone.
-- [ ] Evaluate a small coherent asset sample and establish the attribution/provenance inventory described in the research document.
-- [ ] Write personal/shared ownership and persistence rules before designing season rewards.
-- [ ] Define one shared-project concurrency test and a performance budget before scaling the map.
-
-## How to keep this discoverable and current
-
-The root README, AGENTS.md and CURRENT_STATE.md point here. Use this directory for sequel discussions rather than adding speculative features to the live-game backlog.
-
-Add dated decisions with an ID, explicit status (proposed/approved/superseded) and the user decision behind them. Do not silently promote a proposal into a requirement. Keep research links, license evidence and evaluation results in REUSE_RESEARCH.md. Record substantive planning updates in the repository changelog. When a separate sequel repository is deliberately created, move or copy this planning home there and leave a link here.
+Root README, AGENTS and CURRENT_STATE point here. Direct user decisions and agent defaults are distinguished in DECISIONS. Keep dated closeouts, exact check/artifact evidence, discovered follow-ups and a next task. When implementation moves to the sequel repository, copy this system there, repair links and leave the authoritative pointer here. Never rely on this chat as the only record.
