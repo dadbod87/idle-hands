@@ -10,6 +10,10 @@ Read **this file first**, followed by `docs/CURRENT_STATE.md`, `docs/CHANGELOG.m
 - Production Supabase project: `wbakpxbvqxppqbrwuokp`. Treat all player data as real. No destructive queries or testing with real accounts.
 - Timezone for office/user: America/Los_Angeles; some shared NPC timers are deliberately UTC-epoch based.
 
+## Future separate game: Idle Hands 2.0
+
+The user-approved sequel direction and gradual roadmap live at [docs/idle-hands-2/README.md](docs/idle-hands-2/README.md), with reusable-art/system research beside it. Read that planning home for 2.0 work. Confirmed decisions: separate game; persistent town and creative work; weekly competitions may reset scores without erasing the town. Other features and technology choices remain proposals. Planning documents in this repository do not authorize implementing the sequel inside the current game, provisioning infrastructure, importing accounts or buying assets.
+
 ## Required change workflow (NO DIRECT MAIN EDITS)
 1. Read the four repo documents above, inspect relevant code and Supabase functions; reconcile source docs with runtime.
 2. Create a short-lived feature branch from current `main`. Implement the smallest scoped change.
