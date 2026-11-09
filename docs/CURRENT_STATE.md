@@ -1,3 +1,11 @@
+# Build 192 — silver lining (2026-11-09)
+
+Quick Hands now keeps the shared chair visible and clickable for its server-granted extra eight seconds per level (40/48/56 seconds); the announcement follows the actual remaining duration. Silver Tongue now controls the client cooldown for deeds, blame and coworker costumes: five/four/three/two minutes at levels zero through three. Countdown messages show remaining seconds and refresh once a second while cooling down, including zero-income players. The guarded dress migration aligns its coworker check with do_deed; self-costumes remain exempt. Nickname cooldown and Seniority spending/output rules remain unchanged. Help now shows the player’s real offline cap including Deep Pockets and Property, and notes that temporary bonuses can expire. The Office Directory adds Bulletin Board using its existing bulletin/wire walking destination; twelve destinations remain. Vending copy now makes uncertain odds and no guaranteed payout/profit explicit with an unreliable-machine joke. Odds, prizes and charges are unchanged.
+
+Validation includes all four expiry boundaries, actual migrated costume RPC behavior in disposable PostgreSQL, and desktop/phone controls. No real player actions are used. Required full CI must pass before the guarded migration and publication; release evidence is recorded separately.
+
+---
+
 # Build 191 — until friday (2026-11-06)
 
 Completes build 190’s weekly-raise wording: the success feedback now says “+2% until Friday, 4 PM Pacific” instead of “+2% forever”. The action, rate calculation, cooldown, reset and player data are unchanged. The existing synthetic raise walkthrough checks the wording both before a request and after a fixture approval. Required Node checks and the complete exact-head release gate must pass before merge; production artifact/commit and screenshot evidence are recorded in the release report and PR. No real account request or currency change is used for QA. CI exposed a fixture teardown race from reading browser time inside a pending RPC callback. Its synthetic server now owns an independent clock; the skew/expiry test advances both clocks explicitly and preserves every timing/no-spend assertion.

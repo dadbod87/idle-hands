@@ -107,3 +107,5 @@ console.log('PASS: prop camera frames measured bubble, tall prop and actor; shor
 require('./active-effects.test.cjs');
 
 require('./large-numbers.test.cjs');
+
+require("./silver-tongue.test.cjs");
