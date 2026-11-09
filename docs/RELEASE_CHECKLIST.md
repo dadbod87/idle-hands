@@ -85,3 +85,8 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Run `node tests/refresh-queue.test.cjs` and desktop/phone `tests/performance.spec.cjs` for bursts, slow requests, trailing refresh, errors, cleanup, hidden/resume and pending purchase suppression.
 - [ ] Run actual baseline/new price RPCs in isolated PostgreSQL via `tests/efficient-prices-contract.sql`; preserve grants and existing action functions.
 - [ ] Verify the guarded migration and served production artifact, and distinguish fixture request reductions from sustained real-player performance. Never reset production statistics or load-test real mutations.
+
+## Development tooling
+- [ ] Run `python3 tools/verify-game-skills.py` after any bundled skill change; preserve upstream provenance and license notices.
+- [ ] New QA tools must use isolated fixture data, pinned development dependencies and local-only defaults. Keep them out of the game runtime/build detection.
+- [ ] Diagnostic completion is not an accessibility or performance pass; disclose findings, incomplete results, browser emulation and scope.
