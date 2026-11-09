@@ -6,7 +6,7 @@ A shared office idle game with Busywork, questionable productivity and permanent
 
 ## Idle Hands 2.0 — future separate game
 
-Start with the **[2.0 planning home](docs/idle-hands-2/README.md)** for the approved vision, free-asset policy, Phaser decision and staged build/continuity system. Run `python3 tools/idle-hands-2.py prompt` to get the next bounded task. The town and players' creative work persist; weekly competitions may reset scores without erasing the world.
+Start with the **[2.0 planning home](docs/idle-hands-2/README.md)** for the approved vision, free-asset policy, Phaser decision and staged build/continuity system. Follow [the separate sequel source pointer](docs/idle-hands-2/SEQUEL_SOURCE.md), then run its tracker to get the next bounded task. The town and players' creative work persist; weekly competitions may reset scores without erasing the world.
 
 These documents live here for discovery while 2.0 is being planned. They do not turn the current game into 2.0 or authorize a new deployment, account migration or infrastructure purchase.
 

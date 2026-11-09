@@ -1,12 +1,7 @@
-# Current sequel handoff
+# Current sequel handoff — follow separate source
 
-Updated: 2026-11-09. Planning authority: this directory in `dadbod87/idle-hands` until a separate sequel repository pointer is recorded here.
+Updated 2026-11-09. **Implementation/planning authority moved**: read [SEQUEL_SOURCE.md](SEQUEL_SOURCE.md) for exact local repository, branch and checkpoint. No sequel remote exists yet. Do not implement 2.0 in this repository.
 
-- Latest closeout: [2026-11-09-build-system.md](handoffs/2026-11-09-build-system.md).
-- Task source: [ROADMAP.json](ROADMAP.json); run `python3 tools/idle-hands-2.py status` and `prompt`.
-- Next intended result: IH2-010, a separate local Phaser desktop/phone engine pilot. No sequel runtime exists yet.
-- Current live game: build 194; no runtime, economy, accounts or cloud configuration changed by sequel planning.
-- Engine decision is source-reviewed and agent-selected, not runtime-benchmarked. Real-device checks and free-hosting feasibility remain pending.
-- No known concurrent Idle Hands chat was found in the available recent session summaries on 2026-11-09. This was a point-in-time check, not a lock; recheck remote PRs/worktrees next session.
+IH2-010 local engine pilot is complete. Next: IH2-015 private GitHub source and CI checkpoint; then IH2-020 coherent visual kit. Run the tracker in the separate repository and follow its AGENTS/hand-off. The copied roadmap here is a discovery snapshot, not a second writable authority.
 
-When IH2-010 creates or discovers the separate source repository, record its exact local path, remote if any, branch and commit here; make that repository's handoff authoritative for implementation. Keep this pointer current. Never assume an old worktree is current source.
+Latest priorities: slower long-term progression; humor, deep systems and teamwork; acquire/design/upgrade/decorate personal homes. Preferred GitHub/Vercel/Supabase, modest extra hosting may be considered after an estimate. No paid assets or unbounded spending. The existing live game stays build 194; no accounts/data/runtime changed.

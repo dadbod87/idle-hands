@@ -18,6 +18,12 @@ Primary verbs: walk, inspect, gather, make, place, contribute, discover. Both ac
 
 3–5: donate one crafted supply to the square's “bridge repair, awaiting committee” project. See a receipt, your contribution and the shared stage change. The completed bridge later opens the trail; one player cannot spend other players' stock or remove their work. In a solo fixture, simulated neighbors are visibly labeled, never presented as actual people.
 
+## Long-term pace and housing
+
+Nick's latest direction: slower than 1.0, deeper systems, humor and teamwork. Quick orientation teaches verbs, not the whole progression. See [PACING_AND_HOUSING.md](PACING_AND_HOUSING.md) for provisional milestone ranges and active/idle fairness. The first planter is a one-time teaching reward, not a repeatable fast income source. Later personal and town stages should take days/weeks, with persistent housing goals over months.
+
+Personal plots are a first-neighborhood priority: reserve space in the map now, implement acquisition/ownership, house improvements and decoration in the durable/polish tasks. A labeled future plot in the engine pilot is not a sale or an ownership system.
+
 ## First twenty minutes and return visit
 
 Complete the planter loop, inspect the café, start one bounded bench production job, choose a second cosmetic placement, contribute to the bridge and explore the first trail once open. A small NPC errand gives context, not a second currency. Leave knowing what will finish and when. Return/reconnect to exactly one settled job result and the saved room. Show what changed, where the reward came from and the offline cap; no silent loss or duplicated output. Initial tunings are data, not hard-coded rendering rules.

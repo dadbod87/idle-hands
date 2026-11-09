@@ -1,6 +1,6 @@
 # Engine decision — 2026-11-09
 
-Status: **agent-selected working architecture under Nick's delegated authority**. Source/documentation review completed; no engine installed, comparative runtime benchmark or phone-device test performed. Validate this choice in task IH2-010 before producing bulk content. This is a decision for the separate sequel, not a migration of Idle Hands 1.0.
+Status: **agent-selected working architecture under Nick's delegated authority**. Initial source/documentation review is now followed by the local Phaser pilot in docs/evidence/IH2-010. No comparative RPGJS runtime benchmark or physical-phone test performed. Validate this choice in task IH2-010 before producing bulk content. This is a decision for the separate sequel, not a migration of Idle Hands 1.0.
 
 ## Choice
 
@@ -40,3 +40,7 @@ Godot is a capable MIT alternative with a strong editor/native route. Its web ex
 Exact source/package observations are in [engine-sources-2026-11-09.json](engine-sources-2026-11-09.json). They are a dated snapshot, not a future version guarantee. We inspected scripts/metadata rather than executing upstream starters. The Phaser starter's default dev/build scripts launch anonymous build logging; a future bootstrap will use our own minimal files and no telemetry hook. No starter art was imported.
 
 Primary sources: [RPGJS source](https://github.com/RSamaium/RPG-JS), [quick start and explicit MMORPG mode](https://v5.rpgjs.dev/guide/quick-start), [save storage strategy](https://v5.rpgjs.dev/guide/save-load), [map-room synchronization](https://v5.rpgjs.dev/guide/synchronization), [Phaser browser/2D design](https://docs.phaser.io/phaser/getting-started/what-is-phaser), [MIT terms](https://phaser.io/download/license), [official starter](https://github.com/phaserjs/template-vite-ts), [Godot web requirements](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html), [Colyseus documentation](https://docs.colyseus.io/).
+
+## Hosting clarification — later 2026-11-09
+
+Nick prefers GitHub/Vercel/Supabase where appropriate and can consider modest additional business-funded hosting. That supersedes a strict zero-operating-cost assumption, while the no-paid-assets rule remains. Favor Vercel web delivery and a **separate** Supabase database/auth/storage project at the isolated-backend stage if suitable. Evaluate server-authoritative Postgres functions/commands and scoped realtime before adding a dedicated room server. Colyseus is conditional on an actual presence/interaction requirement; choose runtime/hosting from measured behavior and current provider terms, not habit. This pilot provisions none of them.

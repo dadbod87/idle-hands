@@ -1,5 +1,7 @@
 # One-prompt-at-a-time build system
 
+**Source moved after IH2-010:** follow [SEQUEL_SOURCE.md](SEQUEL_SOURCE.md) and the separate repository's current instructions/task file. This copy records the original setup; do not run a second parallel implementation here.
+
 Authority: Nick delegated routine design/technical choices on 2026-11-09 and requested free assets with as little upfront input as possible. The agent owns ordinary reversible choices and records reasons; Nick may steer at any point. This system runs when prompted; it does not start unattended background development or promise automatic future sessions.
 
 ## Resume in any session
