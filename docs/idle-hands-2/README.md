@@ -1,6 +1,6 @@
 # Idle Hands 2.0 — planning and build home
 
-Status: **local engine pilot complete; source authority moved** (2026-11-09). Read [SEQUEL_SOURCE.md](SEQUEL_SOURCE.md) first for the separate local repository/checkpoint and next task IH2-015. No remote or hosted sequel exists yet. Current game remains build 194. This directory now keeps a discovery snapshot; implementation decisions/tasks are authoritative in the separate source.
+Status: **private sequel source established; continue there** (2026-11-09). Read [SEQUEL_SOURCE.md](SEQUEL_SOURCE.md) and fetch [dadbod87/idle-hands-2](https://github.com/dadbod87/idle-hands-2). This directory is a historical discovery snapshot; source/decisions/tasks/evidence are authoritative in the separate repository. Its current handoff records CI/bootstrap status. No hosted sequel/backend exists; current Idle Hands remains build 194.
 
 Nick has delegated routine design and technical choices, asked for free assets and a system that can progress one prompt at a time. The agent selects reasonable defaults, tests them and records decisions. No large upfront questionnaire is required.
 
