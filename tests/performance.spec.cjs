@@ -11,6 +11,9 @@ async function exposeNotifications(page){
 }
 for(const width of [1440,390]) test(`${width}: update bursts stay bounded and purchases cannot pile up`,async({browser})=>{
  const ctx=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'}),page=await ctx.newPage();
+ // Keep scheduled chair appearances/phone calls outside this refresh-isolation test.
+ // setFixedTime leaves real intervals running, including the earnings heartbeat.
+ await page.clock.setFixedTime(new Date('2026-10-24T12:34:00Z'));
  let pending=0,maxPending=0,fail=false;
  const f=await installGameFixture(page,{upgrades:[{id:'qa_up',name:'Less paperwork',note:'QA approval',cost:100,t:'all',mult:2,req:['intern',2]}],handleRpc:async(name,args,p)=>{
   if(name==='buy_upgrade'){
