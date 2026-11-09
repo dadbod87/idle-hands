@@ -103,3 +103,7 @@ Use the shared material paint helper for physical furniture, held items, wardrob
 ## Build 190 natural palette
 
 Keep the playful colors and add a separate Natural tones group: walnut, oak, chestnut, sandstone, linen, cream, olive, forest green, stone, charcoal, slate blue and dusty rose. They use the same existing material masks, preview/save flow and prices; no outlines, photos, TV screens or furniture geometry change. Preserve named accessible buttons and keyboard focus.
+
+## Build 193 rug identity
+
+A custom finish changes the rug fabric, never removes its tier design. Retain r1's plain field, r2's diamond row, r3's central medallion and r4's woven lines, plus the shared border/fringe. Draw those motifs above custom patterns, adjusting motif accents for contrast when a custom color is selected. Use the same renderer in catalogue/editor previews and on the office floor; saved custom finishes receive this presentation correction without a new purchase.

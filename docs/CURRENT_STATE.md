@@ -1,3 +1,9 @@
+# Build 193 — woven identity (2026-11-09)
+
+Custom rug finishes preserve the original tier motifs: r1 stays plain, r2 retains its diamonds, r3 its medallion and r4 its woven lines. Color/pattern applies to the fabric beneath those motifs; motif accents adapt for contrast on custom colors while borders, fringe and geometry remain intact. The shared renderer covers owned-item preview, catalogue art and office floors, including previously saved customizations. No prices, ownership, styles, payments or server rules change. Browser verification compares native motif geometry across all tiers and finishes, and checks the shared preview/world rendering at desktop and phone sizes. Production artifact and fixture screenshots are recorded in the release report.
+
+---
+
 # Build 192 — silver lining (2026-11-09)
 
 Quick Hands now keeps the shared chair visible and clickable for its server-granted extra eight seconds per level (40/48/56 seconds); the announcement follows the actual remaining duration. Silver Tongue now controls the client cooldown for deeds, blame and coworker costumes: five/four/three/two minutes at levels zero through three. Countdown messages show remaining seconds and refresh once a second while cooling down, including zero-income players. The guarded dress migration aligns its coworker check with do_deed; self-costumes remain exempt. Nickname cooldown and Seniority spending/output rules remain unchanged. Help now shows the player’s real offline cap including Deep Pockets and Property, and notes that temporary bonuses can expire. The Office Directory adds Bulletin Board using its existing bulletin/wire walking destination; twelve destinations remain. Vending copy now makes uncertain odds and no guaranteed payout/profit explicit with an unreliable-machine joke. Odds, prizes and charges are unchanged.
