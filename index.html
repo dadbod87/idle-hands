@@ -3563,10 +3563,15 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 191 · until friday";
+const BUILD = "build 192 · silver lining";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
+function deedCooldownMs(player, now=Date.now()) {
+ const level=Math.max(0,Math.min(3,Number(player?.perks?.silver_tongue)||0));
+ const last=Date.parse(player?.last_deed);
+ return Number.isFinite(last)?Math.max(0,(5-level)*60000-(now-last)):0;
+}
 
 /** Display projection only. Never writes a player or participates in earnings. */
 function activeEffects(p, cat, now) {
@@ -4535,8 +4540,7 @@ function OfficeFloor() {
   const chairTakenBy = chair && chairClaim && chairClaim.window === chair.window
     ? chairClaim.by : null;
 
-  const cool = me?.last_deed
-    ? Math.max(0, 300000 - (Date.now() - new Date(me.last_deed).getTime())) : 0;
+  const cool = deedCooldownMs(me);
 
   /**
    * Offices have one door. Walking straight at a wall doesn't work, so any
@@ -6674,8 +6678,7 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit, prices })
       </div>
       {target && cool > 0 && (
         <div className="pg-note pg-tooearly">
-          You did something to somebody recently. There's a five minute cooling-off period
-          before you can do anything to a coworker again.
+          Cooling off — {Math.ceil(cool / 1000)} seconds until your next coworker action. Silver Tongue reduces this wait.
         </div>
       )}
 
@@ -6760,8 +6763,7 @@ function Owner({ me, board, lifetime, pp, cool, cat, prices, onMeeting, onRaise,
       </div>
       {target && cool > 0 && (
         <div className="pg-note pg-tooearly">
-          You did something to somebody recently. There's a five minute cooling-off period
-          before you can do anything to a coworker again.
+          Cooling off — {Math.ceil(cool / 1000)} seconds until your next coworker action. Silver Tongue reduces this wait.
         </div>
       )}
 
@@ -7079,7 +7081,7 @@ function Fund({ fund, tiers=FUND_TIERS, nextTier, prevTier, office, card, pp, me
 
       <div className="pg-sep" />
       <h4 className="pg-h4">The Machine</h4>
-      <p className="pg-note">Put money in. Something comes out. Usually.</p>
+      <p className="pg-note">Put money in. Win something. Maybe. The machine says the odds are great; Legal says the machine is not a reliable witness.</p>
 
       <div className={"pg-slot" + (vending ? " pulling" : "") + (prize ? " landed" : "")}>
         <div className="pg-slotwin">
@@ -7094,7 +7096,7 @@ function Fund({ fund, tiers=FUND_TIERS, nextTier, prevTier, office, card, pp, me
       <button className="pg-btn pg-wide danger" disabled={vending||vendPrice===null||!!vendStatusError||vendLeft===null||vendLeft>0||pp<vendPrice} onClick={pull}>
         {vending?"Pulling…":vendStatusError?"Machine status unavailable":vendLeft>0?"Cooling down · "+clockText(vendLeft):vendPrice===null?"Checking machine…":pp<vendPrice?"Not enough for a pull":"Pull — "+fmt(vendPrice)+" BW"}
       </button>
-      <p className="pg-fine">Nine things can come out and one is nothing at all. The machine does not negotiate. A rejected pull does not restart your cooldown.</p>
+      <p className="pg-fine">Nine possible outcomes, including nothing. Possible does not mean equally likely. You take your chances; the machine takes your Busywork. No payout or profit is guaranteed. A rejected pull does not restart your cooldown.</p>
       <p ref={vendFeedback} className="pg-vend-feedback" id="vending-feedback" role="status">{vendError}</p>
       {vendStatusError&&<div className="pg-note"><p>{vendStatusError}</p><button className="pg-btn" onClick={refreshVend}>Retry machine status</button></div>}
 
@@ -7696,10 +7698,8 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
 
       {target && !mine && cool > 0 && (
         <div className="pg-note pg-tooearly">
-          You did something to somebody {Math.ceil(cool / 60000) >= 1
-            ? `${Math.ceil(cool / 60000)} minute(s)` : "moments"} ago. There's a five minute
-          cooling-off period before you can do anything to a coworker again — dressing yourself
-          still works.
+          Cooling off — {Math.ceil(cool / 1000)} seconds until your next coworker action.
+          Silver Tongue reduces this wait. Dressing yourself still works.
         </div>
       )}
 

@@ -51,3 +51,5 @@ ROLLBACK;
 \i tests/birthday-card-contract.sql
 
 \i tests/progression-vending-contract.sql
+
+\i tests/silver-tongue-contract.sql
