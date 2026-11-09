@@ -2959,12 +2959,13 @@ function goodChairSpawns(){
 /** Timing mirrors chair_window() in Postgres: every 7 minutes, visible for 40 seconds.
     Placement is client-side and deterministic per window, so all clients see the same chair.
     Claims and rewards remain server-authoritative and are unchanged. */
-function chairAt(t = Date.now()) {
+function chairAt(t = Date.now(), quickHands = 0) {
+ const duration=40+Math.max(0,Math.min(2,Number(quickHands)||0))*8;
  const sec=Math.floor(t/1000),into=sec%420;
- if(into>=40)return null;
+ if(into>=duration)return null;
  const w=Math.floor(sec/420),points=goodChairSpawns();
  const point=points[officeHash(w^0x43484149)%points.length];
- return {window:w,x:point.x,y:point.y,endsIn:(40-into)*1000};
+ return {window:w,x:point.x,y:point.y,endsIn:(duration-into)*1000};
 }
 
 /* Pins are bought weekly and worn indefinitely, so a character may be wearing
@@ -4328,19 +4329,19 @@ function OfficeFloor() {
     // The chair is the same chair for everyone now — derived from the clock,
     // claimed on the server. First one there wins it; everybody else watches.
     const tick = () => {
-      const c = chairAt(Date.now());
+      const c = chairAt(Date.now(),perkCount(me,"good_hands"));
       setChair(c);
       if (c && chairSeen.current !== c.window) {
         chairSeen.current = c.window;
         say("The good chair is on the floor. Somebody get it.", "good");
-        flash("THE GOOD CHAIR — 40 seconds");
+        flash("THE GOOD CHAIR — "+Math.ceil(c.endsIn/1000)+" seconds");
         loadOffice().then(setOffice).catch(() => {});
       }
     };
     tick();
     const to = setInterval(tick, 1000);
     return () => clearInterval(to);
-  }, [phase]);
+  }, [phase,me?.perks?.good_hands]);
 
   // Somebody on the floor says something. It is never important.
   useEffect(() => {
@@ -4477,7 +4478,7 @@ function OfficeFloor() {
   const startPropScene=(target)=>{const prop=propSceneTarget(target);if(!prop)return;setPanel(null);routeTo(prop.x+prop.w/2,prop.kind==="bench"?prop.y+prop.h-20:prop.y+prop.h+40,"scene:"+prop.id);};
 
   const grabChair = async () => {
-    const current=chairAt();if(!current){flash("The good chair has moved on. Emotionally, so have we.");return;}
+    const current=chairAt(Date.now(),perkCount(me,"good_hands"));if(!current){flash("The good chair has moved on. Emotionally, so have we.");return;}
     if(dist(posRef.current,{x:current.x+23,y:current.y+27})>REACH){routeTo(current.x+23,current.y+70,null);flash("Walk up to the chair, then grab it. HR insists on the walking part.");return;}
     const row = await guard(() => api.grabChair());
     loadOffice().then(setOffice).catch(() => {});

@@ -1,6 +1,6 @@
 # Build 192 — silver lining (2026-11-09)
 
-Silver Tongue now controls the client cooldown for deeds, blame and coworker costumes: five/four/three/two minutes at levels zero through three. Countdown messages show remaining seconds. The guarded dress migration aligns its coworker check with do_deed; self-costumes remain exempt. Nickname cooldown and Seniority spending/output rules remain unchanged. Vending copy now makes uncertain odds and no guaranteed payout/profit explicit with an unreliable-machine joke. Odds, prizes and charges are unchanged.
+Quick Hands now keeps the shared chair visible and clickable for its server-granted extra eight seconds per level (40/48/56 seconds); the announcement follows the actual remaining duration. Silver Tongue now controls the client cooldown for deeds, blame and coworker costumes: five/four/three/two minutes at levels zero through three. Countdown messages show remaining seconds. The guarded dress migration aligns its coworker check with do_deed; self-costumes remain exempt. Nickname cooldown and Seniority spending/output rules remain unchanged. Vending copy now makes uncertain odds and no guaranteed payout/profit explicit with an unreliable-machine joke. Odds, prizes and charges are unchanged.
 
 Validation includes all four expiry boundaries, actual migrated costume RPC behavior in disposable PostgreSQL, and desktop/phone controls. No real player actions are used. Required full CI must pass before the guarded migration and publication; release evidence is recorded separately.
 

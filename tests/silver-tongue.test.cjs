@@ -1,2 +1,4 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');const s=fs.readFileSync('index.html','utf8');const box={};vm.createContext(box);
 const fn=s.match(/function deedCooldownMs\([^]*?\n\}/)[0];vm.runInContext(fn+';this.cool=deedCooldownMs',box);const now=Date.now();for(let level=0;level<=3;level++){const boundary=(5-level)*60000,p={perks:{silver_tongue:level},last_deed:new Date(now).toISOString()};assert.equal(box.cool(p,now+boundary-1),1);assert.equal(box.cool(p,now+boundary),0);assert.equal(box.cool(p,now+boundary+1),0);}assert.equal(box.cool({}),0);console.log('PASS Silver Tongue levels 0-3 before/at/after expiry');
+
+const chair=require('./chair-spawns.test.cjs').model();for(let level=0;level<=2;level++){const start=4200000*420000,end=start+(40+level*8)*1000;assert(chair.at(end-1,level));assert.equal(chair.at(end,level),null);assert.equal(chair.at(end+1,level),null);}console.log('PASS Quick Hands visibility at all three duration boundaries');
