@@ -109,3 +109,6 @@ require('./active-effects.test.cjs');
 require('./large-numbers.test.cjs');
 
 require("./silver-tongue.test.cjs");
+
+// Load/performance contracts share the existing required Node gate.
+require('./refresh-queue.test.cjs');

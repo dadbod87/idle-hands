@@ -3421,13 +3421,12 @@ async function loadCatalog() {
 }
 
 async function loadCard() {
-  const { data, error } = await supabase.rpc("card_state");
-  if (error) throw error;
+  const data = await rpc("card_state");
   return data || null;
 }
 
 async function loadOffice() {
-  const { data } = await supabase.rpc("office_state");
+  const data = await rpc("office_state");
   return data || null;
 }
 
@@ -3504,6 +3503,25 @@ function subscribeFloor(onChange) {
   return () => supabase.removeChannel(ch);
 }
 
+// Collapse a burst of notifications into one refresh, with at most one running.
+// A notification during a request schedules a trailing read, so it isn't lost.
+function queuedRefresh(run, delay = 2000) {
+  let timer = null, running = false, dirty = false, stopped = false;
+  const schedule = () => {
+    if (stopped || timer !== null || running || document.hidden || !dirty) return;
+    timer = setTimeout(flush, delay);
+  };
+  const flush = async () => {
+    timer = null;
+    if (stopped || running || document.hidden || !dirty) return;
+    dirty = false; running = true;
+    try { await run(); } catch { /* The next event or periodic refresh retries. */ }
+    finally { running = false; schedule(); }
+  };
+  return { request: () => { dirty = true; schedule(); },
+    stop: () => { stopped = true; clearTimeout(timer); timer = null; } };
+}
+
 
 /* ===== components/OfficeFloor.jsx ===== */
 
@@ -3564,7 +3582,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 193 · woven identity";
+const BUILD = "build 194 · less paperwork";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3735,6 +3753,9 @@ function OfficeFloor() {
   const [pins, setPins] = useState(null);
   const [spend, setSpend] = useState(null);
   const [testers, setTesters] = useState(null);
+  const [purchasePending, setPurchasePending] = useState(null);
+  const purchaseLock = useRef(false);
+  const refreshPricesRef = useRef(() => {});
   const [prices, setPrices] = useState(null);   // server quotes; lifetime-based sums drift
   const [mascotReal, setMascotReal] = useState(false);
   const [jam, setJam] = useState(null);
@@ -3794,6 +3815,7 @@ function OfficeFloor() {
     setMe(row);
     setDrift(0);
     syncedAt.current = Date.now();
+    refreshPricesRef.current();
   }, []);
 
   const guard = useCallback(async (fn, okMsg) => {
@@ -3908,34 +3930,65 @@ function OfficeFloor() {
     let active = true;
     const refresh = async () => { try { const st = await loadCard(); if (active) setCard(st); } catch { /* Keep the last snapshot; signing still validates on the server. */ } };
     refresh();
-    const timer = setInterval(refresh, 10000);
+    const timer = setInterval(() => { if (!document.hidden) refresh(); }, 10000);
     return () => { active = false; clearInterval(timer); };
   }, [phase, panel]);
 
   /* ------------------------- live + heartbeat --------------------- */
   useEffect(() => {
     if (phase !== "play") return;
+    let active = true, heartbeatBusy = false, metadataBusy = false;
     const refresh = async () => {
-      setFloor(await loadFloor());
-      loadOffice().then(setOffice).catch(() => {});
-      loadCard().then(setCard).catch(() => {});
-      api.weeklyPins().then(setPins).catch(() => {});
-      api.spendBoard().then(setSpend).catch(() => {});
-      api.betaTesters().then(setTesters).catch(() => {});
-      api.allPrices().then(setPrices).catch(() => {});
+      const [floor, office] = await Promise.all([loadFloor(), loadOffice()]);
+      if (active) { setFloor(floor); setOffice(office); }
     };
-    const un = subscribeFloor(refresh);
-    const cats = setInterval(() => { loadCatalog().then(setCat).catch(() => {}); }, 180000);
-    const catOnFocus = () => { if (!document.hidden) loadCatalog().then(setCat).catch(() => {}); };
-    document.addEventListener("visibilitychange", catOnFocus);
-    const t = setInterval(async () => {
-      try { applyServer(await api.sync()); api.allPrices().then(setPrices).catch(() => {}); } catch { /* offline, keep drifting */ }
-      await claim();
-    }, SYNC_MS);
+    const queued = queuedRefresh(refresh);
+    const priceQueue = queuedRefresh(async () => {
+      const quotes = await api.allPrices();
+      if (active) setPrices(quotes);
+    });
+    refreshPricesRef.current = priceQueue.request;
+    // Personal quotes and slow-changing lists refresh separately from the floor.
+    const un = subscribeFloor(queued.request);
+    const metadata = async () => {
+      if (!active || document.hidden || metadataBusy) return;
+      metadataBusy = true;
+      try {
+        await Promise.allSettled([
+          api.weeklyPins().then(v => { if (active) setPins(v); }),
+          api.spendBoard().then(v => { if (active) setSpend(v); }),
+          api.betaTesters().then(v => { if (active) setTesters(v); }),
+        ]);
+      } finally { metadataBusy = false; }
+    };
+    const heartbeat = async () => {
+      if (!active || heartbeatBusy) return;
+      heartbeatBusy = true;
+      try {
+        try {
+          const row = await api.sync();
+          if (active) applyServer(row);
+        } catch { /* offline, keep drifting */ }
+        if (active) await claim();
+      } finally { heartbeatBusy = false; }
+    };
+    const catalog = () => { if (!document.hidden) loadCatalog().then(v => { if (active) setCat(v); }).catch(() => {}); };
+    const visible = () => {
+      if (document.hidden) return;
+      queued.request(); priceQueue.request(); heartbeat(); metadata(); catalog();
+    };
+    metadata();
+    priceQueue.request();
+    const metaTimer = setInterval(metadata, 60000);
+    const cats = setInterval(catalog, 180000);
+    document.addEventListener("visibilitychange", visible);
+    const t = setInterval(heartbeat, SYNC_MS);
     claim();
     return () => {
-      un(); clearInterval(t); clearInterval(cats);
-      document.removeEventListener("visibilitychange", catOnFocus);
+      active = false; queued.stop(); priceQueue.stop(); un();
+      refreshPricesRef.current = () => {};
+      clearInterval(t); clearInterval(cats); clearInterval(metaTimer);
+      document.removeEventListener("visibilitychange", visible);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
@@ -4421,6 +4474,8 @@ function OfficeFloor() {
   }, [phase, applyServer]);
 
   const buy = async (item) => {
+    if (purchaseLock.current) return;
+    purchaseLock.current = true; setPurchasePending("item:" + item.id);
     try {
       const row=await api.buyItem(item.id);applyServer(row);
       if(row){reactTo("receipt","Hired. Inbox included.");sfx("buy");}
@@ -4438,11 +4493,15 @@ function OfficeFloor() {
         }
       }
       flash(prettyError(e));
-    }
+    } finally { purchaseLock.current = false; setPurchasePending(null); }
   };
   const buyUp = async (u) => {
-    const r = await guard(() => api.buyUpgrade(u.id), `Approved: ${u.name}`);
-    if (r) {sfx("buy");reactTo("receipt","Approved. In triplicate.");}
+    if (purchaseLock.current) return;
+    purchaseLock.current = true; setPurchasePending("upgrade:" + u.id);
+    try {
+      const r = await guard(() => api.buyUpgrade(u.id), `Approved: ${u.name}`);
+      if (r) {sfx("buy");reactTo("receipt","Approved. In triplicate.");}
+    } finally { purchaseLock.current = false; setPurchasePending(null); }
   };
   const commit = async (target, kind) => {
     const T = DEED_TEXT[kind];
@@ -5035,7 +5094,7 @@ function OfficeFloor() {
         <Panel stablePurchases={panel==="shop"||panel==="mirror"} receipt={reaction&&!["work","filed"].includes(reaction.kind)?reaction:null} onClose={() => setPanel(null)} title={panel.startsWith("prop:")?(inspectedProp?.label||PROP_LABELS[inspectedProp?.kind]):PANEL_TITLES[panel]}>
           {panel.startsWith("prop:")&&<PropInspection kind={inspectedProp?.kind} propId={inspectedProp?.id} variant={officeSceneAt(funTick)} onCoffee={joinCoffeeBreak} onPerform={startPropScene}/> }
           {panel === "shop" && (
-            <Shop cat={cat} me={me} pp={pp} rate={rate}
+            <Shop cat={cat} me={me} pp={pp} rate={rate} purchasePending={purchasePending}
               pins={pins}
               onPin={async (x) => {
                 try {
@@ -6375,7 +6434,7 @@ const SLOT_NAMES = { glow: "Glow", size: "Presence", held: "Something To Carry",
                      aura: "Atmosphere", desk: "The Desk", chair: "The Chair",
                      rug: "The Floor", art: "The Wall", tv: "Conflict-Resolution Training" };
 
-function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure,
+function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure, purchasePending,
                 onFitting, pins, onPin, onWear, onStyled, guard, flash }) {
   const owned = me?.owned || {}, ups = me?.upgrades || [];
   const cycle = me?.cycle || 0;
@@ -6398,7 +6457,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
               const hidden = have === 0 && c > Math.max(pp, lifetime * 0.35) * 3;
               return (
                 <button key={it.id} className={"pg-row" + (i % 2 ? " alt" : "") + (pp < c ? " poor" : "")}
-                        onClick={() => onBuy(it)} disabled={pp < c}>
+                        onClick={() => onBuy(it)} aria-busy={purchasePending === "item:" + it.id} disabled={!!purchasePending || pp < c}>
                   <OfficeIcon kind={it.name} /><span className="pg-ct">{have || "—"}</span>
                   <span className="pg-main">
                     <b>{hidden ? "Position not yet approved" : it.name}</b>
@@ -6418,7 +6477,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
               .map((u, i) => (
               <button key={u.id}
                       className={"pg-row" + (i % 2 ? " alt" : "") + (ups.includes(u.id) ? " done" : pp < u.cost ? " poor" : "")}
-                      onClick={() => onUp(u)} disabled={ups.includes(u.id) || pp < u.cost}>
+                      onClick={() => onUp(u)} aria-busy={purchasePending === "upgrade:" + u.id} disabled={!!purchasePending || ups.includes(u.id) || pp < u.cost}>
                 <OfficeIcon kind={u.name+" upgrade"} /><span className="pg-ct">{ups.includes(u.id) ? "✓" : "—"}</span>
                 <span className="pg-main"><b>{u.name}</b><span>{u.note}</span></span>
                 <span className="pg-right"><b>{ups.includes(u.id) ? "owned" : fmt(u.cost)}</b>
