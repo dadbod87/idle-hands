@@ -1,3 +1,9 @@
+# Planning documentation — Idle Hands 2.0 (2026-11-09)
+
+Added a discoverable [2.0 planning home](idle-hands-2/README.md), vision/first-neighborhood brief, explicit approved decisions versus proposals, gradual work queue and dated primary-source art/system shortlist with licensing and evaluation notes. Root README, AGENTS and current state link to it. 2.0 is a separate future game; town and creative work persist across renewable competitions. No sequel implementation, assets, spending, infrastructure, account import, migration or runtime change. Current game build remains 194. Required existing regression checks gate the documentation merge.
+
+---
+
 # Build 194 — less paperwork (2026-11-09)
 
 Reduces a measured refresh storm: realtime player/deed notifications previously triggered eight reads per event, including full personal prices and unrelated award lists. Notifications now coalesce for two seconds into one floor/office refresh, with one request group in flight and a trailing refresh when changes arrive during it. Personal server responses schedule their own coalesced price refresh; heartbeat remains ten seconds. Pins, spender list and beta roster load on entry and refresh once per visible minute. Birthday-card quotes stay scoped to the open Office Fund panel. Hidden tabs suppress notification, price and list reads; returning refreshes them. The existing ten-second earnings/claim heartbeat continues in the background, preserving open-tab earning behavior and offline-cap semantics. Pending staff/approval purchases disable those purchase controls until the server responds and cannot queue duplicate requests; failures release the controls. No optimistic awards or mutation retries are added.
