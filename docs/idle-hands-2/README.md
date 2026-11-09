@@ -1,6 +1,6 @@
 # Idle Hands 2.0 — planning and build home
 
-Status: **preproduction setup complete; engine pilot next** (2026-11-09). Working title. Separate game; no sequel runtime, hosted service or asset purchase exists yet. Current game remains build 194.
+Status: **local engine pilot complete; source authority moved** (2026-11-09). Read [SEQUEL_SOURCE.md](SEQUEL_SOURCE.md) first for the separate local repository/checkpoint and next task IH2-015. No remote or hosted sequel exists yet. Current game remains build 194. This directory now keeps a discovery snapshot; implementation decisions/tasks are authoritative in the separate source.
 
 Nick has delegated routine design and technical choices, asked for free assets and a system that can progress one prompt at a time. The agent selects reasonable defaults, tests them and records decisions. No large upfront questionnaire is required.
 
@@ -14,17 +14,18 @@ The [machine-readable roadmap](ROADMAP.json) is authoritative for task status/de
 
 ## Chosen direction
 
-- [Engine comparison and decision](ENGINE_DECISION.md): **Phaser 4 + TypeScript + Vite + DOM UI**, selected after current source/documentation review; validate desktop/phone in IH2-010. RPGJS offers more built-in RPG systems and remains the fallback if the pilot changes the tradeoff. Neither engine has been runtime-tested here.
+- [Engine comparison and decision](ENGINE_DECISION.md): **Phaser 4 + TypeScript + Vite + DOM UI**, selected after current source/documentation review; validate desktop/phone in IH2-010. RPGJS offers more built-in RPG systems and remains the fallback if the pilot changes the tradeoff. Phaser now has a local runtime pilot; RPGJS remains source-reviewed only.
 - A humorous shared company town: personal workshop/home, cooperative visible construction and modest exploration. [Experience brief](EXPERIENCE_BRIEF.md) defines the first five/twenty minutes and persistence boundaries.
 - Original or verified CC0 assets first; $0 asset purchases. No mandatory monetization in the first release. Free hosting feasibility remains unproven and has its own measured gate.
-- Separate local sequel repository at the pilot; no sequel runtime inside 1.0. Its exact location/authority pointer will be recorded here when created. No account imports or new cloud resources assumed.
+- Separate local sequel repository at the pilot; no sequel runtime inside 1.0. Its exact location/authority pointer is in SEQUEL_SOURCE. No account imports or new cloud resources assumed.
 
 ## Stages
 
 | Task | Reviewable result | Gate |
 |---|---|---|
 | IH2-000 | Comparison, defaults, brief and build/continuity system | Source-reviewed documents and tracker tests; complete |
-| IH2-010 | Separate local engine pilot | Walk/interact/transition, desktop/narrow/short screenshots and measured budgets |
+| IH2-010 | Separate local engine pilot | Complete locally; evidence/checkpoint in SEQUEL_SOURCE |
+| IH2-015 | Private GitHub source and separate CI | Durable source and exact passing check evidence |
 | IH2-020 | One coherent visual kit | Comparable samples, licensed asset inventory, phone readability |
 | IH2-030 | Fun local workshop loop | Gather/craft/decorate, saved synthetic state, deterministic idle tests |
 | IH2-040 | Durable two-player bridge loop | Transactions, replay/concurrency, restart/reconnect and rollover safety |

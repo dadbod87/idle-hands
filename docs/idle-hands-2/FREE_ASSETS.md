@@ -12,6 +12,10 @@ Paid packs, paid editors/services and marketplace subscriptions are excluded. Li
 
 Original assets still need provenance: author/date/source file and any references. Use existing image tools only under their actual terms; do not assume AI-generated art or a third-party API has zero cost. No runtime AI/image service, telemetry, analytics or asset CDN dependency by default. System fonts and local assets keep the prototype simple.
 
+## Hosting clarification (2026-11-09)
+
+Nick prefers GitHub/Vercel/Supabase and is open to modest business-funded extra hosting. No exact recurring budget or provider purchase is authorized yet. Prefer appropriate existing platform experience while creating separate sequel resources when approved; do not reuse real 1.0 data. A small, justified hosting bill may be acceptable after presenting the actual estimate. The asset-purchase budget remains $0.
+
 ## Hosting is a separate budget
 
 Open-source engines have no engine purchase fee under their licenses; servers, database, bandwidth, email and backups may still cost money. Local development uses existing tools and no new cloud resources. At IH2-060 measure 20-client memory/CPU, connection-hours, stored data, transfer and query rates. Evaluate free-tier terms, sleeping/connection limits, backup/restore and abuse controls against actual play. Do not sign up for a trial that can silently become paid or attach billing without approval. If zero-cost reliable hosting is not feasible, present a concrete reduced-scope option and an optional cost estimate before spending. Public beta is gated on this decision.

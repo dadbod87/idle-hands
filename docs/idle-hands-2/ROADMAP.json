@@ -29,7 +29,7 @@
     {
       "id": "IH2-010",
       "title": "Separate local repository and engine pilot",
-      "status": "queued",
+      "status": "done",
       "depends_on": [
         "IH2-000"
       ],
@@ -44,6 +44,27 @@
       "exclusions": [
         "No production login, live backend, cloud resources, finished asset library or new features."
       ],
+      "evidence": [
+        "docs/idle-hands-2/SEQUEL_SOURCE.md",
+        "docs/idle-hands-2/pilot-checkpoint.json"
+      ]
+    },
+    {
+      "id": "IH2-015",
+      "title": "Private GitHub source and sequel CI checkpoint",
+      "status": "queued",
+      "depends_on": [
+        "IH2-010"
+      ],
+      "goal": "Make the local sequel source durable and resumable through GitHub before substantial art/content work.",
+      "acceptance": [
+        "Check for an existing dadbod87 sequel repository; choose private visibility by default, never overwrite an existing remote or publish publicly. Confirm no new paid feature or hosting resource is required.",
+        "Establish separate build, domain, browser and planning/integrity checks on GitHub using pinned versions, isolated synthetic data and collected screenshot artifacts. Resolve actual permission limits transparently; do not bypass restrictions or claim a workflow ran if it did not.",
+        "Push the exact local pilot/history to the verified private source, run required checks on the final commit and record remote URL, branch, commit and next task in both source and bridge pointers."
+      ],
+      "exclusions": [
+        "No game hosting, real accounts, live backend, public repository or paid service."
+      ],
       "evidence": []
     },
     {
@@ -51,7 +72,7 @@
       "title": "Choose and prove one coherent visual kit",
       "status": "queued",
       "depends_on": [
-        "IH2-010"
+        "IH2-015"
       ],
       "goal": "Make the same representative scene readable, warm and distinct on a phone.",
       "acceptance": [
@@ -77,7 +98,8 @@
         "Pure domain modules support gathering, two recipes, legal personal placement and one timed bench job; Phaser remains disposable view state.",
         "Versioned synthetic local save survives reload; deterministic clock tests cover completion, offline cap, storage limit and no duplicated settlement. Mark local saves as non-authoritative prototype.",
         "Show exact resource changes, clear feedback, free preview/cancel and useful first-minute completion; test keyboard/touch workflow with no shifting controls.",
-        "Capture a short playtest report against first-session brief; record confusing/boring steps and resolve blockers before shared play."
+        "Capture a short playtest report against first-session brief; record confusing/boring steps and resolve blockers before shared play.",
+        "Add deterministic progression-cohort simulation for slow days/weeks pacing; compare idle, regular and active schedules and housing/project milestones before final economy tuning. First fast craft is a one-time tutorial, not repeatable click income."
       ],
       "exclusions": [
         "No public economy, trading, exponential progression, purchases, auth or claim that local saves are secure."
@@ -93,11 +115,12 @@
       ],
       "goal": "Move rules to a local authoritative server and make two synthetic players cooperate safely.",
       "acceptance": [
-        "Implement Node/TypeScript command service and disposable PostgreSQL with schema migrations, separate synthetic identities and scoped authorization; no 1.0 secrets/data.",
-        "Validate Colyseus room transport for movement/presence; durable resources, jobs, property and shared projects stay in atomic database transactions.",
+        "Implement an isolated authoritative command service and disposable PostgreSQL with migrations, separate synthetic identities and scoped authorization; evaluate Supabase-compatible functions/auth boundaries before choosing deployment runtime; no 1.0 secrets/data.",
+        "Validate scoped room/presence updates; use Colyseus only if needed after comparing suitable Supabase realtime and command boundaries. Durable resources, jobs, house plots and projects remain atomic PostgreSQL transactions.",
         "Test duplicate command IDs, concurrent last contributions, insufficient inventory, unauthorized edits, disconnect/reconnect, server restart, stale client and migration/restore; no double charge or lost committed progress.",
         "Server validates gathering/proximity/rates; receipt replay is deterministic; visible loading/error/retry never invents a reward. Room updates scoped, bounded movement sends, no animation database writes.",
-        "Verify simulated weekly rollover changes only season-keyed scores and preserves inventory, jobs, decoration and bridge. Capture two-client desktop/phone evidence."
+        "Verify simulated weekly rollover changes only season-keyed scores and preserves inventory, jobs, decoration and bridge. Capture two-client desktop/phone evidence.",
+        "Prove plot acquisition/owner-only edits and upgrade/placement persistence, including concurrent claims, visitor denial and newcomers joining after initial plot allocations."
       ],
       "exclusions": [
         "No real accounts, hosted database, paid transport service, production load test or huge multiplayer world."
@@ -116,7 +139,8 @@
         "Workshop/square/cafe/trail, three resources/two recipes/one project and six props meet the brief; locked art kit and provenance cover shipped content.",
         "Inventory, dialogue, crafting, decorating, destination directory and offline summary work on narrow phones/short landscape and keyboard; no obstructed essentials.",
         "Fresh/resumed/reconnected two-client playthroughs, weekly rollover and regression suites pass; inspect screenshots and small UX findings list.",
-        "Measure play duration and identify a reason to return without mandatory waiting or punitive reset. Fix first-session blockers."
+        "Measure play duration and identify a reason to return without mandatory waiting or punitive reset. Fix first-session blockers.",
+        "Include expandable personal plots, starter house and one home upgrade/decorating path; validate slow progression targets using isolated accelerated-time fixtures, with humor and useful newcomer teamwork."
       ],
       "exclusions": [
         "No broad expansion, marketplace, PvP, guild politics, public chat or monetization."
@@ -133,7 +157,7 @@
       "goal": "Prepare a concrete affordable private-preview package and prove recovery before inviting anyone.",
       "acceptance": [
         "Run bounded 20-client synthetic tests only on local/authorized isolated environment; report commands/events/queries, latency percentiles, frame time, CPU/memory, storage and bandwidth against budgets.",
-        "Evaluate free hosting terms and persistent room/database/backup requirements from measured usage; document sleeping, quotas, overage risk and zero-cost alternatives. No bill or provider setup without required approval.",
+        "Prefer GitHub CI/source, Vercel client delivery and separate Supabase database/auth/storage where appropriate. Measure whether extra persistent-room hosting is needed; present modest cost/limits/backup plan before provisioning any billed service. No asset purchases.",
         "Threat/permission review, auth plan, rate limits, data retention, migration/backup/restore drill and rollback plan complete; real phone manual check pending clearly if unavailable.",
         "Create a reviewable private-preview deployment/access plan with exact artifact, targets, costs, separate identity/data, monitoring and support. Resolve any required access/budget decision before dependent work."
       ],

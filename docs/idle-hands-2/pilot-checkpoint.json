@@ -1,0 +1,35 @@
+{
+  "observed_date": "2026-11-09",
+  "source_authority": "Separate local idle-hands-2 repository; no remote yet",
+  "local_path": "/Users/nicksummerlin/Documents/Codex/2026-10-22/continue-the-game-room-wording-update/work/idle-hands-2",
+  "branch": "feat/engine-pilot",
+  "commit": "3c8a55226e7de3a157b8036e161142c4891365c8",
+  "tested_code_commit": "eeae76d0a1732905f0ee2e92472ead430b6bdb3f",
+  "node": "26.7.0",
+  "versions": {
+    "phaser": "4.2.1",
+    "vite": "8.3.7",
+    "typescript": "7.0.2",
+    "playwright": "1.56.1"
+  },
+  "checks": {
+    "domain_tests": "4 passed",
+    "browser_walkthroughs": "4 passed (53.1s), actual keyboard/mouse/touch at 1440x900,390x844,360x640,844x390",
+    "build": "strict TypeScript + Vite passed",
+    "tracker_tests": "10 passed",
+    "upstream_integrity": "40 files pass",
+    "whitespace": "pass, scoped untouched upstream guidance/license formatting preserved"
+  },
+  "total_distribution_gzip_bytes": 361019,
+  "budget_method": "Sum Python gzip default-level compressed dist files including license notices; not network measurement",
+  "source_report": "docs/evidence/IH2-010/REPORT.md",
+  "screenshots": "docs/evidence/IH2-010/*.png in sequel repository",
+  "limitations": [
+    "local-only, no remote/CI/hosting",
+    "original placeholder art, not final visual kit",
+    "no backend/economy/accounts/housing acquisition implemented",
+    "viewport/touch emulation, not physical device",
+    "short local frame samples, not low-end or multiplayer benchmark"
+  ],
+  "next_task": "IH2-015"
+}
