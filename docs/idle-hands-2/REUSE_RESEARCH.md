@@ -1,16 +1,14 @@
 # Reusable art, tools and systems
 
-Researched 2026-11-09 from the primary project/publisher sources linked below. **This art/engine shortlist remains an evaluation list; no art or game engine is adopted.** The later [development toolkit](../DEVELOPMENT_TOOLKIT.md) records the actual installed authoring skills and development-only QA tools separately. This is a record of published terms and fit for evaluation, not a completed audit of downloaded releases. Recheck the exact release/archive and its included licenses before use. License-free hosting and free operation are different questions.
+Researched 2026-11-09 from the primary project/publisher sources linked below. **Historical shortlist.** Later on 2026-11-09 Nick delegated routine choices and required free assets. [ENGINE_DECISION](ENGINE_DECISION.md) now selects Phaser for a separate pilot; [FREE_ASSETS](FREE_ASSETS.md) excludes purchases. No engine runtime or art files have yet been installed. The later [development toolkit](../DEVELOPMENT_TOOLKIT.md) records the actual installed authoring skills and development-only QA tools separately. This is a record of published terms and fit for evaluation, not a completed audit of downloaded releases. Recheck the exact release/archive and its included licenses before use. License-free hosting and free operation are different questions.
 
 ## Further repository evaluation
 
-The [development toolkit](../DEVELOPMENT_TOOLKIT.md) adds a dated popularity/maintenance/source snapshot, RPGJS as a more complete framework candidate, and the installed skills/QA tooling. Compare RPGJS with a custom Phaser route before rebuilding maps, inventory, dialogue and multiplayer plumbing ourselves. Engine choice remains open; built-in systems still need testing against persistent cooperative town rules.
+The [development toolkit](../DEVELOPMENT_TOOLKIT.md) adds a dated popularity/maintenance/source snapshot, RPGJS as a more complete framework candidate, and the installed skills/QA tooling. Compare RPGJS with a custom Phaser route before rebuilding maps, inventory, dialogue and multiplayer plumbing ourselves. The later engine decision supersedes the open shortlist; built-in systems still need testing against persistent cooperative town rules.
 
-## Recommended first comparison
+## Current evaluation path
 
-For a browser-first prototype, evaluate a Phaser starter plus one coherent art family and a map editor. Compare the same small scene in Godot if an editor-first/native path is attractive. Treat multiplayer and persistent town rules as separate evaluations.
-
-Kenney is the low-friction prototype art option. LimeZu is a promising paid option if we choose a modern pixel-art town. Neither commits us to pixel art: our own illustrated style may better express Idle Hands' identity. Choose the style before buying a large library or mixing packs.
+Source/documentation review compared RPGJS and Phaser; the selected Phaser pilot is the next runtime test. Godot remains an alternative if browser or native requirements change; no third parallel prototype is required. Kenney/original assets are the first art candidates. The paid LimeZu row below is retained as historical research and is **excluded under the user's no-paid-assets constraint**. See the roadmap for exact task order and acceptance.
 
 ## Art shortlist
 
@@ -42,7 +40,7 @@ Before importing a candidate, record the exact files/package version or source c
 
 | Item ID | Exact source/version/files | Creator / license evidence | Intended use / modifications | Cost | Decision |
 |---|---|---|---|---|---|
-| No items adopted | — | — | — | No spending | Research only |
+| No runtime/art imported | — | — | — | No spending | Phaser selected for pilot; exact installation/provenance pending |
 
 For paid/restricted packs, confirm where source assets may be stored and who may receive them. For share-alike or mixed-license artwork, choose and document a compliant distribution approach before committing to it. Do not assume that “free to download,” an engine license, or a repository's top-level license covers every image.
 
