@@ -80,3 +80,8 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Check no permanent raise/fund copy; desktop/phone/short cooldown, reopen/reload, clock skew, errors, double clicks, saved prize refresh failure and all-unlocked state.
 - [ ] Check huge money values across scales, short quote/available/shortfall/confirm, optional expanded amounts and both natural/playful palettes.
 - [ ] Record full exact-head CI, migration/core-function checks, Vercel commit/served artifact and disclosed live fixture screenshots.
+
+## Refresh load and purchase responsiveness
+- [ ] Run `node tests/refresh-queue.test.cjs` and desktop/phone `tests/performance.spec.cjs` for bursts, slow requests, trailing refresh, errors, cleanup, hidden/resume and pending purchase suppression.
+- [ ] Run actual baseline/new price RPCs in isolated PostgreSQL via `tests/efficient-prices-contract.sql`; preserve grants and existing action functions.
+- [ ] Verify the guarded migration and served production artifact, and distinguish fixture request reductions from sustained real-player performance. Never reset production statistics or load-test real mutations.
