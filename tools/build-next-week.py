@@ -12,6 +12,11 @@ for name in ['live_mult','live_mult_at']:
     patch(name,'p.equity * 0.03','p.seniority_earned * 0.03')
 patch('restructure','equity=equity+gain,','equity=equity+gain,seniority_earned=seniority_earned+gain,')
 patch('season_wipe','equity=0,','equity=0,seniority_earned=0,')
+patch('season_wipe','nickname=null,outfit=null,ooo=null,','nickname=null,outfit=null,ooo=null,office_confetti=null,')
+# Serialize targeted mutations before either player is locked. Opposite-direction
+# actions must not each hold their actor while waiting for the other's row.
+for name in ['do_deed','dress','give_nickname']:
+    patch(name,'begin\n','begin\n  perform pg_advisory_xact_lock(728194, 1);\n')
 for name in ['buy_fitting','buy_pin']:
     patch(name,'calc_rate(p) * live_mult(p)','public.permanent_price_rate(p)')
 patch('fitting_prices','eff := calc_rate(p) * live_mult(p);','eff := public.permanent_price_rate(p);')

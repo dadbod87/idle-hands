@@ -46,7 +46,7 @@ BEGIN;
 DO $test$
 DECLARE p public.players;t public.players;r jsonb;r2 jsonb;before_rate float8;after_rate float8;before_pp float8;n int;rejected boolean;uid uuid:=auth.uid();rid uuid:=gen_random_uuid();anchor float8;q jsonb;
 BEGIN
- IF EXISTS(SELECT 1 FROM public.players p JOIN before_install b USING(id) WHERE p.kit<>b.kit OR p.vanity<>b.vanity OR p.wardrobe_owned<>b.wardrobe_owned OR p.cosmetic_styles<>b.cosmetic_styles OR p.pp<>b.pp) THEN RAISE EXCEPTION 'installation changed ownership or funds'; END IF;
+ IF EXISTS(SELECT 1 FROM public.players employee JOIN before_install b USING(id) WHERE employee.kit<>b.kit OR employee.vanity<>b.vanity OR employee.wardrobe_owned<>b.wardrobe_owned OR employee.cosmetic_styles<>b.cosmetic_styles OR employee.pp<>b.pp) THEN RAISE EXCEPTION 'installation changed ownership or funds'; END IF;
  IF (SELECT count(*) FROM office_private.action_history)<>2 OR (SELECT count(*) FROM office_private.project_stamps)<>0 THEN RAISE EXCEPTION 'backfill count or historic reward wrong'; END IF;
  r:=public.office_profile(uid,'lifetime',NULL);
  IF jsonb_array_length(r->'by_kind')<>1 OR r#>>'{by_kind,0,kind}'<>'coffee' THEN RAISE EXCEPTION 'hushed source leaked'; END IF;

@@ -29,7 +29,7 @@ CREATE TABLE office_private.toolkits(
  charges jsonb NOT NULL DEFAULT '{"rescue":2,"confetti":2,"filter":2}',PRIMARY KEY(actor,week)
 );
 CREATE TABLE office_private.action_receipts(actor uuid NOT NULL,request uuid NOT NULL,action text NOT NULL,target uuid NOT NULL,result jsonb NOT NULL,PRIMARY KEY(actor,request));
-CREATE TABLE office_private.history_coverage(id boolean PRIMARY KEY DEFAULT true CHECK(id),started_at timestamptz NOT NULL);
+CREATE TABLE office_private.history_coverage(id boolean PRIMARY KEY DEFAULT true CHECK(id),started_at timestamptz NOT NULL,continuous_since timestamptz NOT NULL DEFAULT now());
 INSERT INTO office_private.history_coverage(started_at) SELECT coalesce(min(created_at),now()) FROM public.deeds;
 ALTER TABLE office_private.action_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.project_stamps ENABLE ROW LEVEL SECURITY;
@@ -119,6 +119,8 @@ BEGIN
  'toolkit',jsonb_build_object('slots',coalesce(k.slots,ARRAY['rescue','confetti']),'charges',coalesce(k.charges,'{"rescue":2,"confetti":2,"filter":2}'::jsonb)),
  'collectibles',p.office_collectibles,'confetti',p.office_confetti,
  'history_since',(SELECT started_at FROM office_private.history_coverage WHERE id=true),
+ 'continuous_since',(SELECT continuous_since FROM office_private.history_coverage WHERE id=true),
+ 'reward_weeks',coalesce((SELECT jsonb_agg(jsonb_build_object('week',r.week,'mine',r.mine,'completed',EXISTS(SELECT 1 FROM office_private.project_completions c WHERE c.week=r.week)) ORDER BY r.week DESC) FROM (SELECT s.week,jsonb_agg(s.category ORDER BY s.category) mine FROM office_private.project_stamps s WHERE s.actor=u GROUP BY s.week) r),'[]'::jsonb),
  'completed_weeks',coalesce((SELECT jsonb_agg(c.week ORDER BY c.week DESC) FROM office_private.project_completions c WHERE EXISTS(SELECT 1 FROM office_private.project_stamps s WHERE s.week=c.week AND s.actor=u)),'[]'::jsonb)) INTO result
  FROM office_private.project_stamps WHERE week=w;
  RETURN result;
@@ -138,7 +140,7 @@ BEGIN
  WHERE happened_at>=now()-interval '30 days' GROUP BY 1),
  peers AS(SELECT CASE WHEN actor=p_player THEN target ELSE actor END other,count(*) FILTER(WHERE actor=p_player) given,count(*) FILTER(WHERE target=p_player) received FROM visible GROUP BY 1)
  SELECT jsonb_build_object('player',jsonb_build_object('id',p_player,'name',(SELECT name FROM public.players WHERE id=p_player)),
- 'period',p_period,'week',w,'since',(SELECT started_at FROM office_private.history_coverage WHERE id=true),'privacy','Hushed actions are excluded from public charts.',
+ 'period',p_period,'week',w,'since',(SELECT started_at FROM office_private.history_coverage WHERE id=true),'continuous_since',(SELECT continuous_since FROM office_private.history_coverage WHERE id=true),'privacy','Hushed actions are excluded from public charts.',
  'by_kind',coalesce((SELECT jsonb_agg(to_jsonb(kinds) ORDER BY kind) FROM kinds),'[]'::jsonb),
  'daily',coalesce((SELECT jsonb_agg(to_jsonb(days) ORDER BY days."day") FROM days),'[]'::jsonb),
  'coworkers',coalesce((SELECT jsonb_agg(jsonb_build_object('id',other,'name',coalesce(p.name,'Former player'),'given',given,'received',received) ORDER BY given+received DESC)
@@ -163,6 +165,7 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 DECLARE u uuid:=auth.uid();p public.players;t public.players;k office_private.toolkits;receipt office_private.action_receipts;remove_index bigint;outcome text;result jsonb;cd interval;
 BEGIN
  IF u IS NULL OR p_request IS NULL OR p_target IS NULL OR p_target=u OR p_action NOT IN('rescue','confetti') OR p_action IS NULL THEN RAISE EXCEPTION 'choose a coworker and a valid action'; END IF;
+ PERFORM pg_advisory_xact_lock(728194, 1);
  p:=public.accrue(u);
  SELECT * INTO receipt FROM office_private.action_receipts WHERE actor=u AND request=p_request;
  IF FOUND THEN
@@ -334,7 +337,7 @@ BEGIN
   heat=0,busted=0,goodwill=0,notoriety=0,hush=0,quits=0,
   grabs=0,kind_received=0,rivalries=0,hits='{}'::jsonb,tally='{}'::jsonb,
   today='{}'::jsonb,contracts=null,mail=null,streak=0,last_checkin=null,
-  nickname=null,outfit=null,ooo=null,
+  nickname=null,outfit=null,ooo=null,office_confetti=null,
   last_restructure=null,last_deed=null,last_nick=null,last_vend=null,
   last_break=null,last_work=null,last_tick=now()
  WHERE id IS NOT NULL;
@@ -346,6 +349,170 @@ BEGIN
  DELETE FROM birthday_card WHERE week_key IS NOT NULL;
  RETURN v_n;
 END $function$
+;
+DO $guard$ BEGIN IF md5(pg_get_functiondef('public.do_deed'::regproc))<>'3990db113fdb087cca7af01ed977496d' THEN RAISE EXCEPTION 'Audited function drift: do_deed'; END IF; END $guard$;
+CREATE OR REPLACE FUNCTION public.do_deed(p_target uuid, p_kind text)
+ RETURNS players
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare p players; t players; d jsonb; price double precision; amt double precision := 0;
+        soften double precision; eff double precision; cd interval; blocked_by_filter boolean:=false;
+begin
+  perform pg_advisory_xact_lock(728194, 1);
+  p := accrue(auth.uid());
+  if p_target = p.id then raise exception 'not to yourself'; end if;
+  cd := (interval '5 minutes') - (perk_of(p, 'silver_tongue') * interval '1 minute');
+  if p.last_deed is not null and now() - p.last_deed < cd then raise exception 'cooling off'; end if;
+  select (data -> p_kind) into d from catalog where key = 'deeds';
+  if d is null then raise exception 'no such deed'; end if;
+  if p_kind='cover' then d:='{"cost":0.05,"good":true,"mins":20,"mult":1.15}'::jsonb; end if;
+  if d ? 'transfer' then raise exception 'cash transfer deeds are retired'; end if;
+  t := accrue(p_target);
+  if t is null then raise exception 'no such player'; end if;
+  price := deed_price(p, p_kind);
+  if p.pp < price then raise exception 'cannot afford'; end if;
+
+  soften := case when t.dept = 'systems' then 0.6 else 1 end
+            * (1 - 0.25 * perk_of(t, 'thick_skin'));
+  if soften < 0.2 then soften := 0.2; end if;
+
+  if d ? 'transfer' then amt := price * (d ->> 'transfer')::double precision; end if;
+  if d ? 'steal' then
+    amt := least(greatest(20, t.pp * (d ->> 'steal')::double precision * soften), steal_cap(p));
+    update players set pp = greatest(0, pp - amt) where id = t.id;
+    update players set pp = pp + amt where id = p.id;
+  end if;
+  if d ? 'transfer' then update players set pp = pp + amt where id = t.id; end if;
+  if d ? 'mult' and (d->>'mult')::double precision<1 and office_private.filter_blocks(t.id) then
+    blocked_by_filter:=true; d:=d-'mult';
+  end if;
+  if p_kind='cover' then
+    update players set buffs=coalesce((select jsonb_agg(b) from jsonb_array_elements(t.buffs) b where b->>'kind'<>'cover'),'[]'::jsonb) where id=t.id;
+  end if;
+  if d ? 'mult' then
+    eff := (d ->> 'mult')::double precision;
+    if eff < 1 then eff := 1 - (1 - eff) * soften; end if;
+    update players set buffs = buffs || jsonb_build_object(
+      'kind', p_kind, 'mult', eff, 'from_name', p.name,
+      'until', now() + ((d ->> 'mins') || ' minutes')::interval)
+    where id = t.id;
+  end if;
+  if d ? 'heat_to' then update players set heat = heat + (d ->> 'heat_to')::int where id = t.id; end if;
+  if (d ->> 'good')::boolean then
+    update players set kind_received = kind_received + 1 where id = t.id;
+  end if;
+
+  insert into deeds (actor, target, kind, amount, detail) values (p.id, p_target, p_kind, amt,case when blocked_by_filter then 'blocked:filter' else null end);
+
+  update players set
+    pp = pp - price, last_deed = now(),
+    goodwill  = goodwill  + case when (d ->> 'good')::boolean then 1 else 0 end,
+    notoriety = notoriety + case when (d ->> 'good')::boolean then 0 else 1 end,
+    heat = case when p_kind = 'blame' then 0
+                when (d ->> 'good')::boolean then heat else heat + 1 end,
+    busted = case when p_kind <> 'blame' and not (d ->> 'good')::boolean
+                    and heat + 1 = 5 then busted + 1 else busted end,
+    tally = jsonb_set(tally, array[p_kind],
+              to_jsonb(coalesce((tally ->> p_kind)::int, 0) + 1), true)
+  where id = p.id returning * into p;
+
+  perform bump_today(p.id, case when (d ->> 'good')::boolean then 'kind' else 'mean' end, 1);
+  if not (d ->> 'good')::boolean then
+    perform check_rivalry(p.id, p_target);
+    select * into p from players where id = p.id;
+  end if;
+  return p;
+end $function$
+;
+DO $guard$ BEGIN IF md5(pg_get_functiondef('public.dress'::regproc))<>'f49b09daf8daa3931b34e07a43a3f93e' THEN RAISE EXCEPTION 'Audited function drift: dress'; END IF; END $guard$;
+CREATE OR REPLACE FUNCTION public.dress(p_target uuid, p_outfit text)
+ RETURNS players
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+#variable_conflict use_variable
+declare v_p players; v_t players; v_c jsonb; v_price double precision; v_mine boolean;
+begin
+  perform pg_advisory_xact_lock(728194, 1);
+  v_p := accrue(auth.uid());
+  select e into v_c from catalog cat, jsonb_array_elements(cat.data) e
+    where cat.key = 'costumes' and e ->> 'id' = p_outfit;
+  if v_c is null then raise exception 'no such costume'; end if;
+
+  v_mine := (p_target = v_p.id);
+  if not v_mine then
+    if v_p.last_deed is not null and now() - v_p.last_deed < (interval '5 minutes' - public.perk_of(v_p, 'silver_tongue') * interval '1 minute')
+      then raise exception 'cooling off'; end if;
+    v_t := accrue(p_target);
+    if v_t is null then raise exception 'no such player'; end if;
+    v_p := accrue(auth.uid());        -- re-read: accrue(target) may have moved the clock
+  end if;
+
+  -- the same function all_prices() quotes from
+  v_price := costume_price(v_p, (v_c ->> 'cost')::double precision)
+             * case when v_mine then 1 else 2 end
+             * case when v_p.dept = 'contracts' then 0.7 else 1 end;
+
+  if v_p.pp < v_price then
+    raise exception 'that costs % and you have %', round(v_price::numeric), round(v_p.pp::numeric);
+  end if;
+
+  update players set outfit = jsonb_build_object(
+      'id', p_outfit, 'by', v_p.id, 'by_name', case when v_mine then null else v_p.name end,
+      'until', now() + ((v_c ->> 'mins') || ' minutes')::interval)
+  where id = p_target;
+
+  if v_mine then
+    update players set pp = pp - v_price where id = v_p.id returning * into v_p;
+  else
+    insert into deeds (actor, target, kind, detail) values (v_p.id, p_target, 'dress', p_outfit);
+    update players set pp = pp - v_price, last_deed = now(), notoriety = notoriety + 1,
+      heat = heat + 1,
+      busted = case when heat + 1 = 5 then busted + 1 else busted end,
+      tally = jsonb_set(tally, array['dress'],
+                to_jsonb(coalesce((tally ->> 'dress')::int, 0) + 1), true)
+    where id = v_p.id returning * into v_p;
+    perform bump_today(v_p.id, 'dress', 1);
+  end if;
+  return v_p;
+end $function$
+;
+DO $guard$ BEGIN IF md5(pg_get_functiondef('public.give_nickname'::regproc))<>'6e9f370eef3533c6eb1c0ceae85eb1fb' THEN RAISE EXCEPTION 'Audited function drift: give_nickname'; END IF; END $guard$;
+CREATE OR REPLACE FUNCTION public.give_nickname(p_target uuid, p_text text)
+ RETURNS players
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare p players; t players; price double precision; nm text;
+begin
+  perform pg_advisory_xact_lock(728194, 1);
+  p := accrue(auth.uid());
+  if p_target = p.id then raise exception 'not to yourself'; end if;
+  if p.last_nick is not null and now() - p.last_nick < interval '10 minutes'
+    then raise exception 'cooling off'; end if;
+  nm := btrim(regexp_replace(coalesce(p_text, ''), '\s+', ' ', 'g'));
+  if char_length(nm) < 2 or char_length(nm) > 18 then raise exception 'bad nickname length'; end if;
+  if nm !~ '^[A-Za-z0-9 ''\-\.]+$' then raise exception 'letters and numbers only'; end if;
+  if not is_clean(nm) then raise exception 'keep it office-safe'; end if;
+  t := accrue(p_target);
+  if t is null then raise exception 'no such player'; end if;
+  price := greatest(100, calc_rate(p) * live_mult(p) * 300);
+  if p.pp < price then raise exception 'cannot afford'; end if;
+
+  update players set nickname = jsonb_build_object(
+    'text', nm, 'by', p.id, 'by_name', p.name, 'until', now() + interval '60 minutes')
+  where id = t.id;
+  insert into deeds (actor, target, kind, detail) values (p.id, p_target, 'nickname', nm);
+  update players set pp = pp - price, last_nick = now(), notoriety = notoriety + 1,
+    tally = jsonb_set(tally, array['nickname'],
+              to_jsonb(coalesce((tally ->> 'nickname')::int, 0) + 1), true)
+  where id = p.id returning * into p;
+  return p;
+end $function$
 ;
 DO $guard$ BEGIN IF md5(pg_get_functiondef('public.buy_fitting'::regproc))<>'bcf9947dff258417a8a468f63cb9b3de' THEN RAISE EXCEPTION 'Audited function drift: buy_fitting'; END IF; END $guard$;
 CREATE OR REPLACE FUNCTION public.buy_fitting(p_key text, p_id text)
@@ -493,84 +660,13 @@ BEGIN
  RETURN p;
 END $function$
 ;
-DO $guard$ BEGIN IF md5(pg_get_functiondef('public.do_deed'::regproc))<>'3990db113fdb087cca7af01ed977496d' THEN RAISE EXCEPTION 'Audited function drift: do_deed'; END IF; END $guard$;
-CREATE OR REPLACE FUNCTION public.do_deed(p_target uuid, p_kind text)
- RETURNS players
- LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO 'public'
-AS $function$
-declare p players; t players; d jsonb; price double precision; amt double precision := 0;
-        soften double precision; eff double precision; cd interval; blocked_by_filter boolean:=false;
-begin
-  p := accrue(auth.uid());
-  if p_target = p.id then raise exception 'not to yourself'; end if;
-  cd := (interval '5 minutes') - (perk_of(p, 'silver_tongue') * interval '1 minute');
-  if p.last_deed is not null and now() - p.last_deed < cd then raise exception 'cooling off'; end if;
-  select (data -> p_kind) into d from catalog where key = 'deeds';
-  if d is null then raise exception 'no such deed'; end if;
-  if p_kind='cover' then d:='{"cost":0.05,"good":true,"mins":20,"mult":1.15}'::jsonb; end if;
-  if d ? 'transfer' then raise exception 'cash transfer deeds are retired'; end if;
-  t := accrue(p_target);
-  if t is null then raise exception 'no such player'; end if;
-  price := deed_price(p, p_kind);
-  if p.pp < price then raise exception 'cannot afford'; end if;
-
-  soften := case when t.dept = 'systems' then 0.6 else 1 end
-            * (1 - 0.25 * perk_of(t, 'thick_skin'));
-  if soften < 0.2 then soften := 0.2; end if;
-
-  if d ? 'transfer' then amt := price * (d ->> 'transfer')::double precision; end if;
-  if d ? 'steal' then
-    amt := least(greatest(20, t.pp * (d ->> 'steal')::double precision * soften), steal_cap(p));
-    update players set pp = greatest(0, pp - amt) where id = t.id;
-    update players set pp = pp + amt where id = p.id;
-  end if;
-  if d ? 'transfer' then update players set pp = pp + amt where id = t.id; end if;
-  if d ? 'mult' and (d->>'mult')::double precision<1 and office_private.filter_blocks(t.id) then
-    blocked_by_filter:=true; d:=d-'mult';
-  end if;
-  if p_kind='cover' then
-    update players set buffs=coalesce((select jsonb_agg(b) from jsonb_array_elements(t.buffs) b where b->>'kind'<>'cover'),'[]'::jsonb) where id=t.id;
-  end if;
-  if d ? 'mult' then
-    eff := (d ->> 'mult')::double precision;
-    if eff < 1 then eff := 1 - (1 - eff) * soften; end if;
-    update players set buffs = buffs || jsonb_build_object(
-      'kind', p_kind, 'mult', eff, 'from_name', p.name,
-      'until', now() + ((d ->> 'mins') || ' minutes')::interval)
-    where id = t.id;
-  end if;
-  if d ? 'heat_to' then update players set heat = heat + (d ->> 'heat_to')::int where id = t.id; end if;
-  if (d ->> 'good')::boolean then
-    update players set kind_received = kind_received + 1 where id = t.id;
-  end if;
-
-  insert into deeds (actor, target, kind, amount, detail) values (p.id, p_target, p_kind, amt,case when blocked_by_filter then 'blocked:filter' else null end);
-
-  update players set
-    pp = pp - price, last_deed = now(),
-    goodwill  = goodwill  + case when (d ->> 'good')::boolean then 1 else 0 end,
-    notoriety = notoriety + case when (d ->> 'good')::boolean then 0 else 1 end,
-    heat = case when p_kind = 'blame' then 0
-                when (d ->> 'good')::boolean then heat else heat + 1 end,
-    busted = case when p_kind <> 'blame' and not (d ->> 'good')::boolean
-                    and heat + 1 = 5 then busted + 1 else busted end,
-    tally = jsonb_set(tally, array[p_kind],
-              to_jsonb(coalesce((tally ->> p_kind)::int, 0) + 1), true)
-  where id = p.id returning * into p;
-
-  perform bump_today(p.id, case when (d ->> 'good')::boolean then 'kind' else 'mean' end, 1);
-  if not (d ->> 'good')::boolean then
-    perform check_rivalry(p.id, p_target);
-    select * into p from players where id = p.id;
-  end if;
-  return p;
-end $function$
-;
 
 -- @END_PATCHES@
 
+DO $costs$ BEGIN
+ IF (SELECT jsonb_object_agg(x->>'id',(x->>'cost')::int) FROM public.catalog,jsonb_array_elements(data) x WHERE key='perks') IS DISTINCT FROM '{"deep_pockets":3,"compound":4,"thick_skin":5,"silver_tongue":4,"good_hands":3}'::jsonb
+ THEN RAISE EXCEPTION 'Seniority perk costs drifted; review earned-point reconstruction'; END IF;
+END $costs$;
 UPDATE public.players p SET seniority_earned=equity+3*public.perk_of(p,'deep_pockets')+4*public.perk_of(p,'compound')+5*public.perk_of(p,'thick_skin')+4*public.perk_of(p,'silver_tongue')+3*public.perk_of(p,'good_hands'),cosmetic_rate_peak=greatest(cosmetic_rate_peak,public.calc_rate(p));
 UPDATE public.catalog SET data=jsonb_set(data,'{cover}','{"cost":0.05,"good":true,"mins":20,"mult":1.15}') WHERE key='deeds';
 -- Old, unaccepted style quotes used a different price basis; keep accepted receipts intact.
