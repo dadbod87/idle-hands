@@ -184,6 +184,7 @@ BEGIN
  IF p_action='rescue' THEN
   SELECT ord INTO remove_index FROM jsonb_array_elements(t.buffs) WITH ORDINALITY e(b,ord)
   WHERE b->>'kind' IN('mute','chair','meeting','replyall') AND (b->>'mult')::float8<1 AND (b->>'until')::timestamptz>now()
+  AND coalesce(b->>'start',CASE WHEN (b->>'from') ~ '^\d{4}-\d{2}-\d{2}' THEN b->>'from' END,now()::text)::timestamptz<=now()
   ORDER BY (b->>'until')::timestamptz,ord LIMIT 1;
   IF remove_index IS NULL THEN RAISE EXCEPTION 'no eligible negative effect to rescue'; END IF;
   UPDATE public.players SET buffs=coalesce((SELECT jsonb_agg(b ORDER BY ord) FROM jsonb_array_elements(t.buffs) WITH ORDINALITY e(b,ord) WHERE ord<>remove_index),'[]'::jsonb),kind_received=kind_received+1 WHERE id=p_target;

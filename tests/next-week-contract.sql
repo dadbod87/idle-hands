@@ -84,6 +84,9 @@ BEGIN
  -- Two-slot changes preserve all charges. Replayed actions cannot spend another charge.
  r:=public.office_equip_tools(ARRAY['rescue','confetti']);
  UPDATE public.players SET last_deed=null WHERE id=uid;
+ UPDATE public.players SET buffs=jsonb_build_array(jsonb_build_object('kind','replyall','mult',0.45,'start',now()+interval '1 minute','until',now()+interval '8 minutes')) WHERE id='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+ rejected:=false;BEGIN PERFORM public.office_interact('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','rescue',gen_random_uuid());EXCEPTION WHEN others THEN rejected:=true;END;
+ IF NOT rejected OR (SELECT charges->>'rescue' FROM office_private.toolkits WHERE actor=uid AND week=public.week_key())<>'2' THEN RAISE EXCEPTION 'Rescue consumed a charge for a future penalty'; END IF;
  UPDATE public.players SET buffs=jsonb_build_array(jsonb_build_object('kind','replyall','mult',0.45,'until',now()+interval '8 minutes')) WHERE id='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
  r:=public.office_interact('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','rescue',rid);r2:=public.office_interact('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','rescue',rid);
  IF r<>r2 OR r#>>'{status,toolkit,charges,rescue}'<>'1' OR (SELECT jsonb_array_length(buffs) FROM public.players WHERE id='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb')<>0 THEN RAISE EXCEPTION 'rescue replay or effect incorrect'; END IF;
