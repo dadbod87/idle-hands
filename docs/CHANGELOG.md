@@ -1,3 +1,7 @@
+## History-only preservation LIVE — 2026-11-12
+
+The separately authorized journal stage was applied once at 11:56:53 AM Pacific as migration `20261112195653_office_action_journal_history_only`. All 946 retained coworker actions were backfilled with zero missing/mismatched events; future capture is enabled and private. Public game functions and catalog are unchanged. Frontend remains build 194 / main `9d622b9`. **The rest of build 195 remains held for after verified Friday rollover.** See [live receipt](HISTORY_ONLY_RELEASE_2026-11-12.md). Do not reapply the journal.
+
 ## Second audit — held build 195, November 12
 
 Adds a reviewable second audit and repeatable-content plan. Prepares `sql/office_action_journal.sql`, an optional private journal-only installation before Friday: captures/backfills retained deeds, preserves hush and survives the existing normal reset without changing any player field or public economy/reset function. The complete package creates the same core when absent or validates/reuses it when already installed; its capture function is then extended with project credit. Reinstall/downgrade guards protect stored history. Both installation orders remain held and require a release decision.

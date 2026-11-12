@@ -1,12 +1,16 @@
+## History-only preservation LIVE — 2026-11-12
+
+The separately authorized journal stage was applied once at 11:56:53 AM Pacific as migration `20261112195653_office_action_journal_history_only`. All 946 retained coworker actions were backfilled with zero missing/mismatched events; future capture is enabled and private. Public game functions and catalog are unchanged. Frontend remains build 194 / main `9d622b9`. **The rest of build 195 remains held for after verified Friday rollover.** See [live receipt](HISTORY_ONLY_RELEASE_2026-11-12.md). Do not reapply the journal.
+
 ## Second audit and staged fixes — 2026-11-12
 
-[Second audit](SECOND_AUDIT_2026-11-12.md) records the repeatability gap, dominant credit theft, proposed project/memento/collection/resupply improvements, and concrete build order. The larger gameplay proposals are not implemented yet. The same held build now prepares an optional history-only payload for before Friday, with compatible full installation afterward. No live installation or deployment is authorized by that proposal.
+[Second audit](SECOND_AUDIT_2026-11-12.md) records the repeatability gap, dominant credit theft, proposed project/memento/collection/resupply improvements, and concrete build order. The larger gameplay proposals are not implemented yet. The separate history-only stage is now live under Nick’s later explicit authorization; the full feature package remains held, with compatible installation after verified rollover.
 
 The audit fixes unconfirmed fitting-price purchases, independent profile/status errors, bounded visible project refresh, unsaved toolkit selection, stale state from an older action receipt, and three missing `api.getMe` calls (now the existing authoritative sync). Exact validation and remaining limits are recorded in PR #56. The journal-only path is tested against synthetic players before the full package; no actual player records are exported or mutated.
 
 ## Next-week office package - candidate only / RELEASE HOLD (2026-11-12)
 
-Build 195 is being prepared on `feat/next-week-office`: durable targeted-action history/profiles, earned-versus-spendable weekly Seniority, bounded Cover help and reset-resistant permanent prices, deliberate phone interaction, weekly verified projects, three earned cosmetics and a two-slot toolkit. Production remains main `9d622b9`, build 194. No migration, live player mutation or merge is authorized before the reviewed post-reset release. See [release contract](NEXT_WEEK_RELEASE.md). Verification includes actual SQL contracts, concurrent receipt/project/defense scenarios and deliberate touch walkthroughs. Exact candidate results and remaining limits are recorded in draft PR #56; no readiness claim is valid without its complete successful gate. Private snapshots remain outside this public repository.
+Build 195 is being prepared on `feat/next-week-office`: durable targeted-action history/profiles, earned-versus-spendable weekly Seniority, bounded Cover help and reset-resistant permanent prices, deliberate phone interaction, weekly verified projects, three earned cosmetics and a two-slot toolkit. Production remains main `9d622b9`, build 194. The journal-only migration is the sole live exception; no full-package migration, live player mutation or frontend merge is authorized before the reviewed post-reset release. See [release contract](NEXT_WEEK_RELEASE.md). Verification includes actual SQL contracts, concurrent receipt/project/defense scenarios and deliberate touch walkthroughs. Exact candidate results and remaining limits are recorded in draft PR #56; no readiness claim is valid without its complete successful gate. Private snapshots remain outside this public repository.
 
 ## Separate sequel private source — 2026-11-09
 

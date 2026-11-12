@@ -1,6 +1,6 @@
 # Next-week office package - RELEASE HOLD
 
-User-authorized implementation on 2026-11-12. **Do not merge to main, apply to Production, trigger a reset, change live balances/inventory, or release automatically.** Prepare, test, review and continue improving first. Target release is after the normal Friday 2026-11-13 16:00 America/Los_Angeles rollover is independently confirmed.
+User-authorized implementation on 2026-11-12. **History-only exception: Nick explicitly authorized it, and migration `20261112195653_office_action_journal_history_only` is now live.** See [receipt](HISTORY_ONLY_RELEASE_2026-11-12.md). Do not reapply it. **The remaining full package stays held: do not merge the frontend, apply the full migration, trigger a reset, change live balances/inventory, or release automatically.** Target release is after normal Friday 2026-11-13 16:00 America/Los_Angeles rollover is independently confirmed.
 
 Base: GitHub main `9d622b9123c0e71c391637ec4a68335a8fcbb61f`. The local source checkpoint `9501f8a` has the identical complete root tree (every root blob/tree hash verified through the GitHub app). The approval UI is failing; use local source and connected GitHub operations, not repeated permission prompts. Remote feature commits use current main as parent.
 
@@ -25,11 +25,11 @@ Rollback frontend first; preserve lifetime history, earned collectibles, style r
 
 ## Review and continuation
 
-Draft PR: https://github.com/dadbod87/idle-hands/pull/56. The PR head and its complete three-job gate are authoritative. Current candidate files are held; no main merge, migration application or automatic release.
+Draft PR: https://github.com/dadbod87/idle-hands/pull/56. The PR head and its complete three-job gate are authoritative. Remaining candidate files are held; only the journal-only migration has been applied. No main merge, full-package migration or automatic release.
 
 The held SQL settles existing capped offline accrual under the old functions before switching Seniority. It does not call sync, accrue or roll_week during installation. It requires season_state.current_week to match week_key at transaction time. The normal recap classifies Rescue as help. All thirteen replaced functions have audited-definition guards; the earned-point reconstruction also guards the fixed perk costs. Targeted social RPCs acquire one common transaction lock before locking either player, preventing opposite-direction deadlocks in this small office. The concurrency harness exercises actual RPC bodies in separate disposable sessions.
 
-Profiles distinguish retained older events from the beginning of continuous tracking. The private November 12 snapshot retains 942 deeds at 09:13:48 Pacific; it is not the final pre-reset history. Actions occurring later and deleted before installation cannot be reconstructed from that snapshot. Obtain a fresh read-only export before normal rollover if complete coverage of this week is wanted; never force rollover for a snapshot or test. Import the private export only after the reviewed journal installation, using the validated importer. Do not add player history or import SQL to this public repository.
+Profiles distinguish retained older events from the beginning of continuous tracking. The private November 12 snapshot retains 942 deeds at 09:13:48 Pacific; it is not the final pre-reset history. Actions occurring later and deleted before installation cannot be reconstructed from that snapshot. The live journal now backfills all 946 retained events and captures later deeds inside the existing database; a fresh local export is not needed for these captured events. Never force rollover for a snapshot or test. An optional earlier private export may only be imported after source-identity review if it contains genuinely missing events. Do not add player history or import SQL to this public repository.
 
 Before the held release:
 
@@ -37,7 +37,7 @@ Before the held release:
 2. Independently read current main, deployed build, season_state and the completed seasons row after Friday November 13, 16:00 Pacific. If rollover is incomplete, hold.
 3. Generate a migration with the installed Supabase CLI, copy the exact reviewed payload, and compare SHA-256. Inspect current function hashes and the perk cost guard before applying. Never test the payload against live accounts.
 4. Apply the additive backend once, then verify function hashes, private-schema grants/RLS, journal/backfill counts, earned-versus-available counters, retained peak rates, permanent inventory/styles and correct catalog Cover behavior. Installation legitimately settles old offline earnings, so compare that settlement with the old capped accrual formula rather than expecting unchanged balances.
-5. Import the reviewed private retained-history export with source-identity conflict checks and hush protection. Label any missing coverage honestly.
+5. Verify existing journal coverage and survival of normal rollover. No export is required for captured events. Any optional earlier import needs source-identity checks and hush protection; label missing coverage honestly.
 6. Only after backend verification, release the reviewed frontend and verify Vercel READY, served artifact and browser behavior. The candidate preview blocks access to live accounts; it is not an isolated hosted game backend.
 7. If a problem appears, revert the frontend first and preserve journal, rewards, receipts and styles. Prefer a forward database fix. Do not restore the cash-gift exploit or delete progress as a rollback.
 
@@ -45,12 +45,12 @@ Next improvements to review after this pack: rotating project themes and visibly
 
 ## Second audit: optional pre-deadline history stage
 
-The [second audit](SECOND_AUDIT_2026-11-12.md) recommends preserving the journal before Friday while leaving the full economy/content release until after normal rollover. This is a prepared option, not permission to apply it. The prior release hold continues; Nick's November 12 statement was tentative about release timing.
+The [second audit](SECOND_AUDIT_2026-11-12.md) recommends preserving the journal before Friday while leaving the full economy/content release until after normal rollover. Nick subsequently explicitly authorized this separate stage, and it is now live; see the receipt. The full economy/content release remains held until verified normal rollover.
 
-`sql/office_action_journal.sql` is the held, independently reviewable journal-only payload. It creates the private journal/coverage/classifier/capture trigger and backfills currently retained deeds. It updates no player row, replaces no public function, grants no client access, starts no project and calls no reset/accrual function. It refuses an existing journal or a downgrade after the full package. Keep it installed on any rollback so history survives.
+`sql/office_action_journal.sql` is the immutable, reviewed journal-only payload already applied once. It creates the private journal/coverage/classifier/capture trigger and backfills currently retained deeds. It updates no player row, replaces no public function, grants no client access, starts no project and calls no reset/accrual function. It refuses an existing journal or a downgrade after the full package. Keep it installed on any rollback so history survives.
 
 The full payload contains a generated copy of the same core. When an earlier journal exists, it validates its version marker, columns, primary keys, coverage row, helper bodies, RLS, trigger and grants, then reuses it without deleting or re-awarding history. The full capture function adds future project credit only after that installation. Both direct full installation and journal-first installation have isolated fixtures. The generator is canonical; do not hand-edit the embedded core.
 
-If the journal stage is chosen, generate a provider migration, compare the reviewed payload hash, apply once before Friday 4 PM Pacific, and independently verify stored definitions, privacy, backfill counts and unchanged player/economy state. Existing gameplay can then record new deeds into its private journal through the ordinary trigger. After verified normal rollover, apply the reviewed full package and frontend using the existing checklist. No local export is necessary for captured events. If the first stage is not installed until after reset, it cannot restore deleted events that were never captured.
+The stage was applied through the provider migration tool. Its generated ledger version, exact stored payload, helper definitions, privacy and backfill were verified. Public economy/reset functions and catalog are unchanged; the payload performs no player writes. Do not run the standalone installer again. Existing gameplay can then record new deeds into its private journal through the ordinary trigger. After verified normal rollover, apply the reviewed full package and frontend using the existing checklist. No local export is necessary for captured events. If the first stage is not installed until after reset, it cannot restore deleted events that were never captured.
 
 The larger design proposals have not been built into runtime. PR #56 records current candidate hashes, completed checks and remaining review limits; earlier green results do not certify a later head.
