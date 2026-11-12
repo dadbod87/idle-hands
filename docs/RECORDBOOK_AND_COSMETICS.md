@@ -30,3 +30,5 @@ At a flat base rate and inactive floors, all six items total 36 hours of base ou
 ## Verification limits
 
 Use isolated PostgreSQL contracts for the actual record, quote, purchase, appearance, costume and rollover bodies. Exercise authenticated API calls with signed synthetic JWTs against disposable PostgREST. Browser screenshots and touch emulation cover narrow portrait, short landscape and desktop; they are not physical-phone tests. No separate hosted Idle Hands test project/branch is connected (checked November 12). Other Patron Platform projects are unrelated and must not be used. Do not substitute production accounts or provision paid test infrastructure silently.
+
+Browser review also reproduced a boot race: the desk shortcut could claim to start a route before office data existed. The held fix waits for the real office, explains loading, and adds a deliberately delayed-floor regression without extending arrival timeouts or earning test BW. Boutique SVG rules apply only to root desk art, not nested character rigs; mannequin previews omit pets/mounts and retain their full height.

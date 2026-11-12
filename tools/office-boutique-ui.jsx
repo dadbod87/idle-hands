@@ -18,7 +18,7 @@ function DeskThemeArt({item}){
  </svg>;
 }
 function OfficeBoutiqueArt({item,player}){
- return item.kind==='desk'?<DeskThemeArt item={item.id}/>:<div className="pg-costume-preview large" role="img" aria-label={item.name+' outfit preview'}><Body p={{...player,look:{...normalizedAvatar(lookFor(player)),clothing:item.id},outfit:null,vanity:{},cosmetic_equipped:{}}}/></div>;
+ return item.kind==='desk'?<DeskThemeArt item={item.id}/>:<div className="pg-costume-preview large" role="img" aria-label={item.name+' outfit preview'}><Body p={{name:player?.name||'Employee',avatar_url:player?.avatar_url,look:{...normalizedAvatar(lookFor(player)),clothing:item.id}}}/></div>;
 }
 function OfficeBoutique({me,onPlayer,status,onDisplay}){
  const [shop,setShop]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[selected,setSelected]=useState(null),[quote,setQuote]=useState(null),[feedback,setFeedback]=useState(''),[clock,setClock]=useState(Date.now());
