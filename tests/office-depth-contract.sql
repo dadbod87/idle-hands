@@ -10,6 +10,7 @@ DECLARE
  before_a float8;before_b float8;price float8;total float8;n int;rejected boolean;w text:=public.week_key();i int;day1 date;week1 text;eligible text;excluded text;
 BEGIN
  PERFORM set_config('request.jwt.claim.sub',b::text,true);
+ IF EXISTS(SELECT 1 FROM public.catalog,LATERAL jsonb_array_elements(data) x WHERE key='perks' AND x->>'id'='compound' AND x->>'note' NOT LIKE '%Friday reset%') THEN RAISE EXCEPTION 'weekly perk sold as permanent';END IF;
  UPDATE public.players SET pp=1e6,last_deed=null,buffs='[]',perks='{}',heat=0;
  cfg:=office_private.ensure_project();r:=public.office_week_status();
  IF r#>>'{project,goal}'<>'9' OR cardinality(cfg.categories)<>3 OR r#>>'{project,stretch_goal}'<>'15' THEN RAISE EXCEPTION 'project configuration missing';END IF;

@@ -1,5 +1,7 @@
 # Second audit: give the office a second week
 
+**Subsequent implementation:** Nick authorized this pack after the audit. The held implementation and chosen numbers are now in [OFFICE_DEPTH_CONTRACT.md](OFFICE_DEPTH_CONTRACT.md); the text below preserves the original proposals. The history-only stage is live, while all gameplay remains held. Current results belong to PR #56.
+
 Audit base: held build 195, PR #56 head `0cc30badd04901daf725633d471492bc2e7ce1b8`; live main remains `9d622b9` / build 194. This is preparation, not a release authorization. No live player action or migration is part of this audit.
 
 ## What the evidence says

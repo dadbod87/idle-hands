@@ -392,7 +392,7 @@ BEGIN
  'cooldown_until',CASE WHEN p.last_deed IS NULL THEN NULL ELSE p.last_deed+interval '5 minutes'-public.perk_of(p,'silver_tongue')*interval '1 minute' END,
  'collectibles',p.office_collectibles,'confetti',p.office_confetti,
  'history_since',(SELECT started_at FROM office_private.history_coverage WHERE id=true),'continuous_since',(SELECT continuous_since FROM office_private.history_coverage WHERE id=true),
- 'reward_weeks',coalesce((SELECT jsonb_agg(jsonb_build_object('week',r.week,'mine',r.mine,'completed',EXISTS(SELECT 1 FROM office_private.project_completions pc WHERE pc.week=r.week)) ORDER BY r.week DESC) FROM (SELECT s.week,jsonb_agg(s.category ORDER BY s.category) mine FROM office_private.project_stamps s WHERE s.actor=u GROUP BY s.week) r),'[]'::jsonb),
+ 'reward_weeks',coalesce((SELECT jsonb_agg(jsonb_build_object('week',r.week,'mine',r.mine,'categories',(SELECT to_jsonb(pc.categories) FROM office_private.projects pc WHERE pc.week=r.week),'completed',EXISTS(SELECT 1 FROM office_private.project_completions pc WHERE pc.week=r.week)) ORDER BY r.week DESC) FROM (SELECT s.week,jsonb_agg(s.category ORDER BY s.category) mine FROM office_private.project_stamps s WHERE s.actor=u GROUP BY s.week) r),'[]'::jsonb),
  'completed_weeks',coalesce((SELECT jsonb_agg(pc.week ORDER BY pc.week DESC) FROM office_private.project_completions pc WHERE EXISTS(SELECT 1 FROM office_private.project_stamps s WHERE s.week=pc.week AND s.actor=u)),'[]'::jsonb));
  RETURN result;
 END $$;
@@ -484,7 +484,7 @@ BEGIN
  q.actor:=u;q.quote:=gen_random_uuid();q.week:=public.week_key();q.price:=office_private.shield_price(p);q.rate:=public.permanent_price_rate(p);q.expires_at:=now()+interval '2 minutes';
  IF NOT (q.price>0 AND q.price<'Infinity'::float8) THEN RAISE EXCEPTION 'invalid shield price'; END IF;
  INSERT INTO office_private.shield_quotes(actor,quote,week,price,rate,expires_at) VALUES(q.actor,q.quote,q.week,q.price,q.rate,q.expires_at) ON CONFLICT(actor) DO UPDATE SET quote=excluded.quote,week=excluded.week,price=excluded.price,rate=excluded.rate,expires_at=excluded.expires_at;
- RETURN to_jsonb(q)-'actor'||jsonb_build_object('server_now',now(),'attack_reference',q.price/2,'basis','Retained base production; excludes temporary bonuses and department discounts');
+ RETURN (to_jsonb(q)-'actor')||jsonb_build_object('server_now',now(),'attack_reference',q.price/2,'basis','Retained base production; excludes temporary bonuses and department discounts');
 END $$;
 
 CREATE FUNCTION public.office_buy_shield(p_quote uuid,p_request uuid) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
@@ -530,7 +530,7 @@ BEGIN
  p:=public.do_deed(p_target,p_kind);
  SELECT * INTO d FROM public.deeds WHERE actor=u AND id>before_id ORDER BY id DESC LIMIT 1;
  SELECT amount INTO reflected_amount FROM office_private.reflections WHERE source_deed=d.id;
- result:=jsonb_build_object('player',to_jsonb(p),'reflected',d.detail='reflected:shield','detail',d.detail,'amount',coalesce(reflected_amount,d.amount),'outcome',CASE d.detail WHEN 'reflected:shield' THEN 'Return to Sender: your sabotage bounced back onto you.' WHEN 'blocked:filter' THEN 'Their Spam Filter blocked the output penalty.' WHEN 'protected:clip' THEN 'Their Receipt Clip halved the theft.' ELSE NULL END);
+ result:=jsonb_build_object('player',to_jsonb(p),'reflected',coalesce(d.detail='reflected:shield',false),'detail',d.detail,'amount',coalesce(reflected_amount,d.amount),'outcome',CASE d.detail WHEN 'reflected:shield' THEN 'Return to Sender: your sabotage bounced back onto you.' WHEN 'blocked:filter' THEN 'Their Spam Filter blocked the output penalty.' WHEN 'protected:clip' THEN 'Their Receipt Clip halved the theft.' ELSE NULL END);
  INSERT INTO office_private.action_receipts(actor,request,action,target,result) VALUES(u,p_request,'deed:'||p_kind,p_target,result);
  RETURN result;
 END $$;
@@ -557,6 +557,8 @@ END $$;
 
 REVOKE ALL ON FUNCTION public.office_display_collectibles(text[]),public.office_display_memento(text),public.office_resupply(text,uuid),public.office_shield_quote(),public.office_buy_shield(uuid,uuid),public.office_deed(uuid,text,uuid) FROM PUBLIC,anon;
 GRANT EXECUTE ON FUNCTION public.office_display_collectibles(text[]),public.office_display_memento(text),public.office_resupply(text,uuid),public.office_shield_quote(),public.office_buy_shield(uuid,uuid),public.office_deed(uuid,text,uuid) TO authenticated;
+-- Perks reset Friday; an output perk must not be sold as a lifetime bonus.
+UPDATE public.catalog c SET data=(SELECT jsonb_agg(CASE WHEN x->>'id'='compound' THEN jsonb_set(x,'{note}',to_jsonb('+5% output per level until Friday reset. Spending keeps your earned-Seniority bonus.'::text)) ELSE x END ORDER BY ord) FROM jsonb_array_elements(c.data) WITH ORDINALITY e(x,ord)) WHERE c.key='perks';
 
 -- @END_OFFICE_DEPTH@
 

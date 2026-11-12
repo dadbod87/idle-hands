@@ -49,6 +49,8 @@ if ds in sql:sql=sql[:sql.index(ds)]+sql[sql.index(de)+len(de):].lstrip('\n')
 anchor='-- Everything below patches exact audited bodies; source drift aborts the whole transaction.'
 sql=sql.replace(anchor,ds+'\n'+(root/'tools/office-depth.sql').read_text()+'\n'+de+'\n\n'+anchor,1)
 journal=(root/'sql/office_action_journal.sql').read_text()
+if hashlib.sha256(journal.encode()).hexdigest()!='3d0e5d1a482bd5af84adfb67b9618128337045685d1c5a5712f96193a4d665d4':
+    raise SystemExit('The applied journal payload is immutable; review a separate forward change')
 core=journal.split('-- @JOURNAL_CORE@\n',1)[1].split('-- @END_JOURNAL_CORE@',1)[0]
 capture_body=re.search(r'AS \$journal_capture\$([\s\S]*?)\$journal_capture\$',core).group(1)
 category_body=re.search(r'AS \$\$([\s\S]*?)\$\$',core).group(1)

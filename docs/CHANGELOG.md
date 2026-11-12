@@ -1,6 +1,6 @@
-## Office depth continuation — held implementation checkpoint
+## Office depth continuation — implemented, held for review
 
-Adds the explicit depth contract and held backend for rotating projects, immutable dated scrapbook rewards, multi-week collections, bounded daily resupply, Receipt Clip, quoted one-use reflection and idempotent social resolution. Ordinary and reflected theft transfer only the actual available debit. Passive defenses and repeated sabotage stacking remain. This is an implementation checkpoint; UI and final verification remain in progress. No new live installation, player action or frontend release.
+Adds the explicit depth contract and held backend for rotating projects, immutable dated scrapbook rewards, multi-week collections, bounded daily resupply, Receipt Clip, quoted one-use reflection and idempotent social resolution. Ordinary and reflected theft transfer only the actual available debit. Passive defenses and repeated sabotage stacking remain. The same package includes responsive collection/scrapbook/display controls, free previews, supply progress, server-clock cooldowns and a confirmed-price shield review with protected retries. Sender and recipient feedback distinguish reflected/blocked attempts; profile totals never invent a second initiated action. A short dismissible route points at existing activities. The weekly output-perk note now discloses Friday reset. Final exact-head results are recorded in PR #56. No new live installation, player action or frontend release.
 
 ## History-only preservation LIVE — 2026-11-12
 
@@ -12,7 +12,7 @@ Adds a reviewable second audit and repeatable-content plan. Prepares `sql/office
 
 Fitting Buy controls wait for valid server prices; free previews remain available during missing/failed quotes, with a visible retry. Office profiles retain their own loading errors when a project read completes later. Open records refresh every 30 seconds while visible, on return, or by explicit refresh, preserving unsaved tool choices and resetting weekly supplies from the server. Accepted action receipts refresh current player/status before display instead of restoring an old week's state. Existing vending/card/secret refresh callbacks now use the defined sync method instead of an undefined getMe method.
 
-The eight local logic suites, additional synthetic browser cases, both disposable database installation orders, normal rollover and concurrency/refusal tests gate the candidate. Exact-head results belong to PR #56. No Production migration, reset, private export or frontend release is part of this preparation. Further gameplay additions in SECOND_AUDIT_2026-11-12.md remain proposals.
+The eight local logic suites, additional synthetic browser cases, both disposable database installation orders, normal rollover and concurrency/refusal tests gate the candidate. Exact-head results belong to PR #56. No Production migration, reset, private export or frontend release is part of this preparation. This entry records the initial preparation; the subsequent depth pack above implements those proposals under the later authorization.
 
 ## Next-week office package - candidate only / RELEASE HOLD (2026-11-12)
 

@@ -1,6 +1,6 @@
-## Office depth continuation — IN PROGRESS / held
+## Office depth continuation — implemented / RELEASE HOLD
 
-Nick authorized building the second-audit proposals into the same held package. [Depth contract](OFFICE_DEPTH_CONTRACT.md) specifies rotating three-category projects, dated mementos, two/four/six-week collections, capped earned resupply, Receipt Clip and a one-use purchased reflective shield. Backend, UI and isolated verification are being developed; this checkpoint is not a readiness claim. Stacking stays intact. The history-only installation below remains the only live change.
+Nick authorized building the second-audit proposals into the same held package. [Depth contract](OFFICE_DEPTH_CONTRACT.md) specifies rotating three-category projects, dated mementos, two/four/six-week collections, capped earned resupply, Receipt Clip and a one-use purchased reflective shield. Backend and player controls are implemented. Initial actual-SQL checks passed both installation orders; final exact-head browser/concurrency evidence belongs to PR #56. This is not a live release. Stacking stays intact. The history-only installation below remains the only live change.
 
 ## History-only preservation LIVE — 2026-11-12
 
@@ -8,13 +8,13 @@ The separately authorized journal stage was applied once at 11:56:53 AM Pacific 
 
 ## Second audit and staged fixes — 2026-11-12
 
-[Second audit](SECOND_AUDIT_2026-11-12.md) records the repeatability gap, dominant credit theft, proposed project/memento/collection/resupply improvements, and concrete build order. The larger gameplay proposals are not implemented yet. The separate history-only stage is now live under Nick’s later explicit authorization; the full feature package remains held, with compatible installation after verified rollover.
+[Second audit](SECOND_AUDIT_2026-11-12.md) records the repeatability gap, dominant credit theft, proposed project/memento/collection/resupply improvements, and concrete build order. Those initial proposals are now implemented in the held depth pack above; the original audit remains a historical design record. The separate history-only stage is now live under Nick’s later explicit authorization; the full feature package remains held, with compatible installation after verified rollover.
 
 The audit fixes unconfirmed fitting-price purchases, independent profile/status errors, bounded visible project refresh, unsaved toolkit selection, stale state from an older action receipt, and three missing `api.getMe` calls (now the existing authoritative sync). Exact validation and remaining limits are recorded in PR #56. The journal-only path is tested against synthetic players before the full package; no actual player records are exported or mutated.
 
 ## Next-week office package - candidate only / RELEASE HOLD (2026-11-12)
 
-Build 195 is being prepared on `feat/next-week-office`: durable targeted-action history/profiles, earned-versus-spendable weekly Seniority, bounded Cover help and reset-resistant permanent prices, deliberate phone interaction, weekly verified projects, three earned cosmetics and a two-slot toolkit. Production remains main `9d622b9`, build 194. The journal-only migration is the sole live exception; no full-package migration, live player mutation or frontend merge is authorized before the reviewed post-reset release. See [release contract](NEXT_WEEK_RELEASE.md). Verification includes actual SQL contracts, concurrent receipt/project/defense scenarios and deliberate touch walkthroughs. Exact candidate results and remaining limits are recorded in draft PR #56; no readiness claim is valid without its complete successful gate. Private snapshots remain outside this public repository.
+Build 195 is being prepared on `feat/next-week-office`: durable targeted-action history/profiles, earned-versus-spendable weekly Seniority, bounded Cover help and reset-resistant permanent prices, deliberate phone interaction, rotating verified projects, six earned cosmetics, a dated scrapbook, earned refills, a two-slot/four-tool toolkit and one-use reflection. Production remains main `9d622b9`, build 194. The journal-only migration is the sole live exception; no full-package migration, live player mutation or frontend merge is authorized before the reviewed post-reset release. See [release contract](NEXT_WEEK_RELEASE.md). Verification includes actual SQL contracts, concurrent receipt/project/defense scenarios and deliberate touch walkthroughs. Exact candidate results and remaining limits are recorded in draft PR #56; no readiness claim is valid without its complete successful gate. Private snapshots remain outside this public repository.
 
 ## Separate sequel private source — 2026-11-09
 

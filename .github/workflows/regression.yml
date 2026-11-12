@@ -42,13 +42,13 @@ jobs:
       - name: Start local static server
         run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/idle-hands-http.log 2>&1 &
       - name: Deliberate touch and next-week walkthroughs
-        run: npx playwright test tests/next-week-ui.spec.cjs tests/chair-spawns.spec.cjs tests/gameplay.spec.cjs tests/lived-in-office.spec.cjs tests/mobile-hierarchy.spec.cjs tests/office-polish.spec.cjs tests/planter-targets.spec.cjs tests/prop-performances.spec.cjs --reporter=line
+        run: npx playwright test tests/next-week-ui.spec.cjs tests/office-depth-ui.spec.cjs tests/chair-spawns.spec.cjs tests/gameplay.spec.cjs tests/lived-in-office.spec.cjs tests/mobile-hierarchy.spec.cjs tests/office-polish.spec.cjs tests/planter-targets.spec.cjs tests/prop-performances.spec.cjs --reporter=line
       - name: Preserve bounded synthetic visual evidence in diagnostics
         if: always()
         run: |
           python3 - <<'PYCODE'
           import base64,pathlib
-          names=['office-project-390.jpg','office-profile-390.jpg','office-project-844.jpg','plant-selection-landscape.jpg']
+          names=['office-project-390.jpg','office-profile-390.jpg','office-project-844.jpg','plant-selection-landscape.jpg','office-collection-390.jpg','office-shield-390.jpg','office-depth-844.jpg','office-depth-art-390.jpg']
           for name in names:
               p=pathlib.Path('test-results')/name
               if p.exists():
