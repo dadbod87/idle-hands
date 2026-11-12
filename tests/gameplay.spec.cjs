@@ -29,6 +29,9 @@ for(const mode of ['desktop','mobile']){
     await expect(avatar).toHaveClass(new RegExp('em-'+id));
   }
   // The movement sample can already land at the desk on some viewport/camera frames.
+  // Doug's real 60-second phone event can also start mid-walk; wait through it.
+  test.info().setTimeout(test.info().timeout+65000);
+  await expect(page.locator('.pg-work')).toBeEnabled({timeout:65000});
   await page.locator('.pg-work').click();
   await expect(page.getByRole('button',{name:/Do actual work/})).toBeVisible({timeout:30000});
   await page.getByRole('button',{name:/Do actual work/}).click();

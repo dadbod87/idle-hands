@@ -77,7 +77,7 @@ test('next week reliability: refresh preserves unsaved tools and resets them on 
  await openRecords(page);await expect(page.getByRole('heading',{name:state.project.title})).toBeVisible();
  await page.getByRole('button',{name:'Toolkit',exact:true}).click();
  await page.getByRole('button',{name:/Emergency Stapler/}).click();await page.getByRole('button',{name:/Spam Filter/}).click();
- await page.getByLabel('Coworker',{exact:true}).selectOption(peer.id);
+ await page.getByLabel('Toolkit recipient',{exact:true}).selectOption(peer.id);
  await expect(page.getByRole('button',{name:'Send confetti',exact:true})).toBeDisabled();
  await page.getByRole('button',{name:'Refresh office records',exact:true}).click();
  await expect.poll(()=>f.calls.filter(c=>c.rpc==='office_week_status').length).toBe(2);
@@ -101,7 +101,7 @@ test('next week reliability: a lost action reply retried after rollover keeps on
   }
  }});
  await openRecords(page);await expect(page.getByRole('heading',{name:state.project.title})).toBeVisible();await page.getByRole('button',{name:'Toolkit',exact:true}).click();
- await page.getByLabel('Coworker',{exact:true}).selectOption(peer.id);await page.getByRole('button',{name:'Send confetti',exact:true}).click();
+ await page.getByLabel('Toolkit recipient',{exact:true}).selectOption(peer.id);await page.getByRole('button',{name:'Send confetti',exact:true}).click();
  await expect(page.getByRole('alert')).toContainText('Reply lost after acceptance');
  state.week='2026-48';Object.assign(f.player,{equity:0,seniority_earned:0,owned:{}});
  await page.getByRole('button',{name:'Retry action',exact:true}).click();
