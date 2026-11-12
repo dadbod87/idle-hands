@@ -69,7 +69,7 @@ jobs:
           retention-days: 7
   isolated-postgres:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     services:
       postgres:
         image: postgres:16
@@ -106,3 +106,19 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f tests/office-depth-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/recordbook-boutique-contract.sql
           python3 tests/next-week-concurrency.py
+      - name: Prepare disposable authenticated API
+        run: |
+          psql -v ON_ERROR_STOP=1 -f tests/next-week-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/authenticated-office-setup.sql
+      - name: Start pinned isolated PostgREST
+        run: |
+          docker run --detach --name ih-api --network host \
+            -e PGRST_DB_URI=postgres://ih_api:isolated-api-test-only@127.0.0.1:5432/idle_hands_test \
+            -e PGRST_DB_SCHEMAS=public -e PGRST_DB_ANON_ROLE=anon \
+            -e PGRST_JWT_SECRET=idle-hands-disposable-jwt-test-only-2026 \
+            postgrest/postgrest:v16.5
+      - name: Exercise JWT-authenticated real API and RLS
+        run: node tests/authenticated-office-api.test.cjs
+      - name: Preserve isolated API diagnostics
+        if: always()
+        run: docker logs ih-api 2>&1 || true

@@ -7889,7 +7889,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
         <div className="pg-list">
           {list.map((c, i) => {
             const base = prices?.["cos_" + c.id] ?? Math.max(120, lifetime * c.cost);
-            const price = base * (mine ? 1 : 2);
+            const price = base * (mine ? 1 : 2) * (me?.dept === "contracts" ? 0.7 : 1);
             const broke = pp < price;
             const cooling = !mine && cool > 0;
             const disabled = broke || cooling;

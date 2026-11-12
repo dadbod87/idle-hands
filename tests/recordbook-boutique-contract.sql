@@ -1,6 +1,7 @@
 \set ON_ERROR_STOP on
 DO $$ BEGIN IF current_database()<>'idle_hands_test' THEN RAISE EXCEPTION 'isolated test DB required';END IF; END $$;
 \i tests/fixtures/appearance-baseline.sql
+\i tests/fixtures/costume-price-baseline.sql
 BEGIN;
 DO $pack$
 DECLARE a uuid:='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';b uuid:='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';c uuid:='cccccccc-cccc-4ccc-8ccc-cccccccccccc';p public.players;q jsonb;r jsonb;r2 jsonb;before_pp float8;price float8;req uuid;rejected boolean;w text:=public.week_key();closing text:=public.week_key(now()-interval '7 days');i int;old_week text;
