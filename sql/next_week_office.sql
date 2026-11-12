@@ -134,13 +134,13 @@ BEGIN
  WITH visible AS(SELECT * FROM office_private.action_history h WHERE NOT hush AND (actor=p_player OR target=p_player)
  AND (p_period='lifetime' OR week=w) AND (p_peer IS NULL OR actor=p_peer OR target=p_peer)),
  kinds AS(SELECT kind,category,count(*) FILTER(WHERE actor=p_player) given,count(*) FILTER(WHERE target=p_player) received FROM visible GROUP BY kind,category),
- days AS(SELECT (happened_at AT TIME ZONE 'America/Los_Angeles')::date day,count(*) FILTER(WHERE actor=p_player) given,count(*) FILTER(WHERE target=p_player) received FROM visible
+ days AS(SELECT (happened_at AT TIME ZONE 'America/Los_Angeles')::date AS "day",count(*) FILTER(WHERE actor=p_player) given,count(*) FILTER(WHERE target=p_player) received FROM visible
  WHERE happened_at>=now()-interval '30 days' GROUP BY 1),
  peers AS(SELECT CASE WHEN actor=p_player THEN target ELSE actor END other,count(*) FILTER(WHERE actor=p_player) given,count(*) FILTER(WHERE target=p_player) received FROM visible GROUP BY 1)
  SELECT jsonb_build_object('player',jsonb_build_object('id',p_player,'name',(SELECT name FROM public.players WHERE id=p_player)),
  'period',p_period,'week',w,'since',(SELECT started_at FROM office_private.history_coverage WHERE id=true),'privacy','Hushed actions are excluded from public charts.',
  'by_kind',coalesce((SELECT jsonb_agg(to_jsonb(kinds) ORDER BY kind) FROM kinds),'[]'::jsonb),
- 'daily',coalesce((SELECT jsonb_agg(to_jsonb(days) ORDER BY day) FROM days),'[]'::jsonb),
+ 'daily',coalesce((SELECT jsonb_agg(to_jsonb(days) ORDER BY days."day") FROM days),'[]'::jsonb),
  'coworkers',coalesce((SELECT jsonb_agg(jsonb_build_object('id',other,'name',coalesce(p.name,'Former player'),'given',given,'received',received) ORDER BY given+received DESC)
  FROM peers LEFT JOIN public.players p ON p.id=other),'[]'::jsonb)) INTO result;
  RETURN result;
@@ -171,6 +171,8 @@ BEGIN
  END IF;
  SELECT * INTO t FROM public.players WHERE id=p_target FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'no such player'; END IF;
+ -- Settle the old penalty before removing it; never retroactively reprice absence.
+ t:=public.accrue(p_target);
  cd:=interval '5 minutes'-public.perk_of(p,'silver_tongue')*interval '1 minute';
  IF p.last_deed IS NOT NULL AND now()-p.last_deed<cd THEN RAISE EXCEPTION 'cooling off'; END IF;
  INSERT INTO office_private.toolkits(actor,week) VALUES(u,public.week_key()) ON CONFLICT DO NOTHING;

@@ -20,6 +20,9 @@ INSERT INTO public.players(id,name,pp,owned,equity,last_tick) VALUES
  ('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','Fixture B',1e40,'{"intern":1}',0,now()),
  ('cccccccc-cccc-4ccc-8ccc-cccccccccccc','Fixture C',1e40,'{"intern":1}',0,now());
 CREATE FUNCTION public.accrue(p_id uuid) RETURNS public.players LANGUAGE sql AS $$SELECT * FROM public.players WHERE id=p_id$$;
+-- Install the actual historic ownership helper/trigger from its pre-migration schema.
+DROP TABLE public.style_quotes;
+ALTER TABLE public.players DROP COLUMN cosmetic_styles,DROP COLUMN cosmetic_equipped,DROP COLUMN cosmetic_revision;
 \i supabase/migrations/20261106213809_owned_item_styles.sql
 \i tests/fixtures/next-week-baseline.sql
 -- These dependencies are deterministic fixture substitutes. Action and migration bodies are actual.
