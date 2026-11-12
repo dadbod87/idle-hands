@@ -20,7 +20,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  await page.getByRole('button',{name:'Claim reward',exact:true}).first().click();await expect(page.getByRole('button',{name:'Owned',exact:true})).toHaveCount(1);
  await page.getByRole('button',{name:'Player profiles',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Fixture profile retry');
  await page.getByRole('button',{name:/Retry/}).click();await expect(page.getByRole('img',{name:/Actions given/}).first()).toBeVisible();
- await expect(page.getByRole('cell',{name:'help',exact:true})).toBeVisible();
+ await expect(page.getByRole('table',{name:/Successful actions/}).getByRole('cell',{name:'help',exact:true})).toBeVisible();
  await page.screenshot({path:`test-results/office-profile-${viewport.width}.jpg`,type:'jpeg',quality:60,fullPage:true});
  await page.getByRole('button',{name:'Toolkit',exact:true}).click();await expect(page.getByRole('heading',{name:'Choose two tools'})).toBeVisible();
  await page.getByRole('button',{name:'Emergency Stapler',exact:false}).click();await page.getByRole('button',{name:'Spam Filter',exact:false}).click();await page.getByRole('button',{name:'Save two-slot toolkit'}).click();

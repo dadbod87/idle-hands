@@ -4671,7 +4671,8 @@ function OfficeFloor() {
   // Pointer movement and interaction are separate intents on phones. Keyboard
   // activation (detail=0) and explicitly labeled directory routes remain intentional.
   const captureWorldTap=e=>{
-    if(e.detail===0||touchGesture.current?.type!=="touch")return;
+    const pointerType=e.nativeEvent.pointerType||touchGesture.current?.type;
+    if(e.detail===0||pointerType!=="touch")return;
     e.preventDefault();e.stopPropagation();
     if(touchGesture.current?.dragged){goRef.current=null;setWorldIntent(null);worldActivation.current=null;return;}
     const el=e.target.closest('[data-fixture],.pg-officedesk,[data-scenery],.pg-chair,.pg-office-tv');
@@ -5091,7 +5092,7 @@ function OfficeFloor() {
           </div>
         </div>
         {(!touchMovement||mapOpen)&&<MiniMap pos={pos} board={board} meId={me?.id} cam={cam} view={view} chair={chair} />}
-        {touchMovement&&worldIntent&&<div className="pg-destination" aria-hidden="true" style={{left:(worldIntent.x-cam.x)*zoom,top:(worldIntent.y-cam.y)*zoom}}>◇</div>}
+        {worldIntent&&<div className="pg-destination" aria-hidden="true" style={{left:(worldIntent.x-cam.x)*zoom,top:(worldIntent.y-cam.y)*zoom}}>◇</div>}
         {chair && (chair.x < cam.x || chair.x > cam.x + view.w ||
                    chair.y < cam.y || chair.y > cam.y + view.h) && (
           <div className="pg-chairping" style={{
@@ -5125,7 +5126,7 @@ function OfficeFloor() {
           ))}
         </div>
         <div className="pg-prompt">
-          {touchMovement&&worldIntent?<><b>{dist(pos,worldIntent)>180?"Walk closer to "+worldIntent.label.toLowerCase():"Ready"}</b><button className="pg-open" disabled={dist(pos,worldIntent)>180} onClick={()=>{worldActivation.current?.();setWorldIntent(null);worldActivation.current=null;}}> {worldIntent.label}</button></>:near
+          {worldIntent?<><b>{dist(pos,worldIntent)>180?"Walk closer to "+worldIntent.label.toLowerCase():"Ready"}</b><button className="pg-open" disabled={dist(pos,worldIntent)>180} onClick={()=>{worldActivation.current?.();setWorldIntent(null);worldActivation.current=null;}}> {worldIntent.label}</button></>:near
             ? (<><b>{near.label}</b> — {near.sub}<button className="pg-open" onClick={() => openFixture(near)}>Open</button></>)
             : <><span className="pg-walk-hint">Tap the floor to walk (arrow keys work too). Walk up to anything and open it.</span><span className="pg-walk-hint-short">Tap the floor to walk. Help has the rest.</span></>}
         </div>
