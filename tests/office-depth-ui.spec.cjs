@@ -71,6 +71,19 @@ test('office depth art: all earned decorations and the shield render without spe
  expect(f.calls.some(c=>['office_buy_shield','office_claim_collectible','buy_fitting','do_deed','office_deed'].includes(c.rpc))).toBe(false);
 });
 
+test('office depth: server-clock cooldown and shield quote expire with a skewed client clock',async({page})=>{
+ let server=Date.now();const s=state(),peer={id:'00000000-0000-4000-8000-000000000099',name:'Fixture coworker'};s.cooldown_until=new Date(server+20000).toISOString();
+ await page.clock.install({time:new Date(server+3600000)});
+ const f=await installGameFixture(page,{coworkers:[peer],handleRpc:async(name)=>{
+  if(name==='office_week_status'){s.server_now=new Date(server).toISOString();return {body:s};}
+  if(name==='office_shield_quote')return {body:{quote:'11111111-1111-4111-8111-111111111111',week:s.week,server_now:new Date(server).toISOString(),expires_at:new Date(server+20000).toISOString(),price:5000,attack_reference:2500,basis:'Current week base production'}};
+ }});
+ await openRecords(page);await expect(page.getByRole('heading',{name:s.project.title})).toBeVisible();await page.getByRole('button',{name:'Toolkit',exact:true}).click();await page.getByLabel('Toolkit recipient',{exact:true}).selectOption(peer.id);
+ await expect(page.getByRole('button',{name:'Send confetti',exact:true})).toBeDisabled();server+=21000;await page.clock.fastForward(21000);await expect(page.getByRole('button',{name:'Send confetti',exact:true})).toBeEnabled();
+ await page.locator('.pg-next-shield>summary').click();await page.getByRole('button',{name:'Review shield price',exact:true}).click();await expect(page.getByRole('button',{name:/Buy and arm/})).toBeEnabled();
+ server+=21000;await page.clock.fastForward(21000);await expect(page.getByRole('button',{name:/Buy and arm/})).toBeDisabled();expect(f.calls.some(c=>['office_buy_shield','office_interact'].includes(c.rpc))).toBe(false);
+});
+
 test('office depth: sender recovers a reflected action receipt without a second attack',async({page})=>{
  test.setTimeout(75000);const peer={id:'00000000-0000-4000-8000-000000000099',name:'Fixture defender'};let saved,uses=0;const requests=[];
  const f=await installGameFixture(page,{coworkers:[peer],handleRpc:async(name,args,p)=>{

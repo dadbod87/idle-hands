@@ -98,6 +98,9 @@ BEGIN
  IF (public.office_shield_quote()->>'price')::float8<>(q->>'price')::float8 THEN RAISE EXCEPTION 'temporary sabotage discounted shield';END IF;
  UPDATE public.players SET buffs='[]',owned='{}' WHERE id=b;
  IF (public.office_shield_quote()->>'price')::float8<>(q->>'price')::float8 THEN RAISE EXCEPTION 'restructure-sized production drop discounted shield';END IF;
+ INSERT INTO office_private.weekly_price_peaks(actor,week,rate) VALUES(b,public.week_key(now()-interval '7 days'),1e30);
+ UPDATE public.players SET cosmetic_rate_peak=1e35 WHERE id=b;
+ IF (public.office_shield_quote()->>'price')::float8<>(q->>'price')::float8 THEN RAISE EXCEPTION 'lifetime or previous-week peak overcharged a weekly consumable';END IF;
 
  -- Work + a different category; one daily and three weekly restoration claims.
  PERFORM set_config('request.jwt.claim.sub',a::text,true);
@@ -157,7 +160,7 @@ BEGIN
  IF (SELECT reward->>'title' FROM office_private.mementos WHERE actor=a AND week=w)<>cfg.title THEN RAISE EXCEPTION 'historical memento recomputed';END IF;
 
  -- Normal weekly state expires by key; lifetime earning/display history survives wipes.
- INSERT INTO office_private.shields(actor,week,armed) VALUES(a,'previous-fixture-week',true) ON CONFLICT DO NOTHING;
+ INSERT INTO office_private.shields(actor,week,armed) VALUES(a,public.week_key(now()-interval '7 days'),true) ON CONFLICT DO NOTHING;
  UPDATE office_private.shields SET armed=false WHERE actor=a AND week=w;
  r:=public.office_week_status();IF r#>>'{shield,armed}'<>'false' THEN RAISE EXCEPTION 'old-week shield leaked';END IF;
  PERFORM public.season_wipe();SELECT * INTO p FROM public.players WHERE id=a;

@@ -22,6 +22,7 @@ CREATE TABLE office_private.resupplies(actor uuid NOT NULL,day date NOT NULL,wee
 CREATE INDEX resupplies_actor_week ON office_private.resupplies(actor,week);
 CREATE TABLE office_private.shields(actor uuid NOT NULL,week text NOT NULL,armed boolean NOT NULL DEFAULT false,armed_at timestamptz,PRIMARY KEY(actor,week));
 CREATE TABLE office_private.shield_quotes(actor uuid PRIMARY KEY,quote uuid NOT NULL,week text NOT NULL,price float8 NOT NULL,rate float8 NOT NULL,expires_at timestamptz NOT NULL);
+CREATE TABLE office_private.weekly_price_peaks(actor uuid NOT NULL,week text NOT NULL,rate float8 NOT NULL CHECK(rate>=0 AND rate<'Infinity'::float8),PRIMARY KEY(actor,week));
 CREATE TABLE office_private.reflections(source_deed bigint PRIMARY KEY REFERENCES office_private.action_history(source_deed),defender uuid NOT NULL,sender uuid NOT NULL,kind text NOT NULL,amount float8 NOT NULL DEFAULT 0);
 ALTER TABLE office_private.projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.daily_activity ENABLE ROW LEVEL SECURITY;
@@ -29,8 +30,24 @@ ALTER TABLE office_private.mementos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.resupplies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.shields ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.shield_quotes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE office_private.weekly_price_peaks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.reflections ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON ALL TABLES IN SCHEMA office_private FROM PUBLIC,anon,authenticated;
+
+-- Permanent decor retains a lifetime peak; a weekly consumable retains only its week.
+CREATE OR REPLACE FUNCTION office_private.production_peak() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
+DECLARE r float8;
+BEGIN
+ r:=public.calc_rate(NEW);
+ IF r::text IN('NaN','Infinity','-Infinity') OR r<0 THEN RAISE EXCEPTION 'invalid production rate'; END IF;
+ NEW.cosmetic_rate_peak:=greatest(NEW.cosmetic_rate_peak,CASE WHEN TG_OP='UPDATE' THEN OLD.cosmetic_rate_peak ELSE 0 END,r);
+ INSERT INTO office_private.weekly_price_peaks(actor,week,rate) VALUES(NEW.id,public.week_key(),r)
+ ON CONFLICT(actor,week) DO UPDATE SET rate=greatest(office_private.weekly_price_peaks.rate,excluded.rate);
+ RETURN NEW;
+END $$;
+CREATE FUNCTION office_private.weekly_price_rate(p public.players) RETURNS float8 LANGUAGE sql STABLE SET search_path='' AS $$
+ SELECT greatest(0.25,public.calc_rate(p),coalesce((SELECT rate FROM office_private.weekly_price_peaks WHERE actor=p.id AND week=public.week_key()),0))
+$$;
 
 CREATE FUNCTION office_private.ensure_project() RETURNS office_private.projects
 LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
@@ -94,7 +111,7 @@ $$;
 
 CREATE FUNCTION office_private.shield_price(p public.players) RETURNS float8
 LANGUAGE sql STABLE SET search_path='' AS $$
- SELECT ceil(2*greatest(60,public.permanent_price_rate(p)*1500*coalesce((SELECT max((e.value->>'cost')::float8) FROM public.catalog c,LATERAL jsonb_each(c.data) e WHERE c.key='deeds' AND NOT (e.value->>'good')::boolean AND (e.value?'steal' OR e.value?'heat_to' OR (e.value->>'mult')::float8<1)),1.2)))
+ SELECT ceil(2*greatest(60,office_private.weekly_price_rate(p)*1500*coalesce((SELECT max((e.value->>'cost')::float8) FROM public.catalog c,LATERAL jsonb_each(c.data) e WHERE c.key='deeds' AND NOT (e.value->>'good')::boolean AND (e.value?'steal' OR e.value?'heat_to' OR (e.value->>'mult')::float8<1)),1.2)))
 $$;
 
 CREATE OR REPLACE FUNCTION public.office_week_status() RETURNS jsonb LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path='' AS $$
@@ -116,7 +133,7 @@ BEGIN
  'collection',progress||jsonb_build_object('display',p.office_display),
  'scrapbook',coalesce((SELECT jsonb_agg(m.reward||jsonb_build_object('stretch',m.stretch,'selected',p.office_memento->>'week'=m.week) ORDER BY m.week DESC) FROM office_private.mementos m WHERE m.actor=u),'[]'::jsonb),
  'resupply',jsonb_build_object('day',today,'activity',to_jsonb(daily),'used_this_week',used,'weekly_limit',3,'claimed_today',EXISTS(SELECT 1 FROM office_private.resupplies WHERE actor=u AND day=today),'eligible',cardinality(daily)>=2 AND 'work'=ANY(daily) AND used<3 AND NOT EXISTS(SELECT 1 FROM office_private.resupplies WHERE actor=u AND day=today)),
- 'shield',jsonb_build_object('armed',coalesce((SELECT armed FROM office_private.shields WHERE actor=u AND week=w),false),'price_hint',office_private.shield_price(p),'price_basis','Twice the highest base sabotage quote; retained production, no temporary boosts or department discount'),
+ 'shield',jsonb_build_object('armed',coalesce((SELECT armed FROM office_private.shields WHERE actor=u AND week=w),false),'price_hint',office_private.shield_price(p),'price_basis','Twice the highest base sabotage quote; this week''s retained production, no temporary boosts or department discount'),
  'cooldown_until',CASE WHEN p.last_deed IS NULL THEN NULL ELSE p.last_deed+interval '5 minutes'-public.perk_of(p,'silver_tongue')*interval '1 minute' END,
  'collectibles',p.office_collectibles,'confetti',p.office_confetti,
  'history_since',(SELECT started_at FROM office_private.history_coverage WHERE id=true),'continuous_since',(SELECT continuous_since FROM office_private.history_coverage WHERE id=true),
@@ -209,10 +226,10 @@ BEGIN
  IF u IS NULL THEN RAISE EXCEPTION 'not signed in'; END IF;
  SELECT * INTO p FROM public.players WHERE id=u;
  IF NOT FOUND THEN RAISE EXCEPTION 'no player'; END IF;
- q.actor:=u;q.quote:=gen_random_uuid();q.week:=public.week_key();q.price:=office_private.shield_price(p);q.rate:=public.permanent_price_rate(p);q.expires_at:=now()+interval '2 minutes';
+ q.actor:=u;q.quote:=gen_random_uuid();q.week:=public.week_key();q.price:=office_private.shield_price(p);q.rate:=office_private.weekly_price_rate(p);q.expires_at:=now()+interval '2 minutes';
  IF NOT (q.price>0 AND q.price<'Infinity'::float8) THEN RAISE EXCEPTION 'invalid shield price'; END IF;
  INSERT INTO office_private.shield_quotes(actor,quote,week,price,rate,expires_at) VALUES(q.actor,q.quote,q.week,q.price,q.rate,q.expires_at) ON CONFLICT(actor) DO UPDATE SET quote=excluded.quote,week=excluded.week,price=excluded.price,rate=excluded.rate,expires_at=excluded.expires_at;
- RETURN (to_jsonb(q)-'actor')||jsonb_build_object('server_now',now(),'attack_reference',q.price/2,'basis','Retained base production; excludes temporary bonuses and department discounts');
+ RETURN (to_jsonb(q)-'actor')||jsonb_build_object('server_now',now(),'attack_reference',q.price/2,'basis','This week''s retained base production; excludes temporary bonuses and department discounts');
 END $$;
 
 CREATE FUNCTION public.office_buy_shield(p_quote uuid,p_request uuid) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
@@ -224,7 +241,7 @@ BEGIN
  IF FOUND THEN IF r.action<>'shield:'||p_quote::text OR r.target<>u THEN RAISE EXCEPTION 'request belongs to a different action'; END IF;RETURN r.result; END IF;
  p:=public.accrue(u);w:=public.week_key();
  SELECT * INTO q FROM office_private.shield_quotes WHERE actor=u AND quote=p_quote FOR UPDATE;
- IF NOT FOUND OR q.week<>w OR q.expires_at<=now() OR q.rate<>public.permanent_price_rate(p) OR q.price<>office_private.shield_price(p) THEN RAISE EXCEPTION 'shield quote expired or changed; refresh it'; END IF;
+ IF NOT FOUND OR q.week<>w OR q.expires_at<=now() OR q.rate<>office_private.weekly_price_rate(p) OR q.price<>office_private.shield_price(p) THEN RAISE EXCEPTION 'shield quote expired or changed; refresh it'; END IF;
  IF EXISTS(SELECT 1 FROM office_private.shields WHERE actor=u AND week=w AND armed) THEN RAISE EXCEPTION 'one shield is already armed'; END IF;
  IF p.pp<q.price THEN RAISE EXCEPTION 'cannot afford this shield'; END IF;
  INSERT INTO office_private.shields(actor,week,armed,armed_at) VALUES(u,w,true,now()) ON CONFLICT(actor,week) DO UPDATE SET armed=true,armed_at=excluded.armed_at;
