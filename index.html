@@ -3735,8 +3735,8 @@ function OfficeFloor() {
   // a tenth of the room and every object looks enormous.
   const zoom = clamp(stage.w / 820, 0.7, 1);
   const view = { w: stage.w / zoom, h: stage.h / zoom };
-  const [touchMovement,setTouchMovement]=useState(()=>window.matchMedia('(pointer: coarse)').matches);
-  useEffect(()=>{const m=window.matchMedia('(pointer: coarse)');const update=()=>setTouchMovement(m.matches);m.addEventListener('change',update);return()=>m.removeEventListener('change',update);},[]);
+  const [touchMovement,setTouchMovement]=useState(()=>window.matchMedia('(pointer: coarse)').matches||navigator.maxTouchPoints>0);
+  useEffect(()=>{const m=window.matchMedia('(pointer: coarse)');const update=()=>setTouchMovement(m.matches||navigator.maxTouchPoints>0);m.addEventListener('change',update);return()=>m.removeEventListener('change',update);},[]);
   useEffect(()=>{if(panel){setWorldIntent(null);worldActivation.current=null;}},[panel]);
   useEffect(()=>{const cancel=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)&&!e.target.closest('input,select,textarea')){setWorldIntent(null);worldActivation.current=null;}};window.addEventListener('keydown',cancel);return()=>window.removeEventListener('keydown',cancel);},[]);
   const [showHelp, setShowHelp] = useState(false);
