@@ -22,3 +22,23 @@ All existing regression jobs plus new actual-SQL contracts and browser walks mus
 Before live release: reconcile newest main/Production, inspect normal rollover completion via season_state and seasons (read-only), review current candidate SHA/migration hash, preserve a read-only statistics snapshot if wanted, then apply additive migration and verify before merging frontend. Do not call sync/accrue/roll_week to force rollover. If reset is delayed or the package is not ready, hold. A time on the clock is not evidence of a completed reset.
 
 Rollback frontend first; preserve lifetime history, earned collectibles, style records and receipts. Forward fixes are preferred to restoring the gift exploit or deleting progress. New work remains isolated from Idle Hands 2.
+
+## Review and continuation
+
+Draft PR: https://github.com/dadbod87/idle-hands/pull/56. The PR head and its complete three-job gate are authoritative. Current candidate files are held; no main merge, migration application or automatic release.
+
+The held SQL settles existing capped offline accrual under the old functions before switching Seniority. It does not call sync, accrue or roll_week during installation. It requires season_state.current_week to match week_key at transaction time. The normal recap classifies Rescue as help. All thirteen replaced functions have audited-definition guards; the earned-point reconstruction also guards the fixed perk costs. Targeted social RPCs acquire one common transaction lock before locking either player, preventing opposite-direction deadlocks in this small office. The concurrency harness exercises actual RPC bodies in separate disposable sessions.
+
+Profiles distinguish retained older events from the beginning of continuous tracking. The private November 12 snapshot retains 942 deeds at 09:13:48 Pacific; it is not the final pre-reset history. Actions occurring later and deleted before installation cannot be reconstructed from that snapshot. Obtain a fresh read-only export before normal rollover if complete coverage of this week is wanted; never force rollover for a snapshot or test. Import the private export only after the reviewed journal installation, using the validated importer. Do not add player history or import SQL to this public repository.
+
+Before the held release:
+
+1. Confirm the reviewed candidate SHA and all three completed-success jobs; inspect its desktop, portrait and landscape screenshots. Keep physical-phone/authenticated-isolated gameplay distinct from fixture evidence.
+2. Independently read current main, deployed build, season_state and the completed seasons row after Friday November 13, 16:00 Pacific. If rollover is incomplete, hold.
+3. Generate a migration with the installed Supabase CLI, copy the exact reviewed payload, and compare SHA-256. Inspect current function hashes and the perk cost guard before applying. Never test the payload against live accounts.
+4. Apply the additive backend once, then verify function hashes, private-schema grants/RLS, journal/backfill counts, earned-versus-available counters, retained peak rates, permanent inventory/styles and correct catalog Cover behavior. Installation legitimately settles old offline earnings, so compare that settlement with the old capped accrual formula rather than expecting unchanged balances.
+5. Import the reviewed private retained-history export with source-identity conflict checks and hush protection. Label any missing coverage honestly.
+6. Only after backend verification, release the reviewed frontend and verify Vercel READY, served artifact and browser behavior. The candidate preview blocks access to live accounts; it is not an isolated hosted game backend.
+7. If a problem appears, revert the frontend first and preserve journal, rewards, receipts and styles. Prefer a forward database fix. Do not restore the cash-gift exploit or delete progress as a rollback.
+
+Next improvements to review after this pack: rotating project themes and visibly dated plaques, more earned desk decorations, defenses with meaningful choices against credit stealing, a clearer target/action cooldown display, and a first-session guide that points each player at one reachable reward. These remain ideas; avoid giving dominant players another instantly completed cash-only catalogue.

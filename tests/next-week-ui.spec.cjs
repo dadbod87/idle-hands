@@ -27,14 +27,24 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  expect(await page.locator('.pg-panel').evaluate(el=>el.scrollWidth<=el.clientWidth+2)).toBe(true);
  await context.close();
 });
-for(const viewport of [{width:390,height:844},{width:844,height:390}])test(`next week ${viewport.width}: touch moves without opening a fixture`,async({browser})=>{
+for(const viewport of [{width:390,height:640},{width:390,height:844},{width:844,height:390}])test(`next week ${viewport.width}x${viewport.height}: touch moves without opening a fixture`,async({browser})=>{
  const ctx=await browser.newContext({viewport,hasTouch:true,reducedMotion:'reduce'}),page=await ctx.newPage();const f=await installGameFixture(page);
  await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
  await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:/HR Cabinet/}).click();await expect(page.locator('.pg-panel')).toBeVisible({timeout:30000});await page.locator('.pg-panel .pg-x').click();
  const before=f.calls.filter(c=>['do_deed','buy_item','grab_chair'].includes(c.rpc)).length;
- await page.locator('[data-fixture="hr"]').tap();await page.waitForTimeout(500);await expect(page.locator('.pg-panel')).toHaveCount(0);
+ for(let n=0;n<20;n++){await page.locator('[data-fixture="hr"]').tap();await expect(page.locator('.pg-panel')).toHaveCount(0);}
  expect(f.calls.filter(c=>['do_deed','buy_item','grab_chair'].includes(c.rpc))).toHaveLength(before);
  await expect(page.getByRole('button',{name:/Open HR Cabinet/})).toBeVisible();
  await page.getByRole('button',{name:/Open HR Cabinet/}).click();await expect(page.locator('.pg-panel')).toBeVisible();
+ await page.locator('.pg-panel .pg-x').click();
+ await page.locator('[data-fixture="hr"]').tap();
+ const box=await page.locator('.pg-stage').boundingBox(),x=box.x+box.width/2,y=box.y+box.height/2;
+ const cdp=await ctx.newCDPSession(page);
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+45,y:y+15}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ await expect(page.locator('.pg-destination')).toHaveCount(0);
+ await expect(page.locator('.pg-panel')).toHaveCount(0);
+ expect(f.calls.filter(c=>['do_deed','buy_item','grab_chair'].includes(c.rpc))).toHaveLength(before);
  await ctx.close();
 });

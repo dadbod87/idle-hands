@@ -6514,7 +6514,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
                     <span>{hidden ? "Keep earning." : it.note}</span>
                   </span>
                   <span className="pg-right">
-                    <b>{fmt(c)} BW</b>
+                    <b>Hire · {fmt(c)} BW</b>
                     <span>+{fmt(it.rate * itemMult(ups, cat.upgrades, it.id))}/sec</span>
                   </span>
                 </button>
@@ -6530,7 +6530,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
                       onClick={() => onUp(u)} aria-busy={purchasePending === "upgrade:" + u.id} disabled={!!purchasePending || ups.includes(u.id) || pp < u.cost}>
                 <OfficeIcon kind={u.name+" upgrade"} /><span className="pg-ct">{ups.includes(u.id) ? "✓" : "—"}</span>
                 <span className="pg-main"><b>{u.name}</b><span>{u.note}</span></span>
-                <span className="pg-right"><b>{ups.includes(u.id) ? "owned" : fmt(u.cost)}</b>
+                <span className="pg-right"><b>{ups.includes(u.id) ? "owned" : "Buy · "+fmt(u.cost)}</b>
                   <span>×{u.mult}</span></span>
               </button>
             ))}
@@ -8275,13 +8275,13 @@ function OfficeActivityChart({rows}){
   <title>Successful coworker actions</title>{rows.map((r,i)=><g key={r.kind+':'+r.category}><text x="0" y={i*32+19} fontSize="11" fill="currentColor">{r.label||DEED_TEXT[r.kind]?.label||r.kind}</text><rect x="165" y={i*32+5} width={205*r.given/max} height="19" fill="#7B9CC4"/><rect x={165+205*r.given/max} y={i*32+5} width={205*r.received/max} height="19" fill="#8FA67A"/></g>)}</svg>;
 }
 function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
- const [tab,setTab]=useState(initialPlayer?'profiles':'project'),[status,setStatus]=useState(null),[profile,setProfile]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ const [tab,setTab]=useState(initialPlayer?'profiles':'project'),[status,setStatus]=useState(null),[profile,setProfile]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[feedback,setFeedback]=useState('');
  const [selected,setSelected]=useState(initialPlayer||me.id),[period,setPeriod]=useState('week'),[peer,setPeer]=useState(''),[target,setTarget]=useState(''),[slots,setSlots]=useState([]),[rewardWeek,setRewardWeek]=useState(''),[profileRetry,setProfileRetry]=useState(0),[errorSource,setErrorSource]=useState('');
  const locked=useRef(false),request=useRef(null),statusSeq=useRef(0);
  const loadStatus=useCallback(async()=>{const seq=++statusSeq.current;try{const s=await api.officeWeek();if(s?.version!==1)throw Error('This package is waiting for its prepared backend.');if(seq===statusSeq.current){setStatus(s);setSlots(s.toolkit.slots);setRewardWeek(s.week);setError('');}}catch(e){if(seq===statusSeq.current){setErrorSource('status');setError(e.message||'Could not read office records.');}}},[]);
  useEffect(()=>{loadStatus();return()=>{statusSeq.current++;};},[loadStatus]);
  useEffect(()=>{if(tab!=='profiles')return;let live=true;setProfile(null);setError('');api.officeProfile(selected,period,peer||null).then(p=>{if(!p?.player||!Array.isArray(p.by_kind)||!Array.isArray(p.daily))throw Error('The profile records are unavailable.');if(live)setProfile(p);}).catch(e=>{if(live){setErrorSource('profile');setError(e.message||'Could not read this profile.');}});return()=>{live=false;};},[tab,selected,period,peer,profileRetry]);
- const mutate=async fn=>{if(locked.current)return;locked.current=true;setBusy(true);setError('');try{const result=await fn();if(result?.player)onPlayer(result.player);else if(result?.id)onPlayer(result);if(result?.status){setStatus(result.status);setSlots(result.status.toolkit.slots);}else if(result?.version===1){setStatus(result);setSlots(result.toolkit.slots);}else await loadStatus();request.current=null;}catch(e){setErrorSource(request.current?'action':'status');setError(e.message||'The office did not confirm this action. Retry deliberately.');}finally{locked.current=false;setBusy(false);}};
+ const mutate=async fn=>{if(locked.current)return;locked.current=true;setBusy(true);setError('');setFeedback('');try{const result=await fn();setFeedback(result?.outcome||'Saved. The office has filed it.');if(result?.player)onPlayer(result.player);else if(result?.id)onPlayer(result);if(result?.status){setStatus(result.status);setSlots(result.status.toolkit.slots);}else if(result?.version===1){setStatus(result);setSlots(result.toolkit.slots);}else await loadStatus();request.current=null;}catch(e){setErrorSource(request.current?'action':'status');setError(e.message||'The office did not confirm this action. Retry deliberately.');}finally{locked.current=false;setBusy(false);}};
  const interact=action=>{const key=target+':'+action;if(request.current?.key!==key)request.current={key,id:crypto.randomUUID()};return mutate(()=>api.officeInteract(target,action,request.current.id));};
  const choices=board.some(p=>p.id===me.id)?board:[me,...board];
  const mine=status?.project?.mine||[];
@@ -8301,14 +8301,14 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
   </>}</>}
   {tab==='profiles'&&<><div className="pg-next-selects"><label>Player<select value={selected} onChange={e=>{setSelected(e.target.value);setPeer('');}}>{choices.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label><label>Period<select value={period} onChange={e=>setPeriod(e.target.value)}><option value="week">This week</option><option value="lifetime">Tracked lifetime</option></select></label><label>Coworker<select value={peer} onChange={e=>setPeer(e.target.value)}><option value="">Everyone</option>{choices.filter(p=>p.id!==selected).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label></div>
    {!profile&&!error&&<p role="status">Reading the personnel file…</p>}{profile&&<><h3>{profile.player.name}'s office story</h3><p className="pg-small">Retained records from {new Date(profile.since).toLocaleDateString()}. Continuous tracking starts {new Date(profile.continuous_since||profile.since).toLocaleDateString()}. Earlier records may be incomplete. {profile.privacy}</p>
-   {profile.by_kind.length?<><OfficeActivityChart rows={profile.by_kind}/><table><caption>Successful actions · blue given / sage received</caption><thead><tr><th>Action</th><th>Category</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.by_kind.map(r=><tr key={r.kind+':'+r.category}><th>{r.label||DEED_TEXT[r.kind]?.label||r.kind}</th><td>{r.category}</td><td>{r.given}</td><td>{r.received}</td></tr>)}</tbody></table><h4>Daily actions · last 30 days of selected period</h4><OfficeActivityChart rows={profile.daily.map(d=>({...d,kind:d.day,label:d.day,category:'daily'}))}/><table><thead><tr><th>Pacific date</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.daily.map(d=><tr key={d.day}><th>{d.day}</th><td>{d.given}</td><td>{d.received}</td></tr>)}</tbody></table>{profile.coworkers?.length>0&&<><h4>Coworker history</h4><table><thead><tr><th>Coworker</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.coworkers.map(p=><tr key={p.id}><th>{p.name}</th><td>{p.given}</td><td>{p.received}</td></tr>)}</tbody></table></>}</>:<p>No recorded public actions in this selection.</p>}</>}
+   {profile.by_kind.length?<><table><caption>How this player plays</caption><thead><tr><th>Category</th><th>Given</th><th>Received</th></tr></thead><tbody>{['help','sabotage','playful','blocked','other'].map(category=>{const rows=profile.by_kind.filter(r=>r.category===category);return rows.length>0&&<tr key={category}><th>{category}</th><td>{rows.reduce((n,r)=>n+r.given,0)}</td><td>{rows.reduce((n,r)=>n+r.received,0)}</td></tr>;})}</tbody></table><OfficeActivityChart rows={profile.by_kind}/><table><caption>Successful actions · blue given / sage received</caption><thead><tr><th>Action</th><th>Category</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.by_kind.map(r=><tr key={r.kind+':'+r.category}><th>{r.label||DEED_TEXT[r.kind]?.label||r.kind}</th><td>{r.category}</td><td>{r.given}</td><td>{r.received}</td></tr>)}</tbody></table><h4>Daily actions · last 30 days of selected period</h4><OfficeActivityChart rows={profile.daily.map(d=>({...d,kind:d.day,label:d.day,category:'daily'}))}/><table><thead><tr><th>Pacific date</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.daily.map(d=><tr key={d.day}><th>{d.day}</th><td>{d.given}</td><td>{d.received}</td></tr>)}</tbody></table>{profile.coworkers?.length>0&&<><h4>Coworker history</h4><table><thead><tr><th>Coworker</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.coworkers.map(p=><tr key={p.id}><th>{p.name}</th><td>{p.given}</td><td>{p.received}</td></tr>)}</tbody></table></>}</>:<p>No recorded public actions in this selection.</p>}</>}
   </>}
   {tab==='tools'&&<>{!status?<p>Read the office records before using tools.</p>:<><h3>Choose two tools</h3><p>Two charges per tool each week. Swapping tools does not refill them. Rescue and Confetti share the ordinary coworker-action cooldown.</p><div className="pg-tool-grid">{Object.entries(OFFICE_TOOL_LABELS).map(([id,label])=><button className="pg-btn" key={id} aria-pressed={slots.includes(id)} disabled={busy||(!slots.includes(id)&&slots.length>=2)} onClick={()=>setSlots(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id])}>{label}<small>{status.toolkit.charges[id]} charges</small></button>)}</div><button className="pg-btn" disabled={busy} onClick={()=>mutate(()=>api.officeTools(slots))}>Save two-slot toolkit</button>
    <p>Spam Filter automatically blocks one eligible output debuff while equipped. It does not block credit stealing. Rescue clears one active meeting, chair, mute or reply-all penalty. Confetti lasts ten minutes and has no output penalty.</p>
    <label>Coworker<select disabled={busy||errorSource==='action'&&!!error} value={target} onChange={e=>{setTarget(e.target.value);request.current=null;}}><option value="">Choose someone</option>{choices.filter(p=>p.id!==me.id).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
    {errorSource==='action'&&error&&<p>Retry the same action below. Your remaining charge is protected.</p>}<div className="pg-next-actions">{['rescue','confetti'].map(id=><button className="pg-btn" key={id} disabled={busy||!target||!status.toolkit.slots.includes(id)||status.toolkit.charges[id]<1} onClick={()=>interact(id)}>{id==='rescue'?'Rescue coworker':'Send confetti'}</button>)}</div>
    {Date.parse(status.confetti?.until||'')>Date.now()&&<button className="pg-btn" disabled={busy} onClick={()=>mutate(()=>api.officeClearConfetti())}>Clear confetti from my desk</button>}
-   <p className="pg-small" role="status">{busy?'Waiting for the server…':'Actions and remaining charges are confirmed by the server.'}</p>
+   <p className="pg-small" role="status">{busy?'Waiting for the server…':feedback||'Actions and remaining charges are confirmed by the server.'}</p>
   </>}</>}
  </div>;
 }
@@ -8332,8 +8332,8 @@ function EquityShop({ me, cat, onBuy }) {
             <button key={k.id} className={"pg-row" + (i % 2 ? " alt" : "") + (maxed || !afford ? " poor" : "")}
                     disabled={maxed || !afford} onClick={() => onBuy(k.id)}>
               <OfficeIcon kind={k.name+" senior badge"} compact/><span className="pg-ct">{n}/{k.max}</span>
-              <span className="pg-main"><b>{k.name}</b><span>{k.note?.replace(", permanently, each.", " per level until the weekly reset.")}</span></span>
-              <span className="pg-right"><b>{maxed ? "maxed" : k.cost + " eq"}</b></span>
+              <span className="pg-main"><b>{k.name}</b><span>{k.note?.replace(", permanently, each.", " per level until the weekly reset.")}</span>{k.id==="compound"&&!maxed&&<span>Output perk ×{(1+0.05*n).toFixed(2)} → ×{(1+0.05*(n+1)).toFixed(2)}. Earned Seniority stays +{earnedSeniority(me)*3}%.</span>}</span>
+              <span className="pg-right"><b>{maxed ? "maxed" : k.cost + " Seniority"}</b></span>
             </button>
           );
         })}

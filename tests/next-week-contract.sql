@@ -8,6 +8,7 @@ DROP SCHEMA IF EXISTS auth CASCADE;
 \i tests/fixtures/next-week-schema.sql
 ALTER TABLE public.players ADD PRIMARY KEY(id);
 ALTER TABLE public.catalog ADD PRIMARY KEY(key);
+ALTER TABLE public.seasons ADD PRIMARY KEY(week_key);
 ALTER TABLE public.office_play_actions ADD PRIMARY KEY(week,actor,day,kind);
 ALTER TABLE public.printer_claims ADD PRIMARY KEY(window_id);
 ALTER TABLE public.chair_claims ADD PRIMARY KEY(window_id);
@@ -30,7 +31,7 @@ CREATE FUNCTION public.event_mult(ts timestamptz) RETURNS float8 LANGUAGE sql AS
 CREATE FUNCTION public.jess_boost_mult(ts timestamptz) RETURNS float8 LANGUAGE sql AS $$SELECT 1::float8$$;
 CREATE FUNCTION public.check_margarita() RETURNS void LANGUAGE plpgsql AS $$BEGIN END$$;
 CREATE FUNCTION public.settle_meetings() RETURNS void LANGUAGE plpgsql AS $$BEGIN END$$;
-CREATE FUNCTION public.roll_week() RETURNS void LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'fixture unexpectedly requested rollover'; END$$;
+CREATE FUNCTION public.set_week_target() RETURNS void LANGUAGE plpgsql AS $$BEGIN END$$;
 CREATE FUNCTION public.accrual_interval_gain(p public.players,since_ts timestamptz,until_ts timestamptz) RETURNS float8 LANGUAGE sql AS $$SELECT 0::float8$$;
 CREATE FUNCTION public.bump_today(p_id uuid,k text,n int) RETURNS void LANGUAGE plpgsql AS $$BEGIN END$$;
 CREATE FUNCTION public.check_rivalry(p_a uuid,p_b uuid) RETURNS boolean LANGUAGE sql AS $$SELECT false$$;
@@ -107,6 +108,14 @@ BEGIN
  IF NOT EXISTS(SELECT 1 FROM office_private.project_completions) THEN RAISE EXCEPTION 'project history reset'; END IF;
  -- Pacific Friday boundary, including standard/daylight time, belongs to one week only.
  IF public.week_key('2026-11-13 23:59:59Z')=public.week_key('2026-11-14 00:00:00Z') OR public.week_key('2026-10-30 22:59:59Z')=public.week_key('2026-10-30 23:00:00Z') THEN RAISE EXCEPTION 'Friday attribution failed'; END IF;
+ -- Exercise the actual normal rollover too: a rescue must never win "menace".
+ INSERT INTO public.deeds(actor,target,kind,created_at) VALUES(uid,'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','rescue',public.week_started()-interval '1 day');
+ UPDATE public.players SET week_pp=10;
+ UPDATE public.season_state SET current_week=public.week_key(now()-interval '7 days');
+ PERFORM public.roll_week();
+ IF NOT EXISTS(SELECT 1 FROM public.seasons WHERE week_key=public.week_key(now()-interval '7 days') AND stats#>>'{kindest,name}'='Fixture A' AND stats->'menace'='null'::jsonb)
+ THEN RAISE EXCEPTION 'normal rollover misclassified Rescue'; END IF;
+ IF (SELECT current_week FROM public.season_state WHERE id=1)<>public.week_key() OR (SELECT jsonb_array_length(office_collectibles) FROM public.players WHERE id=uid)<>3 THEN RAISE EXCEPTION 'normal rollover lost state'; END IF;
  RAISE NOTICE 'PASS next-week: exact backfill/privacy, actual Seniority functions, cover/pricing, project/claims, tools/replays/filter, grants and reset persistence';
 END $test$;
 ROLLBACK;

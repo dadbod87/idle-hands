@@ -1,4 +1,74 @@
 -- Read-only production function snapshot; execute only inside the isolated contract harness.
+CREATE OR REPLACE FUNCTION public.roll_week()
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare k text := week_key(); prev text; w players;
+        wk_start timestamptz; wk_end timestamptz; st jsonb; was_hit boolean;
+        do_wipe boolean; from_week text; seasoned boolean;
+begin
+  select current_week, mhit into prev, was_hit from season_state where id = 1 for update;
+  if prev = k then return; end if;
+
+  select coalesce((data ->> 'wipe')::boolean, false), coalesce(data ->> 'from_week', '')
+    into do_wipe, from_week from catalog where key = 'season';
+  seasoned := do_wipe and from_week <> '' and prev >= from_week;
+
+  wk_end := week_started();
+  wk_start := wk_end - interval '7 days';
+  select * into w from players order by week_pp desc limit 1;
+
+  with d as (
+    select dd.*, pa.name as actor_name, pt.name as target_name
+    from deeds dd join players pa on pa.id = dd.actor join players pt on pt.id = dd.target
+    where dd.created_at >= wk_start and dd.created_at < wk_end)
+  select jsonb_build_object(
+    'total', (select count(*) from d),
+    'heist', (select jsonb_build_object('actor',actor_name,'target',target_name,'amount',amount)
+              from d where kind='credit' order by amount desc limit 1),
+    'stylist', (select jsonb_build_object('name',actor_name,'n',count(*)) from d where kind='dress'
+                group by actor_name order by count(*) desc limit 1),
+    'kindest', (select jsonb_build_object('name',actor_name,'n',count(*)) from d
+                where kind in ('coffee','hype','cover') group by actor_name order by count(*) desc limit 1),
+    'menace', (select jsonb_build_object('name',actor_name,'n',count(*)) from d
+               where kind not in ('coffee','hype','cover') group by actor_name order by count(*) desc limit 1),
+    'feud', (select jsonb_build_object('a',least(actor_name,target_name),
+                                       'b',greatest(actor_name,target_name),'n',count(*))
+             from d where kind not in ('coffee','hype','cover')
+             group by least(actor_name,target_name), greatest(actor_name,target_name)
+             order by count(*) desc limit 1),
+    'hushed', (select count(*) from d where hush),
+    'punchbag', (select jsonb_build_object('name',target_name,'n',count(*)) from d
+                 where kind not in ('coffee','hype','cover') group by target_name
+                 order by count(*) desc limit 1),
+    'margarita', coalesce(was_hit, false),
+    'office_total', (select coalesce(sum(week_pp),0) from players),
+    'seasoned', seasoned
+  ) into st;
+
+  if w.id is not null and w.week_pp > 0 then
+    insert into seasons (week_key, winner, winner_name, top, stats)
+      values (prev, w.id, w.name, w.week_pp, st)
+      on conflict (week_key) do update set stats = excluded.stats;
+    update players set trophies = trophies + 1 where id = w.id;
+  else
+    insert into seasons (week_key, winner_name, top, stats) values (prev, null, 0, st)
+      on conflict (week_key) do update set stats = excluded.stats;
+  end if;
+
+  if not coalesce(was_hit, false) then
+    update season_state set streak = 0 where id = 1;
+  end if;
+
+  if do_wipe then perform season_wipe();
+  else update players set week_pp = 0 where week_pp <> 0; end if;
+
+  update season_state set current_week = k, mw = k, mhit = false where id = 1;
+  perform set_week_target();
+end $function$
+;
 CREATE OR REPLACE FUNCTION public.accrue(p_id uuid)
  RETURNS players
  LANGUAGE plpgsql
