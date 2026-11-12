@@ -42,3 +42,15 @@ Before the held release:
 7. If a problem appears, revert the frontend first and preserve journal, rewards, receipts and styles. Prefer a forward database fix. Do not restore the cash-gift exploit or delete progress as a rollback.
 
 Next improvements to review after this pack: rotating project themes and visibly dated plaques, more earned desk decorations, defenses with meaningful choices against credit stealing, a clearer target/action cooldown display, and a first-session guide that points each player at one reachable reward. These remain ideas; avoid giving dominant players another instantly completed cash-only catalogue.
+
+## Second audit: optional pre-deadline history stage
+
+The [second audit](SECOND_AUDIT_2026-11-12.md) recommends preserving the journal before Friday while leaving the full economy/content release until after normal rollover. This is a prepared option, not permission to apply it. The prior release hold continues; Nick's November 12 statement was tentative about release timing.
+
+`sql/office_action_journal.sql` is the held, independently reviewable journal-only payload. It creates the private journal/coverage/classifier/capture trigger and backfills currently retained deeds. It updates no player row, replaces no public function, grants no client access, starts no project and calls no reset/accrual function. It refuses an existing journal or a downgrade after the full package. Keep it installed on any rollback so history survives.
+
+The full payload contains a generated copy of the same core. When an earlier journal exists, it validates its version marker, columns, primary keys, coverage row, helper bodies, RLS, trigger and grants, then reuses it without deleting or re-awarding history. The full capture function adds future project credit only after that installation. Both direct full installation and journal-first installation have isolated fixtures. The generator is canonical; do not hand-edit the embedded core.
+
+If the journal stage is chosen, generate a provider migration, compare the reviewed payload hash, apply once before Friday 4 PM Pacific, and independently verify stored definitions, privacy, backfill counts and unchanged player/economy state. Existing gameplay can then record new deeds into its private journal through the ordinary trigger. After verified normal rollover, apply the reviewed full package and frontend using the existing checklist. No local export is necessary for captured events. If the first stage is not installed until after reset, it cannot restore deleted events that were never captured.
+
+The larger design proposals have not been built into runtime. PR #56 records current candidate hashes, completed checks and remaining review limits; earlier green results do not certify a later head.

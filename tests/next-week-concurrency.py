@@ -54,3 +54,10 @@ assert sql("SELECT count(*) FROM deeds WHERE kind='replyall' AND detail='blocked
 assert sql(f"SELECT count(*) FROM players,jsonb_array_elements(buffs) b WHERE id='{B}' AND b->>'kind'='replyall'") == '1'
 assert sql(f"SELECT charges->>'filter' FROM office_private.toolkits WHERE actor='{B}' AND week=week_key()") == '0'
 print('PASS concurrent receipt replay, opposite actions, project completion, collectible claims and final filter charge')
+
+# Re-running the smaller installer must never downgrade the full capture trigger.
+before = sql("SELECT md5(prosrc) FROM pg_proc WHERE oid='office_private.capture_deed()'::regprocedure")
+attempt = subprocess.run(['psql', '-X', '-v', 'ON_ERROR_STOP=1', '-f', 'sql/office_action_journal.sql'], text=True, capture_output=True)
+assert attempt.returncode != 0 and 'journal downgrade refused' in attempt.stderr
+assert sql("SELECT md5(prosrc) FROM pg_proc WHERE oid='office_private.capture_deed()'::regprocedure") == before
+print('PASS journal installer refuses a downgrade after the full package')

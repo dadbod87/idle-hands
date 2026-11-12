@@ -41,6 +41,44 @@ for name,source in changed.items():
     blocks.append("DO $guard$ BEGIN IF md5(pg_get_functiondef('public.%s'::regproc))<>'%s' THEN RAISE EXCEPTION 'Audited function drift: %s'; END IF; END $guard$;\n%s;"%(name,digest,name,source))
 path=root/'sql/next_week_office.sql'
 sql=path.read_text()
+journal=(root/'sql/office_action_journal.sql').read_text()
+core=journal.split('-- @JOURNAL_CORE@\n',1)[1].split('-- @END_JOURNAL_CORE@',1)[0]
+capture_body=re.search(r'AS \$journal_capture\$([\s\S]*?)\$journal_capture\$',core).group(1)
+category_body=re.search(r'AS \$\$([\s\S]*?)\$\$',core).group(1)
+reuse="""DO $journal_reuse$
+BEGIN
+ IF to_regclass('office_private.action_history') IS NULL AND to_regclass('office_private.history_coverage') IS NULL THEN
+  EXECUTE $journal_core$@CORE@$journal_core$;
+ ELSE
+  IF to_regclass('office_private.action_history') IS NULL OR to_regclass('office_private.history_coverage') IS NULL
+  THEN RAISE EXCEPTION 'incomplete prior journal installation'; END IF;
+  IF obj_description('office_private.action_history'::regclass,'pg_class') IS DISTINCT FROM 'idle-hands:action-journal:v1'
+  OR (SELECT array_agg(attname::text||':'||format_type(atttypid,atttypmod) ORDER BY attnum) FROM pg_attribute WHERE attrelid='office_private.action_history'::regclass AND attnum>0 AND NOT attisdropped)
+   IS DISTINCT FROM ARRAY['source_deed:bigint','actor:uuid','target:uuid','kind:text','category:text','amount:double precision','hush:boolean','happened_at:timestamp with time zone','week:text']
+  OR (SELECT array_agg(attname::text||':'||format_type(atttypid,atttypmod) ORDER BY attnum) FROM pg_attribute WHERE attrelid='office_private.history_coverage'::regclass AND attnum>0 AND NOT attisdropped)
+   IS DISTINCT FROM ARRAY['id:boolean','started_at:timestamp with time zone','continuous_since:timestamp with time zone']
+  THEN RAISE EXCEPTION 'prior journal schema drift; review before reuse'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='office_private.action_history'::regclass AND contype='p' AND conkey=ARRAY[1]::smallint[])
+  OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='office_private.history_coverage'::regclass AND contype='p' AND conkey=ARRAY[1]::smallint[])
+  OR (SELECT count(*) FROM office_private.history_coverage)<>1
+  THEN RAISE EXCEPTION 'prior journal identity or coverage drift; review before reuse'; END IF;
+  IF (SELECT md5(prosrc) FROM pg_proc WHERE oid=to_regprocedure('office_private.capture_deed()')) IS DISTINCT FROM '@CAPTURE_HASH@'
+  OR (SELECT md5(prosrc) FROM pg_proc WHERE oid=to_regprocedure('office_private.action_category(text,text)')) IS DISTINCT FROM '@CATEGORY_HASH@'
+  THEN RAISE EXCEPTION 'prior journal function drift; review before reuse'; END IF;
+  IF EXISTS(SELECT 1 FROM pg_class WHERE oid IN('office_private.action_history'::regclass,'office_private.history_coverage'::regclass) AND NOT relrowsecurity)
+  OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='office_capture_deed' AND tgrelid='public.deeds'::regclass AND tgfoid='office_private.capture_deed()'::regprocedure AND tgenabled='O' AND NOT tgisinternal)
+  OR has_table_privilege('anon','office_private.action_history','SELECT,INSERT,UPDATE,DELETE')
+  OR has_table_privilege('authenticated','office_private.action_history','SELECT,INSERT,UPDATE,DELETE')
+  OR has_table_privilege('anon','office_private.history_coverage','SELECT,INSERT,UPDATE,DELETE')
+  OR has_table_privilege('authenticated','office_private.history_coverage','SELECT,INSERT,UPDATE,DELETE')
+  OR has_function_privilege('anon','office_private.capture_deed()','EXECUTE')
+  OR has_function_privilege('authenticated','office_private.action_category(text,text)','EXECUTE')
+  THEN RAISE EXCEPTION 'prior journal protection drift; review before reuse'; END IF;
+ END IF;
+END $journal_reuse$;
+""".replace('@CORE@',core).replace('@CAPTURE_HASH@',hashlib.md5(capture_body.encode()).hexdigest()).replace('@CATEGORY_HASH@',hashlib.md5(category_body.encode()).hexdigest())
+js='-- @JOURNAL_INSTALL@';je='-- @END_JOURNAL_INSTALL@'
+sql=sql[:sql.index(js)+len(js)]+'\n'+reuse+sql[sql.index(je):]
 start='-- @PATCHES@';end='-- @END_PATCHES@'
 if end in sql: sql=sql[:sql.index(start)+len(start)]+ '\n'+sql[sql.index(end):]
 sql=sql.replace(start,start+'\n'+'\n'.join(blocks)+'\n'+(end if end not in sql else ''),1)

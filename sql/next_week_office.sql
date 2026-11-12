@@ -5,12 +5,11 @@ BEGIN;
 CREATE SCHEMA IF NOT EXISTS office_private;
 REVOKE ALL ON SCHEMA office_private FROM PUBLIC,anon,authenticated;
 LOCK TABLE public.players,public.deeds IN SHARE ROW EXCLUSIVE MODE;
-ALTER TABLE public.players ADD COLUMN seniority_earned integer NOT NULL DEFAULT 0 CHECK(seniority_earned>=0);
-ALTER TABLE public.players ADD COLUMN cosmetic_rate_peak double precision NOT NULL DEFAULT 0 CHECK(cosmetic_rate_peak>=0 AND cosmetic_rate_peak<'Infinity'::float8);
-ALTER TABLE public.players ADD COLUMN office_collectibles jsonb NOT NULL DEFAULT '[]';
-ALTER TABLE public.players ADD COLUMN office_confetti jsonb;
-
-CREATE TABLE office_private.action_history(
+-- @JOURNAL_INSTALL@
+DO $journal_reuse$
+BEGIN
+ IF to_regclass('office_private.action_history') IS NULL AND to_regclass('office_private.history_coverage') IS NULL THEN
+  EXECUTE $journal_core$CREATE TABLE office_private.action_history(
  source_deed bigint PRIMARY KEY, actor uuid NOT NULL,target uuid NOT NULL,
  kind text NOT NULL,category text NOT NULL CHECK(category IN('help','sabotage','playful','blocked','other')),
  amount double precision NOT NULL DEFAULT 0,hush boolean NOT NULL DEFAULT false,
@@ -19,6 +18,66 @@ CREATE TABLE office_private.action_history(
 CREATE INDEX action_history_actor_time ON office_private.action_history(actor,happened_at);
 CREATE INDEX action_history_target_time ON office_private.action_history(target,happened_at);
 CREATE INDEX action_history_week ON office_private.action_history(week);
+CREATE TABLE office_private.history_coverage(id boolean PRIMARY KEY DEFAULT true CHECK(id),started_at timestamptz NOT NULL,continuous_since timestamptz NOT NULL DEFAULT now());
+INSERT INTO office_private.history_coverage(started_at) SELECT coalesce(min(created_at),now()) FROM public.deeds;
+CREATE FUNCTION office_private.action_category(k text,detail text DEFAULT NULL) RETURNS text
+LANGUAGE sql IMMUTABLE SET search_path='' AS $$
+ SELECT CASE WHEN detail='blocked:filter' THEN 'blocked'
+ WHEN k IN('coffee','hype','cover','rescue') THEN 'help'
+ WHEN k IN('dress','nickname','confetti') THEN 'playful'
+ WHEN k IN('credit','mute','chair','meeting','replyall','blame') THEN 'sabotage' ELSE 'other' END
+$$;
+INSERT INTO office_private.action_history(source_deed,actor,target,kind,category,amount,hush,happened_at,week)
+ SELECT id,actor,target,kind,office_private.action_category(kind,detail),coalesce(amount,0),coalesce(hush,false),created_at,public.week_key(created_at) FROM public.deeds
+ ON CONFLICT(source_deed) DO NOTHING;
+
+CREATE FUNCTION office_private.capture_deed() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $journal_capture$
+BEGIN
+ INSERT INTO office_private.action_history(source_deed,actor,target,kind,category,amount,hush,happened_at,week)
+ VALUES(NEW.id,NEW.actor,NEW.target,NEW.kind,office_private.action_category(NEW.kind,NEW.detail),coalesce(NEW.amount,0),coalesce(NEW.hush,false),NEW.created_at,public.week_key(NEW.created_at))
+ ON CONFLICT(source_deed) DO UPDATE SET hush=office_private.action_history.hush OR excluded.hush;
+ RETURN NEW;
+END $journal_capture$;
+CREATE TRIGGER office_capture_deed AFTER INSERT OR UPDATE OF hush ON public.deeds FOR EACH ROW EXECUTE FUNCTION office_private.capture_deed();
+ALTER TABLE office_private.action_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE office_private.history_coverage ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE office_private.action_history,office_private.history_coverage FROM PUBLIC,anon,authenticated;
+REVOKE ALL ON FUNCTION office_private.action_category(text,text),office_private.capture_deed() FROM PUBLIC,anon,authenticated;
+COMMENT ON TABLE office_private.action_history IS 'idle-hands:action-journal:v1';
+$journal_core$;
+ ELSE
+  IF to_regclass('office_private.action_history') IS NULL OR to_regclass('office_private.history_coverage') IS NULL
+  THEN RAISE EXCEPTION 'incomplete prior journal installation'; END IF;
+  IF obj_description('office_private.action_history'::regclass,'pg_class') IS DISTINCT FROM 'idle-hands:action-journal:v1'
+  OR (SELECT array_agg(attname::text||':'||format_type(atttypid,atttypmod) ORDER BY attnum) FROM pg_attribute WHERE attrelid='office_private.action_history'::regclass AND attnum>0 AND NOT attisdropped)
+   IS DISTINCT FROM ARRAY['source_deed:bigint','actor:uuid','target:uuid','kind:text','category:text','amount:double precision','hush:boolean','happened_at:timestamp with time zone','week:text']
+  OR (SELECT array_agg(attname::text||':'||format_type(atttypid,atttypmod) ORDER BY attnum) FROM pg_attribute WHERE attrelid='office_private.history_coverage'::regclass AND attnum>0 AND NOT attisdropped)
+   IS DISTINCT FROM ARRAY['id:boolean','started_at:timestamp with time zone','continuous_since:timestamp with time zone']
+  THEN RAISE EXCEPTION 'prior journal schema drift; review before reuse'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='office_private.action_history'::regclass AND contype='p' AND conkey=ARRAY[1]::smallint[])
+  OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='office_private.history_coverage'::regclass AND contype='p' AND conkey=ARRAY[1]::smallint[])
+  OR (SELECT count(*) FROM office_private.history_coverage)<>1
+  THEN RAISE EXCEPTION 'prior journal identity or coverage drift; review before reuse'; END IF;
+  IF (SELECT md5(prosrc) FROM pg_proc WHERE oid=to_regprocedure('office_private.capture_deed()')) IS DISTINCT FROM '751b1e6b8981022f0578e5c7aa099e19'
+  OR (SELECT md5(prosrc) FROM pg_proc WHERE oid=to_regprocedure('office_private.action_category(text,text)')) IS DISTINCT FROM '0ff82e1975eda680a9d61b49297388bd'
+  THEN RAISE EXCEPTION 'prior journal function drift; review before reuse'; END IF;
+  IF EXISTS(SELECT 1 FROM pg_class WHERE oid IN('office_private.action_history'::regclass,'office_private.history_coverage'::regclass) AND NOT relrowsecurity)
+  OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='office_capture_deed' AND tgrelid='public.deeds'::regclass AND tgfoid='office_private.capture_deed()'::regprocedure AND tgenabled='O' AND NOT tgisinternal)
+  OR has_table_privilege('anon','office_private.action_history','SELECT,INSERT,UPDATE,DELETE')
+  OR has_table_privilege('authenticated','office_private.action_history','SELECT,INSERT,UPDATE,DELETE')
+  OR has_table_privilege('anon','office_private.history_coverage','SELECT,INSERT,UPDATE,DELETE')
+  OR has_table_privilege('authenticated','office_private.history_coverage','SELECT,INSERT,UPDATE,DELETE')
+  OR has_function_privilege('anon','office_private.capture_deed()','EXECUTE')
+  OR has_function_privilege('authenticated','office_private.action_category(text,text)','EXECUTE')
+  THEN RAISE EXCEPTION 'prior journal protection drift; review before reuse'; END IF;
+ END IF;
+END $journal_reuse$;
+-- @END_JOURNAL_INSTALL@
+ALTER TABLE public.players ADD COLUMN seniority_earned integer NOT NULL DEFAULT 0 CHECK(seniority_earned>=0);
+ALTER TABLE public.players ADD COLUMN cosmetic_rate_peak double precision NOT NULL DEFAULT 0 CHECK(cosmetic_rate_peak>=0 AND cosmetic_rate_peak<'Infinity'::float8);
+ALTER TABLE public.players ADD COLUMN office_collectibles jsonb NOT NULL DEFAULT '[]';
+ALTER TABLE public.players ADD COLUMN office_confetti jsonb;
+
 CREATE TABLE office_private.project_stamps(
  week text NOT NULL,actor uuid NOT NULL,category text NOT NULL CHECK(category IN('work','facilities','care','playful')),
  happened_at timestamptz NOT NULL DEFAULT now(),PRIMARY KEY(week,actor,category)
@@ -29,27 +88,11 @@ CREATE TABLE office_private.toolkits(
  charges jsonb NOT NULL DEFAULT '{"rescue":2,"confetti":2,"filter":2}',PRIMARY KEY(actor,week)
 );
 CREATE TABLE office_private.action_receipts(actor uuid NOT NULL,request uuid NOT NULL,action text NOT NULL,target uuid NOT NULL,result jsonb NOT NULL,PRIMARY KEY(actor,request));
-CREATE TABLE office_private.history_coverage(id boolean PRIMARY KEY DEFAULT true CHECK(id),started_at timestamptz NOT NULL,continuous_since timestamptz NOT NULL DEFAULT now());
-INSERT INTO office_private.history_coverage(started_at) SELECT coalesce(min(created_at),now()) FROM public.deeds;
-ALTER TABLE office_private.action_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.project_stamps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.project_completions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.toolkits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE office_private.action_receipts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE office_private.history_coverage ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON ALL TABLES IN SCHEMA office_private FROM PUBLIC,anon,authenticated;
-
-CREATE FUNCTION office_private.action_category(k text,detail text DEFAULT NULL) RETURNS text
-LANGUAGE sql IMMUTABLE SET search_path='' AS $$
- SELECT CASE WHEN detail='blocked:filter' THEN 'blocked'
- WHEN k IN('coffee','hype','cover','rescue') THEN 'help'
- WHEN k IN('dress','nickname','confetti') THEN 'playful'
- WHEN k IN('credit','mute','chair','meeting','replyall','blame') THEN 'sabotage' ELSE 'other' END
-$$;
--- Backfill before attaching the live capture trigger: historical actions never earn project stamps.
-INSERT INTO office_private.action_history(source_deed,actor,target,kind,category,amount,hush,happened_at,week)
- SELECT id,actor,target,kind,office_private.action_category(kind,detail),coalesce(amount,0),coalesce(hush,false),created_at,public.week_key(created_at) FROM public.deeds
- ON CONFLICT(source_deed) DO NOTHING;
 
 CREATE FUNCTION office_private.project_credit(p_actor uuid,p_category text) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
@@ -63,7 +106,7 @@ BEGIN
   INSERT INTO office_private.project_completions(week) VALUES(w) ON CONFLICT DO NOTHING;
  END IF;
 END $$;
-CREATE FUNCTION office_private.capture_deed() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
+CREATE OR REPLACE FUNCTION office_private.capture_deed() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 DECLARE c text:=office_private.action_category(NEW.kind,NEW.detail);
 BEGIN
  INSERT INTO office_private.action_history(source_deed,actor,target,kind,category,amount,hush,happened_at,week)
@@ -72,7 +115,6 @@ BEGIN
  IF TG_OP='INSERT' AND c IN('help','playful') THEN PERFORM office_private.project_credit(NEW.actor,CASE WHEN c='help' THEN 'care' ELSE 'playful' END); END IF;
  RETURN NEW;
 END $$;
-CREATE TRIGGER office_capture_deed AFTER INSERT OR UPDATE OF hush ON public.deeds FOR EACH ROW EXECUTE FUNCTION office_private.capture_deed();
 CREATE FUNCTION office_private.production_peak() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 DECLARE r double precision;
 BEGIN

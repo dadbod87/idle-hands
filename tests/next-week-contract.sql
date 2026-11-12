@@ -42,6 +42,32 @@ INSERT INTO public.deeds(actor,target,kind,created_at,hush) VALUES
  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','credit',now()-interval '30 minutes',true);
 SELECT set_config('request.jwt.claim.sub','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',false);
 CREATE TEMP TABLE before_install AS SELECT id,kit,vanity,wardrobe_owned,cosmetic_styles,pp FROM public.players;
+\if :{?journal_first}
+CREATE TEMP TABLE journal_players_before AS SELECT id,to_jsonb(p) body FROM public.players p;
+CREATE TEMP TABLE journal_functions_before AS SELECT p.oid,md5(pg_get_functiondef(p.oid)) hash FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public';
+\i sql/office_action_journal.sql
+DO $journal_only$
+BEGIN
+ IF EXISTS(SELECT 1 FROM public.players p JOIN journal_players_before b USING(id) WHERE to_jsonb(p)<>b.body)
+ OR EXISTS(SELECT 1 FROM journal_functions_before b WHERE md5(pg_get_functiondef(b.oid))<>b.hash)
+ OR to_regclass('office_private.project_stamps') IS NOT NULL
+ OR (SELECT count(*) FROM office_private.action_history)<>2
+ THEN RAISE EXCEPTION 'journal-only changed players/economy or backfill'; END IF;
+END $journal_only$;
+BEGIN;
+INSERT INTO public.deeds(actor,target,kind,created_at) VALUES('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','journal_probe',now());
+UPDATE public.deeds SET hush=true WHERE kind='journal_probe';
+UPDATE public.players SET week_pp=10;
+UPDATE public.season_state SET current_week=public.week_key(now()-interval '7 days');
+SELECT public.roll_week();
+DO $retention$
+BEGIN
+ IF EXISTS(SELECT 1 FROM public.deeds) OR (SELECT count(*) FROM office_private.action_history)<>3
+ OR NOT EXISTS(SELECT 1 FROM office_private.action_history WHERE kind='journal_probe' AND hush)
+ THEN RAISE EXCEPTION 'journal-only lost events or hush at normal rollover'; END IF;
+END $retention$;
+ROLLBACK;
+\endif
 \i sql/next_week_office.sql
 BEGIN;
 DO $test$
