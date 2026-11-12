@@ -7,12 +7,21 @@ DECLARE
  a uuid:='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';b uuid:='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';c uuid:='cccccccc-cccc-4ccc-8ccc-cccccccccccc';
  d uuid:='dddddddd-dddd-4ddd-8ddd-dddddddddddd';e uuid:='eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
  p public.players;t public.players;cfg office_private.projects;q jsonb;r jsonb;r2 jsonb;req uuid;quote_id uuid;deed_id bigint;
- before_a float8;before_b float8;price float8;total float8;n int;rejected boolean;w text:=public.week_key();i int;day1 date;week1 text;eligible text;excluded text;
+ before_a float8;before_b float8;price float8;total float8;n int;rejected boolean;w text:=public.week_key();i int;day1 date;week1 text;eligible text;excluded text;anchor_ts timestamptz;first_theme int;
 BEGIN
  PERFORM set_config('request.jwt.claim.sub',b::text,true);
  IF EXISTS(SELECT 1 FROM public.catalog,LATERAL jsonb_array_elements(data) x WHERE key='perks' AND x->>'id'='compound' AND x->>'note' NOT LIKE '%Friday reset%') THEN RAISE EXCEPTION 'weekly perk sold as permanent';END IF;
  UPDATE public.players SET pp=1e6,last_deed=null,buffs='[]',perks='{}',heat=0;
  cfg:=office_private.ensure_project();r:=public.office_week_status();
+ -- All four themes cycle before repeating, including DST/year transitions.
+ FOREACH anchor_ts IN ARRAY ARRAY['2026-10-30 23:00Z'::timestamptz,'2026-03-07 00:00Z'::timestamptz,'2026-12-26 00:00Z'::timestamptz] LOOP
+  first_theme:=office_private.project_theme_index(anchor_ts);
+  FOR i IN 1..4 LOOP
+   IF office_private.project_theme_index(anchor_ts+make_interval(weeks=>i))<>mod(first_theme+i,4) THEN RAISE EXCEPTION 'theme repeats before the four-week cycle';END IF;
+  END LOOP;
+ END LOOP;
+ IF office_private.project_theme_index('2026-11-07 00:00Z')<>mod(office_private.project_theme_index('2026-10-30 23:00Z')+1,4)
+ OR office_private.project_theme_index('2026-03-13 23:00Z')<>mod(office_private.project_theme_index('2026-03-07 00:00Z')+1,4) THEN RAISE EXCEPTION 'DST shifted the weekly theme cycle';END IF;
  IF r#>>'{project,goal}'<>'9' OR cardinality(cfg.categories)<>3 OR r#>>'{project,stretch_goal}'<>'15' THEN RAISE EXCEPTION 'project configuration missing';END IF;
  IF EXISTS(SELECT 1 FROM office_private.mementos) OR EXISTS(SELECT 1 FROM office_private.daily_activity) THEN RAISE EXCEPTION 'history backfill awarded retrospective goals';END IF;
  q:=public.office_shield_quote();quote_id:=(q->>'quote')::uuid;price:=(q->>'price')::float8;req:=gen_random_uuid();

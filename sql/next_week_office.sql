@@ -321,13 +321,17 @@ CREATE FUNCTION office_private.weekly_price_rate(p public.players) RETURNS float
  SELECT greatest(0.25,public.calc_rate(p),coalesce((SELECT rate FROM office_private.weekly_price_peaks WHERE actor=p.id AND week=public.week_key()),0))
 $$;
 
+CREATE FUNCTION office_private.project_theme_index(p_start timestamptz) RETURNS int
+LANGUAGE sql IMMUTABLE SET search_path='' AS $$
+ SELECT mod(floor(extract(epoch FROM p_start)/604800)::bigint,4)::int
+$$;
 CREATE FUNCTION office_private.ensure_project() RETURNS office_private.projects
 LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 DECLARE w text:=public.week_key();c office_private.projects;n int;
 BEGIN
  SELECT * INTO c FROM office_private.projects WHERE week=w;
  IF FOUND THEN RETURN c; END IF;
- n:=mod(('x'||substr(md5(w),1,7))::bit(28)::int,4);
+ n:=office_private.project_theme_index(public.week_started());
  INSERT INTO office_private.projects(week,theme,title,description,categories,starts_at)
  VALUES(w,(ARRAY['breakroom','it','morale','facilities'])[n+1],
  (ARRAY['Break Room Revival','IT Has Opened a Ticket','The Morale Committee','Facilities Inspection'])[n+1],
