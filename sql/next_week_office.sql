@@ -228,6 +228,20 @@ END $$;
 
 -- Everything below patches exact audited bodies; source drift aborts the whole transaction.
 -- Filled by tools/build-next-week.py, not dynamic client-controlled SQL.
+-- Settle the old earning period under the OLD multiplier before changing Seniority.
+-- No sync/accrue/roll_week call: installation cannot trigger a season rollover.
+DO $season$ BEGIN
+ IF NOT EXISTS(SELECT 1 FROM public.season_state WHERE id=1 AND current_week=public.week_key())
+ THEN RAISE EXCEPTION 'Normal season rollover must finish before installation'; END IF;
+END $season$;
+WITH settlement AS MATERIALIZED (
+ SELECT p.id,CASE WHEN p.last_tick IS NULL OR p.last_tick>=now() THEN 0 ELSE
+ public.accrual_interval_gain(p,now()-make_interval(secs=>least(extract(epoch FROM now()-p.last_tick),
+ (CASE WHEN p.dept='property' THEN 12 ELSE 8 END+4*public.perk_of(p,'deep_pockets'))*3600)),now()) END gain
+ FROM public.players p
+)
+UPDATE public.players p SET pp=p.pp+s.gain,lifetime=p.lifetime+s.gain,cycle=p.cycle+s.gain,
+ week_pp=p.week_pp+s.gain,day_pp=p.day_pp+s.gain,last_tick=now() FROM settlement s WHERE p.id=s.id;
 -- @PATCHES@
 DO $guard$ BEGIN IF md5(pg_get_functiondef('public.live_mult'::regproc))<>'5429d1b3f514ff57c0064018b0b278c8' THEN RAISE EXCEPTION 'Audited function drift: live_mult'; END IF; END $guard$;
 CREATE OR REPLACE FUNCTION public.live_mult(p players)

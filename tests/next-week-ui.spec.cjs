@@ -13,12 +13,12 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  f.player.seniority_earned=20;f.player.equity=16;
  await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
  expect(f.calls.filter(c=>c.rpc==='office_week_status')).toHaveLength(0);
- if(viewport.width<1000)await page.getByRole('button',{name:'More',exact:true}).click();
+ if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();
  await page.getByRole('button',{name:'This week & player profiles',exact:true}).click();
  await expect(page.getByRole('heading',{name:state.project.title})).toBeVisible();
  await page.getByRole('button',{name:'Claim reward',exact:true}).first().click();await expect(page.getByRole('button',{name:'Owned',exact:true})).toHaveCount(1);
  await page.getByRole('button',{name:'Player profiles',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Fixture profile retry');
- await page.getByRole('button',{name:/Retry/}).click();await expect(page.getByRole('img',{name:/Actions given/})).toBeVisible();
+ await page.getByRole('button',{name:/Retry/}).click();await expect(page.getByRole('img',{name:/Actions given/}).first()).toBeVisible();
  await expect(page.getByRole('cell',{name:'help',exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Toolkit',exact:true}).click();await expect(page.getByRole('heading',{name:'Choose two tools'})).toBeVisible();
  await page.getByRole('button',{name:'Emergency Stapler',exact:false}).click();await page.getByRole('button',{name:'Spam Filter',exact:false}).click();await page.getByRole('button',{name:'Save two-slot toolkit'}).click();
