@@ -21,6 +21,9 @@ function denied(r){assert(r.status>=400&&r.status<500,JSON.stringify(r));}
  denied(await call('/players?id=eq.'+a,{pp:999},token(a),'PATCH'));
  denied(await call('/season_results?select=*'));
  denied(await call('/season_results?select=*',undefined,token(a),'GET',{'Accept-Profile':'office_private'}));
+ denied(await rpc('office_set_cosmetic_visibility',{p_slot:'held',p_visible:false},null));
+ const hidden=ok(await rpc('office_set_cosmetic_visibility',{p_slot:'held',p_visible:false}));assert.equal(hidden.cosmetic_equipped.held,null);assert.equal(hidden.pp,own[0].pp);assert.deepEqual(ok(await rpc('office_set_cosmetic_visibility',{p_slot:'held',p_visible:false})),hidden);
+ denied(await rpc('office_set_cosmetic_visibility',{p_slot:'balance',p_visible:false}));
  const shop=ok(await rpc('office_shop_state'));assert.equal(shop.items.length,6);assert.equal(shop.items.find(x=>x.id==='coffee_tech').eligible,false);
  denied(await rpc('office_shop_quote',{p_item:'coffee_tech'}));denied(await rpc('office_shop_quote',{p_item:'forged'}));
  const q=ok(await rpc('office_shop_quote',{p_item:'theme_facilities'}));assert(q.price>0);

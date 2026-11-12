@@ -1,0 +1,40 @@
+\set ON_ERROR_STOP on
+DO $$ BEGIN IF current_database()<>'idle_hands_test' THEN RAISE EXCEPTION 'disposable database required';END IF;END $$;
+BEGIN;
+DO $appearance$
+DECLARE a uuid:='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';b uuid:='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';p public.players;r public.players;snapshot jsonb;q jsonb;revision bigint;rejected boolean;
+BEGIN
+ PERFORM set_config('request.jwt.claim.sub',a::text,true);
+ UPDATE public.players SET pp=1e9,vanity='{"held":"h5","glow":"g2","aura":"a1","size":"s1"}',kit='{"desk":"d5","chair":"c4","rug":"r4","art":"w4","tv":"tv1"}',wardrobe_owned='["coffee_tech"]',look='{"clothing":"coffee_tech","head":"robot"}',pin='beta',extras='["beta"]',cosmetic_styles='{"h5":{"color":"#332211","design":"check"}}',cosmetic_equipped='{}' WHERE id=a;
+ SELECT * INTO p FROM public.players WHERE id=a;snapshot:=to_jsonb(p)-ARRAY['cosmetic_equipped','cosmetic_revision','look','pin'];
+ r:=public.office_set_cosmetic_visibility('held',false);
+ IF r.cosmetic_equipped->'held' IS DISTINCT FROM 'null'::jsonb OR r.vanity->>'held'<>'h5' THEN RAISE EXCEPTION 'empty hands lost ownership or did not hide';END IF;
+ revision:=r.cosmetic_revision;r:=public.office_set_cosmetic_visibility('held',false);
+ IF r.cosmetic_revision<>revision THEN RAISE EXCEPTION 'replayed free hide was not idempotent';END IF;
+ r:=public.equip_style_item('h5');IF r.cosmetic_equipped->>'held'<>'h5' OR r.cosmetic_styles#>>'{h5,color}'<>'#332211' THEN RAISE EXCEPTION 'free re-equip lost finish';END IF;
+ q:=public.quote_style('h5','#222222','solid');r:=public.office_set_cosmetic_visibility('held',false);
+ rejected:=false;BEGIN PERFORM public.apply_style((q->>'id')::uuid);EXCEPTION WHEN others THEN rejected:=true;END;
+ IF NOT rejected THEN RAISE EXCEPTION 'unequip did not invalidate a stale style quote';END IF;
+ r:=public.office_set_cosmetic_visibility('tv',false);r:=public.office_set_cosmetic_visibility('rug',false);r:=public.office_set_cosmetic_visibility('art',false);r:=public.office_set_cosmetic_visibility('desk',false);r:=public.office_set_cosmetic_visibility('chair',false);
+ IF r.kit<>p.kit OR r.cosmetic_equipped->'tv' IS DISTINCT FROM 'null'::jsonb OR r.cosmetic_equipped->'desk' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'removed furnishings changed ownership';END IF;
+ r:=public.office_set_cosmetic_visibility('desk',true);IF r.cosmetic_equipped?'desk' THEN RAISE EXCEPTION 'restore did not return to purchased desk';END IF;
+ r:=public.office_set_cosmetic_visibility('pin',false);r:=public.office_set_cosmetic_visibility('clothing',false);
+ IF r.pin IS NOT NULL OR r.look->>'clothing'<>'starter' OR r.look->>'head'<>'robot' THEN RAISE EXCEPTION 'remove pin/outfit changed the wrong appearance';END IF;
+ r:=public.office_set_cosmetic_visibility('glow',false);r:=public.office_set_cosmetic_visibility('aura',false);r:=public.office_set_cosmetic_visibility('size',false);
+ IF (to_jsonb(r)-ARRAY['cosmetic_equipped','cosmetic_revision','look','pin'])<>snapshot THEN RAISE EXCEPTION 'free appearance changed money, ownership, styles or progress';END IF;
+ r:=public.office_set_cosmetic_visibility('aura',true);IF r.cosmetic_equipped?'aura' THEN RAISE EXCEPTION 'aura cannot restore';END IF;
+ UPDATE public.players SET vanity=jsonb_set(vanity,'{glow}','"g3"') WHERE id=a RETURNING * INTO r;
+ IF r.cosmetic_equipped?'glow' OR r.cosmetic_equipped->'held' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'higher effect purchase did not restore only its own slot';END IF;
+ PERFORM set_config('request.jwt.claim.sub',b::text,true);PERFORM public.office_set_cosmetic_visibility('held',true);
+ IF (SELECT cosmetic_equipped->'held' FROM public.players WHERE id=a) IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'another actor changed my display';END IF;
+ rejected:=false;BEGIN PERFORM public.office_set_cosmetic_visibility('pp',false);EXCEPTION WHEN others THEN rejected:=true;END;
+ IF NOT rejected THEN RAISE EXCEPTION 'unknown visibility slot accepted';END IF;
+ PERFORM set_config('request.jwt.claim.sub',a::text,true);PERFORM public.season_wipe();
+ SELECT * INTO r FROM public.players WHERE id=a;
+ IF r.cosmetic_equipped->'held' IS DISTINCT FROM 'null'::jsonb OR r.vanity->>'held'<>'h5' OR r.cosmetic_styles#>>'{h5,color}'<>'#332211' THEN RAISE EXCEPTION 'weekly reset lost empty-hands preference/ownership/styles';END IF;
+ IF has_function_privilege('anon','public.office_set_cosmetic_visibility(text,boolean)','EXECUTE') OR has_function_privilege('authenticated','office_private.restore_new_effect()','EXECUTE') THEN RAISE EXCEPTION 'appearance grants incorrect';END IF;
+ PERFORM set_config('request.jwt.claim.sub','',true);rejected:=false;BEGIN PERFORM public.office_set_cosmetic_visibility('held',false);EXCEPTION WHEN others THEN rejected:=true;END;
+ IF NOT rejected THEN RAISE EXCEPTION 'anonymous appearance mutation accepted';END IF;
+ RAISE NOTICE 'PASS appearance: free idempotent unequip/restore, preserved ownership/styles/progress, actor isolation, stale quote refusal, higher-tier behavior and reset persistence';
+END $appearance$;
+ROLLBACK;

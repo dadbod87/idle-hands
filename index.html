@@ -1646,6 +1646,7 @@ body{background:#D9CDC0}
 @media(max-width:540px){.pg-bar>.pg-emotes-toggle{grid-column:1/-1;grid-row:2;min-height:44px}.pg-bar>.pg-emotes{grid-row:3}.pg-bar>.pg-prompt{grid-row:4}.pg-prompt>.pg-open{min-height:44px}}
 @media(pointer:coarse){.pg-root .pg-room{touch-action:none}}
 .pg-next-week>.pg-tabs{display:flex;flex-wrap:wrap}.pg-next-week>.pg-tabs .pg-tab{flex:1 1 100px}.pg-boutique-grid .pg-costume-preview{margin:0 auto;flex:none;height:166px}.pg-boutique-grid article>svg{width:100%;max-height:140px}.pg-boutique-grid article{display:flex;flex-direction:column;align-items:stretch;overflow-wrap:anywhere}.pg-boutique-grid article>svg{flex:none;width:160px;max-width:100%;height:100px;align-self:center}.pg-boutique-grid article>button{width:100%;white-space:normal;overflow-wrap:normal}.pg-boutique-notice:focus{outline:none}.pg-boutique-grid button{margin:5px 0}.pg-next-week table td{overflow-wrap:anywhere}
+.pg-style-preview .pg-btn{display:block;margin:8px 0;min-height:44px}.pg-style-effects{padding:12px;margin:12px 0;border:1px solid #8FA67A}.pg-style-effects summary{cursor:pointer;min-height:44px;font-weight:bold}.pg-style-effects .pg-btn{margin:5px;min-height:44px}.pg-form-label optgroup{font-weight:800}
 </style>
 </head>
 <body>
@@ -3422,6 +3423,7 @@ const api = {
   quoteStyle:(item,color,design)=>rpc("quote_style",{p_item:item,p_color:color,p_design:design}),
   applyStyle:id=>rpc("apply_style",{p_quote:id}),
   equipStyle:item=>rpc("equip_style_item",{p_item:item}),
+  cosmeticVisibility:(slot,visible)=>rpc("office_set_cosmetic_visibility",{p_slot:slot,p_visible:visible}),
   weeklyPins: () => rpc("weekly_pins"),
   buyPin: (id) => rpc("buy_pin", { p_id: id }),
   setPin: (id) => rpc("set_pin", { p_id: id }),
@@ -4999,7 +5001,7 @@ function OfficeFloor() {
                             zIndex: Math.round(o.y) }}>
                 <div className={"pg-officefloor" + (physicalId(p,"rug") ? " has-rug rug-" + physicalId(p,"rug") : "")}>{physicalId(p,"rug")&&<OfficeRugArt tier={physicalId(p,"rug")} style={itemStyle(p,physicalId(p,"rug"))}/>}</div>
                 {physicalId(p,"art") && <div className={"pg-officeart art-" + physicalId(p,"art")}><OfficeWallArt tier={physicalId(p,"art")} style={itemStyle(p,physicalId(p,"art"))}/></div>}
-                {p?.kit?.tv==="tv1"&&<OfficeTelevision owner={p.name} style={itemStyle(p,"tv1")}/>}
+                {physicalId(p,"tv")==="tv1"&&<OfficeTelevision owner={p.name} style={itemStyle(p,"tv1")}/>}
 
                 <div className="pg-officedoor"
                      style={{ left: o.doorX - o.x, width: DOOR_W }}><i /><span /><i /></div>
@@ -5675,7 +5677,11 @@ const STYLE_COLORS=[["Hot pink","#ff55b0"],["Bubblegum","#f5a8d6"],["Royal purpl
 const STYLE_NATURAL_COLORS=[["Walnut","#704a32"],["Oak","#b98a5c"],["Chestnut","#955e43"],["Sandstone","#c9b591"],["Linen","#e8ddc7"],["Cream","#f4e9d5"],["Olive","#7b8456"],["Forest green","#43634b"],["Stone","#97958d"],["Charcoal","#484b48"],["Slate blue","#617787"],["Dusty rose","#b98882"]];
 const STYLE_DESIGNS=[["solid","Solid"],["stripe","Stripes"],["check","Checker"],["dots","Polka dots"],["sparkle","Sparkle"],["confetti","Confetti"]];
 function itemStyle(p,id){return p?.cosmetic_styles?.[id]||{color:null,design:"solid"};}
-function physicalId(p,slot){return p?.cosmetic_equipped?.[slot]||(slot==="held"?p?.vanity?.held:p?.kit?.[slot])||(slot==="desk"?"d1":slot==="chair"?"c1":null);}
+function physicalId(p,slot){
+ const fallback=slot==='desk'?'d1':slot==='chair'?'c1':null,display=p?.cosmetic_equipped;
+ if(display&&Object.prototype.hasOwnProperty.call(display,slot)&&display[slot]===null)return fallback;
+ return display?.[slot]||(['held','glow','aura','size'].includes(slot)?p?.vanity?.[slot]:p?.kit?.[slot])||fallback;
+}
 function styleColor(style,fallback){return /^#[0-9a-f]{6}$/i.test(style?.color||"")?style.color:fallback;}
 function useMaterialPaint(style,fallback,size=12){
  const id="material-"+React.useId().replace(/[^a-z0-9]/gi,"");
@@ -5709,7 +5715,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const worn = wearing(p);
   const c = worn ? COSTUMES[worn.id] : null;
   const L = lookFor(p);
-  const v = {...(p?.vanity||{}),held:physicalId(p,"held")};
+  const v = Object.fromEntries(["held","glow","aura","size"].map(slot=>[slot,physicalId(p,slot)]));
   const nickOn = p?.nickname && new Date(p.nickname.until) > new Date();
   const nick = nickOn ? p.nickname.text : null;
   const B = avatarBody(L);
@@ -6418,6 +6424,8 @@ function ownedPhysicalItems(cat,me){
  for(const id of me?.extras||[])if(PIN_INDEX[id])list.push({id:'pin:'+id,name:PIN_INDEX[id].name+' · pin',slot:'pin',kind:'pin'});
  return list;
 }
+const OWNED_STYLE_GROUPS=[['desk','Desks','Desk'],['chair','Chairs','Chair'],['rug','Rugs','Rug'],['art','Wall art','Wall art'],['tv','Televisions','TV'],['held','Held items','Held item'],['clothing','Outfits','Outfit'],['pin','Pins','Pin']];
+const UNEQUIP_LABELS={desk:'Use basic desk',chair:'Use basic chair',rug:'Remove rug',art:'Remove wall art',tv:'Remove television',held:'Empty hands',clothing:'Wear standard outfit',pin:'Remove pin'};
 function styleMoney(n){return fmt(n);}
 function expandedMoney(n){return Number(n).toLocaleString("en-US",{maximumFractionDigits:0});}
 function LargeNumberKey(){return <details className="pg-fine pg-number-key"><summary>Number abbreviations</summary><p>Each label is 1,000 times the previous: Oc = octillion (10²⁷), No = nonillion (10³⁰), Dc = decillion (10³³), Ud = undecillion (10³⁶), Dd = duodecillion (10³⁹), Td = tredecillion (10⁴²). Larger labels continue through Vg (10⁶³), then use scientific notation.</p></details>;}
@@ -6430,6 +6438,8 @@ function Customization({cat,me,pp,onSaved,preview=false}){
  const draftPlayer={...me,cosmetic_styles:{...me?.cosmetic_styles,[item?.id]:{color,design}}};
  const dirty=color!==(saved.color||null)||design!==(saved.design||'solid'),expired=quote&&new Date(quote.expires_at).getTime()<=clock;
  const equipped=item?.kind==='wardrobe'?(lookFor(me).clothing||'starter')===item.id:item?.kind==='pin'?('pin:'+me?.pin)===item.id:physicalId(me,item?.slot)===item?.id;
+ const removable=item?.slot==='clothing'?(lookFor(me).clothing||'starter')!=='starter':item?.slot==='pin'?!!me?.pin:item?.slot==='desk'?physicalId(me,'desk')!=='d1':item?.slot==='chair'?physicalId(me,'chair')!=='c1':!!physicalId(me,item?.slot);
+ const setVisible=async(slot,visible=false)=>{revision.current++;setQuote(null);setBusy(true);setFeedback('');try{const row=await api.cosmeticVisibility(slot,visible);onSaved?.(row);setFeedback((slot==='held'&&!visible?'Empty hands. ':visible?'Purchased appearance restored. ':'Appearance updated. ')+'Ownership and saved finishes are kept. No Busywork charged.');}catch(e){try{onSaved?.(await api.sync());}catch{}setFeedback(prettyError(e)+' Refresh or retry this free appearance choice.');}finally{setBusy(false);}};
  const invalidate=()=>{setQuote(null);revision.current++;setFeedback('');};
  const review=async()=>{const token=++revision.current;setBusy(true);setFeedback('');try{const q=await api.quoteStyle(item.id,color,design);if(q?.seconds_per_change!==28800)throw Error("New eight-hour pricing is not available yet. Refresh the game and review again.");if(token===revision.current){setQuote(q);setClock(Date.now());}}catch(e){setFeedback(prettyError(e));}finally{setBusy(false);}};
  const apply=async()=>{setBusy(true);setFeedback('');try{const row=await api.applyStyle(quote.id);onSaved?.(row);setQuote(null);setFeedback('Style saved. Your office has opinions now.');}catch(e){try{const current=await api.sync();onSaved?.(current);}catch{}setFeedback(prettyError(e)+' Check the saved style and review a fresh price before retrying.');setQuote(null);}finally{setBusy(false);}};
@@ -6437,8 +6447,9 @@ function Customization({cat,me,pp,onSaved,preview=false}){
  useEffect(()=>{if(feedback)feedbackRef.current?.scrollIntoView({block:'nearest'});},[feedback]);
  return <section className="pg-style-editor" data-testid="style-editor" aria-label="Interior Affairs customization">
   <div className="pg-style-heading"><span className="pg-stamp">INTERIOR AFFAIRS · FORM CO-02</span><h3>Make the office yours.</h3><p>Owned items. Questionable taste. Your call.</p></div>
-  <label className="pg-form-label">Choose an owned item<select aria-label="Customize owned item" value={item?.id} disabled={busy} onChange={e=>{setSelected(e.target.value);invalidate();}}>{items.map(it=><option key={it.id} value={it.id}>{it.name}</option>)}</select></label>
-  <div className="pg-style-preview"><FittingPreview item={item} kind={item.kind} player={draftPlayer} large/><div><b>{item.name}</b><p className="pg-fine">Full item preview · no Busywork spent. {item.slot==='desk'?'Top and drawer cabinets change together.':''}</p><button className="pg-btn" disabled={busy||equipped||preview} onClick={equip}>{equipped?'Currently equipped':'Equip this owned item · free'}</button></div></div>
+  <label className="pg-form-label">Choose an owned item<select aria-label="Customize owned item" value={item?.id} disabled={busy} onChange={e=>{setSelected(e.target.value);invalidate();}}>{OWNED_STYLE_GROUPS.map(([slot,label,singular])=>{const group=items.filter(it=>it.slot===slot).sort((a,b)=>a.id==='starter'?-1:b.id==='starter'?1:(a.tier||0)-(b.tier||0)||a.name.localeCompare(b.name));return group.length>0&&<optgroup key={slot} label={label+' · '+group.length+' owned'}>{group.map(it=><option key={it.id} value={it.id}>{singular+' · '+it.name}</option>)}</optgroup>;})}</select></label>
+  <div className="pg-style-preview"><FittingPreview item={item} kind={item.kind} player={draftPlayer} large/><div><b>{item.name}</b><p className="pg-fine">Full item preview · no Busywork spent. {item.slot==='desk'?'Top and drawer cabinets change together.':''}</p><button className="pg-btn" disabled={busy||equipped||preview} onClick={equip}>{equipped?'Currently equipped':'Equip this owned item · free'}</button><button className="pg-btn" disabled={busy||preview||!removable} onClick={()=>setVisible(item.slot,false)}>{UNEQUIP_LABELS[item?.slot]} · free</button><p className="pg-fine">{equipped?'This item is equipped.':'Preview only. This item is not equipped.'} Removing it keeps ownership and its saved finish. Basic desks and chairs stay available for work.</p>{item?.slot==='clothing'&&wearing(me)&&<p className="pg-fine">This changes your permanent outfit. Temporary prank costumes follow the Supply Closet rules.</p>}</div></div>
+  {['glow','aura','size'].some(slot=>me?.vanity?.[slot])&&<details className="pg-style-effects"><summary>Glow, aura and presence</summary><p>Hide or restore these purchased effects for free.</p>{[['glow','glow'],['aura','aura'],['size','presence']].filter(([slot])=>me?.vanity?.[slot]).map(([slot,label])=><button className="pg-btn" key={slot} disabled={busy||preview} onClick={()=>setVisible(slot,!physicalId(me,slot))}>{physicalId(me,slot)?'Hide ':'Restore '}{label} · free</button>)}</details>}
   <fieldset disabled={busy}><legend>Color</legend><div className="pg-style-palettes">{[["Bright & playful",STYLE_COLORS],["Natural tones",STYLE_NATURAL_COLORS]].map(([label,colors])=><div className="pg-style-palette" key={label}><h4>{label}</h4><div className="pg-style-swatches" role="group" aria-label={label+" colors"}>{colors.map(([name,hex])=><button type="button" key={hex} style={{background:hex}} aria-label={name} title={name} aria-pressed={color===hex} onClick={()=>{setColor(hex);invalidate();}}>{color===hex?"✓":""}</button>)}</div></div>)}</div><div className="pg-style-color"><label>Mix your own <input type="color" aria-label="Custom item color" value={color||'#8fa67a'} onChange={e=>{setColor(e.target.value);invalidate();}}/></label><button className="pg-btn" aria-pressed={color===null} onClick={()=>{setColor(null);invalidate();}}>Original color</button></div></fieldset>
   <fieldset disabled={busy}><legend>Design</legend><div className="pg-style-designs">{STYLE_DESIGNS.map(([id,name])=><button type="button" className="pg-btn" key={id} aria-pressed={design===id} onClick={()=>{setDesign(id);invalidate();}}>{name}</button>)}</div></fieldset>
   <p className="pg-fine">Color change: 8 hours of current output. Add/change a design: +8 hours. Both: 16 hours. Minimum 1,000 BW per paid change. Removing a design is free. Unchanged choices cost nothing. Reapplying an old choice is a new change.</p>
