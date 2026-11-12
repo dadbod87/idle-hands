@@ -117,7 +117,17 @@ BEGIN
  UPDATE office_private.toolkits SET charges=jsonb_set(charges,'{confetti}','1') WHERE actor=a AND week=w;
  rejected:=false;BEGIN PERFORM public.office_resupply('confetti',gen_random_uuid());EXCEPTION WHEN others THEN rejected:=true;END;
  IF NOT rejected THEN RAISE EXCEPTION 'resupply without work/activity';END IF;
+ -- Simulate both sides of Friday's same-date reset. Prior-week work cannot
+ -- qualify this week, and recording the same category again must not collide.
+ INSERT INTO office_private.daily_activity(actor,day,week,category)
+ VALUES(a,(now() AT TIME ZONE 'America/Los_Angeles')::date,public.week_key(now()-interval '7 days'),'work'),
+       (a,(now() AT TIME ZONE 'America/Los_Angeles')::date,public.week_key(now()-interval '7 days'),'facilities');
+ IF (public.office_week_status()->'resupply'->>'eligible')::boolean
+ OR jsonb_array_length(public.office_week_status()->'resupply'->'activity')<>0 THEN RAISE EXCEPTION 'old-week daily activity leaked into current supplies';END IF;
+ rejected:=false;BEGIN PERFORM public.office_resupply('confetti',gen_random_uuid());EXCEPTION WHEN others THEN rejected:=true;END;
+ IF NOT rejected THEN RAISE EXCEPTION 'previous week earned a current-week supply';END IF;
  PERFORM office_private.project_credit(a,'work');PERFORM office_private.project_credit(a,'facilities');
+ IF (SELECT count(*) FROM office_private.daily_activity WHERE actor=a AND week=w AND day=(now() AT TIME ZONE 'America/Los_Angeles')::date)<>2 THEN RAISE EXCEPTION 'same-date rollover lost current-week collection activity';END IF;
  req:=gen_random_uuid();r:=public.office_resupply('confetti',req);r2:=public.office_resupply('confetti',req);
  IF r<>r2 OR (SELECT charges->>'confetti' FROM office_private.toolkits WHERE actor=a AND week=w)<>'2' OR (SELECT count(*) FROM office_private.resupplies WHERE actor=a)<>1 THEN RAISE EXCEPTION 'resupply replay duplicated';END IF;
  UPDATE office_private.toolkits SET charges=jsonb_set(charges,'{rescue}','1') WHERE actor=a AND week=w;
@@ -125,6 +135,10 @@ BEGIN
  IF NOT rejected THEN RAISE EXCEPTION 'daily supply cap bypassed';END IF;
  rejected:=false;BEGIN PERFORM public.office_resupply('rescue',req);EXCEPTION WHEN others THEN rejected:=true;END;
  IF NOT rejected THEN RAISE EXCEPTION 'supply receipt rebound';END IF;
+ UPDATE office_private.resupplies SET week=public.week_key(now()-interval '7 days') WHERE actor=a;
+ IF NOT (public.office_week_status()->'resupply'->>'claimed_today')::boolean THEN RAISE EXCEPTION 'rollover hid same-date supply claim';END IF;
+ rejected:=false;BEGIN PERFORM public.office_resupply('rescue',gen_random_uuid());EXCEPTION WHEN others THEN rejected:=true;END;
+ IF NOT rejected THEN RAISE EXCEPTION 'weekly rollover bypassed global daily supply cap';END IF;
  DELETE FROM office_private.resupplies WHERE actor=a;
  INSERT INTO office_private.resupplies SELECT a,(now() AT TIME ZONE 'America/Los_Angeles')::date-g,w,'confetti' FROM generate_series(1,3) g;
  rejected:=false;BEGIN PERFORM public.office_resupply('rescue',gen_random_uuid());EXCEPTION WHEN others THEN rejected:=true;END;

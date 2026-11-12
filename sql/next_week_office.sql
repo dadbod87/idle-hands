@@ -283,7 +283,7 @@ CREATE TABLE office_private.projects(
 );
 CREATE TABLE office_private.daily_activity(
  actor uuid NOT NULL,day date NOT NULL,week text NOT NULL,category text NOT NULL,
- PRIMARY KEY(actor,day,category),CHECK(category IN('work','facilities','care','playful'))
+ PRIMARY KEY(actor,week,day,category),CHECK(category IN('work','facilities','care','playful'))
 );
 CREATE INDEX daily_activity_week_actor ON office_private.daily_activity(week,actor);
 CREATE TABLE office_private.mementos(
@@ -399,7 +399,7 @@ BEGIN
  c:=office_private.ensure_project();progress:=office_private.collection_progress(u);
  SELECT * INTO k FROM office_private.toolkits WHERE actor=u AND week=w;
  SELECT count(*),count(DISTINCT actor) INTO n,people FROM office_private.project_stamps WHERE week=w AND category=ANY(c.categories);
- SELECT coalesce(array_agg(category ORDER BY category),ARRAY[]::text[]) INTO daily FROM office_private.daily_activity WHERE actor=u AND day=today;
+ SELECT coalesce(array_agg(category ORDER BY category),ARRAY[]::text[]) INTO daily FROM office_private.daily_activity WHERE actor=u AND week=w AND day=today;
  SELECT count(*) INTO used FROM office_private.resupplies WHERE actor=u AND week=w;
  result:=jsonb_build_object('version',1,'depth_version',1,'week',w,'server_now',now(),'starts_at',c.starts_at,
  'project',jsonb_build_object('theme',c.theme,'title',c.title,'description',c.description,'categories',to_jsonb(c.categories),'goal',c.goal,'minimum_contributors',c.minimum_contributors,'total',n,'contributors',people,
@@ -485,7 +485,7 @@ BEGIN
  IF FOUND THEN IF r.action<>'resupply:'||p_tool OR r.target<>u THEN RAISE EXCEPTION 'request belongs to a different action'; END IF;RETURN r.result; END IF;
  PERFORM public.accrue(u);w:=public.week_key();
  IF EXISTS(SELECT 1 FROM office_private.resupplies WHERE actor=u AND day=today) OR (SELECT count(*) FROM office_private.resupplies WHERE actor=u AND week=w)>=3 THEN RAISE EXCEPTION 'supply limit reached'; END IF;
- IF NOT (SELECT count(*)>=2 AND bool_or(category='work') FROM office_private.daily_activity WHERE actor=u AND day=today) THEN RAISE EXCEPTION 'work plus a different activity earns today''s resupply'; END IF;
+ IF NOT (SELECT count(*)>=2 AND bool_or(category='work') FROM office_private.daily_activity WHERE actor=u AND week=w AND day=today) THEN RAISE EXCEPTION 'work plus a different activity earns today''s resupply'; END IF;
  INSERT INTO office_private.toolkits(actor,week) VALUES(u,w) ON CONFLICT DO NOTHING;
  SELECT * INTO k FROM office_private.toolkits WHERE actor=u AND week=w FOR UPDATE;
  IF coalesce((k.charges->>p_tool)::int,2)>=2 THEN RAISE EXCEPTION 'that tool is already full'; END IF;
