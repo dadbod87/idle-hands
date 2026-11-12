@@ -26,6 +26,7 @@ DROP TABLE public.style_quotes;
 ALTER TABLE public.players DROP COLUMN cosmetic_styles,DROP COLUMN cosmetic_equipped,DROP COLUMN cosmetic_revision;
 \i supabase/migrations/20261106213809_owned_item_styles.sql
 \i tests/fixtures/next-week-baseline.sql
+\i tests/fixtures/style-item-baseline.sql
 -- These dependencies are deterministic fixture substitutes. Action and migration bodies are actual.
 CREATE FUNCTION public.event_mult(ts timestamptz) RETURNS float8 LANGUAGE sql AS $$SELECT 1::float8$$;
 CREATE FUNCTION public.jess_boost_mult(ts timestamptz) RETURNS float8 LANGUAGE sql AS $$SELECT 1::float8$$;

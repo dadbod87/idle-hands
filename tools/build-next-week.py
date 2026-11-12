@@ -2,7 +2,7 @@
 from pathlib import Path
 import re,hashlib,json
 root=Path(__file__).resolve().parents[1]
-baseline=(root/'tests/fixtures/next-week-baseline.sql').read_text()
+baseline=(root/'tests/fixtures/next-week-baseline.sql').read_text()+'\n'+(root/'tests/fixtures/style-item-baseline.sql').read_text()
 functions={m.group(1):m.group(0) for m in re.finditer(r'CREATE OR REPLACE FUNCTION public\.(\w+)\([\s\S]*?\$function\$[\s\S]*?\$function\$\n',baseline)}
 changed={}
 def patch(name,a,b):
@@ -13,6 +13,7 @@ for name in ['live_mult','live_mult_at']:
 patch('restructure','equity=equity+gain,','equity=equity+gain,seniority_earned=seniority_earned+gain,')
 patch('season_wipe','equity=0,','equity=0,seniority_earned=0,')
 patch('roll_week',"('coffee','hype','cover')","('coffee','hype','cover','rescue')")
+patch('style_item_info',"'hoodie_gold','friday'","'hoodie_gold','friday','coffee_tech','meeting_survivor'")
 patch('season_wipe','nickname=null,outfit=null,ooo=null,','nickname=null,outfit=null,ooo=null,office_confetti=null,')
 # Serialize targeted mutations before either player is locked. Opposite-direction
 # actions must not each hold their actor while waiting for the other's row.

@@ -12,7 +12,7 @@ The full held package creates or validates/reuses the exact private core. RLS an
 
 Budget Wizard and Walking Filing Cabinet use the existing 45-minute costume price, self/coworker targeting, cooldown, heat, commit bonus and history rules. Previewing never spends. They have no additional income multiplier.
 
-Six permanent boutique items use confirmed two-minute quotes at the retained permanent base-production benchmark. Paid purchases use actor/request receipts; retries cannot charge twice. Equip/display is free. Existing inventories, prices and garment IDs remain intact.
+Six permanent boutique items use confirmed two-minute quotes at the retained permanent base-production benchmark. Paid purchases use actor/request receipts; retries cannot charge twice. Equip/display is free. Both new outfits use the existing ownership-checked color/design editor and its unchanged fees. Existing inventories, prices and garment IDs remain intact.
 
 | Item | Pricing basis | Minimum BW | Participation |
 |---|---:|---:|---|

@@ -43,6 +43,7 @@ BEGIN
  q:=public.office_shop_quote('coffee_tech');r:=public.office_shop_buy((q->>'quote')::uuid,gen_random_uuid());
  p:=public.set_look('{"clothing":"coffee_tech","head":"photo"}');
  IF p.look->>'clothing'<>'coffee_tech' OR p.look->>'head'<>'photo' THEN RAISE EXCEPTION 'new garment cannot equip through actual appearance RPC';END IF;
+ q:=public.quote_style('coffee_tech','#123456','solid');p:=public.apply_style((q->>'id')::uuid);IF p.cosmetic_styles#>>'{coffee_tech,color}'<>'#123456' THEN RAISE EXCEPTION 'new outfit cannot use existing paid styles';END IF;
  q:=public.office_shop_quote('meeting_survivor');PERFORM public.office_shop_buy((q->>'quote')::uuid,gen_random_uuid());
  q:=public.office_shop_quote('theme_chaos');PERFORM public.office_shop_buy((q->>'quote')::uuid,gen_random_uuid());
  p:=public.office_display_collectibles(ARRAY['theme_chaos','theme_facilities']);IF jsonb_array_length(p.office_display)<>2 THEN RAISE EXCEPTION 'theme display failed';END IF;
