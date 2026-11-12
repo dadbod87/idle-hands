@@ -105,6 +105,9 @@ test('next week reliability: a lost action reply retried after rollover keeps on
  await expect(page.getByRole('alert')).toContainText('Reply lost after acceptance');
  state.week='2026-48';Object.assign(f.player,{equity:0,seniority_earned:0,owned:{}});
  await page.getByRole('button',{name:'Retry action',exact:true}).click();
+ await expect.poll(()=>requests.length).toBe(2);
+ await expect(page.getByRole('button',{name:'Send confetti',exact:true})).toBeEnabled();
+ await expect.poll(()=>f.calls.filter(c=>c.rpc==='office_week_status').length).toBeGreaterThanOrEqual(2);
  await expect(page.getByRole('alert')).toHaveCount(0);
  await expect(page.getByRole('button',{name:/Confetti Cartridge/})).toContainText('2 charges');
  await expect(page.getByText('▲ 99 available Seniority',{exact:true})).toHaveCount(0);
