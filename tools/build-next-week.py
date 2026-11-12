@@ -35,12 +35,19 @@ patch('do_deed',"  if d ? 'mult' then", """  if d ? 'mult' and (d->>'mult')::dou
   end if;
   if d ? 'mult' then""")
 patch('do_deed','insert into deeds (actor, target, kind, amount) values (p.id, p_target, p_kind, amt);',"insert into deeds (actor, target, kind, amount, detail) values (p.id, p_target, p_kind, amt,case when blocked_by_filter then 'blocked:filter' else null end);")
+# Keep the complete social resolution readable: one shield, actual-debit theft,
+# unchanged stacking/passive defenses, and one initiated deed under the old guard.
+changed['do_deed']=(root/'tools/office-deed.sql').read_text()
 blocks=[]
 for name,source in changed.items():
     digest=hashlib.md5(functions[name].encode()).hexdigest()
     blocks.append("DO $guard$ BEGIN IF md5(pg_get_functiondef('public.%s'::regproc))<>'%s' THEN RAISE EXCEPTION 'Audited function drift: %s'; END IF; END $guard$;\n%s;"%(name,digest,name,source))
 path=root/'sql/next_week_office.sql'
 sql=path.read_text()
+ds='-- @OFFICE_DEPTH@';de='-- @END_OFFICE_DEPTH@'
+if ds in sql:sql=sql[:sql.index(ds)]+sql[sql.index(de)+len(de):].lstrip('\n')
+anchor='-- Everything below patches exact audited bodies; source drift aborts the whole transaction.'
+sql=sql.replace(anchor,ds+'\n'+(root/'tools/office-depth.sql').read_text()+'\n'+de+'\n\n'+anchor,1)
 journal=(root/'sql/office_action_journal.sql').read_text()
 core=journal.split('-- @JOURNAL_CORE@\n',1)[1].split('-- @END_JOURNAL_CORE@',1)[0]
 capture_body=re.search(r'AS \$journal_capture\$([\s\S]*?)\$journal_capture\$',core).group(1)

@@ -104,7 +104,7 @@ BEGIN
  FOR t IN SELECT * FROM public.players LOOP
   PERFORM office_private.project_credit(t.id,'work');PERFORM office_private.project_credit(t.id,'facilities');PERFORM office_private.project_credit(t.id,'care');PERFORM office_private.project_credit(t.id,'playful');
  END LOOP;
- r:=public.office_week_status();IF r#>>'{project,total}'<>'12' OR r#>>'{project,contributors}'<>'3' OR r#>>'{project,completed}'<>'true' THEN RAISE EXCEPTION 'project completion incorrect'; END IF;
+ r:=public.office_week_status();IF r#>>'{project,total}'<>'9' OR r#>>'{project,contributors}'<>'3' OR r#>>'{project,completed}'<>'true' THEN RAISE EXCEPTION 'project completion incorrect'; END IF;
  p:=public.office_claim_collectible('nameplate',public.week_key());p:=public.office_claim_collectible('nameplate',public.week_key());p:=public.office_claim_collectible('corkboard',public.week_key());p:=public.office_claim_collectible('plaque',public.week_key());
  IF jsonb_array_length(p.office_collectibles)<>3 THEN RAISE EXCEPTION 'reward duplication or missing reward'; END IF;
  -- Two-slot changes preserve all charges. Replayed actions cannot spend another charge.

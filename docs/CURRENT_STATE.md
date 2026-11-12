@@ -1,3 +1,7 @@
+## Office depth continuation — IN PROGRESS / held
+
+Nick authorized building the second-audit proposals into the same held package. [Depth contract](OFFICE_DEPTH_CONTRACT.md) specifies rotating three-category projects, dated mementos, two/four/six-week collections, capped earned resupply, Receipt Clip and a one-use purchased reflective shield. Backend, UI and isolated verification are being developed; this checkpoint is not a readiness claim. Stacking stays intact. The history-only installation below remains the only live change.
+
 ## History-only preservation LIVE — 2026-11-12
 
 The separately authorized journal stage was applied once at 11:56:53 AM Pacific as migration `20261112195653_office_action_journal_history_only`. All 946 retained coworker actions were backfilled with zero missing/mismatched events; future capture is enabled and private. Public game functions and catalog are unchanged. Frontend remains build 194 / main `9d622b9`. **The rest of build 195 remains held for after verified Friday rollover.** See [live receipt](HISTORY_ONLY_RELEASE_2026-11-12.md). Do not reapply the journal.

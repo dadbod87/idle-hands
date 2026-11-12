@@ -1,3 +1,7 @@
+## Office depth continuation — held implementation checkpoint
+
+Adds the explicit depth contract and held backend for rotating projects, immutable dated scrapbook rewards, multi-week collections, bounded daily resupply, Receipt Clip, quoted one-use reflection and idempotent social resolution. Ordinary and reflected theft transfer only the actual available debit. Passive defenses and repeated sabotage stacking remain. This is an implementation checkpoint; UI and final verification remain in progress. No new live installation, player action or frontend release.
+
 ## History-only preservation LIVE — 2026-11-12
 
 The separately authorized journal stage was applied once at 11:56:53 AM Pacific as migration `20261112195653_office_action_journal_history_only`. All 946 retained coworker actions were backfilled with zero missing/mismatched events; future capture is enabled and private. Public game functions and catalog are unchanged. Frontend remains build 194 / main `9d622b9`. **The rest of build 195 remains held for after verified Friday rollover.** See [live receipt](HISTORY_ONLY_RELEASE_2026-11-12.md). Do not reapply the journal.
