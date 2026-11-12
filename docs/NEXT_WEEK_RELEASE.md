@@ -1,6 +1,6 @@
 # Next-week office package - RELEASE HOLD
 
-User-authorized implementation on 2026-11-12. **History-only exception: Nick explicitly authorized it, and migration `20261112195653_office_action_journal_history_only` is now live.** See [receipt](HISTORY_ONLY_RELEASE_2026-11-12.md). Do not reapply it. **The remaining full package stays held: do not merge the frontend, apply the full migration, trigger a reset, change live balances/inventory, or release automatically.** Target release is after normal Friday 2026-11-13 16:00 America/Los_Angeles rollover is independently confirmed.
+User-authorized implementation on 2026-11-12. **History-only exception: Nick explicitly authorized it, and migration `20261112195653_office_action_journal_history_only` is now live.** See [action receipt](HISTORY_ONLY_RELEASE_2026-11-12.md). The separate standings preservation migration `20261112215816` is also live; see [standings receipt](SEASON_HISTORY_RELEASE_2026-11-12.md). Do not reapply either standalone stage. **The remaining full package stays held: do not merge the frontend, apply the full migration, trigger a reset, change live balances/inventory, or release automatically.** Target release is after normal Friday 2026-11-13 16:00 America/Los_Angeles rollover is independently confirmed.
 
 Base: GitHub main `9d622b9123c0e71c391637ec4a68335a8fcbb61f`. The local source checkpoint `9501f8a` has the identical complete root tree (every root blob/tree hash verified through the GitHub app). The approval UI is failing; use local source and connected GitHub operations, not repeated permission prompts. Remote feature commits use current main as parent.
 
@@ -27,7 +27,7 @@ Rollback frontend first; preserve lifetime history, earned collectibles, style r
 
 ## Review and continuation
 
-Draft PR: https://github.com/dadbod87/idle-hands/pull/56. The PR head and its complete three-job gate are authoritative. Remaining candidate files are held; only the journal-only migration has been applied. No main merge, full-package migration or automatic release.
+Draft PR: https://github.com/dadbod87/idle-hands/pull/56. The PR head and its complete three-job gate are authoritative. Remaining gameplay files are held; only the action-journal and private-standings preservation migrations have been applied. No main merge, full-package migration or automatic release.
 
 The held SQL settles existing capped offline accrual under the old functions before switching Seniority. It does not call sync, accrue or roll_week during installation. It requires season_state.current_week to match week_key at transaction time. The normal recap classifies Rescue as help. All fourteen replaced functions have audited-definition guards; the earned-point reconstruction also guards the fixed perk costs. Targeted social RPCs acquire one common transaction lock before locking either player, preventing opposite-direction deadlocks in this small office. The concurrency harness exercises actual RPC bodies in separate disposable sessions.
 
@@ -57,4 +57,4 @@ The stage was applied through the provider migration tool. Its generated ledger 
 
 The later depth pack implements the design proposals in held source, with its current contract in OFFICE_DEPTH_CONTRACT.md. PR #56 records current candidate hashes, completed checks and remaining review limits; earlier green results do not certify a later head.
 
-The record-book/cosmetic continuation is documented in RECORDBOOK_AND_COSMETICS.md. A separately reviewed private standings-capture payload can preserve this week before reset; it changes no player/catalog/public economy function. Its live status must be recorded explicitly. New garment IDs also extend the existing guarded ownership resolver so paid color/design changes and free equip work correctly. Exact-head API, SQL, visual and browser evidence belongs to PR #56.
+The record-book/cosmetic continuation is documented in RECORDBOOK_AND_COSMETICS.md. The separately reviewed private standings-capture payload is now live (migration `20261112215816`; see SEASON_HISTORY_RELEASE_2026-11-12.md) to preserve this week before reset; it changes no player/catalog/public economy function. Do not reapply either standalone preservation stage. New garment IDs also extend the existing guarded ownership resolver so paid color/design changes and free equip work correctly. Exact-head API, SQL, visual and browser evidence belongs to PR #56.

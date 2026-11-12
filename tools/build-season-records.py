@@ -13,6 +13,8 @@ DO $guard$ BEGIN
  IF to_regclass('office_private.projects') IS NOT NULL THEN RAISE EXCEPTION 'full package already installed; use its guarded forward path'; END IF;
 END $guard$;
 """+core+'\nCOMMIT;\n'
+if hashlib.sha256(standalone.encode()).hexdigest()!='10db950e43efaaea4c34736d89166a975a9446cceb3745fe496ff7e27a49d1b6':
+    raise SystemExit('Applied standings preservation is immutable; prepare a separate forward change')
 (root/'sql/season_records_history_only.sql').write_text(standalone)
 reuse="""DO $season_reuse$ BEGIN
  IF to_regclass('office_private.season_records') IS NULL AND to_regclass('office_private.season_results') IS NULL THEN

@@ -1,6 +1,6 @@
 # Office depth pack — implementation contract, RELEASE HOLD
 
-Continue build 195 in PR #56. Only the journal is live. No full migration, frontend merge, real-account test, reset or automatic deployment is authorized by this work.
+Continue build 195 in PR #56. Only the private action/standings preservation stages are live; see the two November 12 release receipts. No full migration, frontend merge, real-account test, reset or automatic deployment is authorized by this work.
 
 - **Rotating projects:** cycle through all four themes before repeating; freeze a theme and three eligible categories per Pacific week. The UTC week index stays stable across the office's DST/year boundaries. Base: nine distinct player/category stamps and three contributors; stretch: fifteen and five. Retain all four personal category stamps, so permanent starter rewards remain earnable every week. Excluded activities still count toward personal progression and supplies. No BW donations or required income sabotage.
 - **Scrapbook:** automatically archive an immutable dated memento for participating players when the base project completes; later eligible contributors receive it too. Stretch adds a cosmetic distinction. Select a dated memento for the existing plaque; no income bonus.
