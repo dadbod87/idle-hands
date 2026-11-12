@@ -96,3 +96,11 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Reconcile roadmap, decisions, current handoff and next task; source-review statements must not become runtime/device claims.
 - [ ] Keep separate-game/free-assets boundaries; no new runtime under the current deploy root, no billing or player-data operations.
 - [ ] Existing three CI jobs must pass before merging planning changes; verify unchanged current-game artifact after auto-deployment.
+
+## Season records and cosmetic pack
+- [ ] Exercise standalone private standings capture, direct full installation and preservation-first reuse without changing player rows or public economy functions.
+- [ ] Preserve final game-recorded weekly earnings before normal wipe; test ties, immutable names/results, partial older coverage, personal bests and hush-safe public awards.
+- [ ] Execute actual boutique quotes/payments, existing costume/appearance bodies, actor-bound retries, participation gates, insufficient/stale/expired refusal and normal-reset ownership persistence.
+- [ ] Run signed synthetic JWTs through pinned disposable PostgREST and actual RPCs/RLS; reject missing, forged, expired and unknown-user tokens, foreign quotes and direct protected access.
+- [ ] Review new costumes, outfit equip/world reload, all desk sets and record/boutique panels at desktop, narrow portrait and short landscape. Browser emulation is not physical-phone verification.
+- [ ] Keep hosted Supabase Auth sign-in and physical device checks explicit if unavailable; never use unrelated Patron Platform environments or real accounts for tests.

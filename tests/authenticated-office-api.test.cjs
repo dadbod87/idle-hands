@@ -32,6 +32,12 @@ function denied(r){assert(r.status>=400&&r.status<500,JSON.stringify(r));}
  const status=ok(await rpc('office_week_status'));assert(status.collection.display.includes('theme_facilities'));
  ok(await rpc('office_display_collectibles',{p_items:[]}));assert.equal(ok(await call('/players?select=pp'))[0].pp,after.pp);
  const book=ok(await rpc('office_recordbook',{p_week:null,p_player:a}));assert.equal(book.season.coverage,'standings');assert.equal(book.standings.length,3);assert.equal(book.personal_best.earnings,500);assert.equal(book.standings[0].place,1);
+ // Existing costume resolution and the earlier shield pack also cross the real API.
+ const dressed=ok(await rpc('dress',{p_target:a,p_outfit:'budget_wizard'}));assert.equal(dressed.outfit.id,'budget_wizard');assert(Date.parse(dressed.outfit.until)>Date.now()+44*60000);
+ denied(await rpc('set_look',{p_look:{clothing:'coffee_tech'}}));
+ const shield=ok(await rpc('office_shield_quote')),shieldId=crypto.randomUUID();ok(await rpc('office_buy_shield',{p_quote:shield.quote,p_request:shieldId}));
+ const attackArgs={p_target:a,p_kind:'replyall',p_request:crypto.randomUUID()};const reflected=ok(await rpc('office_deed',attackArgs,token(b)));assert.equal(reflected.reflected,true);assert.deepEqual(ok(await rpc('office_deed',attackArgs,token(b))),reflected);
+ const sender=ok(await call('/players?select=id,buffs',undefined,token(b)))[0];assert(sender.buffs.some(x=>x.kind==='replyall'));assert.equal(ok(await rpc('office_week_status')).shield.armed,false);
  const bs=ok(await rpc('office_shop_state',{},token(b)));assert.equal(bs.items.find(x=>x.id==='theme_facilities').owned,false);
- console.log('PASS JWT-authenticated PostgREST API: missing/forged/expired/unknown-user rejection, role/RLS isolation, participation gate, quote ownership, concurrent replay, exact single payment, free display and preserved complete standings');
+ console.log('PASS JWT-authenticated PostgREST API: missing/forged/expired/unknown-user rejection, role/RLS isolation, participation gate, quote ownership, concurrent replay, exact single payment, free display, costumes, one-shot reflection/replay and preserved complete standings');
 })().catch(e=>{console.error(e);process.exitCode=1;});

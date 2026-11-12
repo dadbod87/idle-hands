@@ -1,5 +1,9 @@
 \set ON_ERROR_STOP on
 DO $$ BEGIN IF current_database()<>'idle_hands_test' THEN RAISE EXCEPTION 'disposable database required';END IF;END $$;
+\i tests/fixtures/appearance-baseline.sql
+\i tests/fixtures/costume-price-baseline.sql
+REVOKE ALL ON FUNCTION public.set_look(jsonb) FROM PUBLIC,anon;
+GRANT EXECUTE ON FUNCTION public.set_look(jsonb) TO authenticated;
 -- This adapter is isolated-test plumbing for real PostgREST JWT claim settings.
 CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$
  SELECT coalesce(nullif(current_setting('request.jwt.claim.sub',true),''),nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'sub')::uuid

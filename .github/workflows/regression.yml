@@ -48,7 +48,7 @@ jobs:
         run: |
           python3 - <<'PYCODE'
           import base64,pathlib
-          names=['office-project-390.jpg','office-profile-390.jpg','office-project-844.jpg','plant-selection-landscape.jpg','office-collection-390.jpg','office-shield-390.jpg','office-depth-844.jpg','office-depth-art-390.jpg','boutique-390.jpg','recordbook-390.jpg','boutique-844.jpg','cosmetic-pack-390.jpg','cosmetic-pack-1440.jpg']
+          names=['office-project-390.jpg','office-profile-390.jpg','office-project-844.jpg','plant-selection-landscape.jpg','office-collection-390.jpg','office-shield-390.jpg','office-depth-844.jpg','office-depth-art-390.jpg','boutique-390.jpg','recordbook-390.jpg','boutique-844.jpg','cosmetic-pack-390.jpg','cosmetic-pack-1440.jpg','new-outfit-world-390.jpg']
           for name in names:
               p=pathlib.Path('test-results')/name
               if p.exists():

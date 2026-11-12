@@ -47,7 +47,8 @@ BEGIN
  q:=public.office_shop_quote('theme_chaos');PERFORM public.office_shop_buy((q->>'quote')::uuid,gen_random_uuid());
  p:=public.office_display_collectibles(ARRAY['theme_chaos','theme_facilities']);IF jsonb_array_length(p.office_display)<>2 THEN RAISE EXCEPTION 'theme display failed';END IF;
  -- Existing dress body must still quote, charge, last 45m and record one playful deed.
- p:=public.dress(a,'budget_wizard');IF p.outfit->>'id'<>'budget_wizard' OR (p.outfit->>'until')::timestamptz<>now()+interval '45 minutes' THEN RAISE EXCEPTION 'wizard costume duration missing';END IF;
+ UPDATE public.players SET dept='contracts' WHERE id=a;SELECT * INTO p FROM public.players WHERE id=a;before_pp:=p.pp;price:=public.costume_price(p,0.025)*0.7;
+ p:=public.dress(a,'budget_wizard');IF p.pp<>before_pp-price THEN RAISE EXCEPTION 'existing Contracts costume discount changed';END IF;IF p.outfit->>'id'<>'budget_wizard' OR (p.outfit->>'until')::timestamptz<>now()+interval '45 minutes' THEN RAISE EXCEPTION 'wizard costume duration missing';END IF;
  p:=public.dress(b,'filing_cabinet');IF NOT EXISTS(SELECT 1 FROM public.deeds WHERE actor=a AND target=b AND kind='dress' AND detail='filing_cabinet') THEN RAISE EXCEPTION 'cabinet deed missing';END IF;
  -- Capture all standings before the actual normal wipe. Preserve names and ties.
  UPDATE public.players SET week_pp=CASE id WHEN a THEN 500 WHEN b THEN 500 ELSE 100 END;

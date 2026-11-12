@@ -12,7 +12,7 @@ for(const mode of ['desktop','mobile']){
   await page.getByText('Supply Closet',{exact:true}).click();
   const panel=page.locator('.pg-panel');
   await expect(panel).toBeVisible({timeout:20000});
-  await expect(panel.locator('.pg-costume-entry')).toHaveCount(13);
+  await expect(panel.locator('.pg-costume-entry')).toHaveCount(costumes.length);
   for(const c of costumes){
    const row=panel.locator(`[data-costume-entry="${c.id}"]`);
    const inspect=row.getByRole('button',{name:'Preview '+c.name,exact:true});
