@@ -1,3 +1,7 @@
+## Next-week office package - candidate only / RELEASE HOLD (2026-11-12)
+
+Build 195 is being prepared on `feat/next-week-office`: durable targeted-action history/profiles, earned-versus-spendable weekly Seniority, bounded Cover help and reset-resistant permanent prices, deliberate phone interaction, weekly verified projects, three earned cosmetics and a two-slot toolkit. Production remains main `9d622b9`, build 194. No migration, live player mutation or merge is authorized before the reviewed post-reset release. See [release contract](NEXT_WEEK_RELEASE.md). Tests and review are in progress; do not call this ready or released until exact-head evidence is recorded. Private snapshots remain outside this public repository.
+
 ## Separate sequel private source — 2026-11-09
 
 The sequel source/history is now private at [dadbod87/idle-hands-2](https://github.com/dadbod87/idle-hands-2), with independent CI defined/reviewed in its PR #1. [SEQUEL_SOURCE](idle-hands-2/SEQUEL_SOURCE.md) and current discovery handoff point there; copied plans here are historical snapshots. Feedback includes accepted continuous movement, door-click entry and exit placement directly outside the door. Authoritative status/checks/evidence live in the separate source; no hosted sequel/backend/account migration. GitHub private branch protection requires an unapproved paid upgrade, so project checks remain manually gated. No 1.0 runtime/data/config change; build remains 194. This pointer merge requires the existing three CI jobs.
