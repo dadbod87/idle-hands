@@ -14,7 +14,7 @@ for(let earned=4;earned<=400;earned++)for(let level=0;level<5;level++){
  assert.equal(c.earned({...base,equity:0}),earned,'spending preserves earned');
 }
 const snippet=source.slice(source.indexOf('/* BEGIN NEXT WEEK UI */')+'/* BEGIN NEXT WEEK UI */'.length,source.indexOf('/* END NEXT WEEK UI */')).trim();
-assert.equal(snippet,fs.readFileSync('tools/next-week-ui.jsx','utf8').trim(),'generated UI matches editable source');
+assert.equal(snippet,(fs.readFileSync('tools/next-week-ui.jsx','utf8')+'\n'+fs.readFileSync('tools/office-boutique-ui.jsx','utf8')).trim(),'generated UI matches editable source');
 const sql=fs.readFileSync('sql/next_week_office.sql','utf8');
 assert.equal((sql.match(/-- @END_PATCHES@/g)||[]).length,1,'one reproducible patch block');
 assert(sql.includes('ON CONFLICT(source_deed) DO UPDATE SET hush=office_private.action_history.hush OR excluded.hush'));

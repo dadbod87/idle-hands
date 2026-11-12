@@ -1,3 +1,7 @@
+## Record book and cosmetic pack — implemented in held source
+
+Adds private normal-rollover standings capture and an authenticated season record book, with honest winner-only older coverage, ties and personal bests. Two new 45-minute costumes, two participation outfits and four themed desk sets use the existing rig, permanent ownership and confirmed receipt-backed shop prices. See [contract](RECORDBOOK_AND_COSMETICS.md). Validation is running in PR #56. No gameplay release or real-player test; the separate standings preservation payload is prepared, not yet applied.
+
 ## Office depth continuation — implemented / RELEASE HOLD
 
 Nick authorized building the second-audit proposals into the same held package. [Depth contract](OFFICE_DEPTH_CONTRACT.md) specifies rotating three-category projects, dated mementos, two/four/six-week collections, capped earned resupply, Receipt Clip and a one-use purchased reflective shield. Backend and player controls are implemented. Initial actual-SQL checks passed both installation orders; final exact-head browser/concurrency evidence belongs to PR #56. This is not a live release. Stacking stays intact. Weekly shields use a separate current-week production peak so last week’s furniture prices cannot overcharge a fresh Friday economy; same-week restructuring still cannot discount them. The history-only installation below remains the only live change. Friday daily activity is recorded separately for each week, with fresh refill eligibility after reset and one refill maximum across the shared Pacific date.

@@ -12,7 +12,7 @@ for(const mode of ['desktop','mobile']){
   await page.getByText('Supply Closet',{exact:true}).click();
   const panel=page.locator('.pg-panel');
   await expect(panel).toBeVisible({timeout:20000});
-  await expect(panel.locator('.pg-costume-entry')).toHaveCount(11);
+  await expect(panel.locator('.pg-costume-entry')).toHaveCount(13);
   for(const c of costumes){
    const row=panel.locator(`[data-costume-entry="${c.id}"]`);
    const inspect=row.getByRole('button',{name:'Preview '+c.name,exact:true});
@@ -55,7 +55,7 @@ for(const mode of ['desktop','mobile']){
   const context=await browser.newContext({viewport:mode==='mobile'?{width:390,height:844}:{width:1440,height:900}}),page=await context.newPage();
   await page.goto('http://127.0.0.1:8765/?art-preview=1');
   const closet=page.getByTestId('closet-qa');
-  await expect(closet.locator('.pg-costume-preview')).toHaveCount(11);
+  await expect(closet.locator('.pg-costume-preview')).toHaveCount(13);
   await closet.getByRole('button',{name:'Preview Party Hat',exact:true}).click();
   await expect(closet.getByTestId('costume-detail')).toBeVisible();
   await closet.screenshot({path:'test-results/'+mode+'-supply-closet.png'});

@@ -54,6 +54,17 @@ BEGIN
  OR (SELECT count(*) FROM office_private.action_history)<>2
  THEN RAISE EXCEPTION 'journal-only changed players/economy or backfill'; END IF;
 END $journal_only$;
+INSERT INTO public.seasons(week_key,winner,winner_name,top) VALUES('2000-01','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','Old Fixture',123);
+\i sql/season_records_history_only.sql
+DO $season_only$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.players p JOIN journal_players_before b USING(id) WHERE to_jsonb(p)<>b.body)
+ OR EXISTS(SELECT 1 FROM journal_functions_before b WHERE md5(pg_get_functiondef(b.oid))<>b.hash)
+ OR (SELECT count(*) FROM office_private.season_results)<>0
+ OR NOT EXISTS(SELECT 1 FROM office_private.season_records WHERE week='2000-01' AND coverage='winner_only')
+ OR has_table_privilege('authenticated','office_private.season_results','SELECT,INSERT,UPDATE,DELETE')
+ OR has_function_privilege('anon','office_private.capture_season()','EXECUTE')
+ THEN RAISE EXCEPTION 'season preservation changed gameplay or forged standings';END IF;
+END $season_only$;
 BEGIN;
 INSERT INTO public.deeds(actor,target,kind,created_at) VALUES('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','journal_probe',now());
 UPDATE public.deeds SET hush=true WHERE kind='journal_probe';
@@ -64,7 +75,9 @@ DO $retention$
 BEGIN
  IF EXISTS(SELECT 1 FROM public.deeds) OR (SELECT count(*) FROM office_private.action_history)<>3
  OR NOT EXISTS(SELECT 1 FROM office_private.action_history WHERE kind='journal_probe' AND hush)
- THEN RAISE EXCEPTION 'journal-only lost events or hush at normal rollover'; END IF;
+ OR (SELECT count(*) FROM office_private.season_results WHERE week=public.week_key(now()-interval '7 days'))<>3
+ OR NOT EXISTS(SELECT 1 FROM office_private.season_records WHERE week=public.week_key(now()-interval '7 days') AND coverage='standings')
+ THEN RAISE EXCEPTION 'journal/season history lost data at normal rollover'; END IF;
 END $retention$;
 ROLLBACK;
 \endif
