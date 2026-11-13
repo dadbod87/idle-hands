@@ -7,13 +7,13 @@ DO $race$
 DECLARE a uuid:='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';b uuid:='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';c uuid:='cccccccc-cccc-4ccc-8ccc-cccccccccccc';r jsonb;before_rows jsonb;after_rows jsonb;n integer;rejected boolean;old_week text;
 BEGIN
  PERFORM set_config('request.jwt.claim.sub',a::text,true);
- PERFORM set_config('test.race_now','2026-11-14 07:59:59Z',true);
+ PERFORM set_config('test.race_now','2026-11-13 23:59:59Z',true);
  UPDATE public.season_state SET current_week=public.week_key(office_private.race_now());
  UPDATE public.players SET pp=CASE id WHEN a THEN 1000 WHEN b THEN 2000 ELSE 3000 END,week_pp=CASE id WHEN c THEN 30 ELSE 100 END,last_tick='2026-11-14 05:00Z',last_restructure=null;
  IF office_private.capture_race()<>0 OR EXISTS(SELECT 1 FROM office_private.race_batches) THEN RAISE EXCEPTION 'disabled recorder captured';END IF;
- rejected:=false;BEGIN UPDATE office_private.race_control SET not_before='2026-11-13 23:59Z';EXCEPTION WHEN check_violation THEN rejected:=true;END;IF NOT rejected THEN RAISE EXCEPTION 'Saturday gate can be weakened by configuration';END IF;
+ rejected:=false;BEGIN UPDATE office_private.race_control SET not_before='2026-11-13 23:59Z';EXCEPTION WHEN check_violation THEN rejected:=true;END;IF NOT rejected THEN RAISE EXCEPTION 'Friday reset gate can be weakened by configuration';END IF;
  UPDATE office_private.race_control SET enabled=true;
- IF office_private.capture_race()<>0 THEN RAISE EXCEPTION 'recording began before Saturday Pacific';END IF;
+ IF office_private.capture_race()<>0 THEN RAISE EXCEPTION 'recording began before Friday reset';END IF;
  PERFORM set_config('test.race_now','2026-11-14 08:20Z',true);IF public.office_race()->>'health'<>'delayed' THEN RAISE EXCEPTION 'missing first snapshot was not flagged as delayed';END IF;
  PERFORM set_config('test.race_now','2026-11-14 08:00:00Z',true);
  SELECT jsonb_agg(to_jsonb(p) ORDER BY id) INTO before_rows FROM public.players p;
@@ -52,6 +52,6 @@ BEGIN
  IF has_function_privilege('anon','public.office_race(text,date)','EXECUTE') OR has_function_privilege('authenticated','office_private.capture_race()','EXECUTE') OR has_function_privilege('authenticated','office_private.race_now()','EXECUTE') OR has_table_privilege('authenticated','office_private.race_points','SELECT,INSERT,UPDATE,DELETE') OR EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='office_private' AND c.relname LIKE 'race_%' AND c.relkind='r' AND NOT c.relrowsecurity) THEN RAISE EXCEPTION 'private race grants/RLS incorrect';END IF;
  PERFORM set_config('request.jwt.claim.sub','',true);rejected:=false;BEGIN PERFORM public.office_race();EXCEPTION WHEN others THEN rejected:=true;END;IF NOT rejected THEN RAISE EXCEPTION 'anonymous chart read accepted';END IF;
  PERFORM set_config('request.jwt.claim.sub','ffffffff-ffff-4fff-8fff-ffffffffffff',true);rejected:=false;BEGIN PERFORM public.office_race();EXCEPTION WHEN others THEN rejected:=true;END;IF NOT rejected THEN RAISE EXCEPTION 'deleted-user chart read accepted';END IF;
- RAISE NOTICE 'PASS weekly race: Saturday gate, no player writes, consistent snapshots, ties/replay, own-only wallets, hush/restructure markers, partial days, late rollover, stale status, archival, normal wipe, DST, grants and auth';
+ RAISE NOTICE 'PASS weekly race: Friday reset gate, no player writes, consistent snapshots, ties/replay, own-only wallets, hush/restructure markers, partial days, late rollover, stale status, archival, normal wipe, DST, grants and auth';
 END $race$;
 ROLLBACK;

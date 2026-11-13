@@ -1,7 +1,7 @@
 -- Private recorded race history. No player writes, accrual or reset.
 CREATE TABLE office_private.race_control(
  id boolean PRIMARY KEY DEFAULT true CHECK(id),enabled boolean NOT NULL DEFAULT false,
- not_before timestamptz NOT NULL DEFAULT '2026-11-14 08:00:00Z' CHECK(not_before>='2026-11-14 08:00:00Z'::timestamptz),
+ not_before timestamptz NOT NULL DEFAULT '2026-11-14 00:00:00Z' CHECK(not_before>='2026-11-14 00:00:00Z'::timestamptz),
  compacted_before timestamptz NOT NULL DEFAULT '-infinity'
 );
 INSERT INTO office_private.race_control(id) VALUES(true);

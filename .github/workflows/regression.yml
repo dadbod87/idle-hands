@@ -45,6 +45,8 @@ jobs:
         run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/idle-hands-http.log 2>&1 &
       - name: Weekly Race walkthroughs
         run: npx playwright test tests/weekly-race-ui.spec.cjs --max-failures=1 --reporter=line
+      - name: Release notices and effect customization walkthroughs
+        run: npx playwright test tests/release-notes.spec.cjs tests/effect-customization.spec.cjs --max-failures=1 --reporter=line
       - name: Grouped customization and free unequip walkthroughs
         run: npx playwright test tests/appearance-ui.spec.cjs --max-failures=1 --reporter=line
       - name: Deliberate touch and next-week walkthroughs
@@ -56,7 +58,7 @@ jobs:
         run: |
           python3 - <<'PYCODE'
           import base64,pathlib
-          names=['office-project-390.jpg','office-profile-390.jpg','office-project-844.jpg','plant-selection-landscape.jpg','office-collection-390.jpg','office-shield-390.jpg','office-depth-844.jpg','office-depth-art-390.jpg','boutique-390.jpg','recordbook-390.jpg','boutique-844.jpg','cosmetic-pack-390.jpg','cosmetic-pack-1440.jpg','new-outfit-world-390.jpg','appearance-390.jpg','appearance-844.jpg','race-390.jpg','race-844.jpg','race-1440.jpg','race-chart-390.jpg','race-chart-844.jpg','race-chart-1440.jpg']
+          names=['office-project-390.jpg','office-profile-390.jpg','office-project-844.jpg','plant-selection-landscape.jpg','office-collection-390.jpg','office-shield-390.jpg','office-depth-844.jpg','office-depth-art-390.jpg','boutique-390.jpg','recordbook-390.jpg','boutique-844.jpg','cosmetic-pack-390.jpg','cosmetic-pack-1440.jpg','new-outfit-world-390.jpg','appearance-390.jpg','appearance-844.jpg','race-390.jpg','race-844.jpg','race-1440.jpg','race-chart-390.jpg','race-chart-844.jpg','race-chart-1440.jpg','effects-390.jpg','effects-844.jpg','effects-1440.jpg','effects-avatar-390.jpg','effects-avatar-844.jpg','effects-avatar-1440.jpg','release-notes-390.jpg','release-notes-844.jpg','release-notes-1440.jpg']
           for name in names:
               p=pathlib.Path('test-results')/name
               if p.exists():

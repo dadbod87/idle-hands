@@ -14,6 +14,8 @@ patch('restructure','equity=equity+gain,','equity=equity+gain,seniority_earned=s
 patch('season_wipe','equity=0,','equity=0,seniority_earned=0,')
 patch('roll_week',"('coffee','hype','cover')","('coffee','hype','cover','rescue')")
 patch('style_item_info',"'hoodie_gold','friday'","'hoodie_gold','friday','coffee_tech','meeting_survivor'")
+patch('style_item_info',"('desk','chair','rug','art','tv','held')","('desk','chair','rug','art','tv','held','glow','aura')")
+patch('quote_style','PERFORM public.style_item_info(p,p_item);',"IF (public.style_item_info(p,p_item)->>'slot')='glow' AND p_design<>'solid' THEN RAISE EXCEPTION 'glow supports color only'; END IF;")
 patch('season_wipe','nickname=null,outfit=null,ooo=null,','nickname=null,outfit=null,ooo=null,office_confetti=null,')
 # Serialize targeted mutations before either player is locked. Opposite-direction
 # actions must not each hold their actor while waiting for the other's row.

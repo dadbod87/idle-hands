@@ -107,7 +107,12 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 
 ## Weekly Race
 - [ ] Exact-head isolated SQL, actual pg_cron background execution/concurrency, JWT API and responsive walkthroughs passed; inspect the saved race control/chart screenshots.
-- [ ] Confirm Saturday November 14, 00:00 Pacific not-before gate; no invented earlier points, mixed weeks, forced accrual or peer wallet disclosure.
+- [ ] Confirm Friday reset lower bound and recording disabled until Production is live; first activation sets its actual start and retries preserve it. No midnight delay, invented earlier points, mixed weeks, forced accrual or peer wallet disclosure.
 - [ ] Re-read normal Friday rollover and complete closing standings, function guards, private history/grants and reviewed payload hashes at release time.
-- [ ] Apply full backend before the separate scheduler activation. Verify exactly one correctly scoped active job and a successful real scheduled execution; zero points before Saturday is expected.
+- [ ] Apply full backend, then sql/weekly_race_prepare.sql. Verify exactly one correctly scoped active job and a real successful zero-capture execution while recording stays disabled. Publish/verify Production, then apply sql/weekly_race_activate.sql and verify the first real scheduled samples at or after activation.
 - [ ] Keep physical-phone and hosted Supabase Auth checks explicit. Disabling collection must preserve saved charts; never restore the gift exploit or erase archived history on rollback.
+
+## Effect customization and What's new
+- [ ] Execute actual owned glow/atmosphere equip, quote/payment/replay, unowned refusal, color-only glow validation and reset persistence in disposable SQL.
+- [ ] Inspect world and preview colors, atmosphere tier changes, original outlines, free hide/equip and reload at desktop/phone/landscape; no highest-tier ownership loss.
+- [ ] Keep release-notes manifest ID aligned to BUILD. Test first signed-in appearance, delayed startup/incident/recap ordering, no competing notice, dismissal/reload, older-version and other-player acknowledgement, blocked storage and Help replay. Acknowledgement is local and never mutates progress.

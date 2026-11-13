@@ -1264,13 +1264,13 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-row.done .pg-right b{color:#2C6B45}
 
 /* glow — a ring of light around the whole person */
-.pg-body.glow-g1{filter:drop-shadow(0 0 6px rgba(255,236,190,.55))}
-.pg-body.glow-g2{filter:drop-shadow(0 0 9px rgba(201,162,83,.85))}
-.pg-body.glow-g3{filter:drop-shadow(0 0 11px rgba(96,158,214,.9))}
-.pg-body.glow-g4{filter:drop-shadow(0 0 13px rgba(200,60,45,.92))}
-.pg-body.glow-g5{filter:drop-shadow(0 0 13px rgba(70,205,120,.92))}
-.pg-body.glow-g6{filter:drop-shadow(0 0 16px rgba(168,88,232,.95))
-  drop-shadow(0 0 30px rgba(168,88,232,.5))}
+.pg-body.glow-g1{filter:drop-shadow(0 0 6px var(--custom-glow,rgba(255,236,190,.55)))}
+.pg-body.glow-g2{filter:drop-shadow(0 0 9px var(--custom-glow,rgba(201,162,83,.85)))}
+.pg-body.glow-g3{filter:drop-shadow(0 0 11px var(--custom-glow,rgba(96,158,214,.9)))}
+.pg-body.glow-g4{filter:drop-shadow(0 0 13px var(--custom-glow,rgba(200,60,45,.92)))}
+.pg-body.glow-g5{filter:drop-shadow(0 0 13px var(--custom-glow,rgba(70,205,120,.92)))}
+.pg-body.glow-g6{filter:drop-shadow(0 0 16px var(--custom-glow,rgba(168,88,232,.95)))
+  drop-shadow(0 0 30px var(--custom-glow,rgba(168,88,232,.5)))}
 
 /* presence */
 .pg-body.size-s1{transform:scale(1.10);transform-origin:50% 100%}
@@ -3699,6 +3699,10 @@ function OfficeFloor() {
   const [feed, setFeed] = useState([]);
   const [panel, setPanel] = useState(null);
   const [incidents, setIncidents] = useState([]);
+  const [bootNoticesReady,setBootNoticesReady]=useState(false),[incomingNoticesReady,setIncomingNoticesReady]=useState(false);
+  const [releaseNotice,setReleaseNotice]=useState({player:null,seen:true,manual:false});
+  useEffect(()=>{if(me?.id)setReleaseNotice({player:me.id,seen:releaseNotesSeen(me.id),manual:false});else setReleaseNotice({player:null,seen:true,manual:false});},[me?.id]);
+  const dismissReleaseNotes=()=>{if(!me?.id)return;try{localStorage.setItem('ih_release_notes_'+me.id,JSON.stringify(RELEASE_NOTES.id));}catch{}setReleaseNotice({player:me.id,seen:true,manual:false});};
   const [funOpen,setFunOpen] = useState(false);
   const [funTab,setFunTab] = useState("incidents");
   const [funTick,setFunTick] = useState(Date.now());
@@ -3877,6 +3881,7 @@ function OfficeFloor() {
   /* ------------------------------ boot ---------------------------- */
   const boot = useCallback(async (u) => {
     try {
+      setBootNoticesReady(false);setIncomingNoticesReady(false);
       setUser(u);
       setCat(await loadCatalog());
       const { data: existing } = await supabase
@@ -3920,6 +3925,7 @@ function OfficeFloor() {
           .select("seen_recap").eq("id", u.id).maybeSingle();
         if (last && last.stats && pl?.seen_recap !== last.week_key) setRecap(last);
       } catch { /* no seasons yet */ }
+      setBootNoticesReady(true);
     } catch (e) {
       setErr(e.message || String(e));
       setPhase("error");
@@ -4027,7 +4033,7 @@ function OfficeFloor() {
     const cats = setInterval(catalog, 180000);
     document.addEventListener("visibilitychange", visible);
     const t = setInterval(heartbeat, SYNC_MS);
-    claim();
+    claim().finally(()=>{if(active)setIncomingNoticesReady(true);});
     return () => {
       active = false; queued.stop(); priceQueue.stop(); un();
       refreshPricesRef.current = () => {};
@@ -5168,7 +5174,9 @@ function OfficeFloor() {
         <div className="pg-build">The Patron Group · {BUILD}</div>
       </div>
 
-      {showHelp && <Help player={me} onClose={() => setShowHelp(false)} rate={rate} onGuide={()=>{setShowHelp(false);openGuide();}} />}
+      {showHelp && <Help player={me} onClose={() => setShowHelp(false)} rate={rate} onGuide={()=>{setShowHelp(false);openGuide();}} onUpdates={()=>{setShowHelp(false);setReleaseNotice({player:me.id,seen:releaseNotice.seen,manual:true});}} />}
+
+      {phase==='play'&&bootNoticesReady&&incomingNoticesReady&&releaseNotice.player===me?.id&&(!releaseNotice.seen||releaseNotice.manual)&&!showHelp&&!panel&&!recap&&!report&&!streakCard&&!incidents.length&&!cow&&!guideOpen&&!funOpen&&<ReleaseNotes onClose={dismissReleaseNotes}/>}
 
       {panel && (
         <Panel stablePurchases={panel==="shop"||panel==="mirror"} receipt={reaction&&!["work","filed"].includes(reaction.kind)?reaction:null} onClose={() => setPanel(null)} title={panel.startsWith("prop:")?(inspectedProp?.label||PROP_LABELS[inspectedProp?.kind]):PANEL_TITLES[panel]}>
@@ -5738,7 +5746,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   ].filter(Boolean).join(" ");
 
   return (
-    <div className={cls} style={{"--skin":AVATAR_SKIN[normalizedAvatar(L).skin]}}>
+    <div className={cls} style={{"--skin":AVATAR_SKIN[normalizedAvatar(L).skin],"--custom-glow":styleColor(itemStyle(p,v.glow),undefined)}}>
       {emote && <div className="pg-bubble">{EMOTE_ICON[emote] || "!"}</div>}
       <div className="pg-flip" style={{ transform: `scaleX(${facing})` }}>
       {/* inside the flip wrapper so the bull turns with you, and behind the rig so
@@ -5791,7 +5799,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       </div>
       </div>
       <span className="pg-shadow" />
-      {v.aura && <i className={"pg-aura aura-" + v.aura}><AuraArt id={v.aura}/></i>}
+      {v.aura && <i className={"pg-aura aura-" + v.aura}><AuraArt id={v.aura} style={itemStyle(p,v.aura)}/></i>}
       {v.held && <i className={"pg-held held-" + v.held}><HeldItemArt id={v.held} style={itemStyle(p,v.held)}/></i>}
       {PETS[p?.pet] && (
         <span className="pg-pet"><svg viewBox="0 0 34 34">{PETS[p.pet].art}</svg></span>
@@ -6262,11 +6270,11 @@ function Panel({ title, children, onClose, receipt=null, stablePurchases=false }
     </div>
   );
 }
-function Modal({ children, onClose }) {
+function Modal({ children, onClose, label="Office notice" }) {
   const dialogRef=useDialogFocus(onClose);
   return (
     <div className="pg-modal" onClick={onClose}>
-      <div className="pg-card" ref={dialogRef} role="dialog" aria-modal="true" aria-label="Office notice" tabIndex={-1} onClick={(e) => e.stopPropagation()}>{children}</div>
+      <div className="pg-card" ref={dialogRef} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onClick={(e) => e.stopPropagation()}>{children}</div>
     </div>
   );
 }
@@ -6284,10 +6292,11 @@ function Tabsy({ tabs, children }) {
   );
 }
 
-function Help({ onClose, rate, onGuide, player }) {
+function Help({ onClose, rate, onGuide, onUpdates, player }) {
   return (
     <Modal onClose={onClose}>
       <div className="pg-stamp">Idle Hands</div>
+      {onUpdates&&<button className="pg-btn" onClick={onUpdates}>What's new</button>}
       <h3 className="pg-helph">The points come to you. That's the idle part.</h3>
       <p className="pg-small">You're earning <b>{fmt(rate)} BW per second</b> right now, and you'll
         receive offline earnings with this tab closed, for up to {offlineCapHours(player)} hours away. Temporary bonuses can expire while you are away.</p>
@@ -6330,11 +6339,12 @@ function HeldItemArt({id,style}){
  {id==="h5"&&<><path d="M8 39h49v15H8Z" fill={paint}/><path d="M10 35l39-19 9 11-44 19Z" fill={paint}/><path d="M15 34l32-14" stroke="#FFF0AE"/><path d="M18 50h27" stroke="#5C4D34"/></>}
  </svg>;
 }
-function AuraArt({id}){
+function AuraArt({id,style}){
+ const [paint,material]=useMaterialPaint(style,({a1:'#E6BF64',a2:'#D9F2F3',a3:'#F78B6B'})[id]||'#E6BF64',10);
  return <svg viewBox="0 0 100 100" data-aura-item={id} aria-hidden="true" fill="none" strokeLinecap="round">
- {id==="a1"&&[[12,30,2],[30,13,3],[75,20,2],[88,46,3],[16,70,3],[77,81,2],[43,90,2]].map(([x,y,r],i)=><circle key={i} cx={x} cy={y} r={r} fill="#E6BF64"/>)}
- {id==="a2"&&[[14,27],[79,18],[85,70],[25,83]].map(([x,y],i)=><path key={i} d={`M${x} ${y-8}q0 8 8 8-8 0-8 8 0-8-8-8 8 0 8-8Z`} fill="#D9F2F3" stroke="#7B9CC4" strokeWidth="1.3"/>)}
- {id==="a3"&&[15,35,60,81].map((x,i)=><path key={x} d={`M${x} 90q-13-10 1-27-2 12 6 15 4-5 2-10 14 19-1 24Z`} fill="#F78B6B" stroke="#B4583F" strokeWidth="1.2"/>)}
+ {material}{id==="a1"&&[[12,30,2],[30,13,3],[75,20,2],[88,46,3],[16,70,3],[77,81,2],[43,90,2]].map(([x,y,r],i)=><circle key={i} cx={x} cy={y} r={r} fill={paint}/>)}
+ {id==="a2"&&[[14,27],[79,18],[85,70],[25,83]].map(([x,y],i)=><path key={i} d={`M${x} ${y-8}q0 8 8 8-8 0-8 8 0-8-8-8 8 0 8-8Z`} fill={paint} stroke="#7B9CC4" strokeWidth="1.3"/>)}
+ {id==="a3"&&[15,35,60,81].map((x,i)=><path key={x} d={`M${x} 90q-13-10 1-27-2 12 6 15 4-5 2-10 14 19-1 24Z`} fill={paint} stroke="#B4583F" strokeWidth="1.2"/>)}
  </svg>;
 }
 function OfficeRugArt({tier="r1",style}){
@@ -6417,7 +6427,7 @@ function FittingPreview({item,kind,player,large=false}){
 function ownedPhysicalItems(cat,me){
  const list=[];
  for(const kind of ['office_kit','vanity'])for(const item of cat[kind]||[]){
-  if(!['desk','chair','rug','art','tv','held'].includes(item.slot))continue;
+  if(!['desk','chair','rug','art','tv','held','glow','aura'].includes(item.slot))continue;
   const have=(kind==='office_kit'?me?.kit:me?.vanity)?.[item.slot],highest=(cat[kind]||[]).find(x=>x.id===have)?.tier||0;
   if(item.tier<=highest||['d1','c1'].includes(item.id))list.push({...item,kind});
  }
@@ -6426,8 +6436,8 @@ function ownedPhysicalItems(cat,me){
  for(const id of me?.extras||[])if(PIN_INDEX[id])list.push({id:'pin:'+id,name:PIN_INDEX[id].name+' · pin',slot:'pin',kind:'pin'});
  return list;
 }
-const OWNED_STYLE_GROUPS=[['desk','Desks','Desk'],['chair','Chairs','Chair'],['rug','Rugs','Rug'],['art','Wall art','Wall art'],['tv','Televisions','TV'],['held','Held items','Held item'],['clothing','Outfits','Outfit'],['pin','Pins','Pin']];
-const UNEQUIP_LABELS={desk:'Use basic desk',chair:'Use basic chair',rug:'Remove rug',art:'Remove wall art',tv:'Remove television',held:'Empty hands',clothing:'Wear standard outfit',pin:'Remove pin'};
+const OWNED_STYLE_GROUPS=[['desk','Desks','Desk'],['chair','Chairs','Chair'],['rug','Rugs','Rug'],['art','Wall art','Wall art'],['tv','Televisions','TV'],['held','Held items','Held item'],['glow','Glows','Glow'],['aura','Atmospheres','Atmosphere'],['clothing','Outfits','Outfit'],['pin','Pins','Pin']];
+const UNEQUIP_LABELS={desk:'Use basic desk',chair:'Use basic chair',rug:'Remove rug',art:'Remove wall art',tv:'Remove television',held:'Empty hands',glow:'Hide glow',aura:'Hide atmosphere',clothing:'Wear standard outfit',pin:'Remove pin'};
 function styleMoney(n){return fmt(n);}
 function expandedMoney(n){return Number(n).toLocaleString("en-US",{maximumFractionDigits:0});}
 function LargeNumberKey(){return <details className="pg-fine pg-number-key"><summary>Number abbreviations</summary><p>Each label is 1,000 times the previous: Oc = octillion (10²⁷), No = nonillion (10³⁰), Dc = decillion (10³³), Ud = undecillion (10³⁶), Dd = duodecillion (10³⁹), Td = tredecillion (10⁴²). Larger labels continue through Vg (10⁶³), then use scientific notation.</p></details>;}
@@ -6453,7 +6463,7 @@ function Customization({cat,me,pp,onSaved,preview=false}){
   <div className="pg-style-preview"><FittingPreview item={item} kind={item.kind} player={draftPlayer} large/><div><b>{item.name}</b><p className="pg-fine">Full item preview · no Busywork spent. {item.slot==='desk'?'Top and drawer cabinets change together.':''}</p><button className="pg-btn" disabled={busy||equipped||preview} onClick={equip}>{equipped?'Currently equipped':'Equip this owned item · free'}</button><button className="pg-btn" disabled={busy||preview||!removable} onClick={()=>setVisible(item.slot,false)}>{UNEQUIP_LABELS[item?.slot]} · free</button><p className="pg-fine">{equipped?'This item is equipped.':'Preview only. This item is not equipped.'} Removing it keeps ownership and its saved finish. Basic desks and chairs stay available for work.</p>{item?.slot==='clothing'&&wearing(me)&&<p className="pg-fine">This changes your permanent outfit. Temporary prank costumes follow the Supply Closet rules.</p>}</div></div>
   {['glow','aura','size'].some(slot=>me?.vanity?.[slot])&&<details className="pg-style-effects"><summary>Glow, aura and presence</summary><p>Hide or restore these purchased effects for free.</p>{[['glow','glow'],['aura','aura'],['size','presence']].filter(([slot])=>me?.vanity?.[slot]).map(([slot,label])=><button className="pg-btn" key={slot} disabled={busy||preview} onClick={()=>setVisible(slot,!physicalId(me,slot))}>{physicalId(me,slot)?'Hide ':'Restore '}{label} · free</button>)}</details>}
   <fieldset disabled={busy}><legend>Color</legend><div className="pg-style-palettes">{[["Bright & playful",STYLE_COLORS],["Natural tones",STYLE_NATURAL_COLORS]].map(([label,colors])=><div className="pg-style-palette" key={label}><h4>{label}</h4><div className="pg-style-swatches" role="group" aria-label={label+" colors"}>{colors.map(([name,hex])=><button type="button" key={hex} style={{background:hex}} aria-label={name} title={name} aria-pressed={color===hex} onClick={()=>{setColor(hex);invalidate();}}>{color===hex?"✓":""}</button>)}</div></div>)}</div><div className="pg-style-color"><label>Mix your own <input type="color" aria-label="Custom item color" value={color||'#8fa67a'} onChange={e=>{setColor(e.target.value);invalidate();}}/></label><button className="pg-btn" aria-pressed={color===null} onClick={()=>{setColor(null);invalidate();}}>Original color</button></div></fieldset>
-  <fieldset disabled={busy}><legend>Design</legend><div className="pg-style-designs">{STYLE_DESIGNS.map(([id,name])=><button type="button" className="pg-btn" key={id} aria-pressed={design===id} onClick={()=>{setDesign(id);invalidate();}}>{name}</button>)}</div></fieldset>
+  {item.slot!=='glow'?<fieldset disabled={busy}><legend>Design</legend><div className="pg-style-designs">{STYLE_DESIGNS.map(([id,name])=><button type="button" className="pg-btn" key={id} aria-pressed={design===id} onClick={()=>{setDesign(id);invalidate();}}>{name}</button>)}</div></fieldset>:<p className="pg-fine">Glows support color changes. Choose an owned glow to change its intensity; atmosphere changes dust, shimmer or flames.</p>}
   <p className="pg-fine">Color change: 8 hours of your highest tracked base production. Add/change a design: +8 hours. Both: 16 hours. Minimum 1,000 BW per paid change. Removing a design is free. Unchanged choices cost nothing. Reapplying an old choice is a new change.</p>
   <p className="pg-fine">Styles stay with each item through restructuring and weekly resets. Screens, photos and original outlines stay intact. Sparkle is static. Cosmetic only—no productivity bonus.</p>
   <button className="pg-btn primary pg-style-review-btn" disabled={busy||!dirty||preview} onClick={review}>{busy?'Filing paperwork…':dirty?'Review price':'Choose a different style'}</button>
@@ -8595,6 +8605,38 @@ function OfficeWeeklyRace({me,board}){
  {data.omitted_events>0&&<p>Only the latest 200 public event markers are included; {data.omitted_events} older markers are omitted from this view.</p>}
  </>}
  </section>;
+}
+
+// Update this manifest for every player-facing release. Acknowledgement is local
+// to this player/browser, never an economic action or a claim of cross-device sync.
+const RELEASE_NOTES = {
+ id: "195",
+ title: "The office remembers",
+ changes: [
+  ["Lifetime profiles and charts", "Helping, sabotage and playful actions now have lasting records, including received actions and coworker relationships. Recorded history survives Friday. Older gaps stay labelled."],
+  ["Weekly Race", "Compare recorded weekly earnings and leaderboard positions over time. Your spendable-balance history is private to you. Five-minute recording starts after release activation; earlier points are not reconstructed."],
+  ["Seniority that stays useful", "Your 3% output bonus uses Seniority earned this week. Spending points on perks no longer removes that earned bonus. Both weekly points and perks still reset Friday."],
+  ["Fairer prices and Cover", "Cover gives a coworker +15% output for 20 minutes instead of transferring cash. Permanent cosmetic prices retain your highest tracked base production, so restructuring cannot make the whole catalogue cheap."],
+  ["Phone movement", "Tap to walk, then use a nearby action button. Passing furniture no longer opens it unexpectedly. Minimap and emotes can collapse."],
+  ["New ways to help and prank", "IT Rescue removes an eligible negative effect. Confetti adds a temporary desk prank without an income penalty. Normal sabotage stacking stays."],
+  ["Tools and reflection", "Choose two toolkit items. Earn limited refills through varied activity. Receipt Clip reduces one eligible theft; the separately purchased Return to Sender shield reflects one eligible sabotage without reflection chains."],
+  ["Projects and lasting collections", "Work together on rotating weekly projects and a stretch goal. Earn nameplates, corkboards, dated plaques and multi-week terrarium, duck and lamp rewards through participation. Qualifying weeks need not be consecutive."],
+  ["Costumes, outfits and desk sets", "Try Budget Wizard and Walking Filing Cabinet costumes. Earn Emergency Coffee Technician and Meeting Survivor outfits, plus Facilities, Accounting, IT and Chaos desk sets."],
+  ["Your look, your choice", "Owned items are grouped by type. Switching owned glows or atmospheres, hiding effects and choosing empty hands are free. Recolor effects with the existing confirmed-price customization flow. Ownership and saved finishes survive removal and Friday resets."],
+  ["Season records and safer purchases", "The record book keeps complete final standings from preserved seasons, ties and personal bests. Quotes, errors and retries are clearer, and repeated requests do not duplicate confirmed purchases."]
+ ]
+};
+function releaseNotesSeen(player){
+ try{return JSON.parse(localStorage.getItem('ih_release_notes_'+player))===RELEASE_NOTES.id;}catch{return false;}
+}
+function ReleaseNotes({onClose}){
+ return <Modal label="What's new" onClose={onClose}><section data-testid="release-notes">
+  <div className="pg-stamp">What's new · build {RELEASE_NOTES.id}</div><h2>{RELEASE_NOTES.title}</h2>
+  <p>New things to do, lasting progress and more ways to make the office your own.</p>
+  <ul className="pg-helplist">{RELEASE_NOTES.changes.map(([title,body])=><li key={title}><b>{title}</b><br/>{body}</li>)}</ul>
+  <p className="pg-fine">You can reopen this list in Help → What's new. Dismissal is remembered for your player in this browser.</p>
+  <button className="pg-btn primary" onClick={onClose}>Got it · back to the office</button>
+ </section></Modal>;
 }
 
 /* END NEXT WEEK UI */

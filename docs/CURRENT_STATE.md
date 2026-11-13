@@ -1,6 +1,12 @@
+## Release-time recording, effect choices and update notice — held, November 13
+
+Nick replaced the midnight race delay with recording after the new Production release is confirmed live. The scheduler is prepared and verified with collection disabled before publication; separate post-publication activation sets the actual recording start. The database still rejects a start before Friday's reset and replay preserves the activation timestamp. The approved automatic release task starts at 16:01 Pacific only when normal rollover and all release gates pass. PR #56 carries exact candidate hashes and new CI results.
+
+Customization now includes owned glow and atmosphere tiers: switch dust/shimmer/flames or glow intensity for free, hide effects, and preview/confirm paid colors. Aura materials use the shared renderer; glow is color-only and the server rejects invisible pattern purchases. Highest-tier ownership, saved styles and display choices survive reset. A build-specific What's new notice lists this package after sign-in and startup notices, remembers dismissal per player/browser and reopens from Help. Storage failure permits dismissal for the current session. No extra gameplay RPC is used for acknowledgement.
+
 ## Weekly Race — held, November 13
 
-Adds periodic recorded weekly earnings/ranks and owner-only wallet history, partial/gap/offline labels, public event markers and saved weekly charts. Recording is disabled on installation and cannot begin before Saturday November 14, 00:00 Pacific. The separate scheduler activation payload remains held until verified normal Friday rollover and full backend verification. Customization now consistently describes its retained base-production pricing. See [race contract](WEEKLY_RACE_CONTRACT.md) and [release preflight](RELEASE_PREFLIGHT_2026-11-13.md). Existing green evidence is for f390448; the continuation requires its own complete exact-head gate in PR #56. No live mutation or scheduler installation occurred during preparation.
+Adds periodic recorded weekly earnings/ranks and owner-only wallet history, partial/gap/offline labels, public event markers and saved weekly charts. Recording is disabled on installation and begins only after verified Production publication and explicit activation, replacing the earlier midnight gate under Nick's later instruction. Customization now consistently describes its retained base-production pricing. See [race contract](WEEKLY_RACE_CONTRACT.md) and [release preflight](RELEASE_PREFLIGHT_2026-11-13.md). The continuation requires its own complete exact-head gate in PR #56. No live mutation or scheduler installation occurred during preparation.
 
 ## Grouped customization and free unequip — held
 

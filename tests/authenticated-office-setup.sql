@@ -21,7 +21,7 @@ UPDATE public.players SET week_pp=CASE WHEN name='Fixture A' THEN 500 WHEN name=
 UPDATE public.season_state SET current_week=public.week_key(now()-interval '7 days');
 SELECT public.roll_week();
 UPDATE public.players SET pp=1e9,owned='{}',last_tick=now(),last_deed=null;
--- Synthetic read-API records. Never weaken the actual Saturday capture gate.
+-- Synthetic read-API records. Never bypass disabled collection or the reset gate.
 INSERT INTO office_private.race_weeks(week,starts_at,ends_at,first_sample_at,last_sample_at)
 VALUES(public.week_key(),public.week_started(),((public.week_started() AT TIME ZONE 'America/Los_Angeles')+interval '7 days') AT TIME ZONE 'America/Los_Angeles',now(),now());
 WITH batch AS(

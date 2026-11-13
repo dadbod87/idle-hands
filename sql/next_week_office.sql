@@ -764,7 +764,7 @@ CREATE TRIGGER office_restore_new_effect BEFORE UPDATE OF vanity ON public.playe
 -- Private recorded race history. No player writes, accrual or reset.
 CREATE TABLE office_private.race_control(
  id boolean PRIMARY KEY DEFAULT true CHECK(id),enabled boolean NOT NULL DEFAULT false,
- not_before timestamptz NOT NULL DEFAULT '2026-11-14 08:00:00Z' CHECK(not_before>='2026-11-14 08:00:00Z'::timestamptz),
+ not_before timestamptz NOT NULL DEFAULT '2026-11-14 00:00:00Z' CHECK(not_before>='2026-11-14 00:00:00Z'::timestamptz),
  compacted_before timestamptz NOT NULL DEFAULT '-infinity'
 );
 INSERT INTO office_private.race_control(id) VALUES(true);
@@ -1138,13 +1138,43 @@ BEGIN
  END IF;
  SELECT c.key,v.value INTO kind,it FROM public.catalog c CROSS JOIN LATERAL jsonb_array_elements(c.data) v(value)
  WHERE c.key IN ('office_kit','vanity') AND v.value->>'id'=p_item;
- IF it IS NULL OR it->>'slot' NOT IN ('desk','chair','rug','art','tv','held') THEN RAISE EXCEPTION 'not a physical catalogue item'; END IF;
+ IF it IS NULL OR it->>'slot' NOT IN ('desk','chair','rug','art','tv','held','glow','aura') THEN RAISE EXCEPTION 'not a physical catalogue item'; END IF;
  have:=CASE WHEN kind='office_kit' THEN p.kit->>(it->>'slot') ELSE p.vanity->>(it->>'slot') END;
  SELECT (v.value->>'tier')::int INTO highest FROM public.catalog c CROSS JOIN LATERAL jsonb_array_elements(c.data) v(value)
  WHERE c.key=kind AND v.value->>'id'=have;
  -- The standard desk and chair are already visible in every new employee's office.
  IF NOT (p_item IN ('d1','c1')) AND coalesce(highest,0)<(it->>'tier')::int THEN RAISE EXCEPTION 'item not owned'; END IF;
  RETURN jsonb_build_object('kind',kind,'slot',it->>'slot');
+END $function$
+;
+DO $guard$ BEGIN IF md5(pg_get_functiondef('public.quote_style'::regproc))<>'96eb8e4199dad43a51a1ca8b1239f554' THEN RAISE EXCEPTION 'Audited function drift: quote_style'; END IF; END $guard$;
+CREATE OR REPLACE FUNCTION public.quote_style(p_item text, p_color text, p_design text)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+DECLARE p public.players; old jsonb; q public.style_quotes; unit double precision; r double precision; cf double precision; df double precision;
+BEGIN
+ IF auth.uid() IS NULL THEN RAISE EXCEPTION 'not signed in'; END IF;
+ IF p_color IS NOT NULL AND p_color !~ '^#[0-9a-fA-F]{6}$' THEN RAISE EXCEPTION 'invalid color'; END IF;
+ IF p_design IS NULL OR p_design NOT IN ('solid','stripe','check','dots','sparkle','confetti') THEN RAISE EXCEPTION 'invalid design'; END IF;
+ SELECT * INTO p FROM public.players WHERE id=auth.uid() FOR UPDATE;
+ IF NOT FOUND THEN RAISE EXCEPTION 'no employee'; END IF;
+ IF (public.style_item_info(p,p_item)->>'slot')='glow' AND p_design<>'solid' THEN RAISE EXCEPTION 'glow supports color only'; END IF;
+ old:=coalesce(p.cosmetic_styles->p_item,'{"color":null,"design":"solid"}'::jsonb);
+ r:=public.permanent_price_rate(p);
+ IF r::text IN ('NaN','Infinity','-Infinity') OR r<0 THEN RAISE EXCEPTION 'output unavailable'; END IF;
+ unit:=greatest(1000,ceil(r*28800));
+ cf:=CASE WHEN (old->>'color') IS DISTINCT FROM lower(p_color) THEN unit ELSE 0 END;
+ -- Removing a pattern is free; adding/changing one is a separate eight hours of output.
+ df:=CASE WHEN coalesce(old->>'design','solid')<>p_design AND p_design<>'solid' THEN unit ELSE 0 END;
+ INSERT INTO public.style_quotes(player_id,item,color,design,color_fee,design_fee,rate,revision,week,expires_at)
+ VALUES(p.id,p_item,lower(p_color),p_design,cf,df,r,p.cosmetic_revision,public.week_key(),now()+interval '2 minutes')
+ ON CONFLICT(player_id) DO UPDATE SET id=gen_random_uuid(),item=excluded.item,color=excluded.color,design=excluded.design,
+ color_fee=excluded.color_fee,design_fee=excluded.design_fee,rate=excluded.rate,revision=excluded.revision,week=excluded.week,expires_at=excluded.expires_at,applied=false
+ RETURNING * INTO q;
+ RETURN jsonb_build_object('id',q.id,'item',q.item,'color',q.color,'design',q.design,'color_fee',cf,'design_fee',df,'total',cf+df,'rate',r,'seconds_per_change',28800,'expires_at',q.expires_at,'balance',p.pp);
 END $function$
 ;
 DO $guard$ BEGIN IF md5(pg_get_functiondef('public.do_deed'::regproc))<>'3990db113fdb087cca7af01ed977496d' THEN RAISE EXCEPTION 'Audited function drift: do_deed'; END IF; END $guard$;
@@ -1390,36 +1420,6 @@ begin
   end loop;
   return jsonb_build_object('rate', eff, 'prices', out);
 end $function$
-;
-DO $guard$ BEGIN IF md5(pg_get_functiondef('public.quote_style'::regproc))<>'96eb8e4199dad43a51a1ca8b1239f554' THEN RAISE EXCEPTION 'Audited function drift: quote_style'; END IF; END $guard$;
-CREATE OR REPLACE FUNCTION public.quote_style(p_item text, p_color text, p_design text)
- RETURNS jsonb
- LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO ''
-AS $function$
-DECLARE p public.players; old jsonb; q public.style_quotes; unit double precision; r double precision; cf double precision; df double precision;
-BEGIN
- IF auth.uid() IS NULL THEN RAISE EXCEPTION 'not signed in'; END IF;
- IF p_color IS NOT NULL AND p_color !~ '^#[0-9a-fA-F]{6}$' THEN RAISE EXCEPTION 'invalid color'; END IF;
- IF p_design IS NULL OR p_design NOT IN ('solid','stripe','check','dots','sparkle','confetti') THEN RAISE EXCEPTION 'invalid design'; END IF;
- SELECT * INTO p FROM public.players WHERE id=auth.uid() FOR UPDATE;
- IF NOT FOUND THEN RAISE EXCEPTION 'no employee'; END IF;
- PERFORM public.style_item_info(p,p_item);
- old:=coalesce(p.cosmetic_styles->p_item,'{"color":null,"design":"solid"}'::jsonb);
- r:=public.permanent_price_rate(p);
- IF r::text IN ('NaN','Infinity','-Infinity') OR r<0 THEN RAISE EXCEPTION 'output unavailable'; END IF;
- unit:=greatest(1000,ceil(r*28800));
- cf:=CASE WHEN (old->>'color') IS DISTINCT FROM lower(p_color) THEN unit ELSE 0 END;
- -- Removing a pattern is free; adding/changing one is a separate eight hours of output.
- df:=CASE WHEN coalesce(old->>'design','solid')<>p_design AND p_design<>'solid' THEN unit ELSE 0 END;
- INSERT INTO public.style_quotes(player_id,item,color,design,color_fee,design_fee,rate,revision,week,expires_at)
- VALUES(p.id,p_item,lower(p_color),p_design,cf,df,r,p.cosmetic_revision,public.week_key(),now()+interval '2 minutes')
- ON CONFLICT(player_id) DO UPDATE SET id=gen_random_uuid(),item=excluded.item,color=excluded.color,design=excluded.design,
- color_fee=excluded.color_fee,design_fee=excluded.design_fee,rate=excluded.rate,revision=excluded.revision,week=excluded.week,expires_at=excluded.expires_at,applied=false
- RETURNING * INTO q;
- RETURN jsonb_build_object('id',q.id,'item',q.item,'color',q.color,'design',q.design,'color_fee',cf,'design_fee',df,'total',cf+df,'rate',r,'seconds_per_change',28800,'expires_at',q.expires_at,'balance',p.pp);
-END $function$
 ;
 DO $guard$ BEGIN IF md5(pg_get_functiondef('public.apply_style'::regproc))<>'fcaa94f37979f8234874ccb6a956151a' THEN RAISE EXCEPTION 'Audited function drift: apply_style'; END IF; END $guard$;
 CREATE OR REPLACE FUNCTION public.apply_style(p_quote uuid)

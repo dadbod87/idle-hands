@@ -1,6 +1,7 @@
 // Runs the unmodified game UI and real Supabase client against intercepted HTTP.
 // Every Supabase request is fulfilled locally. No production credentials or writes.
 const fixtureId='00000000-0000-4000-8000-000000000001';
+const releaseNotesId=require('node:fs').readFileSync(require('node:path').join(__dirname,'../tools/release-notes-ui.jsx'),'utf8').match(/id: "([^"]+)"/)[1];
 
 function makeOfficePlayFixture(){
  const votes={},nominations={},actions={},people={};
@@ -18,12 +19,13 @@ async function installGameFixture(page,options={}) {
  look:{build:'regular',bottom:'trousers',gender:'neutral',hair:'messy',hairColor:1,skin:0,eyes:'tired',expression:'deadpan',top:0,legs:0,clothing:'starter'},
  extras:options.ownedPins||[],pin:options.pin||null,vanity:{},kit:{desk:'d3',chair:'c2',rug:'r2'},streak:0,goodwill:0,notoriety:0};
  const uploads=[];const storedPhotos=new Map();const calls=[];const officePlay=options.playStore||makeOfficePlayFixture();officePlay.people[player.id]=player.name;for(const p of options.coworkers||[])officePlay.people[p.id]=p.name;
- await page.addInitScript(({id})=>{
+ await page.addInitScript(({id,releaseNotesId,releaseNotes})=>{
   const exp=Math.floor(Date.now()/1000)+3600;
   const token=btoa(JSON.stringify({alg:'HS256',typ:'JWT'}))+'.'+btoa(JSON.stringify({sub:id,role:'authenticated',exp}))+'.fixture';
   localStorage.setItem('sb-wbakpxbvqxppqbrwuokp-auth-token',JSON.stringify({access_token:token,refresh_token:'isolated-fixture',expires_at:exp,expires_in:3600,token_type:'bearer',user:{id,is_anonymous:false,aud:'authenticated',role:'authenticated'}}));
   if(localStorage.getItem('ih_muted')===null)localStorage.setItem('ih_muted','1');
- },{id:player.id});
+  if(!releaseNotes)localStorage.setItem('ih_release_notes_'+id,JSON.stringify(releaseNotesId));
+ },{id:player.id,releaseNotesId,releaseNotes:!!options.releaseNotes});
  await page.routeWebSocket('**/wbakpxbvqxppqbrwuokp.supabase.co/**', ws=>options.liveBus?options.liveBus.connect(ws):ws.close());
  await page.route('https://wbakpxbvqxppqbrwuokp.supabase.co/**',async route=>{
   const req=route.request(),url=new URL(req.url());

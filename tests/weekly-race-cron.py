@@ -10,25 +10,48 @@ def query(sql,check=True):
 assert query('select current_database()')=='idle_hands_test'
 def clock(at):
     query("CREATE OR REPLACE FUNCTION office_private.race_now() RETURNS timestamptz LANGUAGE sql STABLE SET search_path='' AS $$SELECT '%s'::timestamptz$$"%at)
-def activate(ok=True):
-    r=subprocess.run(['psql','-X','-v','ON_ERROR_STOP=1','-f','sql/weekly_race_activate.sql'],text=True,capture_output=True)
+def payload(name,ok=True):
+    r=subprocess.run(['psql','-X','-v','ON_ERROR_STOP=1','-f','sql/weekly_race_'+name+'.sql'],text=True,capture_output=True)
     assert (r.returncode==0)==ok,r.stderr
     return r.stderr
+def activate(ok=True):return payload('activate',ok)
+def prepare(ok=True):return payload('prepare',ok)
+def runs(job):return int(query("SELECT count(*) FROM cron.job_run_details WHERE jobid=%s AND status='succeeded'"%job) or '0')
+def wait_for(check,diagnostic):
+    until=time.monotonic()+18
+    while time.monotonic()<until:
+        if check():return
+        time.sleep(.35)
+    raise AssertionError(diagnostic())
 
 clock('2026-11-13 23:59:59Z')
 assert 'held until Friday' in activate(False)
-clock('2026-11-14 08:00Z')
-query("UPDATE public.season_state SET current_week=public.week_key(office_private.race_now()); UPDATE public.players SET week_pp=100,pp=1000,last_tick='2026-11-14 08:00Z',last_restructure=null;")
+assert 'held until Friday' in prepare(False)
+clock('2026-11-14 00:00Z')
+query("UPDATE public.season_state SET current_week='old-unclosed-week'")
+assert 'normal rollover is incomplete' in prepare(False)
+query("UPDATE public.season_state SET current_week=public.week_key(office_private.race_now()); UPDATE public.players SET week_pp=100,pp=1000,last_tick='2026-11-14 00:00Z',last_restructure=null;")
+assert 'prepare and verify' in activate(False)
 before=query('SELECT jsonb_agg(to_jsonb(p) ORDER BY id) FROM public.players p')
-activate();activate()
+prepare();prepare()
+assert query('SELECT enabled FROM office_private.race_control')=='f'
 assert query("SELECT count(*) FROM cron.job WHERE jobname='idle-hands-weekly-race' AND active AND schedule='*/5 * * * *' AND command='SELECT office_private.capture_race();' AND username=current_user AND database=current_database()")=='1'
 probe=int(query("SELECT cron.schedule('idle-hands-weekly-race-ci-probe','1 second','SELECT office_private.capture_race();')"))
-until=time.monotonic()+18
-while time.monotonic()<until:
-    if query("SELECT count(*) FROM cron.job_run_details WHERE jobid=%s AND status='succeeded'"%probe) not in ('','0'):break
-    time.sleep(.35)
-else:raise AssertionError(query("SELECT status,return_message FROM cron.job_run_details WHERE jobid=%s"%probe))
+diagnostic=lambda:query("SELECT status,return_message FROM cron.job_run_details WHERE jobid=%s"%probe)
+wait_for(lambda:runs(probe)>0,diagnostic)
+assert query('SELECT count(*) FROM office_private.race_batches')=='0','prepared scheduler recorded before release activation'
+assert query('SELECT jsonb_agg(to_jsonb(p) ORDER BY id) FROM public.players p')==before
+
+# Simulate the operator confirming Production READY, then activate on Friday evening.
+clock('2026-11-14 00:05Z');activate()
+assert query("SELECT not_before='2026-11-14 00:05Z'::timestamptz FROM office_private.race_control")=='t'
+previous=runs(probe)
+clock('2026-11-14 00:06Z');activate()
+assert query("SELECT not_before='2026-11-14 00:05Z'::timestamptz FROM office_private.race_control")=='t','activation replay moved the start time'
+assert 'remain disabled' in prepare(False)
+wait_for(lambda:runs(probe)>previous and query('SELECT count(*) FROM office_private.race_batches')=='1',diagnostic)
 assert query('SELECT count(*) FROM office_private.race_batches')=='1'
+assert query("SELECT bool_and(recorded_at>='2026-11-14 00:05Z' AND recorded_at<'2026-11-14 08:00Z') FROM office_private.race_batches")=='t','first recording was retroactive or still delayed until Saturday'
 assert query('SELECT jsonb_agg(to_jsonb(p) ORDER BY id) FROM public.players p')==before,'background capture changed players'
 query("SELECT cron.unschedule(jobid) FROM cron.job WHERE jobname IN('idle-hands-weekly-race','idle-hands-weekly-race-ci-probe')")
 
@@ -55,8 +78,10 @@ assert sorted(values)==['0','3'],values
 
 # A colliding job name must never be silently overwritten.
 query("SELECT cron.schedule('idle-hands-weekly-race','*/5 * * * *','SELECT 1;')")
-assert 'scheduler definition drift' in activate(False)
+assert 'definition drift' in activate(False)
 assert query("SELECT command FROM cron.job WHERE jobname='idle-hands-weekly-race'")=='SELECT 1;'
+query('UPDATE office_private.race_control SET enabled=false')
+assert 'scheduler definition drift' in prepare(False)
 query("SELECT cron.unschedule(jobid) FROM cron.job WHERE jobname='idle-hands-weekly-race'; UPDATE office_private.race_control SET enabled=false;")
 query("CREATE OR REPLACE FUNCTION office_private.race_now() RETURNS timestamptz LANGUAGE sql STABLE SET search_path='' AS $$SELECT now()$$")
-print('PASS actual pg_cron: guarded/idempotent activation, successful background execution, unchanged players, rollover lock, concurrent capture replay and drift refusal')
+print('PASS actual pg_cron: guarded/idempotent preparation with zero pre-release capture, post-release Friday recording, immutable activation time, successful background execution, unchanged players, rollover lock, concurrent capture replay and drift refusal')
