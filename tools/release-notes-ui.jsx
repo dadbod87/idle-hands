@@ -26,6 +26,6 @@ function ReleaseNotes({onClose}){
   <p>New things to do, lasting progress and more ways to make the office your own.</p>
   <ul className="pg-helplist">{RELEASE_NOTES.changes.map(([title,body])=><li key={title}><b>{title}</b><br/>{body}</li>)}</ul>
   <p className="pg-fine">You can reopen this list in Help → What's new. Dismissal is remembered for your player in this browser.</p>
-  <button className="pg-btn primary" onClick={onClose}>Got it · back to the office</button>
+  <button className="pg-btn primary" style={{minHeight:44}} onClick={onClose}>Got it · back to the office</button>
  </section></Modal>;
 }

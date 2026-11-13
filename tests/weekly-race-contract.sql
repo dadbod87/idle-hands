@@ -14,7 +14,7 @@ BEGIN
  rejected:=false;BEGIN UPDATE office_private.race_control SET not_before='2026-11-13 23:59Z';EXCEPTION WHEN check_violation THEN rejected:=true;END;IF NOT rejected THEN RAISE EXCEPTION 'Friday reset gate can be weakened by configuration';END IF;
  UPDATE office_private.race_control SET enabled=true;
  IF office_private.capture_race()<>0 THEN RAISE EXCEPTION 'recording began before Friday reset';END IF;
- PERFORM set_config('test.race_now','2026-11-14 08:20Z',true);IF public.office_race()->>'health'<>'delayed' THEN RAISE EXCEPTION 'missing first snapshot was not flagged as delayed';END IF;
+ PERFORM set_config('test.race_now','2026-11-14 08:20Z',true);UPDATE public.season_state SET current_week=public.week_key(office_private.race_now());IF public.office_race()->>'health'<>'delayed' THEN RAISE EXCEPTION 'missing first snapshot was not flagged as delayed';END IF;
  PERFORM set_config('test.race_now','2026-11-14 08:00:00Z',true);
  SELECT jsonb_agg(to_jsonb(p) ORDER BY id) INTO before_rows FROM public.players p;
  IF office_private.capture_race()<>3 OR office_private.capture_race()<>0 THEN RAISE EXCEPTION 'capture/replay count incorrect';END IF;
