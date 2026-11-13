@@ -113,6 +113,10 @@ BEGIN
  r:=public.fitting_prices();IF (r->>'rate')::float8<anchor THEN RAISE EXCEPTION 'fittings quote collapsed'; END IF;
  SELECT * INTO p FROM public.players WHERE id=uid;IF public.permanent_price_rate(p)<anchor THEN RAISE EXCEPTION 'price floor lost'; END IF;
  -- Project credits have a uniqueness key and require three contributors.
+ -- Small fixture project isolates reward/replay behavior; pacing defaults have
+ -- their own frozen-clock actual-SQL suite in project-pacing-contract.sql.
+ PERFORM office_private.ensure_project();
+ UPDATE office_private.projects SET goal=9,stretch_goal=15,minimum_days=1,stretch_days=1 WHERE week=public.week_key();
  PERFORM office_private.project_credit(uid,'work');PERFORM office_private.project_credit(uid,'work');
  IF (SELECT count(*) FROM office_private.project_stamps WHERE actor=uid AND category='work')<>1 THEN RAISE EXCEPTION 'duplicate stamp'; END IF;
  FOR t IN SELECT * FROM public.players LOOP

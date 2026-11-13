@@ -10,7 +10,7 @@ Draft PR: https://github.com/dadbod87/idle-hands/pull/56. Its current candidate 
 - Weekly earned Seniority supplies the output bonus separately from points available to spend. Friday still clears weekly Seniority and perks.
 - Cover becomes a nonstacking twenty-minute +15% benefit instead of a cash transfer. Permanent cosmetic pricing retains a base-production high-water benchmark across restructuring and reset.
 - Deliberate phone movement and nearby interaction controls, with collapsible minimap/emotes.
-- Rotating cooperative projects, stretch goals, dated mementos and participation-based multi-week collections without a consecutive streak requirement.
+- Rotating cooperative projects: 36 daily contributions from at least three people across four active Pacific dates; stretch 60/five/six. One eligible category per person/date counts once. Personal starter rewards retain weekly stamps; dated mementos and multi-week collections need no consecutive streak.
 - A two-slot toolkit, bounded earned refills, Rescue, Confetti, Spam Filter, Receipt Clip and one purchased Return to Sender shield. Normal sabotage stacking remains; reflection never chains and theft transfers only the actual debit.
 - Season records, personal bests, two costumes, participation outfits and themed desk sets. Ownership and saved finishes persist.
 - Grouped owned-item customization, empty hands, removable effects and earlier owned glow/atmosphere choices. Free equip never lowers highest ownership. Confirmed paid colors use existing pricing; atmosphere patterns render through the shared material helper, while non-solid glow quotes are refused.

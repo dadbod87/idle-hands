@@ -38,7 +38,7 @@ function denied(r){assert(r.status>=400&&r.status<500,JSON.stringify(r));}
  const after=ok(await call('/players?select=id,pp'))[0];assert.equal(after.pp,own[0].pp-q.price);
  denied(await rpc('office_shop_buy',{p_quote:crypto.randomUUID(),p_request:id}));
  denied(await rpc('office_shop_buy',{p_quote:q.quote,p_request:crypto.randomUUID()}));
- const status=ok(await rpc('office_week_status'));assert(status.collection.display.includes('theme_facilities'));
+ const status=ok(await rpc('office_week_status'));assert(status.collection.display.includes('theme_facilities'));assert.equal(status.project.credit_unit,'daily_category');assert.equal(status.project.goal,36);assert.equal(status.project.minimum_days,4);assert.equal(status.project.stretch_goal,60);assert.equal(status.project.stretch_days,6);
  ok(await rpc('office_display_collectibles',{p_items:[]}));assert.equal(ok(await call('/players?select=pp'))[0].pp,after.pp);
  const book=ok(await rpc('office_recordbook',{p_week:null,p_player:a}));assert.equal(book.season.coverage,'standings');assert.equal(book.standings.length,3);assert.equal(book.personal_best.earnings,500);assert.equal(book.standings[0].place,1);
  // Existing costume resolution and the earlier shield pack also cross the real API.

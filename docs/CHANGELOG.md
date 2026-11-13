@@ -1,3 +1,7 @@
+## Weekly project pacing — held, November 13
+
+Replaces the one-session nine/fifteen-stamp project with shared daily contributions: base 36 contributions from three people across four Pacific dates; stretch 60 from five across six dates. Count each actor/category/date once and require quantity, people and dates together. Reuse private daily activity while preserving weekly personal stamps, quick starter rewards and existing collection/refill rules. Add today's checklist, separate date progress and explicit tomorrow feedback. A normal Friday start cannot finish the base before Monday or stretch before Wednesday, even with coordinated play. Default-threshold SQL and responsive/API checks cover rush/spam refusal, exact stretch quantity, privacy, archived rewards and weekly isolation. Older green candidates do not certify this continuation; the PR/release task pins current evidence. No new live changes.
+
 ## Release-time recording, effect customization and What's new — held, November 13
 
 Replaces the earlier midnight recording delay at Nick's request. Prepare and verify the five-minute scheduler while collection is disabled; confirm the reviewed frontend live in Production, then activate at the actual release-time timestamp. Preserve the Friday reset lower bound, no retroactive samples and idempotent activation. The owner-approved 16:01 Pacific release task must use the new exact candidate, all three green checks and all three reviewed SQL payload hashes.

@@ -22,8 +22,11 @@ BEGIN
  END LOOP;
  IF office_private.project_theme_index('2026-11-07 00:00Z')<>mod(office_private.project_theme_index('2026-10-30 23:00Z')+1,4)
  OR office_private.project_theme_index('2026-03-13 23:00Z')<>mod(office_private.project_theme_index('2026-03-07 00:00Z')+1,4) THEN RAISE EXCEPTION 'DST shifted the weekly theme cycle';END IF;
- IF r#>>'{project,goal}'<>'9' OR cardinality(cfg.categories)<>3 OR r#>>'{project,stretch_goal}'<>'15' THEN RAISE EXCEPTION 'project configuration missing';END IF;
+ IF r#>>'{project,goal}'<>'36' OR cardinality(cfg.categories)<>3 OR r#>>'{project,stretch_goal}'<>'60' OR cfg.minimum_days<>4 OR cfg.stretch_days<>6 THEN RAISE EXCEPTION 'project configuration missing';END IF;
  IF EXISTS(SELECT 1 FROM office_private.mementos) OR EXISTS(SELECT 1 FROM office_private.daily_activity) THEN RAISE EXCEPTION 'history backfill awarded retrospective goals';END IF;
+ -- Small synthetic project isolates rewards below; actual pacing is exercised
+ -- separately without lowered thresholds in project-pacing-contract.sql.
+ UPDATE office_private.projects SET goal=9,stretch_goal=15,minimum_days=1,stretch_days=1 WHERE week=w RETURNING * INTO cfg;
  q:=public.office_shield_quote();quote_id:=(q->>'quote')::uuid;price:=(q->>'price')::float8;req:=gen_random_uuid();
  IF price<120 OR price<>2*(q->>'attack_reference')::float8 THEN RAISE EXCEPTION 'shield price not above reference attack';END IF;
  SELECT pp INTO before_b FROM public.players WHERE id=b;

@@ -277,8 +277,9 @@ ALTER TABLE office_private.toolkits ALTER COLUMN charges SET DEFAULT '{"rescue":
 ALTER TABLE office_private.project_completions ADD COLUMN stretch_at timestamptz;
 CREATE TABLE office_private.projects(
  week text PRIMARY KEY,theme text NOT NULL,title text NOT NULL,description text NOT NULL,
- categories text[] NOT NULL,goal int NOT NULL DEFAULT 9,minimum_contributors int NOT NULL DEFAULT 3,
- stretch_goal int NOT NULL DEFAULT 15,stretch_contributors int NOT NULL DEFAULT 5,
+ categories text[] NOT NULL,goal int NOT NULL DEFAULT 36,minimum_contributors int NOT NULL DEFAULT 3,
+ stretch_goal int NOT NULL DEFAULT 60,stretch_contributors int NOT NULL DEFAULT 5,
+ minimum_days int NOT NULL DEFAULT 4,stretch_days int NOT NULL DEFAULT 6,
  starts_at timestamptz NOT NULL,created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE TABLE office_private.daily_activity(
@@ -321,41 +322,57 @@ CREATE FUNCTION office_private.weekly_price_rate(p public.players) RETURNS float
  SELECT greatest(0.25,public.calc_rate(p),coalesce((SELECT rate FROM office_private.weekly_price_peaks WHERE actor=p.id AND week=public.week_key()),0))
 $$;
 
+CREATE FUNCTION office_private.project_now() RETURNS timestamptz
+LANGUAGE sql STABLE SET search_path='' AS $$SELECT now()$$;
+REVOKE ALL ON FUNCTION office_private.project_now() FROM PUBLIC,anon,authenticated;
+
 CREATE FUNCTION office_private.project_theme_index(p_start timestamptz) RETURNS int
 LANGUAGE sql IMMUTABLE SET search_path='' AS $$
  SELECT mod(floor(extract(epoch FROM p_start)/604800)::bigint,4)::int
 $$;
 CREATE FUNCTION office_private.ensure_project() RETURNS office_private.projects
 LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
-DECLARE w text:=public.week_key();c office_private.projects;n int;
+DECLARE clock timestamptz:=office_private.project_now();w text:=public.week_key(clock);c office_private.projects;n int;
 BEGIN
  SELECT * INTO c FROM office_private.projects WHERE week=w;
  IF FOUND THEN RETURN c; END IF;
- n:=office_private.project_theme_index(public.week_started());
+ n:=office_private.project_theme_index(public.week_started(clock));
  INSERT INTO office_private.projects(week,theme,title,description,categories,starts_at)
  VALUES(w,(ARRAY['breakroom','it','morale','facilities'])[n+1],
  (ARRAY['Break Room Revival','IT Has Opened a Ticket','The Morale Committee','Facilities Inspection'])[n+1],
  (ARRAY['Work, tend the office and help a coworker. The coffee pot has requested standards.','Work, tend the office and try a harmless prank. Ticket priority: inexplicable.','Work, help someone and make the office laugh. Participation is being mistaken for morale.','Tend the office, help someone and try a harmless prank. The clipboard is watching.'])[n+1],
- (CASE n WHEN 0 THEN ARRAY['work','facilities','care'] WHEN 1 THEN ARRAY['work','facilities','playful'] WHEN 2 THEN ARRAY['work','care','playful'] ELSE ARRAY['facilities','care','playful'] END),public.week_started())
+ (CASE n WHEN 0 THEN ARRAY['work','facilities','care'] WHEN 1 THEN ARRAY['work','facilities','playful'] WHEN 2 THEN ARRAY['work','care','playful'] ELSE ARRAY['facilities','care','playful'] END),public.week_started(clock))
  ON CONFLICT(week) DO NOTHING;
  SELECT * INTO c FROM office_private.projects WHERE week=w;
  RETURN c;
 END $$;
 
+CREATE FUNCTION office_private.project_progress(p_week text,p_clock timestamptz)
+RETURNS TABLE(total bigint,contributors bigint,active_days bigint)
+LANGUAGE sql STABLE SET search_path='' AS $$
+ SELECT count(*),count(DISTINCT a.actor),count(DISTINCT a.day)
+ FROM office_private.daily_activity a JOIN office_private.projects c ON c.week=a.week
+ WHERE a.week=p_week AND a.category=ANY(c.categories)
+ AND a.day>=(c.starts_at AT TIME ZONE 'America/Los_Angeles')::date
+ AND a.day<=least((p_clock AT TIME ZONE 'America/Los_Angeles')::date,
+  (((c.starts_at AT TIME ZONE 'America/Los_Angeles')+interval '7 days')::date))
+$$;
+REVOKE ALL ON FUNCTION office_private.project_progress(text,timestamptz) FROM PUBLIC,anon,authenticated;
+
 CREATE OR REPLACE FUNCTION office_private.project_credit(p_actor uuid,p_category text) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
-DECLARE w text:=public.week_key();c office_private.projects;n int;people int;done boolean;stretch_done boolean;
+DECLARE clock timestamptz:=office_private.project_now();w text:=public.week_key(clock);c office_private.projects;n int;people int;dates int;done boolean;stretch_done boolean;
 BEGIN
  IF p_actor IS NULL OR p_category NOT IN('work','facilities','care','playful') THEN RETURN; END IF;
  PERFORM pg_advisory_xact_lock(hashtextextended('office-project:'||w,0));
  c:=office_private.ensure_project();
- INSERT INTO office_private.daily_activity(actor,day,week,category) VALUES(p_actor,(now() AT TIME ZONE 'America/Los_Angeles')::date,w,p_category) ON CONFLICT DO NOTHING;
+ INSERT INTO office_private.daily_activity(actor,day,week,category) VALUES(p_actor,(clock AT TIME ZONE 'America/Los_Angeles')::date,w,p_category) ON CONFLICT DO NOTHING;
  INSERT INTO office_private.project_stamps(week,actor,category) VALUES(w,p_actor,p_category) ON CONFLICT DO NOTHING;
- SELECT count(*),count(DISTINCT actor) INTO n,people FROM office_private.project_stamps WHERE week=w AND category=ANY(c.categories);
- IF n>=c.goal AND people>=c.minimum_contributors THEN
+ SELECT total,contributors,active_days INTO n,people,dates FROM office_private.project_progress(w,clock);
+ IF n>=c.goal AND people>=c.minimum_contributors AND dates>=c.minimum_days THEN
   INSERT INTO office_private.project_completions(week) VALUES(w) ON CONFLICT DO NOTHING;
  END IF;
- IF n>=c.stretch_goal AND people>=c.stretch_contributors THEN
+ IF n>=c.stretch_goal AND people>=c.stretch_contributors AND dates>=c.stretch_days THEN
   UPDATE office_private.project_completions SET stretch_at=coalesce(stretch_at,now()) WHERE week=w;
  END IF;
  SELECT EXISTS(SELECT 1 FROM office_private.project_completions WHERE week=w),EXISTS(SELECT 1 FROM office_private.project_completions WHERE week=w AND stretch_at IS NOT NULL) INTO done,stretch_done;
@@ -391,18 +408,19 @@ LANGUAGE sql STABLE SET search_path='' AS $$
 $$;
 
 CREATE OR REPLACE FUNCTION public.office_week_status() RETURNS jsonb LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path='' AS $$
-DECLARE u uuid:=auth.uid();w text:=public.week_key();today date:=(now() AT TIME ZONE 'America/Los_Angeles')::date;p public.players;k office_private.toolkits;c office_private.projects;result jsonb;progress jsonb;daily text[];n int;people int;used int;
+DECLARE u uuid:=auth.uid();clock timestamptz:=office_private.project_now();w text:=public.week_key(clock);today date:=(clock AT TIME ZONE 'America/Los_Angeles')::date;p public.players;k office_private.toolkits;c office_private.projects;result jsonb;progress jsonb;daily text[];n int;people int;dates int;used int;
 BEGIN
  IF u IS NULL THEN RAISE EXCEPTION 'not signed in'; END IF;
  SELECT * INTO p FROM public.players WHERE id=u;
  IF NOT FOUND THEN RAISE EXCEPTION 'no player'; END IF;
  c:=office_private.ensure_project();progress:=office_private.collection_progress(u);
  SELECT * INTO k FROM office_private.toolkits WHERE actor=u AND week=w;
- SELECT count(*),count(DISTINCT actor) INTO n,people FROM office_private.project_stamps WHERE week=w AND category=ANY(c.categories);
+ SELECT total,contributors,active_days INTO n,people,dates FROM office_private.project_progress(w,clock);
  SELECT coalesce(array_agg(category ORDER BY category),ARRAY[]::text[]) INTO daily FROM office_private.daily_activity WHERE actor=u AND week=w AND day=today;
  SELECT count(*) INTO used FROM office_private.resupplies WHERE actor=u AND week=w;
- result:=jsonb_build_object('version',1,'depth_version',1,'week',w,'server_now',now(),'starts_at',c.starts_at,
+ result:=jsonb_build_object('version',1,'depth_version',1,'week',w,'server_now',clock,'starts_at',c.starts_at,
  'project',jsonb_build_object('theme',c.theme,'title',c.title,'description',c.description,'categories',to_jsonb(c.categories),'goal',c.goal,'minimum_contributors',c.minimum_contributors,'total',n,'contributors',people,
+ 'credit_unit','daily_category','minimum_days',c.minimum_days,'active_days',dates,'stretch_days',c.stretch_days,'today',today,'mine_today',to_jsonb(daily),
  'stretch_goal',c.stretch_goal,'stretch_contributors',c.stretch_contributors,'stretch_completed',EXISTS(SELECT 1 FROM office_private.project_completions WHERE week=w AND stretch_at IS NOT NULL),
  'mine',coalesce((SELECT jsonb_agg(category ORDER BY category) FROM office_private.project_stamps WHERE week=w AND actor=u),'[]'::jsonb),'completed',EXISTS(SELECT 1 FROM office_private.project_completions WHERE week=w)),
  'toolkit',jsonb_build_object('slots',coalesce(k.slots,ARRAY['rescue','confetti']),'charges','{"rescue":2,"confetti":2,"filter":2,"clip":2}'::jsonb||coalesce(k.charges,'{}'::jsonb)),

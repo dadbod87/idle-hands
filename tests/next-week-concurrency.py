@@ -38,7 +38,7 @@ together([
 assert sql('SELECT count(*) FROM players WHERE office_confetti IS NOT NULL') == '2', 'opposite actions lost an effect'
 
 # Completion is observed atomically even when the final contributors arrive together.
-sql('DELETE FROM office_private.project_stamps; DELETE FROM office_private.project_completions;')
+sql('DELETE FROM office_private.project_stamps; DELETE FROM office_private.daily_activity; DELETE FROM office_private.project_completions; UPDATE office_private.projects SET goal=9,minimum_days=1 WHERE week=week_key();')
 together([(f"SELECT office_private.project_credit('{actor}',c) FROM unnest(ARRAY['work','facilities','care','playful']) c;", actor) for actor in [A, B, C]])
 assert sql('SELECT count(*) FROM office_private.project_stamps WHERE week=week_key()') == '12'
 assert sql('SELECT count(*) FROM office_private.project_completions WHERE week=week_key()') == '1'

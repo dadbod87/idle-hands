@@ -116,3 +116,8 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Execute actual owned glow/atmosphere equip, quote/payment/replay, unowned refusal, color-only glow validation and reset persistence in disposable SQL.
 - [ ] Inspect world and preview colors, atmosphere tier changes, original outlines, free hide/equip and reload at desktop/phone/landscape; no highest-tier ownership loss.
 - [ ] Keep release-notes manifest ID aligned to BUILD. Test first signed-in appearance, delayed startup/incident/recap ordering, no competing notice, dismissal/reload, older-version and other-player acknowledgement, blocked storage and Help replay. Acknowledgement is local and never mutates progress.
+
+## Weekly project pacing
+- [ ] Verify actual defaults 36 contributions / 3 people / 4 Pacific dates, stretch 60 / 5 / 6. Keep personal weekly stamps, starter rewards and collection/refill rules separate.
+- [ ] Pass project-pacing-contract.sql on both installer paths: seven-player one-day spam and twelve-hour midnight crossing cannot complete; two leaders cannot replace a third contributor; future/outside-window rows do not count; exactly sixty with six dates/five people earns stretch; normal week changes preserve archived rewards without carrying progress.
+- [ ] Review daily checkboxes, contribution/people/date counters, tomorrow feedback, completed/late-contributor behavior and weekly refresh at phone/landscape/desktop. Private project clock must remain SELECT now() with no client execution; fake clocks are isolated-test-only.

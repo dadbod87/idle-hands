@@ -1,3 +1,7 @@
+## Multi-day weekly projects — held, November 13
+
+The earlier nine/fifteen weekly-stamp project could finish in one session. Shared progress now uses the first eligible actor/category contribution per Pacific date: base 36 contributions, three people and four active dates; stretch 60/five/six. All three conditions must pass. Personal weekly stamps, quick starter rewards, collection qualification and refill caps stay separate. Project records expose today's checks and contribution/people/date counters. The private project clock is SELECT now(); only disposable tests substitute time. The default-threshold suite rejects seven-player spam and a twelve-hour midnight rush, tests contributor/date/quantity gates, rewards and rollover without changing player rows. Exact candidate hashes and green checks belong to PR #56 and the updated release task. Nothing new is live.
+
 ## Release-time recording, effect choices and update notice — held, November 13
 
 Nick replaced the midnight race delay with recording after the new Production release is confirmed live. The scheduler is prepared and verified with collection disabled before publication; separate post-publication activation sets the actual recording start. The database still rejects a start before Friday's reset and replay preserves the activation timestamp. The approved automatic release task starts at 16:01 Pacific only when normal rollover and all release gates pass. PR #56 carries exact candidate hashes and new CI results.

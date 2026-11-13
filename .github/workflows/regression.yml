@@ -129,11 +129,13 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f tests/shared-office-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/next-week-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/office-depth-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/project-pacing-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/recordbook-boutique-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/appearance-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/weekly-race-contract.sql
           psql -v ON_ERROR_STOP=1 -v journal_first=true -f tests/next-week-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/office-depth-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/project-pacing-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/recordbook-boutique-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/appearance-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/weekly-race-contract.sql
