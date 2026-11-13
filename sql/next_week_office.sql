@@ -875,8 +875,8 @@ BEGIN
  IF NOT EXISTS(SELECT 1 FROM jsonb_array_elements(weeks) x WHERE x->>'week'=current_w) THEN
   weeks:=jsonb_build_array(jsonb_build_object('week',current_w,'starts_at',public.week_started(clock),'first_sample_at',null,'last_sample_at',null))||weeks;
  END IF;
- SELECT coalesce(jsonb_agg(d.day ORDER BY d.day),'[]') INTO days FROM(
-  SELECT DISTINCT (recorded_at AT TIME ZONE 'America/Los_Angeles')::date day FROM office_private.race_batches WHERE week=chosen)d;
+ SELECT coalesce(jsonb_agg(d.sample_day ORDER BY d.sample_day),'[]') INTO days FROM(
+  SELECT DISTINCT (recorded_at AT TIME ZONE 'America/Los_Angeles')::date AS sample_day FROM office_private.race_batches WHERE week=chosen)d;
  WITH batches AS(
   SELECT b.*,row_number() OVER(PARTITION BY date_trunc('hour',b.recorded_at AT TIME ZONE 'UTC') ORDER BY b.recorded_at DESC,b.id DESC) rn
   FROM office_private.race_batches b WHERE b.week=chosen AND b.recorded_at>=from_at AND b.recorded_at<to_at
@@ -889,12 +889,12 @@ BEGIN
  )s;
  IF jsonb_array_length(people)=0 THEN SELECT coalesce(jsonb_agg(jsonb_build_object('id',id,'name',name) ORDER BY name,id),'[]') INTO people FROM public.players;END IF;
  WITH visible AS(
-  SELECT h.happened_at at,h.actor player,h.target,h.kind,h.category,'public_action'::text source FROM office_private.action_history h
+  SELECT h.happened_at AS "at",h.actor player,h.target,h.kind,h.category,'public_action'::text source FROM office_private.action_history h
   WHERE h.week=chosen AND NOT h.hush AND h.happened_at>=greatest(from_at,r.first_sample_at) AND h.happened_at<to_at AND r.first_sample_at IS NOT NULL
   UNION ALL SELECT happened_at,player,null::uuid,'restructure','restructure','restructure' FROM office_private.race_restructures
   WHERE week=chosen AND happened_at>=from_at AND happened_at<to_at
- ), bounded AS(SELECT * FROM visible ORDER BY at DESC,player,kind LIMIT 200)
- SELECT coalesce((SELECT jsonb_agg(to_jsonb(bounded) ORDER BY at,player,kind) FROM bounded),'[]'),(SELECT count(*) FROM visible) INTO events,event_count;
+ ), bounded AS(SELECT * FROM visible ORDER BY "at" DESC,player,kind LIMIT 200)
+ SELECT coalesce((SELECT jsonb_agg(to_jsonb(bounded) ORDER BY "at",player,kind) FROM bounded),'[]'),(SELECT count(*) FROM visible) INTO events,event_count;
  health:=CASE WHEN NOT cfg.enabled THEN 'paused' WHEN clock<cfg.not_before THEN 'scheduled'
  WHEN (SELECT current_week FROM public.season_state WHERE id=1) IS DISTINCT FROM current_w THEN 'awaiting_rollover'
  WHEN chosen<>current_w THEN 'archived' WHEN r.last_sample_at IS NULL THEN CASE WHEN clock>=greatest(cfg.not_before,r.starts_at)+interval '15 minutes' THEN 'delayed' ELSE 'waiting' END
