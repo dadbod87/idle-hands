@@ -51,7 +51,7 @@ function OfficeBoutique({me,onPlayer,status,onDisplay}){
 
  </section>;
 }
-function OfficeRecordBook({me,board}){
+function OfficeSeasonRecords({me,board}){
  const [book,setBook]=useState(null),[week,setWeek]=useState(''),[player,setPlayer]=useState(me.id),[error,setError]=useState(''),[retry,setRetry]=useState(0);
  useEffect(()=>{let live=true;setBook(null);setError('');officeRead(api.officeRecordbook(week,player)).then(r=>{if(r?.version!==1||!Array.isArray(r.seasons)||!Array.isArray(r.standings))throw Error('Season records are unavailable.');if(live)setBook(r);}).catch(e=>{if(live)setError(e.message||'Could not read season records.');});return()=>{live=false;};},[week,player,retry]);
  const choices=board.some(p=>p.id===me.id)?board:[me,...board];

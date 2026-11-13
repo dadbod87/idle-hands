@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),crypto=require('node:crypto');
 const url=process.env.IDLE_HANDS_TEST_API||'http://127.0.0.1:3000';
 assert.equal(new URL(url).hostname,'127.0.0.1','isolated loopback API required');
-const secret='idle-hands-disposable-jwt-test-only-2026';
+const secret=process.env.IH_TEST_JWT_SECRET;assert(secret&&secret.length>=32,'generated isolated JWT secret required');
 const a='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',b='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 function token(id,extra={},key=secret){const h=Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url'),p=Buffer.from(JSON.stringify({sub:id,role:'authenticated',aud:'authenticated',exp:Math.floor(Date.now()/1000)+1800,...extra})).toString('base64url'),data=h+'.'+p;return data+'.'+crypto.createHmac('sha256',key).update(data).digest('base64url');}
 async function call(path,body,jwt=token(a),method=body===undefined?'GET':'POST',extra={}){const r=await fetch(url+path,{method,headers:{...(jwt?{Authorization:'Bearer '+jwt}:{}),'Content-Type':'application/json',...extra},...(body===undefined?{}:{body:JSON.stringify(body)})});const text=await r.text();let data;try{data=JSON.parse(text);}catch{data=text;}return {status:r.status,data};}
@@ -24,6 +24,12 @@ function denied(r){assert(r.status>=400&&r.status<500,JSON.stringify(r));}
  denied(await rpc('office_set_cosmetic_visibility',{p_slot:'held',p_visible:false},null));
  const hidden=ok(await rpc('office_set_cosmetic_visibility',{p_slot:'held',p_visible:false}));assert.equal(hidden.cosmetic_equipped.held,null);assert.equal(hidden.pp,own[0].pp);assert.deepEqual(ok(await rpc('office_set_cosmetic_visibility',{p_slot:'held',p_visible:false})),hidden);
  denied(await rpc('office_set_cosmetic_visibility',{p_slot:'balance',p_visible:false}));
+ denied(await rpc('office_race',{},null));
+ const race=ok(await rpc('office_race'));assert.equal(race.version,1);assert.equal(race.points.length,3);assert(race.points.some(p=>p.player===a&&p.balance===own[0].pp));assert(race.points.filter(p=>p.player!==a).every(p=>!Object.hasOwn(p,'balance')));
+ const peerRace=ok(await rpc('office_race',{},token(b)));assert(peerRace.points.some(p=>p.player===b&&Object.hasOwn(p,'balance')));assert(peerRace.points.filter(p=>p.player!==b).every(p=>!Object.hasOwn(p,'balance')));
+ denied(await rpc('office_race',{p_week:'forged-week'}));denied(await rpc('office_race',{p_day:'2000-01-01'}));denied(await rpc('office_race',{},token('ffffffff-ffff-4fff-8fff-ffffffffffff')));
+ denied(await rpc('capture_race'));denied(await call('/race_points?select=*',undefined,token(a),'GET',{'Accept-Profile':'office_private'}));
+ console.log('PASS JWT weekly race: authenticated recorded scores, owner-only balances, invalid/anonymous/deleted-user refusal and denied collector/private tables');
  const shop=ok(await rpc('office_shop_state'));assert.equal(shop.items.length,6);assert.equal(shop.items.find(x=>x.id==='coffee_tech').eligible,false);
  denied(await rpc('office_shop_quote',{p_item:'coffee_tech'}));denied(await rpc('office_shop_quote',{p_item:'forged'}));
  const q=ok(await rpc('office_shop_quote',{p_item:'theme_facilities'}));assert(q.price>0);

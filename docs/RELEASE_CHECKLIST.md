@@ -104,3 +104,10 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Run signed synthetic JWTs through pinned disposable PostgREST and actual RPCs/RLS; reject missing, forged, expired and unknown-user tokens, foreign quotes and direct protected access.
 - [ ] Review new costumes, outfit equip/world reload, all desk sets and record/boutique panels at desktop, narrow portrait and short landscape. Browser emulation is not physical-phone verification.
 - [ ] Keep hosted Supabase Auth sign-in and physical device checks explicit if unavailable; never use unrelated Patron Platform environments or real accounts for tests.
+
+## Weekly Race
+- [ ] Exact-head isolated SQL, actual pg_cron background execution/concurrency, JWT API and responsive walkthroughs passed; inspect the saved race control/chart screenshots.
+- [ ] Confirm Saturday November 14, 00:00 Pacific not-before gate; no invented earlier points, mixed weeks, forced accrual or peer wallet disclosure.
+- [ ] Re-read normal Friday rollover and complete closing standings, function guards, private history/grants and reviewed payload hashes at release time.
+- [ ] Apply full backend before the separate scheduler activation. Verify exactly one correctly scoped active job and a successful real scheduled execution; zero points before Saturday is expected.
+- [ ] Keep physical-phone and hosted Supabase Auth checks explicit. Disabling collection must preserve saved charts; never restore the gift exploit or erase archived history on rollback.

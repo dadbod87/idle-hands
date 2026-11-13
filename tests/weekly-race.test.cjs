@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),parser=require('@babel/parser'),vm=require('node:vm');
+const source=fs.readFileSync('tools/weekly-race-ui.jsx','utf8'),ast=parser.parse(source,{sourceType:'script',plugins:['jsx']});
+const functions=ast.program.body.filter(n=>n.type==='FunctionDeclaration'&&['raceValue','racePlot'].includes(n.id.name));const ctx={};vm.createContext(ctx);vm.runInContext(functions.map(n=>source.slice(n.start,n.end)).join('\n'),ctx);
+const start=Date.parse('2026-11-14T08:00Z'),point=(minute,value,place=1,id='a')=>({at:new Date(start+minute*60000).toISOString(),player:id,weekly_earnings:value,balance:value,place});
+let g=ctx.racePlot([point(0,0),point(5,1e40),point(40,5e40)],['a'],'earnings','linear',start,start+3600000,320,5);
+assert.equal((g.lines[0].path.match(/ M/g)||[]).length,2,'missing 35 minutes must break a daily line');assert(!/NaN|Infinity/.test(g.lines[0].path));
+g=ctx.racePlot([point(0,1,1),point(5,2,3),point(5,8,1,'b')],['a','b'],'rank','linear',start,start+3600000);assert(g.y(1)<g.y(3),'first place belongs at the top');assert.equal(g.lines[1].rows[0].place,1);
+g=ctx.racePlot([point(0,-500),point(5,1e40)],['a'],'balance','log',start,start+3600000,390,5);assert(!/NaN|Infinity/.test(g.lines[0].path));assert(g.y(-500)>g.y(1e40));
+g=ctx.racePlot([{...point(0,500),balance:undefined}],['a'],'balance','linear',start,start+1);assert.equal(g.lines[0].rows.length,0,'missing wallet must not become zero');
+console.log('PASS actual race geometry: gap breaks, rank orientation/ties, huge and negative log values, absent wallets and narrow charts');

@@ -1,3 +1,7 @@
+## Weekly Race — held, November 13
+
+Adds periodic recorded weekly earnings/ranks and owner-only wallet history, partial/gap/offline labels, public event markers and saved weekly charts. Recording is disabled on installation and cannot begin before Saturday November 14, 00:00 Pacific. The separate scheduler activation payload remains held until verified normal Friday rollover and full backend verification. Customization now consistently describes its retained base-production pricing. See [race contract](WEEKLY_RACE_CONTRACT.md) and [release preflight](RELEASE_PREFLIGHT_2026-11-13.md). Existing green evidence is for f390448; the continuation requires its own complete exact-head gate in PR #56. No live mutation or scheduler installation occurred during preparation.
+
 ## Grouped customization and free unequip — held
 
 The owner requested clearer item boundaries and empty hands. The native picker now groups desks, chairs, rugs, wall art, TVs, held items, outfits and pins, with type prefixes on each option. Free removal/restore keeps highest-tier ownership and saved finishes intact; basic desks/chairs remain available. Glow/aura/presence have optional hide/restore controls. Explicit empty-display preferences survive reload/reset and normal owned-item re-equip; buying a higher effect tier restores that slot. New actual-SQL, JWT API and responsive browser checks gate this continuation in PR #56. No new live migration or frontend release.
