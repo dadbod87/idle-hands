@@ -44,7 +44,7 @@ begin
     least(v_per_sec * 4 * 86400, v_cap));
   update season_state set target = v_t, target_week = week_key() where id = 1;
   return v_t;
-end $function$
+end $function$;
 
 CREATE TEMP TABLE before_install AS SELECT md5(row_to_json(s)::text) AS state_hash,(SELECT md5(jsonb_agg(p ORDER BY id)::text) FROM public.players p) AS player_hash,proowner,proacl FROM public.season_state s,pg_proc WHERE oid='public.set_week_target()'::regprocedure;
 \ir ../sql/margarita_pacing.sql
