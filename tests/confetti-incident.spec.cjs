@@ -15,7 +15,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
   const desk=page.locator('.pg-officedesk.mine'),effect=desk.getByTestId('confetti-incident');
   await expect(effect).toHaveCount(1);await expect(effect.locator('rect')).toHaveCount(108);
   const bounds=await effect.boundingBox(),deskBounds=await desk.boundingBox();
-  expect(bounds.width).toBeGreaterThan(deskBounds.width);expect(bounds.height).toBeGreaterThan(deskBounds.height+75);
+  expect(bounds.width).toBeGreaterThan(deskBounds.width);expect(bounds.height).toBeGreaterThan(deskBounds.height*1.75);
   expect(await effect.evaluate(el=>getComputedStyle(el).pointerEvents)).toBe('none');
   expect(await effect.locator('.pg-confetti-fall').first().evaluate(el=>getComputedStyle(el).animationName)).toBe('none');
   expect(await desk.evaluate(el=>{const r=el.getBoundingClientRect();return !document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('.pg-confetti-incident');})).toBe(true);
