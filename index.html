@@ -3760,7 +3760,22 @@ function OfficeFloor() {
   const [pos, setPos] = useState({ x: 1500, y: 860 });   // middle of the hall
   const [near, setNear] = useState(null);
   const [worldIntent,setWorldIntent]=useState(null),[emotesOpen,setEmotesOpen]=useState(false),[mapOpen,setMapOpen]=useState(false);
-  const worldActivation=useRef(null),touchGesture=useRef(null);
+  const worldActivation=useRef(null),touchGesture=useRef(null),touchCompatClick=useRef(null);
+  useEffect(()=>{
+    const freshPointer=()=>{touchCompatClick.current=null;};
+    const suppressCompatibilityClick=e=>{
+      const tap=touchCompatClick.current;
+      if(!tap||e.detail===0)return;
+      if(Date.now()-tap.at>1000){touchCompatClick.current=null;return;}
+      if(Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>25)return;
+      // A finger-release action can replace the floor with a purchase panel before
+      // the browser emits its click. Catch that old click even on the new panel.
+      e.preventDefault();e.stopImmediatePropagation();touchCompatClick.current=null;
+    };
+    document.addEventListener('pointerdown',freshPointer,true);
+    document.addEventListener('click',suppressCompatibilityClick,true);
+    return()=>{document.removeEventListener('pointerdown',freshPointer,true);document.removeEventListener('click',suppressCompatibilityClick,true);};
+  },[]);
   const [stage, setStage] = useState({ w: 900, h: 560 });
   // A phone is ~400 CSS px wide against a 3400px floor. Without a zoom you see
   // a tenth of the room and every object looks enormous.
@@ -4736,6 +4751,7 @@ function OfficeFloor() {
     const gesture=touchGesture.current;
     if(e.pointerType!=="touch"||gesture?.id!==e.pointerId||gesture.dragged)return;
     if(!e.target.closest('.pg-officedesk.mine,.pg-chair'))return;
+    touchCompatClick.current={x:e.clientX,y:e.clientY,at:Date.now()};
     gesture.handled=true; // Ignore the compatibility click, if the browser sends one.
     captureWorldTap(e,true);
   };
