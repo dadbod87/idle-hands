@@ -37,7 +37,8 @@ for(const size of [{width:1440,height:900},{width:1024,height:768},{width:390,he
   await page.getByRole('button',{name:'Close effect details',exact:true}).click();
   // Bounded strip and badges cannot collide with identity, balance or utility controls.
   const m=await page.evaluate(()=>{const r=s=>{const x=document.querySelector(s).getBoundingClientRect();return {x:x.x,y:x.y,right:x.right,bottom:x.bottom,height:x.height}};return {width:document.documentElement.scrollWidth,strip:r('.pg-effects'),name:r('.pg-hudid'),balance:r('.pg-hudpp'),buttons:r('.pg-hudbtns'),stage:r('.pg-stage')}});
-  expect(m.width).toBeLessThanOrEqual(size.width+1);expect(m.stage.height).toBeGreaterThanOrEqual(size.height<640?180:240);
+  expect(m.width).toBeLessThanOrEqual(size.width+1);expect(m.stage.height).toBeGreaterThanOrEqual(size.width>size.height?size.height*.35:size.height<640?180:240);
+  if(size.width<900)expect(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+1)).toBe(true);
   const overlap=(a,b)=>a.x<b.right&&b.x<a.right&&a.y<b.bottom&&b.y<a.bottom;
   for(const other of [m.name,m.balance,m.buttons])expect(overlap(m.strip,other)).toBe(false);
   for(const b of await badges.all())expect((await b.boundingBox()).height).toBeGreaterThanOrEqual(44);

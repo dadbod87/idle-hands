@@ -55,6 +55,8 @@ jobs:
               for p in pathlib.Path('test-results').glob(pattern):
                   shutil.copy2(p,target/p.name)
           PYCODE
+      - name: Fixed-viewport landscape interaction walkthroughs
+        run: npx playwright test tests/mobile-hierarchy.spec.cjs tests/next-week-ui.spec.cjs tests/planter-targets.spec.cjs tests/prop-performances.spec.cjs tests/active-effects.spec.cjs tests/office-nonsense-tabs.spec.cjs --grep '844|landscape' --max-failures=1 --reporter=line
       - name: Nearby desk and chair touch walkthroughs
         run: npx playwright test tests/nearby-tap.spec.cjs tests/chair-spawns.spec.cjs --max-failures=1 --reporter=line
       - name: Confetti severity and cleanup walkthroughs

@@ -1719,7 +1719,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .pg-bulletins-content .pg-marg,.pg-bulletins-content .pg-event{border:0}
  .pg-bulletins>summary:focus-visible{outline:3px solid #385D81;outline-offset:-3px}
  .pg-play-shell .pg-effects:has(.pg-effects-empty){display:none}
- .pg-play-shell .pg-bar{display:grid;grid-template-columns:minmax(0,1fr) 100px 44px 44px;gap:6px;padding:7px;position:relative;align-items:stretch}
+ .pg-play-shell .pg-bar{display:grid;grid-template-columns:minmax(0,1fr) 100px 44px 44px;gap:6px;padding:5px;position:relative;align-items:stretch}
  .pg-play-shell .pg-work{grid-column:1;grid-row:1;min-width:0;min-height:44px;padding:7px;font-size:10px;letter-spacing:.02em;text-align:left}
  .pg-play-shell .pg-work em{display:block;font-size:9px;margin:3px 0 0}
  .pg-play-shell .pg-directory-button{grid-column:2;grid-row:1;min-width:0;min-height:44px;padding:5px;font-size:10px;gap:4px;justify-content:center}
@@ -1736,7 +1736,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .pg-play-shell .pg-prompt{grid-column:1/-1;grid-row:3;min-width:0;min-height:44px;font-size:10px;flex-wrap:wrap}
  .pg-play-shell .pg-prompt:not(:has(.pg-open)){display:none}
  .pg-play-shell .pg-prompt>.pg-open{margin-left:auto;min-height:44px;min-width:54px}
- .pg-play-shell .pg-wirestrip{padding:4px 8px}
+ .pg-play-shell .pg-wirestrip{padding:2px 8px}
  .pg-play-shell .pg-wirestrip .pg-wl{display:none}
  .pg-play-shell .pg-build{margin:0;border:0;padding:0;font-size:7px}
 }
@@ -3874,7 +3874,9 @@ function OfficeFloor() {
   const [stage, setStage] = useState({ w: 900, h: 560 });
   // A phone is ~400 CSS px wide against a 3400px floor. Without a zoom you see
   // a tenth of the room and every object looks enormous.
-  const zoom = clamp(stage.w / 820, 0.7, 1);
+  const compactFloor=window.matchMedia(PHONE_PLAY_QUERY).matches&&stage.h<300;
+  const baseZoom=clamp(stage.w/820,0.7,1);
+  const zoom=compactFloor?Math.min(baseZoom,Math.max(0.6,stage.h/300)):baseZoom;
   const view = { w: stage.w / zoom, h: stage.h / zoom };
   const [touchMovement,setTouchMovement]=useState(()=>window.matchMedia('(pointer: coarse)').matches||navigator.maxTouchPoints>0);
   useEffect(()=>{const m=window.matchMedia('(pointer: coarse)');const update=()=>setTouchMovement(m.matches||navigator.maxTouchPoints>0);m.addEventListener('change',update);return()=>m.removeEventListener('change',update);},[]);
@@ -4759,7 +4761,7 @@ function OfficeFloor() {
   const [propBubbleHeight,setPropBubbleHeight]=useState(0);
   const cam = {
     x: ROOM.w <= view.w ? 0 : clamp(pos.x - view.w / 2, 0, ROOM.w - view.w),
-    y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h / 2, 0, ROOM.h - view.h),
+    y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h * (compactFloor?0.82:0.5), 0, ROOM.h - view.h),
   };
   if(propScene)cam.y=propCameraY(cam.y,propScene,pos,view,propBubbleHeight,ROOM.h);
   const inspectedProp=panel?.startsWith("prop:")?propSceneTarget(panel.slice(5)):null;
