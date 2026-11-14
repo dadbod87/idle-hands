@@ -4762,7 +4762,7 @@ function OfficeFloor() {
   const [propBubbleHeight,setPropBubbleHeight]=useState(0);
   const cam = {
     x: ROOM.w <= view.w ? 0 : clamp(pos.x - view.w / 2, 0, ROOM.w - view.w),
-    y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h * (compactFloor?0.82:0.5), 0, ROOM.h - view.h),
+    y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h * (compactFloor?0.75:0.5), 0, ROOM.h - view.h),
   };
   if(propScene&&!compactFloor)cam.y=propCameraY(cam.y,propScene,pos,view,propBubbleHeight,ROOM.h);
   const inspectedProp=panel?.startsWith("prop:")?propSceneTarget(panel.slice(5)):null;

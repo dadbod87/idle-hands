@@ -10,6 +10,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
   await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();await openOwnDesk(page);await page.locator('.pg-panel .pg-x').click();
   const desk=page.locator('.pg-officedesk.mine'),name=desk.locator('[data-desk-nameplate]'),board=page.locator('[data-office-corkboard]');
   await expect(name).toHaveText('QA Employee');await expect(desk.locator('.pg-fxlabel')).toHaveCount(0);await expect(board).toHaveCount(1);
+  const plate=await name.boundingBox(),floor=await page.locator('.pg-stage').boundingBox();expect(plate.y).toBeGreaterThanOrEqual(floor.y);expect(plate.y+plate.height).toBeLessThanOrEqual(floor.y+floor.height-1);
   const d=await desk.boundingBox(),b=await board.boundingBox();expect(b.y+b.height).toBeLessThanOrEqual(d.y+2);expect(b.width).toBeGreaterThan(50);
   expect(await board.evaluate(el=>getComputedStyle(el).pointerEvents)).toBe('none');
   expect(await desk.locator('.pg-desk-collectible').evaluate(el=>getComputedStyle(el).position)).toBe('relative');
