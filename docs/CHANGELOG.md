@@ -1,3 +1,7 @@
+# Office UX consistency — in progress
+
+Feature branch implements two visible interchangeable toolkit slots with immediate server saves, direct replacement/removal, active/passive explanations, shared notice close controls and focus styles, clearer coworker prompts and a separate invite-network error/retry. No SQL or economic rule changes. Remaining audit work and visual verification are not complete; this is not a released build. Local Babel parse passed; exact PR-head CI and responsive screenshot inspection are required before merge. Build remains 198 until the package is complete.
+
 ## Build 198 — paperwork pileup (November 13, 2026)
 
 New Confetti Incidents reduce output by 35% for ten minutes before Systems/Thick Skin defenses, cost their existing toolkit charge/cooldown and add one heat/notoriety. Spam Filter blocks them; Return to Sender reflects without chains; IT Rescue or free cleanup removes their matching penalty and pile. Confetti does not stack on an already decorated desk, while other sabotage stacking remains. Saved BW is never drained. New harmful incidents count as sabotage in history while qualifying for the playful project category; older cosmetic records remain unchanged. Existing cosmetic-only piles are not converted on installation. Restructuring keeps its existing buff-clearing behavior.

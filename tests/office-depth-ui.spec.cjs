@@ -38,8 +38,8 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  expect(f.player.office_memento.week).toBe('2026-45');
  await page.screenshot({path:`test-results/office-collection-${viewport.width}.jpg`,type:'jpeg',quality:65,fullPage:true});
  await page.getByRole('button',{name:'Toolkit',exact:true}).click();
- await expect(page.getByRole('button',{name:/Receipt Clip/}).first()).toBeDisabled();
- await page.getByRole('button',{name:/Confetti Cartridge/}).first().click();await page.getByRole('button',{name:/Receipt Clip/}).first().click();await page.getByRole('button',{name:'Save two-slot toolkit',exact:true}).click();
+ await expect(page.getByLabel('Change tool in slot 2',{exact:true})).toBeEnabled();
+ await page.getByLabel('Change tool in slot 2',{exact:true}).selectOption('clip');
  await expect.poll(()=>s.toolkit.slots).toEqual(['rescue','clip']);
  await expect(page.getByRole('button',{name:'Rescue coworker',exact:true})).toBeDisabled();await expect(page.getByText(/Coworker actions ready in/)).toBeVisible();
  await page.getByRole('button',{name:'Refill Emergency Stapler',exact:true}).click();await expect(page.getByText(/Today’s refill used/)).toBeVisible();

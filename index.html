@@ -1655,6 +1655,23 @@ body{background:#D9CDC0}
 .pg-next-week>.pg-tabs{display:flex;flex-wrap:wrap}.pg-next-week>.pg-tabs .pg-tab{flex:1 1 100px}.pg-boutique-grid .pg-costume-preview{margin:0 auto;flex:none;height:166px}.pg-boutique-grid article>svg{width:100%;max-height:140px}.pg-boutique-grid article{display:flex;flex-direction:column;align-items:stretch;overflow-wrap:anywhere}.pg-boutique-grid article>svg{flex:none;width:160px;max-width:100%;height:100px;align-self:center}.pg-boutique-grid article>button{width:100%;white-space:normal;overflow-wrap:normal}.pg-boutique-notice:focus{outline:none}.pg-boutique-grid button{margin:5px 0}.pg-next-week table td{overflow-wrap:anywhere}
 .pg-style-preview .pg-btn{display:block;margin:8px 0;min-height:44px}.pg-style-effects{padding:12px;margin:12px 0;border:1px solid #8FA67A}.pg-style-effects summary{cursor:pointer;min-height:44px;font-weight:bold}.pg-style-effects .pg-btn{margin:5px;min-height:44px}.pg-form-label optgroup{font-weight:800}
 .pg-weekly-race fieldset{min-width:0;border:1px solid #B6AA96;padding:10px}.pg-race-players{display:flex;flex-wrap:wrap;gap:7px}.pg-race-players .pg-btn{white-space:normal;overflow-wrap:anywhere}.pg-race-players [aria-pressed=true]{outline:2px solid #385D81;outline-offset:1px}.pg-race-swatch{display:inline-block;width:12px;height:12px;margin-right:5px;border:1px solid #2B2B2B}.pg-race-plot{width:100%;min-width:0;margin-top:14px}.pg-race-slider{display:block}.pg-race-slider input{display:block;width:100%;min-height:44px}.pg-weekly-race table{table-layout:fixed}.pg-weekly-race td,.pg-weekly-race th{overflow-wrap:anywhere}.pg-race-events{padding-left:18px}.pg-race-events button{text-align:left;white-space:normal;overflow-wrap:anywhere}.pg-race-health,.pg-race-empty{padding:10px;background:#E3EBD8;border:1px solid #8FA67A}
+
+/* Shared office controls: preserve the cutout palette and existing world geometry. */
+:root{--ui-space-1:4px;--ui-space-2:8px;--ui-space-3:12px;--ui-space-4:16px;--ui-space-6:24px}
+.pg-panelbody,.pg-card{line-height:1.45}
+.pg-notice-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:2px solid #2B2B2B;margin-bottom:16px;padding-bottom:8px;font-weight:bold}
+.pg-notice-head .pg-x{background:#2B2B2B;color:#F8F1E3}
+.pg-btn,.pg-x,.pg-tab{min-height:44px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #245585;outline-offset:3px}
+.pg-tool-slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:16px 0}
+.pg-tool-slot{min-width:0;border:2px solid #2B2B2B;background:#F8F1E3;padding:16px}
+.pg-tool-slot h4{margin:0 0 8px}.pg-tool-slot strong{display:block;font-size:18px}
+.pg-tool-slot p{font-size:14px}.pg-tool-slot label{display:block;font-weight:bold;margin-top:12px}
+.pg-tool-slot select{display:block;width:100%;min-width:0;min-height:44px;margin:8px 0;border:2px solid #2B2B2B;background:#fff8e9;font:inherit}
+.pg-state-badge{display:inline-block;background:#dce6f0;border:1px solid #2B2B2B;padding:4px 8px;margin-top:8px;font-size:14px}
+.pg-step-label{font-weight:bold;padding:12px;background:#fff0bc}
+@media(max-width:540px){.pg-tool-slots{grid-template-columns:1fr}.pg-tool-slot{padding:12px}.pg-panelhead{gap:8px}.pg-panelhead>span{min-width:0;overflow-wrap:anywhere}.pg-card{max-width:calc(100vw - 24px)}}
+
 </style>
 </head>
 <body>
@@ -6296,7 +6313,7 @@ function Panel({ title, children, onClose, receipt=null, stablePurchases=false }
   return (
     <div className="pg-modal" onClick={onClose}>
       <div className="pg-panel" data-stable-purchases={stablePurchases?"true":undefined} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
-        <div className="pg-panelhead"><span id={titleId}>{title}</span>
+        <div className="pg-panelhead"><span role="heading" aria-level="2" id={titleId}>{title}</span>
           <button className="pg-x" onClick={onClose}>close</button></div>
         <div className="pg-panel-receipt" role={receipt?"status":undefined} aria-live="polite" aria-atomic="true">{receipt&&<><OfficeIcon kind={receipt.kind==="kind"?"mug":"paper"} compact/><span>{receipt.label}</span></>}</div>
         <div className="pg-panelbody">{children}</div>
@@ -6308,7 +6325,7 @@ function Modal({ children, onClose, label="Office notice" }) {
   const dialogRef=useDialogFocus(onClose);
   return (
     <div className="pg-modal" onClick={onClose}>
-      <div className="pg-card" ref={dialogRef} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onClick={(e) => e.stopPropagation()}>{children}</div>
+      <div className="pg-card" ref={dialogRef} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onClick={(e) => e.stopPropagation()}><div className="pg-notice-head"><span>{label}</span><button className="pg-x" onClick={onClose} aria-label={"Close "+label}>close</button></div>{children}</div>
     </div>
   );
 }
@@ -6604,7 +6621,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
   return (
     <>
       <div className="pg-earnbar pg-shop-earnbar">
-        Your desk earns <b>{fmt(rate)} BW/sec</b> — that's <b>{fmt(rate * 3600)} BW</b> an hour,
+        Hire staff in Requisitions; improve them in Approvals. Your desk earns <b>{fmt(rate)} BW/sec</b> — that's <b>{fmt(rate * 3600)} BW</b> an hour,
         whether this tab is open or not. Buy more staff to raise it.
       </div>
       <Tabsy tabs={[["hire", "Requisitions"], ["ups", "Approvals"],
@@ -6909,6 +6926,7 @@ function Targets({ good, board, me, cat, lifetime, pp, cool, onCommit, prices })
     <div>
       {cool > 0 && <div className="pg-note">Cooling off — {Math.ceil(cool / 1000)}s until you can do this again.</div>}
       {others.length === 0 && <div className="pg-note">Nobody else has badged in yet. Send them the link.</div>}
+      <p className="pg-step-label">{target ? "2. Choose an action for "+target.name : "1. Choose a coworker"}</p>
       <div className="pg-picks">
         {others.map((p) => (
           <button key={p.id} className={"pg-pick" + (sel === p.id ? " on" : "")} onClick={() => setSel(p.id)}>
@@ -7049,7 +7067,7 @@ function Wire({ wire, feed, lifetime, onPineapple, testers, prices }) {
       <div className="pg-note">Everything anyone does to anyone lands here, with names attached.</div>
       <div className="pg-pad">
         <button className="pg-btn danger" onClick={onPineapple}>
-          Say pineapple <em>{fmt(prices?.pineapple ?? Math.max(200, lifetime * 0.08))} BW</em>
+          Hide my name · Say pineapple <em>{fmt(prices?.pineapple ?? Math.max(200, lifetime * 0.08))} BW</em>
         </button>
         <div className="pg-fine">Scrubs your name off your most recent entry. The deed still
           happened — the wire just says "Someone".</div>
@@ -8273,14 +8291,15 @@ function CodeDoor({ onOk }) {
   const [v, setV] = useState("");
   const [busy, setBusy] = useState(false);
   const [bad, setBad] = useState(false);
+  const [networkError,setNetworkError]=useState(false);
 
   const submit = async (val) => {
     if (busy) return;
-    setBusy(true); setBad(false);
+    setBusy(true); setBad(false);setNetworkError(false);
     try {
       if (await checkCode(val)) { onOk(val); return; }
       setBad(true); setV("");
-    } catch { setBad(true); }
+    } catch { setNetworkError(true); }
     setBusy(false);
   };
 
@@ -8301,9 +8320,10 @@ function CodeDoor({ onOk }) {
              inputMode="numeric" pattern="[0-9]*" maxLength={4} autoFocus
              placeholder="••••" aria-label="Invite code"
              onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") submit(v); }} />
-      <div className="pg-codemsg">
-        {busy ? "Checking…" : bad ? "That's not it. Ask whoever sent you the link." : "\u00a0"}
+      <div className="pg-codemsg" role="status" aria-live="polite">
+        {networkError ? "Could not reach the office. Check your connection and retry." : busy ? "Checking…" : bad ? "That's not it. Ask whoever sent you the link." : "\u00a0"}
       </div>
+      {networkError&&<button className="pg-btn" disabled={busy||v.length!==4} onClick={()=>submit(v)}>Retry office code</button>}
       <div className="pg-doorfine">
         There is nothing behind this door until the code is right — no account is created,
         nothing is saved.
@@ -8374,6 +8394,7 @@ function officeRead(promise){
  return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Office records took too long. Please retry.')),15000);})]).finally(()=>clearTimeout(timer));
 }
 function earnedSeniority(p){return Math.max(0,Number(p?.seniority_earned??p?.equity??0));}
+const OFFICE_TOOL_HELP={rescue:'Remove one eligible penalty from a coworker.',confetti:'Reduce output by 35% for ten minutes before defenses. Adds heat.',filter:'Block one eligible output sabotage. Does not block credit theft.',clip:'Halve one positive credit theft after passive defenses.'};
 const OFFICE_TOOL_LABELS={rescue:'Emergency Stapler',confetti:'Confetti Cartridge',filter:'Spam Filter',clip:'Receipt Clip'};
 const OFFICE_COLLECTIBLE_LABELS={nameplate:'Personalized nameplate',corkboard:'Incident Corkboard',plaque:'Project plaque',terrarium:'Desk terrarium',duck:'Rubber-duck consultant',lamp:'Executive lamp'};
 const OFFICE_COLLECTION_WEEKS={terrarium:2,duck:4,lamp:6};
@@ -8513,8 +8534,7 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
    {profile.reflections&&<p>Shield protections: {profile.reflections.protected} · Sabotages returned to this sender: {profile.reflections.returned_to_sender}. Reflected attempts are counted once under blocked.</p>}
    {profile.by_kind.length?<><table><caption>How this player plays</caption><thead><tr><th>Category</th><th>Given</th><th>Received</th></tr></thead><tbody>{['help','sabotage','playful','blocked','other'].map(category=>{const rows=profile.by_kind.filter(r=>r.category===category);return rows.length>0&&<tr key={category}><th>{category}</th><td>{rows.reduce((n,r)=>n+r.given,0)}</td><td>{rows.reduce((n,r)=>n+r.received,0)}</td></tr>;})}</tbody></table><OfficeActivityChart rows={profile.by_kind}/><table><caption>Recorded actions · blue given / sage received</caption><thead><tr><th>Action</th><th>Category</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.by_kind.map(r=><tr key={r.kind+':'+r.category}><th>{r.label||DEED_TEXT[r.kind]?.label||r.kind}</th><td>{r.category}</td><td>{r.given}</td><td>{r.received}</td></tr>)}</tbody></table><h4>Daily actions · last 30 days of selected period</h4><OfficeActivityChart rows={profile.daily.map(d=>({...d,kind:d.day,label:d.day,category:'daily'}))}/><table><thead><tr><th>Pacific date</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.daily.map(d=><tr key={d.day}><th>{d.day}</th><td>{d.given}</td><td>{d.received}</td></tr>)}</tbody></table>{profile.coworkers?.length>0&&<><h4>Coworker history</h4><table><thead><tr><th>Coworker</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.coworkers.map(p=><tr key={p.id}><th>{p.name}</th><td>{p.given}</td><td>{p.received}</td></tr>)}</tbody></table></>}</>:<p>No recorded public actions in this selection.</p>}</>}
   </>}
-  {tab==='tools'&&<>{!status?<p>Read the office records before using tools.</p>:<><h3>Choose two tools</h3><p>Two charges per tool each week. Swapping tools does not refill them. Rescue and Confetti share the ordinary coworker-action cooldown.</p><div className="pg-tool-grid">{Object.entries(OFFICE_TOOL_LABELS).filter(([id])=>depth||id!=='clip').map(([id,label])=><button className="pg-btn" key={id} aria-pressed={slots.includes(id)} disabled={busy||(!slots.includes(id)&&slots.length>=2)} onClick={()=>{slotsDirty.current=true;setSlots(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);}}>{label}<small>{status.toolkit.charges[id]} charges</small></button>)}</div><button className="pg-btn" disabled={busy} onClick={()=>mutate(()=>api.officeTools(slots))}>Save two-slot toolkit</button>
-   {unsavedSlots&&<p role="status">Save your tool choices before using them. Refreshing preserves unsaved choices.</p>}
+  {tab==='tools'&&<>{!status?<p>Read the office records before using tools.</p>:<><h3>Your two-tool toolkit</h3><p>Equip up to two different tools. Both slots work the same way. Changes save immediately; swapping never refills charges. These tools are separate from the objects your character carries.</p><div className="pg-tool-slots">{[0,1].map(index=>{const id=status.toolkit.slots[index]||'',active=id==='rescue'||id==='confetti';return <section className="pg-tool-slot" key={index} aria-label={'Tool slot '+(index+1)}><h4>Tool slot {index+1}</h4><strong>{OFFICE_TOOL_LABELS[id]||'Empty slot'}</strong>{id&&<><span className="pg-state-badge">{active?'Use on coworker':'Automatic defense'}</span><p>{status.toolkit.charges[id]} charges remaining</p><p>{OFFICE_TOOL_HELP[id]}</p></>}<label>Change tool<select aria-label={'Change tool in slot '+(index+1)} value={id} disabled={busy||statusLoading||!!statusError} onChange={e=>{const next=[...status.toolkit.slots];if(e.target.value)next[index]=e.target.value;else next.splice(index,1);mutate(()=>api.officeTools(next.filter(Boolean)));}}><option value="">Empty slot</option>{Object.entries(OFFICE_TOOL_LABELS).filter(([key])=>depth||key!=='clip').map(([key,label])=><option key={key} value={key} disabled={status.toolkit.slots.includes(key)&&key!==id}>{label}{status.toolkit.slots.includes(key)&&key!==id?' · already equipped':''}</option>)}</select></label>{id&&<button className="pg-btn" disabled={busy||statusLoading||!!statusError} onClick={()=>mutate(()=>api.officeTools(status.toolkit.slots.filter((_,i)=>i!==index)))}>Remove {OFFICE_TOOL_LABELS[id]}</button>}</section>;})}</div><p role="status">{busy?'Saving or processing your request…':'Equipped choices above are confirmed by the server.'}</p>
    <p>Spam Filter automatically blocks one eligible output debuff while equipped. It does not block credit stealing. Rescue clears one active meeting, chair, mute, reply-all or confetti penalty. Confetti reduces output by 35% for ten minutes before Systems and Thick Skin defenses. Cleanup or Rescue clears it; Spam Filter blocks it and Return to Sender reflects it. Sending it adds one heat. It does not drain saved Busywork.{depth?' Receipt Clip halves one positive credit theft after passive defenses. Empty thefts use no charge.':''}</p>
    <label>Coworker<select aria-label="Toolkit recipient" disabled={busy||errorSource==='action'&&!!error} value={target} onChange={e=>{setTarget(e.target.value);request.current=null;}}><option value="">Choose someone</option>{choices.filter(p=>p.id!==me.id).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
    {status.confetti_rules?.version!==1&&<p>Confetti output rules are waiting for the updated backend. Rescue and cleanup remain available.</p>}{errorSource==='action'&&error&&<p>Retry the same request below. An accepted request will not be charged again.</p>}{cooldown>0&&<p role="status">Coworker actions ready in {cooldown}s. Defensive shields and automatic tools work independently.</p>}<div className="pg-next-actions">{['rescue','confetti'].map(id=><button className="pg-btn" key={id} disabled={busy||unsavedSlots||cooldown>0||(id==='confetti'&&status.confetti_rules?.version!==1)||!target||!status.toolkit.slots.includes(id)||status.toolkit.charges[id]<1} onClick={()=>interact(id)}>{id==='rescue'?'Rescue coworker':'Send confetti'}</button>)}</div>
