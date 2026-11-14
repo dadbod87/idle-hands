@@ -1742,10 +1742,12 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .pg-play-shell .pg-emotes .pg-emote{min-height:44px;min-width:0;flex:1;padding:2px}
  /* A nearby action must never resize the floor or change its zoom. */
  .pg-play-shell .pg-floor-prompt{position:absolute;left:6px;right:6px;bottom:6px;z-index:50;max-width:340px;pointer-events:none}
+ .pg-play-shell .pg-floor-prompt.prompt-right{left:auto;width:calc(100% - 12px)}
+ .pg-play-shell .pg-floor-prompt.prompt-left .pg-prompt{flex-direction:row-reverse;padding-left:0;padding-right:8px}
  .pg-play-shell .pg-floor-prompt .pg-prompt{display:flex;min-width:0;height:48px;min-height:48px;gap:8px;padding-left:8px;border:2px solid var(--ink);border-radius:5px;background:var(--paper);font-size:10px;flex-wrap:nowrap;pointer-events:none;box-shadow:2px 2px 0 #2B2B2B44}
  .pg-play-shell .pg-prompt:not(:has(.pg-open)){display:none}
  .pg-play-shell .pg-context-copy{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
- .pg-play-shell .pg-prompt>.pg-open{margin-left:auto;min-height:44px;min-width:54px;max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;pointer-events:auto}
+ .pg-play-shell .pg-prompt>.pg-open{margin-left:auto;min-height:44px;min-width:54px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;pointer-events:auto}
  .pg-play-shell .pg-wirestrip{padding:2px 8px}
  .pg-play-shell .pg-wirestrip .pg-wl{display:none}
  .pg-play-shell .pg-build{margin:0;border:0;padding:0;font-size:7px}
@@ -4928,7 +4930,7 @@ function OfficeFloor() {
   // One prompt instance: phone controls float inside the floor, desktop keeps its footer.
   const interactionPrompt=(
         <div className="pg-prompt">
-          {worldIntent?<><span className="pg-context-copy"><b>{dist(pos,worldIntent)>180?"Walk closer to "+worldIntent.label.toLowerCase():"Ready"}</b></span><button className="pg-open" disabled={dist(pos,worldIntent)>180} onClick={()=>{worldActivation.current?.();setWorldIntent(null);worldActivation.current=null;}}> {worldIntent.label}</button></>:near
+          {worldIntent?<><span className="pg-context-copy"><b>{worldIntent.label}</b> — {dist(pos,worldIntent)>180?"Walk closer":"Ready"}</span><button className="pg-open" aria-label={worldIntent.label} disabled={dist(pos,worldIntent)>180} onClick={()=>{worldActivation.current?.();setWorldIntent(null);worldActivation.current=null;}}> {worldIntent.label.startsWith("Grab")?"Grab":worldIntent.label.startsWith("Change")?"Change":"Open"}</button></>:near
             ? (<><span className="pg-context-copy"><b>{near.label}</b> — {near.sub}</span><button className="pg-open" onClick={() => openFixture(near)}>Open</button></>)
             : <><span className="pg-walk-hint">Tap the floor to walk (arrow keys work too). Walk up to anything and open it.</span><span className="pg-walk-hint-short">Tap the floor to walk. Help has the rest.</span></>}
         </div>
@@ -5303,7 +5305,7 @@ function OfficeFloor() {
                   emote={emote && emote.until > Date.now() ? emote.id : null} />
           </div>
         </div>
-        {phonePlay&&<div className="pg-floor-prompt">{interactionPrompt}</div>}
+        {phonePlay&&<div className={"pg-floor-prompt "+(((worldIntent?.x??(near?near.x+near.w/2:pos.x))-cam.x)*zoom<stage.w/2?"prompt-right":"prompt-left")}>{interactionPrompt}</div>}
         {(!touchMovement||mapOpen)&&<MiniMap pos={pos} board={board} meId={me?.id} cam={cam} view={view} chair={chair} />}
         {worldIntent&&<div className="pg-destination" aria-hidden="true" style={{left:(worldIntent.x-cam.x)*zoom,top:(worldIntent.y-cam.y)*zoom}}>◇</div>}
         {chair && (chair.x < cam.x || chair.x > cam.x + view.w ||
