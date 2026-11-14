@@ -53,6 +53,8 @@ for(const viewport of [{width:393,height:851},{width:390,height:640},{width:844,
  test('phone viewport and collapsed bulletins '+viewport.width+'x'+viewport.height,async({browser})=>{
   const mobile=viewport.width<1000,ctx=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile,reducedMotion:'reduce'}),page=await ctx.newPage();
   const f=await installGameFixture(page,{officeState:{total:1000,target:100,tiers:0,streak:4,best:4,hit:true,goal:{name:'The Margarita Machine'}}});
+  // Measure the default layout at a fixed quiet moment; scheduled-alert crowding has its own mobile-hierarchy fixture.
+  await page.clock.setFixedTime(new Date('2026-10-22T09:00:00Z'));
   await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
   const bulletins=page.locator('.pg-bulletins'),summary=bulletins.locator('summary');
   if(mobile){
