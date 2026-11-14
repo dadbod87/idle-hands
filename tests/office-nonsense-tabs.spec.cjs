@@ -6,7 +6,7 @@ for(const size of [{width:1440,height:900},{width:393,height:851},{width:320,hei
  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
  const fixture=await installGameFixture(page);
  await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});
- if(size.width<540)await page.getByRole('button',{name:'More',exact:true}).click();
+ if(mobile)await page.getByRole('button',{name:'More',exact:true}).click();
  await page.getByRole('button',{name:'Office Nonsense',exact:true}).click();
  const dialog=page.getByRole('dialog',{name:'Office notice',exact:true}),nav=dialog.getByRole('group',{name:'Office Nonsense sections'});
  await expect(nav.getByRole('button')).toHaveCount(6);

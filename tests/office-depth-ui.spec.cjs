@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 const {installGameFixture}=require('./game-fixture.cjs');
 const base='http://127.0.0.1:8765/';
 function state(){return {version:1,depth_version:1,confetti_rules:{version:1,mult:0.65,minutes:10},week:'2026-46',server_now:new Date().toISOString(),project:{theme:'it',title:'IT Has Opened a Ticket',description:'Work, tend the office and try a harmless prank.',categories:['work','facilities','playful'],goal:36,minimum_contributors:3,total:18,contributors:3,credit_unit:"daily_category",minimum_days:4,active_days:2,stretch_days:6,today:"2026-11-12",mine_today:["work","facilities","playful"],mine:['work','facilities','care'],completed:false,stretch_goal:60,stretch_contributors:5,stretch_completed:false},toolkit:{slots:['rescue','confetti'],charges:{rescue:1,confetti:2,filter:2,clip:2}},collection:{qualified_weeks:2,display:['nameplate','corkboard','plaque']},collectibles:['nameplate','corkboard','plaque','terrarium'],scrapbook:[{week:'2026-45',theme:'breakroom',title:'Break Room Revival',starts_at:'2026-10-30T23:00:00Z',stretch:true,selected:false}],resupply:{day:'2026-11-12',activity:['work','facilities'],used_this_week:0,weekly_limit:3,claimed_today:false,eligible:true},shield:{armed:false,price_hint:5000},cooldown_until:new Date(Date.now()+120000).toISOString(),completed_weeks:[],reward_weeks:[],history_since:'2026-11-07T00:12:00Z'};}
-async function openRecords(page){await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();await page.getByRole('button',{name:'This week & player profiles',exact:true}).click();}
+async function openRecords(page){await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();await page.getByRole('button',{name:'Office hub',exact:true}).click();}
 
 test('project pacing: large totals cannot hide missing dates, new-day checks and weekly refresh',async({page})=>{
  const s=state();Object.assign(s.project,{total:42,contributors:7,active_days:2,completed:false});
@@ -38,8 +38,8 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  expect(f.player.office_memento.week).toBe('2026-45');
  await page.screenshot({path:`test-results/office-collection-${viewport.width}.jpg`,type:'jpeg',quality:65,fullPage:true});
  await page.getByRole('button',{name:'Toolkit',exact:true}).click();
- await expect(page.getByRole('button',{name:/Receipt Clip/}).first()).toBeDisabled();
- await page.getByRole('button',{name:/Confetti Cartridge/}).first().click();await page.getByRole('button',{name:/Receipt Clip/}).first().click();await page.getByRole('button',{name:'Save two-slot toolkit',exact:true}).click();
+ await expect(page.getByLabel('Change tool in slot 2',{exact:true})).toBeEnabled();
+ await page.getByLabel('Change tool in slot 2',{exact:true}).selectOption('clip');
  await expect.poll(()=>s.toolkit.slots).toEqual(['rescue','clip']);
  await expect(page.getByRole('button',{name:'Rescue coworker',exact:true})).toBeDisabled();await expect(page.getByText(/Coworker actions ready in/)).toBeVisible();
  await page.getByRole('button',{name:'Refill Emergency Stapler',exact:true}).click();await expect(page.getByText(/Today’s refill used/)).toBeVisible();

@@ -14,7 +14,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
  expect(f.calls.filter(c=>c.rpc==='office_week_status')).toHaveLength(0);
  if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();
- await page.getByRole('button',{name:'This week & player profiles',exact:true}).click();
+ await page.getByRole('button',{name:'Office hub',exact:true}).click();
  await expect(page.getByRole('heading',{name:state.project.title})).toBeVisible();
  await page.screenshot({path:`test-results/office-project-${viewport.width}.jpg`,type:'jpeg',quality:60,fullPage:true});
  await page.getByRole('button',{name:'Claim reward',exact:true}).first().click();await expect(page.getByRole('button',{name:'Owned',exact:true})).toHaveCount(1);
@@ -22,8 +22,8 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  await page.getByRole('button',{name:/Retry/}).click();await expect(page.getByRole('img',{name:/Actions given/}).first()).toBeVisible();
  await expect(page.getByRole('table',{name:/Recorded actions/}).getByRole('cell',{name:'help',exact:true})).toBeVisible();
  await page.screenshot({path:`test-results/office-profile-${viewport.width}.jpg`,type:'jpeg',quality:60,fullPage:true});
- await page.getByRole('button',{name:'Toolkit',exact:true}).click();await expect(page.getByRole('heading',{name:'Choose two tools'})).toBeVisible();
- await page.getByRole('button',{name:'Emergency Stapler',exact:false}).click();await page.getByRole('button',{name:'Spam Filter',exact:false}).click();await page.getByRole('button',{name:'Save two-slot toolkit'}).click();
+ await page.getByRole('button',{name:'Toolkit',exact:true}).click();await expect(page.getByRole('heading',{name:'Your two-tool toolkit'})).toBeVisible();
+ await page.getByLabel('Change tool in slot 1',{exact:true}).selectOption('filter');
  await expect.poll(()=>state.toolkit.slots.includes('filter')).toBe(true);expect(state.toolkit.charges.rescue).toBe(2);
  await page.screenshot({path:`test-results/next-week-${viewport.width}-${viewport.height}.png`,fullPage:true});
  expect(await page.locator('.pg-panel').evaluate(el=>el.scrollWidth<=el.clientWidth+2)).toBe(true);
@@ -33,6 +33,7 @@ for(const viewport of [{width:390,height:640},{width:390,height:844},{width:844,
  const ctx=await browser.newContext({viewport,hasTouch:true,reducedMotion:'reduce'}),page=await ctx.newPage();const f=await installGameFixture(page);
  await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
  await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:/HR Cabinet/}).click();await expect(page.locator('.pg-panel')).toBeVisible({timeout:30000});await page.locator('.pg-panel .pg-x').click();
+ if(viewport.width===844)await expect.poll(()=>page.locator('[data-fixture="hr"]').evaluate(el=>{const r=el.getBoundingClientRect(),floor=document.querySelector('.pg-stage').getBoundingClientRect();return r.top+r.height/2-floor.top;})).toBeGreaterThanOrEqual(20);
  const before=f.calls.filter(c=>['do_deed','buy_item','grab_chair'].includes(c.rpc)).length;
  for(let n=0;n<20;n++){await page.locator('[data-fixture="hr"]').tap();await expect(page.locator('.pg-panel')).toHaveCount(0);}
  expect(f.calls.filter(c=>['do_deed','buy_item','grab_chair'].includes(c.rpc))).toHaveLength(before);
@@ -53,7 +54,7 @@ for(const viewport of [{width:390,height:640},{width:390,height:844},{width:844,
 
 function recordsState(){return {version:1,confetti_rules:{version:1,mult:0.65,minutes:10},week:'2026-47',server_now:new Date().toISOString(),project:{title:'The Break Room Has Standards Now',goal:12,minimum_contributors:3,total:5,contributors:3,mine:['work','care'],completed:false},toolkit:{slots:['rescue','confetti'],charges:{rescue:2,confetti:2,filter:2}},collectibles:[],completed_weeks:[],reward_weeks:[],history_since:'2026-11-07T00:00:00Z'};}
 function recordsProfile(p){return {player:{id:p.id,name:p.name},period:'week',since:'2026-11-07T00:00:00Z',by_kind:[],daily:[],coworkers:[]};}
-async function openRecords(page){await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();await page.getByRole('button',{name:'This week & player profiles',exact:true}).click();}
+async function openRecords(page){await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();await page.getByRole('button',{name:'Office hub',exact:true}).click();}
 
 test('next week reliability: late project success cannot erase a failed profile or its retry',async({page})=>{
  let release,firstProfile=true;const gate=new Promise(r=>release=r),state=recordsState();
@@ -71,23 +72,23 @@ test('next week reliability: late project success cannot erase a failed profile 
  await expect(page.getByRole('heading',{name:/office story/})).toBeVisible();
 });
 
-test('next week reliability: refresh preserves unsaved tools and resets them on a new week',async({page})=>{
- const state=recordsState();const peer={id:'00000000-0000-4000-8000-000000000099',name:'Fixture coworker'};
- const f=await installGameFixture(page,{coworkers:[peer],handleRpc:async(name)=>name==='office_week_status'?{body:state}:undefined});
- await openRecords(page);await expect(page.getByRole('heading',{name:state.project.title})).toBeVisible();
- await page.getByRole('button',{name:'Toolkit',exact:true}).click();
- await page.getByRole('button',{name:/Emergency Stapler/}).click();await page.getByRole('button',{name:/Spam Filter/}).click();
- await page.getByLabel('Toolkit recipient',{exact:true}).selectOption(peer.id);
- await expect(page.getByRole('button',{name:'Send confetti',exact:true})).toBeDisabled();
- await page.getByRole('button',{name:'Refresh office records',exact:true}).click();
- await expect.poll(()=>f.calls.filter(c=>c.rpc==='office_week_status').length).toBe(2);
- await expect(page.getByRole('button',{name:/Spam Filter/})).toHaveAttribute('aria-pressed','true');
- await expect(page.getByRole('button',{name:/Emergency Stapler/})).toHaveAttribute('aria-pressed','false');
- state.week='2026-48';state.project.mine=[];state.project.total=0;
- await page.getByRole('button',{name:'Refresh office records',exact:true}).click();
- await expect(page.getByRole('button',{name:/Emergency Stapler/})).toHaveAttribute('aria-pressed','true');
- await expect(page.getByRole('button',{name:/Spam Filter/})).toHaveAttribute('aria-pressed','false');
- expect(f.calls.some(c=>c.rpc==='office_equip_tools'||c.rpc==='office_interact')).toBe(false);
+test('next week reliability: tool saves recover after failure and refresh shows server state',async({page})=>{
+ const state=recordsState();let fail=true;
+ const f=await installGameFixture(page,{handleRpc:async(name,args)=>{
+  if(name==='office_week_status')return {body:state};
+  if(name==='office_equip_tools'){if(fail){fail=false;return {status:503,body:{message:'Tool save not confirmed'}};}state.toolkit.slots=args.p_slots;return {body:state};}
+ }});
+ await openRecords(page);await page.getByRole('button',{name:'Toolkit',exact:true}).click();
+ const slot=page.getByLabel('Change tool in slot 1',{exact:true});
+ await slot.selectOption('filter');await expect(page.getByRole('alert')).toContainText('Tool save not confirmed');
+ await expect(slot).toHaveValue('rescue');await expect(slot).toBeDisabled();await page.getByRole('button',{name:'Retry records',exact:true}).click();await expect(slot).toBeEnabled();await slot.selectOption('filter');await expect(slot).toHaveValue('filter');
+ expect(state.toolkit.charges.filter).toBe(2);
+ await page.getByRole('button',{name:'Remove Spam Filter',exact:true}).click();await expect(slot).toHaveValue('confetti');
+ await page.getByRole('button',{name:'Remove Confetti Cartridge',exact:true}).click();await expect(slot).toHaveValue('');
+ expect(state.toolkit.slots).toEqual([]);
+ state.week='2026-48';state.toolkit.slots=['rescue','confetti'];
+ await page.getByRole('button',{name:'Refresh office records',exact:true}).click();await expect(slot).toHaveValue('rescue');
+ expect(f.calls.some(c=>c.rpc==='office_interact')).toBe(false);
 });
 
 test('next week reliability: a lost action reply retried after rollover keeps one receipt and fresh state',async({page})=>{
@@ -109,7 +110,7 @@ test('next week reliability: a lost action reply retried after rollover keeps on
  await expect(page.getByRole('button',{name:'Send confetti',exact:true})).toBeEnabled();
  await expect.poll(()=>f.calls.filter(c=>c.rpc==='office_week_status').length).toBeGreaterThanOrEqual(2);
  await expect(page.getByRole('alert')).toHaveCount(0);
- await expect(page.getByRole('button',{name:/Confetti Cartridge/})).toContainText('2 charges');
+ await expect(page.getByRole('region',{name:'Tool slot 2'})).toContainText('2 charges');
  await expect(page.getByText('▲ 99 available Seniority',{exact:true})).toHaveCount(0);
  expect(uses).toBe(1);expect(requests).toHaveLength(2);expect(new Set(requests).size).toBe(1);
  expect(f.calls.some(c=>c.rpc==='sync')).toBe(true);

@@ -1,9 +1,15 @@
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "198",
- title: "Paperwork pileup",
+ id: "199",
+ title: "Facilities approved",
  changes: [
+  ["Your rewards belong in your office", "Displayed nameplates now show your actual name in a readable desk plate. Incident Corkboards are mounted on the cubicle wall, and other collectibles sit on the desk."],
+  ["One visible Office hub", "Use the always-visible Office hub button for This week, Player profiles, Toolkit, Collection, Boutique and Record book. The whiteboard keeps the full rankings; Employee of the Week opens a distinct current-leader spotlight."],
+  ["More room on phones", "Margarita Friday and event banners start collapsed under Office bulletins. Expand them when needed; the game fits the browser screen while panels scroll inside."],
+  ["A harder Margarita Friday", "Future weekly targets use at least 150% of the previous completed week instead of the old fixed ceiling. Already-set targets and earned rewards are preserved. The 24-hour prize itself stays the same."],
+  ["A toolkit you can read", "Two visible slots show equipped tools, remaining charges and automatic defenses. Change or remove a tool directly; changes save immediately and never refill charges. Unavailable actions explain what is needed."],
+  ["Less confusing paperwork", "Panels explain their purpose, notices share a close control, coworker actions guide you through choosing a recipient, and restructuring uses an in-game confirmation. Invite connection failures now let you retry the same code. Onboarding puts Start the shift before optional appearance controls."],
   ["Confetti hurts output", "New Confetti Incidents cut output by 35% for ten minutes before Systems and Thick Skin defenses. Cleanup or IT Rescue restores the rate. Spam Filter blocks it and Return to Sender can reflect it. Sending one adds heat. Saved Busywork is never drained, and earlier cosmetic-only confetti stays harmless."],
   ["Tap nearby desks and the good chair", "On phones, walk up to your desk or the good chair and tap it directly. No separate action button is required when you are in reach. Distant taps still walk without automatically opening or claiming anything."],
   ["Confetti catastrophe", "Confetti Incidents now bury the desk in a bright mound, hang streamers over the edges and keep showering paper until cleared or expired. The ten-minute prank is removable from Toolkit; new incidents now carry the output penalty described above."],

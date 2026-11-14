@@ -11,7 +11,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible();
  await expect(page.locator('.pg-effect').filter({hasText:'Confetti Incident'})).toContainText('−35%');
  if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();
- await page.getByRole('button',{name:'This week & player profiles',exact:true}).click();await page.getByRole('button',{name:'Toolkit',exact:true}).click();
+ await page.getByRole('button',{name:'Office hub',exact:true}).click();await page.getByRole('button',{name:'Toolkit',exact:true}).click();
  await expect(page.locator('.pg-panel')).toContainText('Confetti reduces output by 35%');
  await expect(page.locator('.pg-panel')).toContainText('Spam Filter blocks it and Return to Sender reflects it');
  await expect(page.locator('.pg-panel')).not.toContainText('has no output penalty');
