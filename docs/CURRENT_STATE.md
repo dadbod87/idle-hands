@@ -1,6 +1,8 @@
-# Office UX consistency — in progress
+# Build 199 — facilities approved (candidate)
 
-Feature branch implements two visible interchangeable toolkit slots with immediate server saves, direct replacement/removal, active/passive explanations, shared notice close controls and focus styles, clearer coworker prompts and a separate invite-network error/retry. No SQL or economic rule changes. Remaining audit work and visual verification are not complete; this is not a released build. Local Babel parse passed; exact PR-head CI and responsive screenshot inspection are required before merge. Build remains 198 until the package is complete.
+Two visible interchangeable toolkit slots now save direct replacement/removal via the existing server API. Cards explain active/passive tools and charges; unavailable actions explain the missing requirement. Shared notices have close controls and focus styling, panels explain their purpose, social target selection has instructions, and restructure uses a themed confirmation retaining all existing reset/survival rules. Invite service failure preserves the entered code for retry; invalid codes remain distinct. New-hire Start precedes optional appearance controls. Fictional/local/shared Office Nonsense sources are labeled. No SQL, balance, pacing, inventory or saved-data changes.
+
+Validation: Babel script/test syntax passed on the first commit; economy and isolated PostgreSQL CI passed there. Final-head browser/contract checks, screenshot review, full visual audit and hosted-auth/physical-phone limitations must be recorded before release. Not yet merged or live.
 
 ## Build 198 — paperwork pileup (November 13, 2026)
 
