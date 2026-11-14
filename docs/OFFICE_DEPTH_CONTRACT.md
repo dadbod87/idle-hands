@@ -1,3 +1,12 @@
+# Build 198 — Confetti output extension
+
+New Confetti Incidents reduce output by 35% for ten minutes before Systems/Thick Skin defenses, cost their existing toolkit charge/cooldown and add one heat/notoriety. Spam Filter blocks them; Return to Sender reflects without chains; IT Rescue or free cleanup removes their matching penalty and pile. Confetti does not stack on an already decorated desk, while other sabotage stacking remains. Saved BW is never drained. New harmful incidents count as sabotage in history while qualifying for the playful project category; older cosmetic records remain unchanged. Existing cosmetic-only piles are not converted on installation. Restructuring keeps its existing buff-clearing behavior.
+
+A read-only synthetic comparison exposed over-escaped timestamp patterns in the existing offline integrator. The guarded forward patch recognizes actual start/expiry timestamps so unsettled intervals are split correctly; no previously settled earnings or history are rewritten. Installation replaces six guarded functions and changes no player rows. Actual SQL contracts run on both installer paths; JWT API and desktop/phone/landscape UI checks cover the new rules and cleanup. Source, exact-head checks, migration hash and live verification belong to the release PR. Physical phones and hosted Auth remain untested.
+
+
+---
+
 # Office depth pack — implementation contract, RELEASE HOLD
 
 Continue build 195 in PR #56. Only the private action/standings preservation stages are live; see the two November 12 release receipts. No full migration, frontend merge, real-account test, reset or automatic deployment is authorized by this work.

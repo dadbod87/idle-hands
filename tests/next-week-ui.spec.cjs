@@ -3,7 +3,7 @@ const {installGameFixture}=require('./game-fixture.cjs');
 const base='http://127.0.0.1:8765/';
 for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844,height:390}])test(`next week ${viewport.width}x${viewport.height}: project, profiles, retry and toolkit`,async({browser})=>{
  const context=await browser.newContext({viewport,hasTouch:viewport.width<1000,reducedMotion:'reduce'}),page=await context.newPage();
- let profileFail=true;const state={version:1,week:'2026-47',project:{title:'The Break Room Has Standards Now',goal:12,minimum_contributors:3,total:5,contributors:3,mine:['work','care'],completed:false},toolkit:{slots:['rescue','confetti'],charges:{rescue:2,confetti:2,filter:2}},collectibles:[],completed_weeks:[],history_since:'2026-11-07T00:00:00Z'};
+ let profileFail=true;const state={version:1,confetti_rules:{version:1,mult:0.65,minutes:10},week:'2026-47',project:{title:'The Break Room Has Standards Now',goal:12,minimum_contributors:3,total:5,contributors:3,mine:['work','care'],completed:false},toolkit:{slots:['rescue','confetti'],charges:{rescue:2,confetti:2,filter:2}},collectibles:[],completed_weeks:[],history_since:'2026-11-07T00:00:00Z'};
  const f=await installGameFixture(page,{handleRpc:async(name,args,p)=>{
   if(name==='office_week_status')return {body:state};
   if(name==='office_profile'){if(profileFail){profileFail=false;return {status:400,body:{message:'Fixture profile retry'}};}return {body:{player:{id:p.id,name:p.name},period:args.p_period,since:state.history_since,privacy:'Hushed actions are excluded from public charts.',by_kind:[{kind:'coffee',category:'help',given:5,received:3},{kind:'credit',category:'sabotage',given:4,received:2},{kind:'dress',category:'playful',given:1,received:1}],daily:[{day:'2026-11-13',given:10,received:6}],coworkers:[]}};}
@@ -51,7 +51,7 @@ for(const viewport of [{width:390,height:640},{width:390,height:844},{width:844,
  await ctx.close();
 });
 
-function recordsState(){return {version:1,week:'2026-47',server_now:new Date().toISOString(),project:{title:'The Break Room Has Standards Now',goal:12,minimum_contributors:3,total:5,contributors:3,mine:['work','care'],completed:false},toolkit:{slots:['rescue','confetti'],charges:{rescue:2,confetti:2,filter:2}},collectibles:[],completed_weeks:[],reward_weeks:[],history_since:'2026-11-07T00:00:00Z'};}
+function recordsState(){return {version:1,confetti_rules:{version:1,mult:0.65,minutes:10},week:'2026-47',server_now:new Date().toISOString(),project:{title:'The Break Room Has Standards Now',goal:12,minimum_contributors:3,total:5,contributors:3,mine:['work','care'],completed:false},toolkit:{slots:['rescue','confetti'],charges:{rescue:2,confetti:2,filter:2}},collectibles:[],completed_weeks:[],reward_weeks:[],history_since:'2026-11-07T00:00:00Z'};}
 function recordsProfile(p){return {player:{id:p.id,name:p.name},period:'week',since:'2026-11-07T00:00:00Z',by_kind:[],daily:[],coworkers:[]};}
 async function openRecords(page){await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();await page.getByRole('button',{name:'This week & player profiles',exact:true}).click();}
 
