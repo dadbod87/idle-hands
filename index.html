@@ -1700,6 +1700,26 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .pg-employee-spotlight{padding:16px}.pg-employee-spotlight article{border:2px solid #b38a3a;padding:16px;margin-bottom:12px;text-align:center}
 @media(min-width:700px){.pg-next-week>nav.pg-tabs{grid-template-columns:repeat(6,minmax(0,1fr))}}
 
+
+/* Phone play stays inside the dynamic browser viewport; dialogs scroll themselves. */
+.pg-bulletins>summary{display:none}
+.pg-bulletins-content{display:contents}
+@media(max-width:600px),(max-width:1000px) and (pointer:coarse){
+ html.pg-playing,html.pg-playing body{height:100%;overflow:hidden;overscroll-behavior:none}
+ .pg-root.pg-play-shell{position:fixed;inset:0;width:100%;height:100%;height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top,4px) env(safe-area-inset-right,4px) env(safe-area-inset-bottom,4px) env(safe-area-inset-left,4px);overflow:hidden}
+ .pg-play-shell>*{flex-shrink:0}
+ .pg-play-shell>.pg-stage{flex:1 1 0;min-height:0;height:auto!important}
+ .pg-bulletins{border:2px solid var(--ink);border-top:0;background:var(--paper)}
+ .pg-bulletins>summary{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 10px;cursor:pointer;font:700 11px var(--mono);list-style:none}
+ .pg-bulletins>summary::-webkit-details-marker{display:none}
+ .pg-bulletins>summary::after{content:'＋';margin-left:auto;font-size:18px}
+ .pg-bulletins[open]>summary::after{content:'−'}
+ .pg-bulletins>summary span{font:10px var(--sans);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+ .pg-bulletins-content{display:block;max-height:min(180px,25dvh);overflow:auto;overscroll-behavior:contain;touch-action:pan-y}
+ .pg-bulletins-content .pg-marg,.pg-bulletins-content .pg-event{border:0}
+ .pg-bulletins>summary:focus-visible{outline:3px solid #385D81;outline-offset:-3px}
+}
+
 </style>
 </head>
 <body>
@@ -3732,6 +3752,7 @@ function ActiveEffects({player,cat}) {
 
 function OfficeFloor() {
   const [phase, setPhase] = useState("boot");
+  useEffect(()=>{document.documentElement.classList.toggle("pg-playing",phase==="play");return()=>document.documentElement.classList.remove("pg-playing");},[phase]);
   const [user, setUser] = useState(null);
   const [authNotice, setAuthNotice] = useState(null);
   const [catRaw, setCatRaw] = useState({ items: [], upgrades: [], deeds: {} });
@@ -4470,20 +4491,23 @@ function OfficeFloor() {
       const top = el.getBoundingClientRect().top;
       const root=el.parentElement;
       const chrome=[".pg-bar",".pg-feedback-rail",".pg-wirestrip"].reduce((sum,sel)=>sum+(root.querySelector(sel)?.offsetHeight||0),0)+16;
-      const avail = window.innerHeight - top - chrome;
-      // Keep a usable floor on portrait phones; let the page scroll if bulletins need more room.
+      const fixedPhone=window.matchMedia(PHONE_PLAY_QUERY).matches;
+      const avail = fixedPhone ? el.clientHeight : window.innerHeight - top - chrome;
+      // The flex shell owns phone height; camera measurements follow its actual floor.
       const minimum = window.innerHeight >= 600 ? 240 : 180;
-      const h = clamp(Math.round(avail), minimum, Math.min(ROOM.h, 820));
+      const h = clamp(Math.round(avail), fixedPhone?1:minimum, Math.min(ROOM.h, 820));
       setStage((v) => (v.w === w && v.h === h ? v : { w, h }));
     };
     fit();
     window.addEventListener("resize", fit);
+    window.visualViewport?.addEventListener("resize",fit);
     const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(fit) : null;
     if(ro&&stageRef.current){ro.observe(stageRef.current);ro.observe(stageRef.current.parentElement);
-      for(const sel of [".pg-bar",".pg-feedback-rail",".pg-wirestrip",".pg-hud",".pg-event"]) {const el=stageRef.current.parentElement.querySelector(sel);if(el)ro.observe(el);}}
+      for(const sel of [".pg-bar",".pg-feedback-rail",".pg-wirestrip",".pg-hud",".pg-bulletins"]) {const el=stageRef.current.parentElement.querySelector(sel);if(el)ro.observe(el);}}
     const t = setTimeout(fit, 250);
     return () => {
       window.removeEventListener("resize", fit);
+      window.visualViewport?.removeEventListener("resize",fit);
       if (ro) ro.disconnect();
       clearTimeout(t);
     };
@@ -4885,7 +4909,7 @@ function OfficeFloor() {
   );
 
   return (
-    <div className="pg-root">
+    <div className="pg-root pg-play-shell">
       <div className="pg-hud">
         <Face src={me?.avatar_url} name={me?.name} look={me?.look} size={40} />
         <div className="pg-hudid">
@@ -4983,14 +5007,6 @@ function OfficeFloor() {
         )
       )}
 
-      {office?.hit && (
-        <div className="pg-marg">
-          <b>MARGARITA FRIDAY</b>
-          <span>The office hit the goal. Everybody doubles for 24 hours.</span>
-          {office.streak > 1 && <em>{office.streak} weeks running</em>}
-        </div>
-      )}
-
       {stale && (
         <div className="pg-stale">
           <span>A newer version of Idle Hands is out. Your points are safe either way.</span>
@@ -5002,6 +5018,15 @@ function OfficeFloor() {
         <button className="pg-summons" onClick={() => setPanel("owner")}>
           Dave wants to see you in his office. <em>Go now</em>
         </button>
+      )}
+
+      <OfficeBulletins label={[office?.hit?"Margarita Friday":null,ev?"Event active":nextEv?"Next: "+nextEv.name:"Floor calm"].filter(Boolean).join(" · ")}>
+      {office?.hit && (
+        <div className="pg-marg">
+          <b>MARGARITA FRIDAY</b>
+          <span>The office hit the goal. Everybody doubles for 24 hours.</span>
+          {office.streak > 1 && <em>{office.streak} weeks running</em>}
+        </div>
       )}
 
       <div className={"pg-event" + (ev ? (ev.mult >= 1 ? " on good" : " on bad") : "")}>
@@ -5023,6 +5048,8 @@ function OfficeFloor() {
           </button>
         )}
       </div>
+
+      </OfficeBulletins>
 
       {activeBreak&&<div className="pg-live-break" data-testid="live-break-invite"><UtilityIcon kind="sound"/><span><b>{activeBreak.id===me?.id?"Your coffee break":names[activeBreak.id]+" signaled a coffee break"}</b><small>Live player invitation · {Math.max(0,Math.ceil((activeBreak.until-momentNow)/1000))}s · {nearbyBreak} nearby</small></span><button className="pg-btn" onClick={joinCoffeeBreak}>Walk over</button><button className="pg-x" aria-label="Dismiss coffee break invitation" onClick={()=>setBreakInvite(null)}>×</button></div>}
       <div ref={stageRef} className="pg-stage" style={{ height: stage.h }}>
@@ -7285,6 +7312,17 @@ function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear, onPet, onCl
   );
 }
 
+const PHONE_PLAY_QUERY="(max-width:600px), (max-width:1000px) and (pointer:coarse)";
+function OfficeBulletins({label,children}){
+ const [compact,setCompact]=useState(()=>window.matchMedia(PHONE_PLAY_QUERY).matches);
+ const [expanded,setExpanded]=useState(false);
+ useEffect(()=>{const media=window.matchMedia(PHONE_PLAY_QUERY),change=()=>{setCompact(media.matches);setExpanded(false);};media.addEventListener("change",change);return()=>media.removeEventListener("change",change);},[]);
+ return <details className="pg-bulletins" open={!compact||expanded} onToggle={e=>{if(compact)setExpanded(e.currentTarget.open);}}>
+  <summary>Office bulletins <span>{label}</span></summary>
+  <div className="pg-bulletins-content">{children}</div>
+ </details>;
+}
+
 const FACES = ["$", "+", "—", "?", "*", "!"];
 
 function vendingSeconds(status,clientNow){
@@ -8725,6 +8763,7 @@ const RELEASE_NOTES = {
  changes: [
   ["Your rewards belong in your office", "Displayed nameplates now show your actual name in a readable desk plate. Incident Corkboards are mounted on the cubicle wall, and other collectibles sit on the desk."],
   ["One visible Office hub", "Use the always-visible Office hub button for This week, Player profiles, Toolkit, Collection, Boutique and Record book. The whiteboard keeps the full rankings; Employee of the Week opens a distinct current-leader spotlight."],
+  ["More room on phones", "Margarita Friday and event banners start collapsed under Office bulletins. Expand them when needed; the game fits the browser screen while panels scroll inside."],
   ["A harder Margarita Friday", "Future weekly targets use at least 150% of the previous completed week instead of the old fixed ceiling. Already-set targets and earned rewards are preserved. The 24-hour prize itself stays the same."],
   ["A toolkit you can read", "Two visible slots show equipped tools, remaining charges and automatic defenses. Change or remove a tool directly; changes save immediately and never refill charges. Unavailable actions explain what is needed."],
   ["Less confusing paperwork", "Panels explain their purpose, notices share a close control, coworker actions guide you through choosing a recipient, and restructuring uses an in-game confirmation. Invite connection failures now let you retry the same code. Onboarding puts Start the shift before optional appearance controls."],

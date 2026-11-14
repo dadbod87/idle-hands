@@ -48,3 +48,27 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
   expect(f.player.pp).toBe(500000);expect(f.calls.some(c=>['buy_item','office_interact','office_claim_collectible','vend'].includes(c.rpc))).toBe(false);await ctx.close();
  });
 }
+
+for(const viewport of [{width:393,height:851},{width:390,height:640},{width:844,height:390},{width:1440,height:900}]){
+ test('phone viewport and collapsed bulletins '+viewport.width+'x'+viewport.height,async({browser})=>{
+  const mobile=viewport.width<1000,ctx=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile,reducedMotion:'reduce'}),page=await ctx.newPage();
+  const f=await installGameFixture(page,{officeState:{total:1000,target:100,tiers:0,streak:4,best:4,hit:true,goal:{name:'The Margarita Machine'}}});
+  await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
+  const bulletins=page.locator('.pg-bulletins'),summary=bulletins.locator('summary');
+  if(mobile){
+   await expect(bulletins).not.toHaveAttribute('open','');await expect(summary).toBeVisible();await expect(page.locator('.pg-marg')).toBeHidden();await expect(page.locator('.pg-event')).toBeHidden();
+   await expect.poll(()=>page.locator('.pg-stage').evaluate(el=>el.clientHeight)).toBeGreaterThan(viewport.height*(viewport.width<600?.5:.35));
+   const fits=()=>page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight,y:window.scrollY,viewport:innerHeight,bottom:document.querySelector('.pg-wirestrip').getBoundingClientRect().bottom}));
+   let m=await fits();expect(m.width).toBeLessThanOrEqual(viewport.width+1);expect(m.height).toBeLessThanOrEqual(m.viewport+1);expect(m.bottom).toBeLessThanOrEqual(m.viewport+1);
+   await page.mouse.wheel(0,700);await page.evaluate(()=>window.scrollTo(0,500));expect((await fits()).y).toBe(0);
+   await page.screenshot({path:'test-results/phone-floor-'+viewport.width+'x'+viewport.height+'.png',fullPage:true});
+   await summary.click();await expect(bulletins).toHaveAttribute('open','');await expect(page.locator('.pg-marg')).toBeVisible();await expect(page.locator('.pg-event')).toBeVisible();
+   expect((await fits()).height).toBeLessThanOrEqual(viewport.height+1);await summary.click();await expect(page.locator('.pg-marg')).toBeHidden();
+   await page.setViewportSize({width:viewport.width,height:viewport.height-70});await expect.poll(()=>page.locator('.pg-play-shell').evaluate(el=>Math.round(el.getBoundingClientRect().height))).toBe(viewport.height-70);
+   await page.getByRole('button',{name:'Office directory',exact:true}).click();const dialog=page.getByRole('dialog');await expect(dialog).toBeVisible();
+   const body=page.locator('.pg-panelbody');await body.evaluate(el=>el.scrollTop=el.scrollHeight);expect(await body.evaluate(el=>el.scrollTop)).toBeGreaterThan(0);
+   await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);expect((await fits()).y).toBe(0);
+  }else{await expect(bulletins).toHaveAttribute('open','');await expect(summary).toBeHidden();await expect(page.locator('.pg-marg')).toBeVisible();await expect(page.locator('.pg-event')).toBeVisible();}
+  expect(f.player.pp).toBe(500000);await ctx.close();
+ });
+}

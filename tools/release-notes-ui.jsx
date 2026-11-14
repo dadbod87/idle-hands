@@ -6,6 +6,7 @@ const RELEASE_NOTES = {
  changes: [
   ["Your rewards belong in your office", "Displayed nameplates now show your actual name in a readable desk plate. Incident Corkboards are mounted on the cubicle wall, and other collectibles sit on the desk."],
   ["One visible Office hub", "Use the always-visible Office hub button for This week, Player profiles, Toolkit, Collection, Boutique and Record book. The whiteboard keeps the full rankings; Employee of the Week opens a distinct current-leader spotlight."],
+  ["More room on phones", "Margarita Friday and event banners start collapsed under Office bulletins. Expand them when needed; the game fits the browser screen while panels scroll inside."],
   ["A harder Margarita Friday", "Future weekly targets use at least 150% of the previous completed week instead of the old fixed ceiling. Already-set targets and earned rewards are preserved. The 24-hour prize itself stays the same."],
   ["A toolkit you can read", "Two visible slots show equipped tools, remaining charges and automatic defenses. Change or remove a tool directly; changes save immediately and never refill charges. Unavailable actions explain what is needed."],
   ["Less confusing paperwork", "Panels explain their purpose, notices share a close control, coworker actions guide you through choosing a recipient, and restructuring uses an in-game confirmation. Invite connection failures now let you retry the same code. Onboarding puts Start the shift before optional appearance controls."],
