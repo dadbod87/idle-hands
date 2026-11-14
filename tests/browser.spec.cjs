@@ -43,7 +43,7 @@ for(const viewport of [{name:'desktop',width:1440,height:900},{name:'mobile',wid
   expect(hs.bg).toBe('rgba(0, 0, 0, 0)');
   expect(hs.border).toBe('0px');
 
-  await expect(page.getByTestId('avatar-qa').locator('.ar-cell')).toHaveCount(6);
+  await expect(page.getByTestId('avatar-qa').locator('.ar-cell')).toHaveCount(8);
   await page.getByTestId('avatar-qa').getByLabel('Hair', {exact:true}).selectOption('long');
   await page.getByTestId('avatar-qa').getByLabel('Expression').selectOption('happy');
   await expect(page.getByTestId('avatar-qa').getByLabel('Hair', {exact:true})).toHaveValue('long');

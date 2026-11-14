@@ -21,9 +21,13 @@ jobs:
       - run: node tests/social-moments.test.cjs
       - run: node tests/chair-spawns.test.cjs
       - run: node tests/comedy-contract.test.cjs
+      - run: node tests/next-week.test.cjs
+      - run: node tests/office-records.test.cjs
+      - run: node tests/appearance.test.cjs
+      - run: node tests/weekly-race.test.cjs
   browser-smoke:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,37 +43,80 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Start local static server
         run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/idle-hands-http.log 2>&1 &
+      - name: Weekly Race walkthroughs
+        run: npx playwright test tests/weekly-race-ui.spec.cjs --max-failures=1 --reporter=line
+      - name: Release notices and effect customization walkthroughs
+        run: npx playwright test tests/release-notes.spec.cjs tests/effect-customization.spec.cjs --max-failures=1 --reporter=line
+      - name: Grouped customization and free unequip walkthroughs
+        run: npx playwright test tests/appearance-ui.spec.cjs --max-failures=1 --reporter=line
+      - name: Deliberate touch and next-week walkthroughs
+        run: npx playwright test tests/next-week-ui.spec.cjs tests/office-depth-ui.spec.cjs tests/recordbook-boutique-ui.spec.cjs tests/chair-spawns.spec.cjs tests/gameplay.spec.cjs tests/lived-in-office.spec.cjs tests/mobile-hierarchy.spec.cjs tests/office-polish.spec.cjs tests/planter-targets.spec.cjs tests/prop-performances.spec.cjs --reporter=line
       - name: Browser smoke and visual gallery checks
         run: npx playwright test --reporter=line
+      - name: Preserve bounded synthetic visual evidence in diagnostics
+        if: always()
+        run: |
+          python3 - <<'PYCODE'
+          import base64,pathlib
+          names=['office-project-390.jpg','office-profile-390.jpg','office-project-844.jpg','plant-selection-landscape.jpg','office-collection-390.jpg','office-shield-390.jpg','office-depth-844.jpg','office-depth-art-390.jpg','boutique-390.jpg','recordbook-390.jpg','boutique-844.jpg','cosmetic-pack-390.jpg','cosmetic-pack-1440.jpg','new-outfit-world-390.jpg','appearance-390.jpg','appearance-844.jpg','race-390.jpg','race-844.jpg','race-1440.jpg','race-chart-390.jpg','race-chart-844.jpg','race-chart-1440.jpg','effects-390.jpg','effects-844.jpg','effects-1440.jpg','effects-avatar-390.jpg','effects-avatar-844.jpg','effects-avatar-1440.jpg','release-notes-390.jpg','release-notes-844.jpg','release-notes-1440.jpg']
+          for name in names:
+              p=pathlib.Path('test-results')/name
+              if p.exists():
+                  print('OFFICE_IMAGE_BEGIN '+name)
+                  print(base64.b64encode(p.read_bytes()).decode())
+                  print('OFFICE_IMAGE_END '+name)
+          PYCODE
       - name: Preserve QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: idle-hands-art-qa
-          path: test-results/*.png
+          path: |
+            test-results/*.png
+            test-results/*.jpg
           retention-days: 7
   isolated-postgres:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: idle_hands_test
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U test -d idle_hands_test"
-          --health-interval 5s --health-timeout 5s --health-retries 10
+    timeout-minutes: 12
     env:
-      PGHOST: localhost
+      PGHOST: 127.0.0.1
       PGPORT: 5432
       PGUSER: test
-      PGPASSWORD: test
       PGDATABASE: idle_hands_test
     steps:
       - uses: actions/checkout@v4
+      - name: Start isolated database with generated credentials
+        run: |
+          export PGPASSWORD="$(openssl rand -hex 24)"
+          IH_TEST_DB_PASS="$(openssl rand -hex 24)"
+          IH_TEST_JWT_SECRET="$(openssl rand -hex 32)"
+          echo "::add-mask::$PGPASSWORD"
+          echo "::add-mask::$IH_TEST_DB_PASS"
+          echo "::add-mask::$IH_TEST_JWT_SECRET"
+          {
+            printf 'PGPASSWORD=%s\n' "$PGPASSWORD"
+            printf 'IH_TEST_DB_PASS=%s\n' "$IH_TEST_DB_PASS"
+            printf 'IH_TEST_JWT_SECRET=%s\n' "$IH_TEST_JWT_SECRET"
+          } >> "$GITHUB_ENV"
+          docker run --detach --name ih-postgres -p 127.0.0.1:5432:5432 \
+            -e POSTGRES_USER=test -e POSTGRES_PASSWORD="$PGPASSWORD" \
+            -e POSTGRES_DB=idle_hands_test postgres:16
+          for attempt in $(seq 1 30); do
+            if psql -At -c 'SELECT 1' >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          psql -v ON_ERROR_STOP=1 -c 'SELECT 1'
+      - name: Enable pg_cron in disposable PostgreSQL only
+        run: |
+          dbbox=ih-postgres
+          docker exec --user root "$dbbox" sh -ec 'apt-get update -qq && apt-get install -y --no-install-recommends postgresql-16-cron'
+          docker exec --user postgres "$dbbox" sh -ec 'printf "\nshared_preload_libraries = pg_cron\ncron.database_name = idle_hands_test\ncron.use_background_workers = on\n" >> "$PGDATA/postgresql.conf"'
+          docker restart "$dbbox"
+          for attempt in $(seq 1 30); do
+            if psql -At -c 'SELECT 1' >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          psql -v ON_ERROR_STOP=1 -c 'CREATE EXTENSION pg_cron WITH SCHEMA pg_catalog'
       - name: Validate isolated database contract fixtures
         run: |
           psql -v ON_ERROR_STOP=1 -f tests/economy-contract.sql
@@ -80,3 +127,33 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f tests/permanent-cosmetics-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/restore-names-contract.sql
           psql -v ON_ERROR_STOP=1 -f tests/shared-office-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/next-week-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/office-depth-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/project-pacing-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/recordbook-boutique-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/appearance-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/weekly-race-contract.sql
+          psql -v ON_ERROR_STOP=1 -v journal_first=true -f tests/next-week-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/office-depth-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/project-pacing-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/recordbook-boutique-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/appearance-contract.sql
+          psql -v ON_ERROR_STOP=1 -f tests/weekly-race-contract.sql
+          python3 tests/next-week-concurrency.py
+          python3 tests/weekly-race-cron.py
+      - name: Prepare disposable authenticated API
+        run: |
+          psql -v ON_ERROR_STOP=1 -f tests/next-week-contract.sql
+          psql -v ON_ERROR_STOP=1 -v ih_api_password="$IH_TEST_DB_PASS" -f tests/authenticated-office-setup.sql
+      - name: Start pinned isolated PostgREST
+        run: |
+          docker run --detach --name ih-api --network host \
+            -e PGRST_DB_URI="postgres://ih_api:${IH_TEST_DB_PASS}@127.0.0.1:5432/idle_hands_test" \
+            -e PGRST_DB_SCHEMAS=public -e PGRST_DB_ANON_ROLE=anon \
+            -e PGRST_JWT_SECRET="$IH_TEST_JWT_SECRET" -e PGRST_SERVER_HOST=127.0.0.1 \
+            postgrest/postgrest:v16.5
+      - name: Exercise JWT-authenticated real API and RLS
+        run: node tests/authenticated-office-api.test.cjs
+      - name: Preserve isolated API diagnostics
+        if: always()
+        run: docker logs ih-api 2>&1 || true

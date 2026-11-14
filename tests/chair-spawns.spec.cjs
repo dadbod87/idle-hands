@@ -24,10 +24,12 @@ for(const mode of ['desktop','mobile'])test(mode+': distant good chair renders a
  await walk('left',point.x+(mode==='desktop'?100:-60));await walk('top',point.y+60);
  await expect(chair).toBeInViewport();await page.screenshot({path:'test-results/'+mode+'-distant-good-chair.png',fullPage:true});
  const box=await chair.boundingBox();if(mode==='mobile')await page.touchscreen.tap(box.x+box.width/2,box.y+box.height/2);else await page.mouse.click(box.x+box.width/2,box.y+box.height/2);
+ if(mode==='mobile'){expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);await page.locator('.pg-prompt').getByRole('button',{name:'Grab the good chair',exact:true}).click();}
  await expect.poll(()=>fixture.calls.filter(c=>c.rpc==='grab_chair').length).toBe(1);await expect(page.getByText('Error: Fixture request declined',{exact:true})).toBeVisible();
  expect(fixture.player.grabs).toBeUndefined();await expect(chair).toBeVisible();
  failRpcs.length=0;
  const retry=await chair.boundingBox();if(mode==='mobile')await page.touchscreen.tap(retry.x+retry.width/2,retry.y+retry.height/2);else await page.mouse.click(retry.x+retry.width/2,retry.y+retry.height/2);
+ if(mode==='mobile')await page.locator('.pg-prompt').getByRole('button',{name:'Grab the good chair',exact:true}).click();
  await expect.poll(()=>fixture.player.grabs).toBe(1);await expect(chair).toHaveCount(0);await expect(page.locator('.pg-jam.done')).toContainText('You got the good chair.');
  expect(fixture.player.pp).toBe(500000);expect(fixture.player.equity).toBe(2);expect(fixture.player.owned.intern).toBe(2);expect(errors).toEqual([]);
  await context.close();

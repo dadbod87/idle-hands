@@ -15,6 +15,14 @@ async function installStyleFixture(page,options={}){
    if(!quote||a.p_quote!==quote.id||p.pp<quote.total)return {status:400,body:{message:'Style request declined'}};
    p.pp-=quote.total;p.spent+=quote.total;p.cosmetic_styles[quote.item]={color:quote.color,design:quote.design};p.cosmetic_revision++;return options.lostResponse?{status:503,body:{message:'Response lost after save'}}:{body:p};
   }
+  if(rpc==='office_set_cosmetic_visibility'){
+   if(options.failVisibility)return {status:503,body:{message:'Appearance update unavailable'}};
+   if(a.p_slot==='pin')p.pin=null;
+   else if(a.p_slot==='clothing')p.look.clothing='starter';
+   else if(a.p_visible)delete p.cosmetic_equipped[a.p_slot];
+   else p.cosmetic_equipped[a.p_slot]=null;
+   p.cosmetic_revision++;return {body:p};
+  }
   if(rpc==='equip_style_item'){
    const item=fittings.office_kit.concat(fittings.vanity).find(x=>x.id===a.p_item);
    if(item)p.cosmetic_equipped[item.slot]=item.id;else if(a.p_item.startsWith('pin:'))p.pin=a.p_item.slice(4);else p.look.clothing=a.p_item;

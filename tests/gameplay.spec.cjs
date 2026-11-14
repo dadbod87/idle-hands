@@ -20,6 +20,7 @@ for(const mode of ['desktop','mobile']){
   await expect.poll(async()=>avatar.locator('..').evaluate(el=>({x:el.style.left,y:el.style.top}))).not.toEqual(initial);
   await page.screenshot({path:'test-results/'+mode+'-game-walking.png',fullPage:true});
   await expect(avatar).toHaveClass(/idling/,{timeout:15000});
+  if(mode==='mobile')await page.getByRole('button',{name:'Emotes',exact:true}).click();
   await page.getByTitle('Wave', {exact:true}).click();
   await expect(avatar).toHaveClass(/em-wave/);
   await page.screenshot({path:'test-results/'+mode+'-game-wave.png',fullPage:true});
@@ -28,6 +29,9 @@ for(const mode of ['desktop','mobile']){
     await expect(avatar).toHaveClass(new RegExp('em-'+id));
   }
   // The movement sample can already land at the desk on some viewport/camera frames.
+  // Doug's real 60-second phone event can also start mid-walk; wait through it.
+  test.info().setTimeout(test.info().timeout+65000);
+  await expect(page.locator('.pg-work')).toBeEnabled({timeout:65000});
   await page.locator('.pg-work').click();
   await expect(page.getByRole('button',{name:/Do actual work/})).toBeVisible({timeout:30000});
   await page.getByRole('button',{name:/Do actual work/}).click();
@@ -60,6 +64,7 @@ for(const mode of ['desktop','mobile']){
   await expect(page.locator('.pg-room .pg-body.me')).toHaveClass(/garment-hoodie/);
   await expect(page.locator('.pg-room .pg-body.me .pg-avatar-head [data-head]')).toHaveAttribute('data-head','alien');
   await expect(page.locator('.pg-room .pg-body.me')).toHaveClass(/style-feminine/);
+  if(mode==='mobile')await page.getByRole('button',{name:'Emotes',exact:true}).click();
   await page.getByTitle('Dance',{exact:true}).click();
   await expect(page.locator('.pg-room .pg-body.me')).toHaveClass(/em-dance/);
   await page.screenshot({path:'test-results/'+mode+'-alien-gameplay.png',fullPage:true});

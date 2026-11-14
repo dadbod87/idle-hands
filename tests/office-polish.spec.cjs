@@ -5,6 +5,7 @@ for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and dir
  test.setTimeout(90000);
  const context=await browser.newContext(mode==='mobile'?{...devices['Pixel 7']}:{viewport:{width:1440,height:900}}),page=await context.newPage();
  const fixture=await installGameFixture(page);await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
+ if(mode==='mobile'){await expect(page.getByRole('button',{name:'Jump',exact:true})).toBeHidden();await page.getByRole('button',{name:'Emotes',exact:true}).click();}
  const emotes=page.locator('.pg-bar .pg-emote');await expect(emotes).toHaveCount(6);
  for(const label of ['Jump','Dance','Wave','Panic','Shrug','Type furiously']){
   const button=page.getByRole('button',{name:label,exact:true});await expect(button.locator('svg')).toBeVisible();

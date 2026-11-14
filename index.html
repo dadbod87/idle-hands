@@ -1264,13 +1264,13 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-row.done .pg-right b{color:#2C6B45}
 
 /* glow — a ring of light around the whole person */
-.pg-body.glow-g1{filter:drop-shadow(0 0 6px rgba(255,236,190,.55))}
-.pg-body.glow-g2{filter:drop-shadow(0 0 9px rgba(201,162,83,.85))}
-.pg-body.glow-g3{filter:drop-shadow(0 0 11px rgba(96,158,214,.9))}
-.pg-body.glow-g4{filter:drop-shadow(0 0 13px rgba(200,60,45,.92))}
-.pg-body.glow-g5{filter:drop-shadow(0 0 13px rgba(70,205,120,.92))}
-.pg-body.glow-g6{filter:drop-shadow(0 0 16px rgba(168,88,232,.95))
-  drop-shadow(0 0 30px rgba(168,88,232,.5))}
+.pg-body.glow-g1{filter:drop-shadow(0 0 6px var(--custom-glow,rgba(255,236,190,.55)))}
+.pg-body.glow-g2{filter:drop-shadow(0 0 9px var(--custom-glow,rgba(201,162,83,.85)))}
+.pg-body.glow-g3{filter:drop-shadow(0 0 11px var(--custom-glow,rgba(96,158,214,.9)))}
+.pg-body.glow-g4{filter:drop-shadow(0 0 13px var(--custom-glow,rgba(200,60,45,.92)))}
+.pg-body.glow-g5{filter:drop-shadow(0 0 13px var(--custom-glow,rgba(70,205,120,.92)))}
+.pg-body.glow-g6{filter:drop-shadow(0 0 16px var(--custom-glow,rgba(168,88,232,.95)))
+  drop-shadow(0 0 30px var(--custom-glow,rgba(168,88,232,.5)))}
 
 /* presence */
 .pg-body.size-s1{transform:scale(1.10);transform-origin:50% 100%}
@@ -1638,6 +1638,16 @@ body{background:#D9CDC0}
 .pg-style-gallery .pg-wornpin{position:static;width:48px;height:48px}.pg-style-editor{padding:12px;background:#F8F1E3;color:#2B2B2B}.pg-style-heading{padding:14px;background:#343B44;color:#FFF8E8;border:2px solid #2B2B2B;border-radius:6px}.pg-style-heading h3{margin:5px 0;font-size:22px}.pg-style-heading p{margin:0}.pg-style-editor select{width:100%;max-width:100%;min-height:44px}.pg-style-preview{display:grid;grid-template-columns:1fr;gap:12px;border:2px solid #B6AA96;border-radius:6px;padding:12px;margin:12px 0;background:#EEE4D1}.pg-style-preview .pg-fitting-preview.large{width:100%;height:180px;border:0;margin:auto}.pg-style-preview .pg-wornpin{position:static;width:100px;height:100px}.pg-style-preview .pg-fitting-avatar{height:175px}.pg-style-preview .pg-fitting-avatar>.pg-body{transform:translateX(-50%) scale(1.35);top:15px}.pg-style-editor fieldset{min-width:0;margin:12px 0;padding:12px;border:2px solid #B6AA96;border-radius:6px}.pg-style-editor legend{font:700 12px var(--mono);padding:0 5px}.pg-style-swatches{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.pg-style-swatches button{height:44px;min-width:0;border:2px solid #2B2B2B;border-radius:5px;color:#fff;font-size:22px;text-shadow:0 1px 2px #000;cursor:pointer}.pg-style-editor [aria-pressed=true]{outline:3px solid #A74135;outline-offset:2px}.pg-style-editor button:focus-visible,.pg-style-editor input:focus-visible,.pg-style-editor select:focus-visible{outline:3px solid #385D81;outline-offset:3px}.pg-style-color{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}.pg-style-color label{display:flex;align-items:center;gap:10px}.pg-style-color input{width:60px;height:44px;border:2px solid #2B2B2B;background:#F8F1E3}.pg-style-designs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.pg-style-designs button{min-height:44px;padding:8px 3px}.pg-style-review-btn,.pg-style-reset{width:100%;min-height:44px;margin:6px 0}.pg-style-quote{border:2px dashed #9A7640;padding:12px;margin:12px 0;background:#F4E7CA}.pg-style-quote h4{margin:0 0 10px}.pg-style-quote dl{margin:0}.pg-style-quote dl>div{display:flex;justify-content:space-between;gap:10px;padding:7px 0}.pg-style-quote dd{margin:0;font-weight:700;font-family:var(--mono);overflow-wrap:anywhere}.pg-style-quote .total{border-top:2px solid;font-weight:700}.pg-style-actions{display:flex;gap:10px;flex-wrap:wrap}.pg-style-actions button{flex:1 1 150px;min-height:44px}.pg-style-feedback{min-height:38px;font-size:13px;overflow-wrap:anywhere}@media(max-width:420px){.pg-style-swatches{grid-template-columns:repeat(4,minmax(0,1fr))}.pg-style-preview .pg-fitting-preview.large{height:150px}.pg-style-designs button{font-size:12px}}
 
 .pg-fund-milestones>summary{min-height:44px;padding:12px;font:700 12px var(--mono);cursor:pointer;border-top:1px solid #B6AA96;border-bottom:1px solid #B6AA96}.pg-style-palette h4{font-size:12px;margin:12px 0 8px}.pg-style-palette:first-child h4{margin-top:0}.pg-vend-status{display:flex;flex-direction:column;gap:4px;min-height:56px;padding:10px 12px;background:#EEE4D1;border-top:2px solid #B6AA96;font:12px var(--mono)}.pg-vend-status span{font-size:10px;color:#625B50}.pg-vend-feedback{min-height:30px;margin:8px 12px;font-size:12px;color:#A74135;overflow-wrap:anywhere}.pg-expanded-quote p{overflow-wrap:anywhere}.pg-number-key{margin:10px 0}.pg-number-key summary,.pg-expanded-quote summary{cursor:pointer;min-height:32px;padding:6px 0}.pg-style-quote dd{max-width:65%;text-align:right}
+/* Next-week office: keep secondary records inside panels. */
+.pg-next-week[data-depth="true"] .pg-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pg-next-goal,.pg-next-supply,.pg-next-shield,.pg-next-guide{padding:12px;border:2px solid #8FA67A;margin:14px 0;background:#FFF4D8;color:#2B2B2B}.pg-next-week summary{cursor:pointer;min-height:44px;padding:10px 0;font-weight:bold}.pg-next-shield>svg{float:right;width:90px;height:70px;margin:0 0 8px 10px}.pg-next-week p,.pg-next-week h4{overflow-wrap:anywhere}.pg-scrapbook article{display:grid;grid-template-columns:70px minmax(0,1fr);gap:12px;padding:12px 0;border-bottom:1px solid #8FA67A}.pg-scrapbook svg{width:70px;height:60px}.pg-next-week .pg-next-actions button{flex:1 1 140px}@media(max-width:600px){.pg-next-week[data-depth="true"] .pg-tool-grid{grid-template-columns:1fr}.pg-next-week .pg-collectible-grid article>svg{grid-row:span 4}}
+.pg-emotes[hidden]{display:none}.pg-next-week{padding:12px}.pg-next-week select{display:block;width:100%;min-height:44px;margin:6px 0 12px}.pg-next-week button{min-height:44px}.pg-next-selects{display:flex;gap:10px;flex-wrap:wrap}.pg-next-selects label{flex:1 1 140px}.pg-next-week table{border-collapse:collapse;width:100%;font-size:12px;margin:12px 0}.pg-next-week td,.pg-next-week th{padding:8px;border-bottom:1px solid #8FA67A;text-align:left}.pg-next-week caption{text-align:left;padding:8px}.pg-next-error{padding:12px;border:2px dashed #F78B6B}.pg-next-error button{display:block;margin-top:10px}.pg-next-progress progress{display:block;width:100%;height:20px}.pg-activity-chart{width:100%;margin:10px 0}.pg-collectible-grid,.pg-tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.pg-collectible-grid article{padding:10px;border:2px solid #8FA67A;background:#303E37;color:#FFF8E8}.pg-collectible-grid article>svg{width:100%;height:95px}.pg-collectible-grid h4{min-height:42px}.pg-tool-grid button small{display:block}.pg-next-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.pg-office-collection{pointer-events:none;position:absolute;inset:-50px 8px auto;display:flex;justify-content:flex-end;gap:2px;height:42px}.pg-office-collection>span{width:48px}.pg-office-collection svg{width:100%;height:100%}.pg-confetti-desk{position:absolute;inset:48px 0 auto;height:70px;width:100%}.pg-confetti-desk b{position:absolute;width:7px;height:4px;transform:rotate(27deg)}.pg-profile-link{font:inherit;color:inherit;background:transparent;border:0;text-decoration:underline;cursor:pointer;min-height:44px;text-align:left}.pg-destination{position:absolute;pointer-events:none;color:#FFD36B;font-size:30px;transform:translate(-50%,-50%)}.pg-next-week .pg-tabs{overflow-x:auto;scrollbar-width:thin}.pg-tabs{scrollbar-width:thin}@media(max-width:600px){.pg-collectible-grid{grid-template-columns:1fr}.pg-tool-grid{grid-template-columns:1fr}.pg-collectible-grid h4{min-height:0}.pg-next-week td,.pg-next-week th{padding:6px 3px}.pg-collectible-grid article{display:grid;grid-template-columns:90px 1fr;gap:8px}.pg-collectible-grid article>svg{grid-row:span 3}.pg-root .pg-room{touch-action:none}}
+/* Touch controls remain distinct on small screens. */
+.pg-open{min-height:44px}
+@media(max-width:540px){.pg-bar>.pg-emotes-toggle{grid-column:1/-1;grid-row:2;min-height:44px}.pg-bar>.pg-emotes{grid-row:3}.pg-bar>.pg-prompt{grid-row:4}.pg-prompt>.pg-open{min-height:44px}}
+@media(pointer:coarse){.pg-root .pg-room{touch-action:none}}
+.pg-next-week>.pg-tabs{display:flex;flex-wrap:wrap}.pg-next-week>.pg-tabs .pg-tab{flex:1 1 100px}.pg-boutique-grid .pg-costume-preview{margin:0 auto;flex:none;height:166px}.pg-boutique-grid article>svg{width:100%;max-height:140px}.pg-boutique-grid article{display:flex;flex-direction:column;align-items:stretch;overflow-wrap:anywhere}.pg-boutique-grid article>svg{flex:none;width:160px;max-width:100%;height:100px;align-self:center}.pg-boutique-grid article>button{width:100%;white-space:normal;overflow-wrap:normal}.pg-boutique-notice:focus{outline:none}.pg-boutique-grid button{margin:5px 0}.pg-next-week table td{overflow-wrap:anywhere}
+.pg-style-preview .pg-btn{display:block;margin:8px 0;min-height:44px}.pg-style-effects{padding:12px;margin:12px 0;border:1px solid #8FA67A}.pg-style-effects summary{cursor:pointer;min-height:44px;font-weight:bold}.pg-style-effects .pg-btn{margin:5px;min-height:44px}.pg-form-label optgroup{font-weight:800}
+.pg-weekly-race fieldset{min-width:0;border:1px solid #B6AA96;padding:10px}.pg-race-players{display:flex;flex-wrap:wrap;gap:7px}.pg-race-players .pg-btn{white-space:normal;overflow-wrap:anywhere}.pg-race-players [aria-pressed=true]{outline:2px solid #385D81;outline-offset:1px}.pg-race-swatch{display:inline-block;width:12px;height:12px;margin-right:5px;border:1px solid #2B2B2B}.pg-race-plot{width:100%;min-width:0;margin-top:14px}.pg-race-slider{display:block}.pg-race-slider input{display:block;width:100%;min-height:44px}.pg-weekly-race table{table-layout:fixed}.pg-weekly-race td,.pg-weekly-race th{overflow-wrap:anywhere}.pg-race-events{padding-left:18px}.pg-race-events button{text-align:left;white-space:normal;overflow-wrap:anywhere}.pg-race-health,.pg-race-empty{padding:10px;background:#E3EBD8;border:1px solid #8FA67A}
 </style>
 </head>
 <body>
@@ -1770,6 +1780,8 @@ function officeFor(board, id) {
 
 /* Deed copy. The numbers come from the DB; these are the jokes. */
 const DEED_TEXT = {
+  rescue: {label:"IT Rescue",eff:"Clears one eligible coworker debuff",good:true,mine:n=>`You rescued ${n}'s afternoon.`,wire:(a,b)=>`${a} cleared one penalty for ${b}.`,hit:n=>`${n} cleared one of your eligible penalties.`},
+  confetti: {label:"Confetti Incident",eff:"Ten minutes of removable desk confetti",good:false,mine:n=>`You decorated ${n}'s desk. Facilities has questions.`,wire:(a,b)=>`${a} delivered confetti to ${b}.`,hit:n=>`${n} decorated your desk with confetti. No output penalty.`},
   nickname: { label: "Nickname", eff: "Names them for an hour. Everyone sees it.",
     mine: (n, d) => `You started calling ${n} "${d}". It will stick.`,
     wire: (a, b, amt, d) => `${a} started calling ${b} "${d || "something"}".`,
@@ -1782,10 +1794,10 @@ const DEED_TEXT = {
     mine: (n) => `You gave ${n} a shout-out. The room clapped. Briefly.`,
     wire: (a, b) => `${a} gave ${b} a shout-out at the all-hands.`,
     hit: (n) => `${n} shouted you out at the all-hands. Output up 20% for an hour.` },
-  cover: { label: "Cover their shift", eff: "they receive 150% of what you pay", good: true,
+  cover: { label: "Cover their shift", eff: "+15% output for 20 min; replaces existing Cover", good: true,
     mine: (n) => `You covered ${n}'s shift. They will never know what it cost.`,
     wire: (a, b, amt) => `${a} quietly covered ${b}'s shift${amt ? ` (${fmt(amt)} BW)` : ""}.`,
-    hit: (n) => `${n} covered your shift. That is real money.` },
+    hit: (n) => `${n} covered your shift. Output up 15% for twenty minutes.` },
   meeting: { label: "Book a recurring meeting", eff: "−35% output for 20 min", good: false,
     mine: (n) => `You booked ${n} into a recurring meeting. This is who you are now.`,
     wire: (a, b) => `${a} booked ${b} into a recurring meeting.`,
@@ -1818,6 +1830,8 @@ const DEED_TEXT = {
 
 /* Costume drawing hints. Prices and durations live in the DB catalog. */
 const COSTUMES = {
+  budget_wizard:{name:"Budget Wizard",shirt:"#7B7090",hat:"wizard",art:"wizard",note:"Calculator wand. Forecast accuracy not included."},
+  filing_cabinet:{name:"Walking Filing Cabinet",shirt:"#7B9CC4",art:"cabinet",note:"Three drawers. None alphabetized."},
   cone:    { name: "Traffic Cone",   hat: "cone",  note: "Placed. Not explained." },
   party:   { name: "Party Hat",      hat: "party", note: "It is nobody's birthday." },
   hardhat: { name: "Hard Hat",       hat: "hard",  note: "No construction is occurring." },
@@ -2625,6 +2639,8 @@ const AVATAR_SKIN=["#F1C5A5","#DCA581","#BD805F","#955E46","#68452F","#F9D9C5"];
 const AVATAR_EYES=["tired","bright","wide","sleepy"];
 const AVATAR_EXPRS=["deadpan","smile","skeptical","happy","surprised"];
 const WARDROBE=[
+ {id:"coffee_tech",name:"Emergency Coffee Technician",office:true,shirt:"#8FA67A",detail:"Earn through helping, then purchase in Office Boutique."},
+ {id:"meeting_survivor",name:"Meeting Survivor",office:true,shirt:"#E4DBC5",detail:"Earn through qualifying weeks, then purchase in Office Boutique."},
  {id:"hoodie",name:"Suspiciously Comfortable Hoodie",cost:2000,shirt:"#4C668C",detail:"A sweatshirt with a productivity exemption."},
  {id:"cardigan",name:"Chaos Coordinator Cardigan",cost:8500,shirt:"#6F8F74",detail:"For the person organizing everybody else's panic."},
  {id:"blazer",name:"Unreasonably Important Blazer",cost:45000,shirt:"#282D34",detail:"Includes no additional authority."},
@@ -2817,7 +2833,7 @@ function calcRate(p, cat) {
     { tiers, streak, tz }. */
 function liveMult(p, ctx = {}) {
   const now = Date.now();
-  let m = 1 + (p.equity || 0) * 0.03 + Math.min(p.goodwill || 0, 30) * 0.01 + (p.raises || 0) * 0.02;
+  let m = 1 + earnedSeniority(p) * 0.03 + Math.min(p.goodwill || 0, 30) * 0.01 + (p.raises || 0) * 0.02;
   m *= 1 + 0.05 * perkCount(p, "compound");
   if (p.dept === "finance") m *= 1.12;
   if ((p.heat || 0) >= HEAT_LIMIT) m *= 0.75;
@@ -3241,14 +3257,15 @@ function sfx(name) {
 
 /* ===== lib/supabaseClient.js ===== */
 
+const PREVIEW_HOLD = !["idlehands.thepatrongrp.com","idle-hands-one.vercel.app","localhost","127.0.0.1"].includes(location.hostname);
 const supabase = SB.createClient(
-  SUPABASE_URL,
+  PREVIEW_HOLD ? "http://127.0.0.1:9" : SUPABASE_URL,
   SUPABASE_ANON_KEY,
   {
     auth: {
-      persistSession: true,      // survives closing the browser
-      autoRefreshToken: true,    // keeps the session alive indefinitely
-      detectSessionInUrl: true,  // picks up the magic link on return
+      persistSession: !PREVIEW_HOLD,      // survives closing the browser
+      autoRefreshToken: !PREVIEW_HOLD,    // keeps the session alive indefinitely
+      detectSessionInUrl: !PREVIEW_HOLD,  // picks up the magic link on return
     },
   }
 );
@@ -3336,6 +3353,7 @@ function onAuthChange(cb) {
    opens devtools and calls buy_item, the database still checks the price. */
 
 async function rpc(name, args = {}) {
+  if(PREVIEW_HOLD)throw Error("This held preview cannot use live player actions.");
   const { data, error } = await supabase.rpc(name, args);
   if (error) throw error;
   return data;
@@ -3344,6 +3362,23 @@ async function rpc(name, args = {}) {
 const api = {
   upsertPlayer: (name, avatar, code) =>
     rpc("upsert_player", { p_name: name, p_avatar: avatar || null, p_code: code || null }),
+  officeWeek:()=>rpc("office_week_status"),
+  officeShop:()=>rpc("office_shop_state"),
+  officeShopQuote:item=>rpc("office_shop_quote",{p_item:item}),
+  officeShopBuy:(quote,request)=>rpc("office_shop_buy",{p_quote:quote,p_request:request}),
+  officeRace:(week,day)=>rpc("office_race",{p_week:week||null,p_day:day||null}),
+  officeRecordbook:(week,player)=>rpc("office_recordbook",{p_week:week||null,p_player:player||null}),
+  officeProfile:(player,period,peer)=>rpc("office_profile",{p_player:player,p_period:period,p_peer:peer}),
+  officeTools:slots=>rpc("office_equip_tools",{p_slots:slots}),
+  officeInteract:(target,action,request)=>rpc("office_interact",{p_target:target,p_action:action,p_request:request}),
+  officeCollectible:(item,week)=>rpc("office_claim_collectible",{p_item:item,p_week:week}),
+  officeClearConfetti:()=>rpc("office_clear_confetti"),
+  officeDisplay:items=>rpc("office_display_collectibles",{p_items:items}),
+  officeMemento:week=>rpc("office_display_memento",{p_week:week}),
+  officeResupply:(tool,request)=>rpc("office_resupply",{p_tool:tool,p_request:request}),
+  officeShieldQuote:()=>rpc("office_shield_quote"),
+  officeBuyShield:(quote,request)=>rpc("office_buy_shield",{p_quote:quote,p_request:request}),
+  officeDeed:(target,kind,request)=>rpc("office_deed",{p_target:target,p_kind:kind,p_request:request}),
   sync: () => rpc("sync"),
   buyItem: (id) => rpc("buy_item", { p_item: id }),
   buyUpgrade: (id) => rpc("buy_upgrade", { p_up: id }),
@@ -3390,6 +3425,7 @@ const api = {
   quoteStyle:(item,color,design)=>rpc("quote_style",{p_item:item,p_color:color,p_design:design}),
   applyStyle:id=>rpc("apply_style",{p_quote:id}),
   equipStyle:item=>rpc("equip_style_item",{p_item:item}),
+  cosmeticVisibility:(slot,visible)=>rpc("office_set_cosmetic_visibility",{p_slot:slot,p_visible:visible}),
   weeklyPins: () => rpc("weekly_pins"),
   buyPin: (id) => rpc("buy_pin", { p_id: id }),
   setPin: (id) => rpc("set_pin", { p_id: id }),
@@ -3582,7 +3618,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 194 · less paperwork";
+const BUILD = "build 195 · the office remembers";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3663,6 +3699,10 @@ function OfficeFloor() {
   const [feed, setFeed] = useState([]);
   const [panel, setPanel] = useState(null);
   const [incidents, setIncidents] = useState([]);
+  const [bootNoticesReady,setBootNoticesReady]=useState(false),[incomingNoticesReady,setIncomingNoticesReady]=useState(false);
+  const [releaseNotice,setReleaseNotice]=useState({player:null,seen:true,manual:false});
+  useEffect(()=>{if(me?.id)setReleaseNotice({player:me.id,seen:releaseNotesSeen(me.id),manual:false});else setReleaseNotice({player:null,seen:true,manual:false});},[me?.id]);
+  const dismissReleaseNotes=()=>{if(!me?.id)return;try{localStorage.setItem('ih_release_notes_'+me.id,JSON.stringify(RELEASE_NOTES.id));}catch{}setReleaseNotice({player:me.id,seen:true,manual:false});};
   const [funOpen,setFunOpen] = useState(false);
   const [funTab,setFunTab] = useState("incidents");
   const [funTick,setFunTick] = useState(Date.now());
@@ -3712,11 +3752,17 @@ function OfficeFloor() {
   const [chair, setChair] = useState(null);
   const [pos, setPos] = useState({ x: 1500, y: 860 });   // middle of the hall
   const [near, setNear] = useState(null);
+  const [worldIntent,setWorldIntent]=useState(null),[emotesOpen,setEmotesOpen]=useState(false),[mapOpen,setMapOpen]=useState(false);
+  const worldActivation=useRef(null),touchGesture=useRef(null);
   const [stage, setStage] = useState({ w: 900, h: 560 });
   // A phone is ~400 CSS px wide against a 3400px floor. Without a zoom you see
   // a tenth of the room and every object looks enormous.
   const zoom = clamp(stage.w / 820, 0.7, 1);
   const view = { w: stage.w / zoom, h: stage.h / zoom };
+  const [touchMovement,setTouchMovement]=useState(()=>window.matchMedia('(pointer: coarse)').matches||navigator.maxTouchPoints>0);
+  useEffect(()=>{const m=window.matchMedia('(pointer: coarse)');const update=()=>setTouchMovement(m.matches||navigator.maxTouchPoints>0);m.addEventListener('change',update);return()=>m.removeEventListener('change',update);},[]);
+  useEffect(()=>{if(panel){setWorldIntent(null);worldActivation.current=null;}},[panel]);
+  useEffect(()=>{const cancel=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)&&!e.target.closest('input,select,textarea')){setWorldIntent(null);worldActivation.current=null;}};window.addEventListener('keydown',cancel);return()=>window.removeEventListener('keydown',cancel);},[]);
   const [showHelp, setShowHelp] = useState(false);
   const [ev, setEv] = useState(null);
   const [nextEv, setNextEv] = useState(null);
@@ -3755,6 +3801,8 @@ function OfficeFloor() {
   const [testers, setTesters] = useState(null);
   const [purchasePending, setPurchasePending] = useState(null);
   const purchaseLock = useRef(false);
+  const deedLock = useRef(false),deedRequest=useRef(null);
+  const [deedRetry,setDeedRetry]=useState(false);
   const refreshPricesRef = useRef(() => {});
   const [prices, setPrices] = useState(null);   // server quotes; lifetime-based sums drift
   const [mascotReal, setMascotReal] = useState(false);
@@ -3833,6 +3881,7 @@ function OfficeFloor() {
   /* ------------------------------ boot ---------------------------- */
   const boot = useCallback(async (u) => {
     try {
+      setBootNoticesReady(false);setIncomingNoticesReady(false);
       setUser(u);
       setCat(await loadCatalog());
       const { data: existing } = await supabase
@@ -3876,6 +3925,7 @@ function OfficeFloor() {
           .select("seen_recap").eq("id", u.id).maybeSingle();
         if (last && last.stats && pl?.seen_recap !== last.week_key) setRecap(last);
       } catch { /* no seasons yet */ }
+      setBootNoticesReady(true);
     } catch (e) {
       setErr(e.message || String(e));
       setPhase("error");
@@ -3983,7 +4033,7 @@ function OfficeFloor() {
     const cats = setInterval(catalog, 180000);
     document.addEventListener("visibilitychange", visible);
     const t = setInterval(heartbeat, SYNC_MS);
-    claim();
+    claim().finally(()=>{if(active)setIncomingNoticesReady(true);});
     return () => {
       active = false; queued.stop(); priceQueue.stop(); un();
       refreshPricesRef.current = () => {};
@@ -4005,7 +4055,7 @@ function OfficeFloor() {
       }));
       shown.forEach((d) => {
         const T = DEED_TEXT[d.kind];
-        if (T) say(T.hit(d.from, COSTUMES[d.detail]?.name), T.good ? "good" : "bad");
+        if (T) say(officeIncidentText(d,T), d.detail==="blocked:filter"||d.detail==="reflected:shield"||T.good ? "good" : "bad");
       });
       setIncidents(shown);
       applyServer(await api.sync());
@@ -4326,7 +4376,7 @@ function OfficeFloor() {
     const dn = (e) => {
       if (typing(e) || e.target?.closest?.('[role="dialog"]') || e.metaKey || e.ctrlKey || e.altKey) return;
       if (map[e.key]) { keysRef.current[map[e.key]] = true; e.preventDefault(); }
-      if (e.key === "Enter" && near && !panel) openFixture(near);
+      if (e.key === "Enter" && near && !panel && !e.target?.closest?.("button,a,[role=button]")) openFixture(near);
       if (e.key === "Escape") setPanel(null);
     };
     const up = (e) => { if (map[e.key]) keysRef.current[map[e.key]] = false; };
@@ -4446,6 +4496,7 @@ function OfficeFloor() {
   /* ---------------------------- actions --------------------------- */
   const doWork = () => {
     if (dougCallNow(Date.now())) return;
+    if (!officeRef.current) { flash("Finding your desk. Give Facilities a moment."); return; }
     if (!atDeskRef.current) {        // you work at your desk, like everybody else
       const o = officeRef.current;
       if (o) routeTo(o.cx, o.cy + 40, null, o);
@@ -4504,16 +4555,24 @@ function OfficeFloor() {
     } finally { purchaseLock.current = false; setPurchasePending(null); }
   };
   const commit = async (target, kind) => {
+    if(deedLock.current)return;
+    deedLock.current=true;
+    setDeedRetry(false);
     const T = DEED_TEXT[kind];
-    const row = await guard(() => api.doDeed(target.id, kind));
-    if (row) {
+    const key=target.id+':'+kind;
+    if(deedRequest.current?.key!==key)deedRequest.current={key,id:crypto.randomUUID(),target,kind};
+    try {
+      const result=await api.officeDeed(target.id,kind,deedRequest.current.id);
+      applyServer(await api.sync());
+      deedRequest.current=null;
       sfx(T.good ? "kind" : "sabotage");
-      reactTo(T.good?"kind":"oops",T.good?"Morale: noticeably improved.":"HR has entered the chat.");
-      say(T.mine(target.name), T.good ? "good" : "bad");
-      flash(T.good ? "Logged. With your name on it." : "Logged. They will see it was you.");
+      reactTo(T.good?"kind":"oops",result.outcome||(T.good?"Morale: noticeably improved.":"HR has entered the chat."));
+      say(result.outcome||T.mine(target.name), T.good ? "good" : "bad");
+      flash(result.outcome||(T.good ? "Logged. With your name on it." : "Logged. They will see it was you."));
       setPanel(null);
       setFloor(await loadFloor());
-    }
+    }catch(e){setDeedRetry(true);flash(prettyError(e));}
+    finally{deedLock.current=false;}
   };
   const dress = async (target, outfitId) => {
     const row = await guard(() => api.dress(target.id, outfitId));
@@ -4618,6 +4677,7 @@ function OfficeFloor() {
    * out of the room you're in, then into the one you're going to.
    */
   const routeTo = (tx, ty, then, forceOffice) => {
+    setWorldIntent(null); worldActivation.current = null;
     const path = [];
     const p = posRef.current;
     // centre of an office doorway, offset outward (+) or inward (-)
@@ -4644,6 +4704,24 @@ function OfficeFloor() {
     if (!roomRef.current) return;
     const r = stageRef.current.getBoundingClientRect();
     routeTo((e.clientX - r.left) / zoom + cam.x, (e.clientY - r.top) / zoom + cam.y);
+  };
+  // Pointer movement and interaction are separate intents on phones. Keyboard
+  // activation (detail=0) and explicitly labeled directory routes remain intentional.
+  const captureWorldTap=e=>{
+    const pointerType=e.nativeEvent.pointerType||touchGesture.current?.type;
+    if(e.detail===0||pointerType!=="touch")return;
+    e.preventDefault();e.stopPropagation();
+    if(touchGesture.current?.dragged){goRef.current=null;setWorldIntent(null);worldActivation.current=null;return;}
+    const el=e.target.closest('[data-fixture],.pg-officedesk,[data-scenery],.pg-chair,.pg-office-tv');
+    const fx=el?.dataset.fixture&&FIXTURES.find(f=>f.id===el.dataset.fixture),prop=el?.dataset.scenery&&SCENERY.find(p=>p.id===el.dataset.scenery);
+    let point=null,label='',activate=null;
+    if(fx){point={x:fx.x+fx.w/2,y:Math.min(ROOM.h-50,fx.y+fx.h+60)};label='Open '+fx.label;activate=()=>openFixture(fx);}
+    else if(prop){point={x:prop.x+prop.w/2,y:prop.y+prop.h+35};label='Inspect '+(prop.label||PROP_LABELS[prop.kind]);activate=()=>setPanel('prop:'+prop.id);}
+    else if(el?.classList.contains('pg-officedesk')&&el.classList.contains('mine')&&myOffice){point={x:myOffice.cx,y:myOffice.cy+40};label='Open your desk';activate=()=>setPanel('shop');}
+    else if(el?.classList.contains('pg-chair')&&chair){point={x:chair.x,y:chair.y+45};label='Grab the good chair';activate=grabChair;}
+    else if(el?.classList.contains('pg-office-tv')){const r=el.getBoundingClientRect(),stageBox=stageRef.current.getBoundingClientRect();point={x:(r.left+r.width/2-stageBox.left)/zoom+cam.x,y:(r.bottom-stageBox.top)/zoom+cam.y+40};label='Change TV channel';activate=()=>el.click();}
+    if(point){routeTo(point.x,point.y);setWorldIntent({...point,label});worldActivation.current=activate;}
+    else{setWorldIntent(null);worldActivation.current=null;walkClick(e);}
   };
   const openFixture = (f) => {
     if (!f) return;
@@ -4751,10 +4829,10 @@ function OfficeFloor() {
                 +{me.raises * 2}% raises
               </span>
             )}
-            {me?.equity > 0 && (
+            {earnedSeniority(me) > 0 && (
               <span className="pg-tag good"
-                    data-tip={`+${(me.equity * 3).toFixed(0)}% output from ${me.equity} Seniority (3% each). Resets every Friday at 4 PM Pacific.`}>
-                ▲ {me.equity} Seniority
+                    data-tip={`+${(earnedSeniority(me)*3).toFixed(0)}% from ${earnedSeniority(me)} earned Seniority; ${me.equity} available. Spending keeps the earned bonus. Resets Friday at 4 PM Pacific.`}>
+                ▲ {me.equity} available Seniority
               </span>
             )}
             {heat > 0 && !underReview && (
@@ -4871,7 +4949,10 @@ function OfficeFloor() {
         <div ref={roomRef} className="pg-room"
              style={{ width: ROOM.w, height: ROOM.h, transformOrigin: "0 0",
                       transform: `scale(${zoom}) translate(${-cam.x}px, ${-cam.y}px)` }}
-             onClick={walkClick}>
+             onPointerDownCapture={e=>{if(e.isPrimary)touchGesture.current={id:e.pointerId,type:e.pointerType,x:e.clientX,y:e.clientY,dragged:false};else if(touchGesture.current)touchGesture.current.dragged=true;}}
+             onPointerMoveCapture={e=>{const g=touchGesture.current;if(g&&g.id===e.pointerId&&g.type==='touch'&&Math.hypot(e.clientX-g.x,e.clientY-g.y)>10){g.dragged=true;goRef.current=null;setWorldIntent(null);worldActivation.current=null;}}}
+             onPointerCancelCapture={e=>{if(touchGesture.current?.id===e.pointerId){goRef.current=null;setWorldIntent(null);worldActivation.current=null;touchGesture.current.dragged=true;}}}
+             onClickCapture={captureWorldTap} onClick={walkClick}>
           <div className="pg-wall" style={{ height: WALL_H }} />
           <div className="pg-carpet" style={{ top: WALL_H }} />
           <OfficeEnvironment variant={officeSceneAt(funTick)} celebrating={!!office?.hit} onInspect={id=>setPanel("prop:"+id)}/>
@@ -4907,7 +4988,7 @@ function OfficeFloor() {
 
           {activeBreak&&<div className="pg-break-sign" data-testid="live-break-sign" style={{left:breakSpot.x-25,top:breakSpot.y-67,zIndex:Math.round(breakSpot.y-60)}}><SceneryArt kind="break"/><b>COFFEE BREAK</b><small>no action items</small></div>}
           {FIXTURES.map((f) => (
-            <div key={f.id} className={"pg-fx" + (near?.id === f.id ? " near" : "")}
+            <div key={f.id} data-fixture={f.id} className={"pg-fx" + (near?.id === f.id ? " near" : "")}
                  style={{ left: f.x, top: f.y, width: f.w, height: f.h,
                           zIndex: Math.round(f.y + f.h) }}
                  onClick={(e) => walkTo(f, e)}>
@@ -4928,7 +5009,7 @@ function OfficeFloor() {
                             zIndex: Math.round(o.y) }}>
                 <div className={"pg-officefloor" + (physicalId(p,"rug") ? " has-rug rug-" + physicalId(p,"rug") : "")}>{physicalId(p,"rug")&&<OfficeRugArt tier={physicalId(p,"rug")} style={itemStyle(p,physicalId(p,"rug"))}/>}</div>
                 {physicalId(p,"art") && <div className={"pg-officeart art-" + physicalId(p,"art")}><OfficeWallArt tier={physicalId(p,"art")} style={itemStyle(p,physicalId(p,"art"))}/></div>}
-                {p?.kit?.tv==="tv1"&&<OfficeTelevision owner={p.name} style={itemStyle(p,"tv1")}/>}
+                {physicalId(p,"tv")==="tv1"&&<OfficeTelevision owner={p.name} style={itemStyle(p,"tv1")}/>}
 
                 <div className="pg-officedoor"
                      style={{ left: o.doorX - o.x, width: DOOR_W }}><i /><span /><i /></div>
@@ -4954,6 +5035,7 @@ function OfficeFloor() {
                        else if (chances) sayAt(o.cx, o.deskY - 6, pick(GHOST_DESK.lines));
                      }}>
                   <OfficeDeskArt tier={physicalId(p,"desk")} style={itemStyle(p,physicalId(p,"desk"))}/>
+                  <OfficeCollectionDecor player={p}/>
                   {mine && <div className="pg-fxlabel">Your Desk</div>}
                 </div>
               </React.Fragment>
@@ -5046,7 +5128,8 @@ function OfficeFloor() {
                   emote={emote && emote.until > Date.now() ? emote.id : null} />
           </div>
         </div>
-        <MiniMap pos={pos} board={board} meId={me?.id} cam={cam} view={view} chair={chair} />
+        {(!touchMovement||mapOpen)&&<MiniMap pos={pos} board={board} meId={me?.id} cam={cam} view={view} chair={chair} />}
+        {worldIntent&&<div className="pg-destination" aria-hidden="true" style={{left:(worldIntent.x-cam.x)*zoom,top:(worldIntent.y-cam.y)*zoom}}>◇</div>}
         {chair && (chair.x < cam.x || chair.x > cam.x + view.w ||
                    chair.y < cam.y || chair.y > cam.y + view.h) && (
           <div className="pg-chairping" style={{
@@ -5058,26 +5141,29 @@ function OfficeFloor() {
 
       <div className="pg-feedback-rail" role="status" aria-live="polite" aria-atomic="true">{toast&&<span key={toast.k} className="pg-toast">{toast.text}</span>}{propScene?<span className={"pg-prop-caption scene-"+propScene.kind} data-testid="prop-performance">{propScene.line}</span>:!toast&&<span className="pg-feedback-idle">Quiet floor. Loud stationery.</span>}</div>
       <div className="pg-bar">
-        <button className={"pg-work" + (atDesk ? "" : " away")} onClick={doWork} disabled={!!dougCall}>
-          {dougCall ? <>Doug is on the phone <em>{Math.ceil(Math.max(0,dougCall.until-Date.now())/1000)}s</em></> : atDesk ? <>Do actual work <em>+{fmt(clickPow)} BW</em></>
+        <button className={"pg-work" + (atDesk ? "" : " away")} onClick={doWork} disabled={!!dougCall || !myOffice}>
+          {!myOffice ? <>Finding your desk <em>Reading the office floor…</em></> : dougCall ? <>Doug is on the phone <em>{Math.ceil(Math.max(0,dougCall.until-Date.now())/1000)}s</em></> : atDesk ? <>Do actual work <em>+{fmt(clickPow)} BW</em></>
                   : <>Go to your desk <em>work happens there</em></>}
         </button>
         <div className={"pg-more"+(moreOpen?" open":"")}>
           <button className="pg-btn pg-more-toggle" aria-expanded={moreOpen} aria-controls="office-more-actions" onClick={()=>setMoreOpen(v=>!v)}><span aria-hidden="true">•••</span>More</button>
           <div id="office-more-actions" className="pg-more-content">
+            <button className="pg-btn" onClick={()=>{setMoreOpen(false);setPanel('officeweek');}}>This week &amp; player profiles</button>
+            {touchMovement&&<button className="pg-btn" aria-pressed={mapOpen} onClick={()=>setMapOpen(v=>!v)}>{mapOpen?'Hide minimap':'Show minimap'}</button>}
             <button className="pg-btn" title="Office votes, bingo, assignments, the cigar lounge and commendations" onClick={()=>{setMoreOpen(false);setFunOpen(true);}}><OfficeIcon kind="paper" compact/> Office Nonsense</button>
             <button className="pg-btn" aria-label="Office field guide" onClick={openGuide}><UtilityIcon kind="help"/>Office field guide{!guideSeen&&<b className="pg-guide-new">new</b>}</button>
             <button className="pg-btn pg-sound-shortcut" onClick={()=>{setMoreOpen(false);setPanel("sound");}}><UtilityIcon kind="sound"/>Sound &amp; feel</button>
           </div>
         </div>
         <button className="pg-btn pg-directory-button" onClick={()=>{setMoreOpen(false);setPanel("directory");}}><UtilityIcon kind="map"/><span>Office directory</span></button>
-        <div className="pg-emotes" aria-label="Express yourself">
+        {touchMovement&&<button className="pg-btn pg-emotes-toggle" aria-expanded={emotesOpen} aria-controls="office-emotes" onClick={()=>setEmotesOpen(v=>!v)}>Emotes</button>}
+        <div id="office-emotes" className="pg-emotes" aria-label="Express yourself" hidden={touchMovement&&!emotesOpen}>
           {EMOTES.map((e) => (
             <EmoteButton key={e.id} item={e} active={emote?.id===e.id&&emote.until>Date.now()} onClick={()=>doEmote(e.id)}/>
           ))}
         </div>
         <div className="pg-prompt">
-          {near
+          {worldIntent?<><b>{dist(pos,worldIntent)>180?"Walk closer to "+worldIntent.label.toLowerCase():"Ready"}</b><button className="pg-open" disabled={dist(pos,worldIntent)>180} onClick={()=>{worldActivation.current?.();setWorldIntent(null);worldActivation.current=null;}}> {worldIntent.label}</button></>:near
             ? (<><b>{near.label}</b> — {near.sub}<button className="pg-open" onClick={() => openFixture(near)}>Open</button></>)
             : <><span className="pg-walk-hint">Tap the floor to walk (arrow keys work too). Walk up to anything and open it.</span><span className="pg-walk-hint-short">Tap the floor to walk. Help has the rest.</span></>}
         </div>
@@ -5088,7 +5174,9 @@ function OfficeFloor() {
         <div className="pg-build">The Patron Group · {BUILD}</div>
       </div>
 
-      {showHelp && <Help player={me} onClose={() => setShowHelp(false)} rate={rate} onGuide={()=>{setShowHelp(false);openGuide();}} />}
+      {showHelp && <Help player={me} onClose={() => setShowHelp(false)} rate={rate} onGuide={()=>{setShowHelp(false);openGuide();}} onUpdates={()=>{setShowHelp(false);setReleaseNotice({player:me.id,seen:releaseNotice.seen,manual:true});}} />}
+
+      {phase==='play'&&bootNoticesReady&&incomingNoticesReady&&releaseNotice.player===me?.id&&(!releaseNotice.seen||releaseNotice.manual)&&!showHelp&&!panel&&!recap&&!report&&!streakCard&&!incidents.length&&!cow&&!guideOpen&&!funOpen&&<ReleaseNotes onClose={dismissReleaseNotes}/>}
 
       {panel && (
         <Panel stablePurchases={panel==="shop"||panel==="mirror"} receipt={reaction&&!["work","filed"].includes(reaction.kind)?reaction:null} onClose={() => setPanel(null)} title={panel.startsWith("prop:")?(inspectedProp?.label||PROP_LABELS[inspectedProp?.kind]):PANEL_TITLES[panel]}>
@@ -5127,9 +5215,10 @@ function OfficeFloor() {
                     if(row){ setPrices(null); api.allPrices().then(setPrices).catch(() => {}); }
                   }} />
           )}
+          {panel === "officeweek" && <OfficeWeekPanel me={me} board={board} onPlayer={applyServer}/>}
           {panel === "sound" && <SoundPanel muted={mute} volume={volume} onMute={()=>setMute(setMuted(!mute))} onVolume={v=>setVolume(setSoundLevel(v))}/>}
           {panel === "directory" && <OfficeDirectory onGo={id=>{setPanel(null);if(id==="desk"&&myOffice)routeTo(myOffice.cx,myOffice.cy+40,"desk",myOffice);else{const f=FIXTURES.find(x=>x.id===id);if(f)walkTo(f);}}}/>}
-          {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} schedule={weekSchedule} />}
+          {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} schedule={weekSchedule} onPlayer={applyServer} />}
           {(panel === "kindness" || panel === "sabotage") && (
             <>
             {panel==="kindness"&&<OfficeMoments wire={wire} meId={me?.id} variant={officeSceneAt(funTick)} office={office} invite={activeBreak} names={names} liveReady={liveReady} inviting={inviting} canInvite={Date.now()-inviteLast.current>=60000} onInvite={inviteCoffeeBreak} onWave={waveTogether} onInspect={(kind,line)=>{reactTo("oops",line);sfx("pop");const prop=SCENERY.find(p=>p.kind===kind);if(prop)sayAt(prop.x+prop.w/2,prop.y,line,5000);}}/>}
@@ -5265,7 +5354,7 @@ function OfficeFloor() {
               onVend={async () => {
                 try {
                   const prize = await api.useVending();
-                  try { applyServer(await api.getMe()); } catch { /* Saved pull remains valid; status/heartbeat recover. */ }
+                  try { applyServer(await api.sync()); } catch { /* Saved pull remains valid; status/heartbeat recover. */ }
                   sfx("good");
                   return prize;                      // the panel shows it; the floor can't
                 } catch (e) { throw e; }
@@ -5275,7 +5364,7 @@ function OfficeFloor() {
                   const st = await api.signCard();
                   setCard(st);
                   // A failed balance refresh must not turn a saved signature into a failed one.
-                  try { applyServer(await api.getMe()); } catch { /* Heartbeat retries. */ }
+                  try { applyServer(await api.sync()); } catch { /* Heartbeat retries. */ }
                   return st;
                 } catch (e) {
                   try { setCard(await loadCard()); } catch { /* Keep the last snapshot. */ }
@@ -5283,13 +5372,14 @@ function OfficeFloor() {
                 }
               }} />
           )}
+          {deedRetry&&deedRequest.current&&<div className="pg-note"><p>The last coworker action was not confirmed. Recover its receipt without applying it again, even during cooldown.</p><button className="pg-btn" disabled={deedLock.current} onClick={()=>commit(deedRequest.current.target,deedRequest.current.kind)}>Retry unconfirmed action</button></div>}
         </Panel>
       )}
 
       {cow && (
         <CowLevel data={cow} onDone={async () => {
           setCow(null);
-          try { applyServer(await api.getMe()); setFloor(await loadFloor()); } catch { /* back anyway */ }
+          try { applyServer(await api.sync()); setFloor(await loadFloor()); } catch { /* back anyway */ }
           say("You are back on the floor. There is no pineapple level.", "sys");
         }} />
       )}
@@ -5362,8 +5452,8 @@ function OfficeFloor() {
                 <Face name={g.from} size={38} />
                 <div>
                   <b>{g.from}</b>
-                  <span className={T.good ? "good" : "bad"}>{T.eff}{g.amount ? ` · ${fmt(g.amount)} BW` : ""}</span>
-                  <em>{T.hit(g.from, COSTUMES[g.detail]?.name)}</em>
+                  <span className={T.good||g.detail==="reflected:shield"||g.detail==="blocked:filter" ? "good" : "bad"}>{g.detail==="reflected:shield"?"Returned to sender":g.detail==="blocked:filter"?"Blocked by your Spam Filter":g.detail==="protected:clip"?"Receipt Clip halved the theft":T.eff}{g.amount ? ` · ${fmt(g.amount)} BW` : ""}</span>
+                  <em>{officeIncidentText(g,T)}</em>
                 </div>
               </div>
             );
@@ -5383,6 +5473,13 @@ function OfficeFloor() {
 }
 
 /* ---------------------------- helpers ----------------------------- */
+function officeIncidentText(d,T,wire=false){
+ const owner=wire?`${d.toName}’s`:'Your';
+ if(d.detail==='reflected:shield')return `${owner} Return to Sender reflected ${d.from}’s ${T.label}. One shield was used; the original target took no sabotage.`;
+ if(d.detail==='blocked:filter')return `${owner} Spam Filter blocked ${d.from}’s ${T.label}. One filter charge was used.`;
+ if(d.detail==='protected:clip')return `${owner} Receipt Clip halved ${d.from}’s theft. The actual loss was ${fmt(d.amount)} BW.`;
+ return wire?T.wire(d.from,d.toName,d.amount,COSTUMES[d.detail]?.name):T.hit(d.from,COSTUMES[d.detail]?.name);
+}
 
 /** Two people trading hostilities is a story. Count the exchanges and name it. */
 function buildFeuds(deeds, names) {
@@ -5444,6 +5541,7 @@ function prettyError(e) {
 }
 
 const PANEL_TITLES = {
+  officeweek:"The office has a record",
   sound: "Sound & feel", directory: "Office directory", shop: "Your desk", standings: "The whiteboard", kindness: "Break room",
   sabotage: "Meeting room", wire: "Bulletin board", personnel: "Personnel file",
   fund: "Office fund", owner: "Dave's office", account: "Your account",
@@ -5531,11 +5629,17 @@ function BadHeron() {
 
 /* Original vector-cutout icon family: survives arbitrary scale, no external art fetch. */
 /* Real selectable outfit thumbnails: each illustrates the garment players purchase. */
+function BoutiqueGarmentDetail({id}){
+ if(id==='coffee_tech')return <g data-boutique-garment={id} stroke="#2B2B2B" strokeWidth="1.4" fill="none"><path d="M20 3h20l6 39H14Z" fill="#C6A15F"/><path d="M21 6q9 7 18 0M20 27h20v11H20Z"/><path d="M12 28h37v6H12Z" fill="#4B5555"/><path d="M39 13h10v18H39Z" fill="#F8F1E3"/><path d="M49 17q9 0 0 10M44 12V8m-5-5h11"/><path d="M16 34v8m5-8v8" stroke="#7B9CC4" strokeWidth="3"/></g>;
+ if(id==='meeting_survivor')return <g data-boutique-garment={id} stroke="#2B2B2B" strokeWidth="1.4" fill="none"><path d="M22 1l8 7 8-7M30 8v31"/><path d="m29 8 5 3-8 21-3-3Z" fill="#D7846C"/><path d="M9 9h10v8H9Zm32 0h10v8H41Z" fill="#F8F1E3"/><rect x="34" y="23" width="15" height="11" rx="1" fill="#FFD36B"/><path d="M37 26h9m-9 4h6"/><path d="m12 32 7 4m-5-10 5 3"/></g>;
+ return null;
+}
 function WardrobeIcon({id}){
- const colors={hoodie:"#4C668C",cardigan:"#6F8F74",blazer:"#282D34",hawaiian:"#E58A57",hoodie_gold:"#B79B55",friday:"#8268A4"};
+ const colors={coffee_tech:"#8FA67A",meeting_survivor:"#E4DBC5",hoodie:"#4C668C",cardigan:"#6F8F74",blazer:"#282D34",hawaiian:"#E58A57",hoodie_gold:"#B79B55",friday:"#8268A4"};
  const color=colors[id]||"#8FA67A";
  return <span className="pg-iconart cosmetic" aria-hidden="true"><svg viewBox="0 0 44 44" fill="none" stroke="#25282A" strokeWidth="2.3" strokeLinejoin="round" strokeLinecap="round">
   <path d="M14 6q8 7 16 0l11 8-6 10-4-4v18H13V20l-4 4-6-10z" fill={color}/>
+  <g transform="translate(4 5) scale(.6)"><BoutiqueGarmentDetail id={id}/></g>
   {(id==="hoodie"||id==="hoodie_gold")&&<><path d="M14 7q-4-6 8-7q12 1 8 7l-7 13z" fill={color} strokeWidth="2"/><path d="M18 10l4 6 4-6M19 17v5M26 17v5" stroke="#F5EDE3" strokeWidth="1.5"/><path d="M17 28h11v7H17z" fill="#33465B" strokeWidth="1.4"/><circle cx="33" cy="30" r="3" fill="#FFD36B" strokeWidth="1"/></>}
   {id==="cardigan"&&<><path d="M14 6l9 11-9 12M30 6l-8 11 9 12" stroke="#EBE4DA" strokeWidth="2.2"/><path d="M23 17v21" stroke="#F8EED7" strokeWidth="2"/><circle cx="22" cy="24" r="1.1" fill="#2B2B2B"/><circle cx="22" cy="31" r="1.1" fill="#2B2B2B"/></>}
   {id==="blazer"&&<><path d="M14 7l8 13-8 11 4-26M30 7l-8 13 8 11-4-26" fill="#F9F5EF" strokeWidth="1.8"/><path d="M22 18l3 5-3 14-3-14z" fill="#C95754"/><path d="M14 31h8M25 31h7" stroke="#A3A9AC" strokeWidth="1.3"/></>}
@@ -5583,7 +5687,11 @@ const STYLE_COLORS=[["Hot pink","#ff55b0"],["Bubblegum","#f5a8d6"],["Royal purpl
 const STYLE_NATURAL_COLORS=[["Walnut","#704a32"],["Oak","#b98a5c"],["Chestnut","#955e43"],["Sandstone","#c9b591"],["Linen","#e8ddc7"],["Cream","#f4e9d5"],["Olive","#7b8456"],["Forest green","#43634b"],["Stone","#97958d"],["Charcoal","#484b48"],["Slate blue","#617787"],["Dusty rose","#b98882"]];
 const STYLE_DESIGNS=[["solid","Solid"],["stripe","Stripes"],["check","Checker"],["dots","Polka dots"],["sparkle","Sparkle"],["confetti","Confetti"]];
 function itemStyle(p,id){return p?.cosmetic_styles?.[id]||{color:null,design:"solid"};}
-function physicalId(p,slot){return p?.cosmetic_equipped?.[slot]||(slot==="held"?p?.vanity?.held:p?.kit?.[slot])||(slot==="desk"?"d1":slot==="chair"?"c1":null);}
+function physicalId(p,slot){
+ const fallback=slot==='desk'?'d1':slot==='chair'?'c1':null,display=p?.cosmetic_equipped;
+ if(display&&Object.prototype.hasOwnProperty.call(display,slot)&&display[slot]===null)return fallback;
+ return display?.[slot]||(['held','glow','aura','size'].includes(slot)?p?.vanity?.[slot]:p?.kit?.[slot])||fallback;
+}
 function styleColor(style,fallback){return /^#[0-9a-f]{6}$/i.test(style?.color||"")?style.color:fallback;}
 function useMaterialPaint(style,fallback,size=12){
  const id="material-"+React.useId().replace(/[^a-z0-9]/gi,"");
@@ -5617,7 +5725,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   const worn = wearing(p);
   const c = worn ? COSTUMES[worn.id] : null;
   const L = lookFor(p);
-  const v = {...(p?.vanity||{}),held:physicalId(p,"held")};
+  const v = Object.fromEntries(["held","glow","aura","size"].map(slot=>[slot,physicalId(p,slot)]));
   const nickOn = p?.nickname && new Date(p.nickname.until) > new Date();
   const nick = nickOn ? p.nickname.text : null;
   const B = avatarBody(L);
@@ -5638,7 +5746,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
   ].filter(Boolean).join(" ");
 
   return (
-    <div className={cls} style={{"--skin":AVATAR_SKIN[normalizedAvatar(L).skin]}}>
+    <div className={cls} style={{"--skin":AVATAR_SKIN[normalizedAvatar(L).skin],"--custom-glow":styleColor(itemStyle(p,v.glow),undefined)}}>
       {emote && <div className="pg-bubble">{EMOTE_ICON[emote] || "!"}</div>}
       <div className="pg-flip" style={{ transform: `scaleX(${facing})` }}>
       {/* inside the flip wrapper so the bull turns with you, and behind the rig so
@@ -5654,6 +5762,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
         <svg viewBox="0 0 60 46" className="pg-torso" aria-hidden="true">
           {shirtMaterial}<path className="pg-body-outline" d={B.torso} fill={shirtPaint} />
           {wardrobeItem&&<>
+            {!c&&<BoutiqueGarmentDetail id={L.clothing}/>}
             {(L.clothing==="hoodie"||L.clothing==="hoodie_gold")&&<><path d="M21 0Q30 13 39 0" stroke="#263446" strokeWidth="4" fill="none"/><path d="M30 15v23" stroke="#DCE7EA" strokeWidth="1.5"/><path d="M20 24q10 4 20 0v10H20Z" fill="rgba(0,0,0,.13)" stroke="#2B2B2B" strokeWidth="1.5"/><path d="M26 7v9M34 7v9" stroke="#F8F1E3" strokeWidth="1.5"/></>}
             {(L.clothing==="cardigan")&&<><path d="M21 1l9 14 9-14M30 12v26" fill="none" stroke="#F4DFCE" strokeWidth="4"/><circle cx="30" cy="19" r="1.6" fill="#2B2B2B"/><circle cx="30" cy="29" r="1.6" fill="#2B2B2B"/></>}
             {L.clothing==="blazer"&&<><path d="M17 2l10 14-7 8-8-17M43 2L33 16l7 8 8-17" fill="#E5E1D8" stroke="#2B2B2B" strokeWidth="1.4"/><path d="M30 10l4 5-4 14-4-14Z" fill="#D16E5F" stroke="#2B2B2B" strokeWidth="1.3"/></>}
@@ -5690,7 +5799,7 @@ function Body({ p, src, me, moving, facing = 1, emote }) {
       </div>
       </div>
       <span className="pg-shadow" />
-      {v.aura && <i className={"pg-aura aura-" + v.aura}><AuraArt id={v.aura}/></i>}
+      {v.aura && <i className={"pg-aura aura-" + v.aura}><AuraArt id={v.aura} style={itemStyle(p,v.aura)}/></i>}
       {v.held && <i className={"pg-held held-" + v.held}><HeldItemArt id={v.held} style={itemStyle(p,v.held)}/></i>}
       {PETS[p?.pet] && (
         <span className="pg-pet"><svg viewBox="0 0 34 34">{PETS[p.pet].art}</svg></span>
@@ -5792,6 +5901,10 @@ function DoorArt({ id }) {
 }
 
 function CostumeSuit({ art, layer }) {
+  if(art==="wizard"||art==="cabinet")return <svg viewBox="0 0 90 100" className={"pg-suit "+layer} aria-hidden="true" fill="none" stroke="#2B2B2B" strokeWidth="2" strokeLinejoin="round">
+   {art==="cabinet"?(layer==="back"?<path d="M20 48h50v48H20Z" fill="#617E99"/>:<><path d="M24 52h42v42H24Z" fill="#9AAEB9"/>{[54,67,80].map(y=><g key={y}><rect x="27" y={y} width="36" height="11" fill="#C4D1C7"/><path d={`M40 ${y+5}h10`}/></g>)}<path d="m63 63 11-3 2 14-11 3" fill="#FFF4D8"/><path d="m67 65 5-1m-5 5 5-1" strokeWidth="1"/></>):layer==="back"?<path d="m28 51 34 0 8 45H19Z" fill="#655675"/>:<><path d="m28 53 17 15 17-15 7 41H20Z" fill="#8D7C9C"/><path d="M45 66v28" stroke="#FFD36B"/>{[[30,74],[55,84]].map(([x,y])=><path key={x} d={`m${x} ${y-4} 2 3 4 1-3 3 1 4-4-2-3 2 1-4-3-3 4-1Z`} fill="#FFD36B" strokeWidth="1"/>)}<path d="M74 89V59" strokeWidth="3"/><rect x="67" y="47" width="15" height="20" rx="2" fill="#8FA67A"/><path d="M70 51h9v5h-9Z" fill="#F8F1E3"/><path d="M70 60h2m3 0h3m-8 3h2m3 0h3" strokeWidth="1.5"/></>}
+  </svg>;
+
   if (art === "dino") {
     return layer === "back" ? (
       <svg viewBox="0 0 90 100" className="pg-suit back" aria-hidden="true">
@@ -5841,6 +5954,7 @@ function Hat({ kind }) {
   if (!kind) return null;
   return (
     <svg className="pg-hat" viewBox="0 0 40 26" aria-hidden="true">
+      {kind === "wizard" && <><path d="m20 1 12 22H7Z" fill="#7B7090" stroke="#2B2B2B" strokeWidth="2"/><path d="M3 23h34" stroke="#2B2B2B" strokeWidth="3"/><path d="m20 8 1 3 4 1-3 2 1 4-3-2-3 2 1-4-3-2 4-1Z" fill="#FFD36B"/></>}
       {kind === "cone" && <>
         <path d="M20 0l11 22H9Z" fill="#D8622C" />
         <rect x="12" y="11" width="16" height="5" fill="#F2F3E8" />
@@ -6156,11 +6270,11 @@ function Panel({ title, children, onClose, receipt=null, stablePurchases=false }
     </div>
   );
 }
-function Modal({ children, onClose }) {
+function Modal({ children, onClose, label="Office notice" }) {
   const dialogRef=useDialogFocus(onClose);
   return (
     <div className="pg-modal" onClick={onClose}>
-      <div className="pg-card" ref={dialogRef} role="dialog" aria-modal="true" aria-label="Office notice" tabIndex={-1} onClick={(e) => e.stopPropagation()}>{children}</div>
+      <div className="pg-card" ref={dialogRef} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onClick={(e) => e.stopPropagation()}>{children}</div>
     </div>
   );
 }
@@ -6178,10 +6292,11 @@ function Tabsy({ tabs, children }) {
   );
 }
 
-function Help({ onClose, rate, onGuide, player }) {
+function Help({ onClose, rate, onGuide, onUpdates, player }) {
   return (
     <Modal onClose={onClose}>
       <div className="pg-stamp">Idle Hands</div>
+      {onUpdates&&<button className="pg-btn" onClick={onUpdates}>What's new</button>}
       <h3 className="pg-helph">The points come to you. That's the idle part.</h3>
       <p className="pg-small">You're earning <b>{fmt(rate)} BW per second</b> right now, and you'll
         receive offline earnings with this tab closed, for up to {offlineCapHours(player)} hours away. Temporary bonuses can expire while you are away.</p>
@@ -6224,11 +6339,12 @@ function HeldItemArt({id,style}){
  {id==="h5"&&<><path d="M8 39h49v15H8Z" fill={paint}/><path d="M10 35l39-19 9 11-44 19Z" fill={paint}/><path d="M15 34l32-14" stroke="#FFF0AE"/><path d="M18 50h27" stroke="#5C4D34"/></>}
  </svg>;
 }
-function AuraArt({id}){
+function AuraArt({id,style}){
+ const [paint,material]=useMaterialPaint(style,({a1:'#E6BF64',a2:'#D9F2F3',a3:'#F78B6B'})[id]||'#E6BF64',10);
  return <svg viewBox="0 0 100 100" data-aura-item={id} aria-hidden="true" fill="none" strokeLinecap="round">
- {id==="a1"&&[[12,30,2],[30,13,3],[75,20,2],[88,46,3],[16,70,3],[77,81,2],[43,90,2]].map(([x,y,r],i)=><circle key={i} cx={x} cy={y} r={r} fill="#E6BF64"/>)}
- {id==="a2"&&[[14,27],[79,18],[85,70],[25,83]].map(([x,y],i)=><path key={i} d={`M${x} ${y-8}q0 8 8 8-8 0-8 8 0-8-8-8 8 0 8-8Z`} fill="#D9F2F3" stroke="#7B9CC4" strokeWidth="1.3"/>)}
- {id==="a3"&&[15,35,60,81].map((x,i)=><path key={x} d={`M${x} 90q-13-10 1-27-2 12 6 15 4-5 2-10 14 19-1 24Z`} fill="#F78B6B" stroke="#B4583F" strokeWidth="1.2"/>)}
+ {material}{id==="a1"&&[[12,30,2],[30,13,3],[75,20,2],[88,46,3],[16,70,3],[77,81,2],[43,90,2]].map(([x,y,r],i)=><circle key={i} cx={x} cy={y} r={r} fill={paint}/>)}
+ {id==="a2"&&[[14,27],[79,18],[85,70],[25,83]].map(([x,y],i)=><path key={i} d={`M${x} ${y-8}q0 8 8 8-8 0-8 8 0-8-8-8 8 0 8-8Z`} fill={paint} stroke="#7B9CC4" strokeWidth="1.3"/>)}
+ {id==="a3"&&[15,35,60,81].map((x,i)=><path key={x} d={`M${x} 90q-13-10 1-27-2 12 6 15 4-5 2-10 14 19-1 24Z`} fill={paint} stroke="#B4583F" strokeWidth="1.2"/>)}
  </svg>;
 }
 function OfficeRugArt({tier="r1",style}){
@@ -6304,14 +6420,14 @@ function OfficeWallArt({tier="w1",style}){
 function FittingPreview({item,kind,player,large=false}){
  const office=kind==="office_kit",style=itemStyle(player,item.id);
  return <div className={"pg-fitting-preview"+(large?" large":"")} data-fitting-preview={item.id} role="img" aria-label={item.name+" preview"}>
- {kind==="wardrobe"?<div className="pg-fitting-avatar"><Body p={{...player,look:{...normalizedAvatar(lookFor(player)),clothing:item.id},vanity:{},cosmetic_equipped:{}}}/></div>:kind==="pin"?<WornPin id={item.id.slice(4)} style={style}/>:office?(item.slot==="desk"?<OfficeDeskArt tier={item.id} style={style}/>:item.slot==="chair"?<OfficeChairArt tier={item.id} style={style}/>:item.slot==="rug"?<OfficeRugArt tier={item.id} style={style}/>:item.slot==="tv"?<SpringerTVArt style={style}/>:<OfficeWallArt tier={item.id} style={style}/>):item.slot==="held"?<HeldItemArt id={item.id} style={style}/>:<div className="pg-fitting-avatar"><Body p={{...player,name:player?.name||"Employee",look:normalizedAvatar(lookFor(player)),vanity:{[item.slot]:item.id}}}/></div>}
+ {kind==="wardrobe"?<div className="pg-fitting-avatar"><Body p={{...player,look:{...normalizedAvatar(lookFor(player)),clothing:item.id},outfit:null,pin:null,pet:null,mount:null,vanity:{},cosmetic_equipped:{}}}/></div>:kind==="pin"?<WornPin id={item.id.slice(4)} style={style}/>:office?(item.slot==="desk"?<OfficeDeskArt tier={item.id} style={style}/>:item.slot==="chair"?<OfficeChairArt tier={item.id} style={style}/>:item.slot==="rug"?<OfficeRugArt tier={item.id} style={style}/>:item.slot==="tv"?<SpringerTVArt style={style}/>:<OfficeWallArt tier={item.id} style={style}/>):item.slot==="held"?<HeldItemArt id={item.id} style={style}/>:<div className="pg-fitting-avatar"><Body p={{...player,name:player?.name||"Employee",look:normalizedAvatar(lookFor(player)),outfit:null,pin:null,pet:null,mount:null,cosmetic_equipped:{},vanity:{[item.slot]:item.id}}}/></div>}
  </div>;
 }
 
 function ownedPhysicalItems(cat,me){
  const list=[];
  for(const kind of ['office_kit','vanity'])for(const item of cat[kind]||[]){
-  if(!['desk','chair','rug','art','tv','held'].includes(item.slot))continue;
+  if(!['desk','chair','rug','art','tv','held','glow','aura'].includes(item.slot))continue;
   const have=(kind==='office_kit'?me?.kit:me?.vanity)?.[item.slot],highest=(cat[kind]||[]).find(x=>x.id===have)?.tier||0;
   if(item.tier<=highest||['d1','c1'].includes(item.id))list.push({...item,kind});
  }
@@ -6320,6 +6436,8 @@ function ownedPhysicalItems(cat,me){
  for(const id of me?.extras||[])if(PIN_INDEX[id])list.push({id:'pin:'+id,name:PIN_INDEX[id].name+' · pin',slot:'pin',kind:'pin'});
  return list;
 }
+const OWNED_STYLE_GROUPS=[['desk','Desks','Desk'],['chair','Chairs','Chair'],['rug','Rugs','Rug'],['art','Wall art','Wall art'],['tv','Televisions','TV'],['held','Held items','Held item'],['glow','Glows','Glow'],['aura','Atmospheres','Atmosphere'],['clothing','Outfits','Outfit'],['pin','Pins','Pin']];
+const UNEQUIP_LABELS={desk:'Use basic desk',chair:'Use basic chair',rug:'Remove rug',art:'Remove wall art',tv:'Remove television',held:'Empty hands',glow:'Hide glow',aura:'Hide atmosphere',clothing:'Wear standard outfit',pin:'Remove pin'};
 function styleMoney(n){return fmt(n);}
 function expandedMoney(n){return Number(n).toLocaleString("en-US",{maximumFractionDigits:0});}
 function LargeNumberKey(){return <details className="pg-fine pg-number-key"><summary>Number abbreviations</summary><p>Each label is 1,000 times the previous: Oc = octillion (10²⁷), No = nonillion (10³⁰), Dc = decillion (10³³), Ud = undecillion (10³⁶), Dd = duodecillion (10³⁹), Td = tredecillion (10⁴²). Larger labels continue through Vg (10⁶³), then use scientific notation.</p></details>;}
@@ -6332,6 +6450,8 @@ function Customization({cat,me,pp,onSaved,preview=false}){
  const draftPlayer={...me,cosmetic_styles:{...me?.cosmetic_styles,[item?.id]:{color,design}}};
  const dirty=color!==(saved.color||null)||design!==(saved.design||'solid'),expired=quote&&new Date(quote.expires_at).getTime()<=clock;
  const equipped=item?.kind==='wardrobe'?(lookFor(me).clothing||'starter')===item.id:item?.kind==='pin'?('pin:'+me?.pin)===item.id:physicalId(me,item?.slot)===item?.id;
+ const removable=item?.slot==='clothing'?(lookFor(me).clothing||'starter')!=='starter':item?.slot==='pin'?!!me?.pin:item?.slot==='desk'?physicalId(me,'desk')!=='d1':item?.slot==='chair'?physicalId(me,'chair')!=='c1':!!physicalId(me,item?.slot);
+ const setVisible=async(slot,visible=false)=>{revision.current++;setQuote(null);setBusy(true);setFeedback('');try{const row=await api.cosmeticVisibility(slot,visible);onSaved?.(row);setFeedback((slot==='held'&&!visible?'Empty hands. ':visible?'Purchased appearance restored. ':'Appearance updated. ')+'Ownership and saved finishes are kept. No Busywork charged.');}catch(e){try{onSaved?.(await api.sync());}catch{}setFeedback(prettyError(e)+' Refresh or retry this free appearance choice.');}finally{setBusy(false);}};
  const invalidate=()=>{setQuote(null);revision.current++;setFeedback('');};
  const review=async()=>{const token=++revision.current;setBusy(true);setFeedback('');try{const q=await api.quoteStyle(item.id,color,design);if(q?.seconds_per_change!==28800)throw Error("New eight-hour pricing is not available yet. Refresh the game and review again.");if(token===revision.current){setQuote(q);setClock(Date.now());}}catch(e){setFeedback(prettyError(e));}finally{setBusy(false);}};
  const apply=async()=>{setBusy(true);setFeedback('');try{const row=await api.applyStyle(quote.id);onSaved?.(row);setQuote(null);setFeedback('Style saved. Your office has opinions now.');}catch(e){try{const current=await api.sync();onSaved?.(current);}catch{}setFeedback(prettyError(e)+' Check the saved style and review a fresh price before retrying.');setQuote(null);}finally{setBusy(false);}};
@@ -6339,15 +6459,16 @@ function Customization({cat,me,pp,onSaved,preview=false}){
  useEffect(()=>{if(feedback)feedbackRef.current?.scrollIntoView({block:'nearest'});},[feedback]);
  return <section className="pg-style-editor" data-testid="style-editor" aria-label="Interior Affairs customization">
   <div className="pg-style-heading"><span className="pg-stamp">INTERIOR AFFAIRS · FORM CO-02</span><h3>Make the office yours.</h3><p>Owned items. Questionable taste. Your call.</p></div>
-  <label className="pg-form-label">Choose an owned item<select aria-label="Customize owned item" value={item?.id} disabled={busy} onChange={e=>{setSelected(e.target.value);invalidate();}}>{items.map(it=><option key={it.id} value={it.id}>{it.name}</option>)}</select></label>
-  <div className="pg-style-preview"><FittingPreview item={item} kind={item.kind} player={draftPlayer} large/><div><b>{item.name}</b><p className="pg-fine">Full item preview · no Busywork spent. {item.slot==='desk'?'Top and drawer cabinets change together.':''}</p><button className="pg-btn" disabled={busy||equipped||preview} onClick={equip}>{equipped?'Currently equipped':'Equip this owned item · free'}</button></div></div>
+  <label className="pg-form-label">Choose an owned item<select aria-label="Customize owned item" value={item?.id} disabled={busy} onChange={e=>{setSelected(e.target.value);invalidate();}}>{OWNED_STYLE_GROUPS.map(([slot,label,singular])=>{const group=items.filter(it=>it.slot===slot).sort((a,b)=>a.id==='starter'?-1:b.id==='starter'?1:(a.tier||0)-(b.tier||0)||a.name.localeCompare(b.name));return group.length>0&&<optgroup key={slot} label={label+' · '+group.length+' owned'}>{group.map(it=><option key={it.id} value={it.id}>{singular+' · '+it.name}</option>)}</optgroup>;})}</select></label>
+  <div className="pg-style-preview"><FittingPreview item={item} kind={item.kind} player={draftPlayer} large/><div><b>{item.name}</b><p className="pg-fine">Full item preview · no Busywork spent. {item.slot==='desk'?'Top and drawer cabinets change together.':''}</p><button className="pg-btn" disabled={busy||equipped||preview} onClick={equip}>{equipped?'Currently equipped':'Equip this owned item · free'}</button><button className="pg-btn" disabled={busy||preview||!removable} onClick={()=>setVisible(item.slot,false)}>{UNEQUIP_LABELS[item?.slot]} · free</button><p className="pg-fine">{equipped?'This item is equipped.':'Preview only. This item is not equipped.'} Removing it keeps ownership and its saved finish. Basic desks and chairs stay available for work.</p>{item?.slot==='clothing'&&wearing(me)&&<p className="pg-fine">This changes your permanent outfit. Temporary prank costumes follow the Supply Closet rules.</p>}</div></div>
+  {['glow','aura','size'].some(slot=>me?.vanity?.[slot])&&<details className="pg-style-effects"><summary>Glow, aura and presence</summary><p>Hide or restore these purchased effects for free.</p>{[['glow','glow'],['aura','aura'],['size','presence']].filter(([slot])=>me?.vanity?.[slot]).map(([slot,label])=><button className="pg-btn" key={slot} disabled={busy||preview} onClick={()=>setVisible(slot,!physicalId(me,slot))}>{physicalId(me,slot)?'Hide ':'Restore '}{label} · free</button>)}</details>}
   <fieldset disabled={busy}><legend>Color</legend><div className="pg-style-palettes">{[["Bright & playful",STYLE_COLORS],["Natural tones",STYLE_NATURAL_COLORS]].map(([label,colors])=><div className="pg-style-palette" key={label}><h4>{label}</h4><div className="pg-style-swatches" role="group" aria-label={label+" colors"}>{colors.map(([name,hex])=><button type="button" key={hex} style={{background:hex}} aria-label={name} title={name} aria-pressed={color===hex} onClick={()=>{setColor(hex);invalidate();}}>{color===hex?"✓":""}</button>)}</div></div>)}</div><div className="pg-style-color"><label>Mix your own <input type="color" aria-label="Custom item color" value={color||'#8fa67a'} onChange={e=>{setColor(e.target.value);invalidate();}}/></label><button className="pg-btn" aria-pressed={color===null} onClick={()=>{setColor(null);invalidate();}}>Original color</button></div></fieldset>
-  <fieldset disabled={busy}><legend>Design</legend><div className="pg-style-designs">{STYLE_DESIGNS.map(([id,name])=><button type="button" className="pg-btn" key={id} aria-pressed={design===id} onClick={()=>{setDesign(id);invalidate();}}>{name}</button>)}</div></fieldset>
-  <p className="pg-fine">Color change: 8 hours of current output. Add/change a design: +8 hours. Both: 16 hours. Minimum 1,000 BW per paid change. Removing a design is free. Unchanged choices cost nothing. Reapplying an old choice is a new change.</p>
+  {item.slot!=='glow'?<fieldset disabled={busy}><legend>Design</legend><div className="pg-style-designs">{STYLE_DESIGNS.map(([id,name])=><button type="button" className="pg-btn" key={id} aria-pressed={design===id} onClick={()=>{setDesign(id);invalidate();}}>{name}</button>)}</div></fieldset>:<p className="pg-fine">Glows support color changes. Choose an owned glow to change its intensity; atmosphere changes dust, shimmer or flames.</p>}
+  <p className="pg-fine">Color change: 8 hours of your highest tracked base production. Add/change a design: +8 hours. Both: 16 hours. Minimum 1,000 BW per paid change. Removing a design is free. Unchanged choices cost nothing. Reapplying an old choice is a new change.</p>
   <p className="pg-fine">Styles stay with each item through restructuring and weekly resets. Screens, photos and original outlines stay intact. Sparkle is static. Cosmetic only—no productivity bonus.</p>
   <button className="pg-btn primary pg-style-review-btn" disabled={busy||!dirty||preview} onClick={review}>{busy?'Filing paperwork…':dirty?'Review price':'Choose a different style'}</button>
   {preview&&<p className="pg-note">Art QA only · saving and payments are disabled.</p>}
-  {quote&&<div className="pg-style-quote" role="group" aria-label="Review style purchase"><h4>Review this purchase</h4><dl><div><dt>Color change</dt><dd>{styleMoney(quote.color_fee)} BW</dd></div><div><dt>Design change</dt><dd>{styleMoney(quote.design_fee)} BW</dd></div><div className="total"><dt>Total</dt><dd title={quote.total.toLocaleString()}>{styleMoney(quote.total)} BW</dd></div></dl><p className="pg-fine">Available: {fmt(pp)} BW. Rounded for display.</p><details className="pg-fine pg-expanded-quote"><summary>Expanded amounts</summary><p>Color: {expandedMoney(quote.color_fee)} BW</p><p>Design: {expandedMoney(quote.design_fee)} BW</p><p>Total: {expandedMoney(quote.total)} BW</p><p>Available: {expandedMoney(pp)} BW</p></details><LargeNumberKey/><p className="pg-fine">Based on current server output, including active boosts and penalties. {expired?'This quote expired. Review a fresh price.':'Quote valid for up to two minutes; output or week changes require a new quote.'}</p>{pp<quote.total&&<p role="status">Need {fmt(quote.total-pp)} more BW.</p>}<div className="pg-style-actions"><button className="pg-btn primary" disabled={busy||expired||pp<quote.total||preview} onClick={apply}>Confirm style · {styleMoney(quote.total)} BW</button><button className="pg-btn" disabled={busy} onClick={()=>setQuote(null)}>Keep previewing</button></div></div>}
+  {quote&&<div className="pg-style-quote" role="group" aria-label="Review style purchase"><h4>Review this purchase</h4><dl><div><dt>Color change</dt><dd>{styleMoney(quote.color_fee)} BW</dd></div><div><dt>Design change</dt><dd>{styleMoney(quote.design_fee)} BW</dd></div><div className="total"><dt>Total</dt><dd title={quote.total.toLocaleString()}>{styleMoney(quote.total)} BW</dd></div></dl><p className="pg-fine">Available: {fmt(pp)} BW. Rounded for display.</p><details className="pg-fine pg-expanded-quote"><summary>Expanded amounts</summary><p>Color: {expandedMoney(quote.color_fee)} BW</p><p>Design: {expandedMoney(quote.design_fee)} BW</p><p>Total: {expandedMoney(quote.total)} BW</p><p>Available: {expandedMoney(pp)} BW</p></details><LargeNumberKey/><p className="pg-fine">Based on your highest tracked base production; temporary boosts, penalties and restructuring do not lower this price. {expired?'This quote expired. Review a fresh price.':'Quote valid for up to two minutes; a higher production benchmark or week change requires a new quote.'}</p>{pp<quote.total&&<p role="status">Need {fmt(quote.total-pp)} more BW.</p>}<div className="pg-style-actions"><button className="pg-btn primary" disabled={busy||expired||pp<quote.total||preview} onClick={apply}>Confirm style · {styleMoney(quote.total)} BW</button><button className="pg-btn" disabled={busy} onClick={()=>setQuote(null)}>Keep previewing</button></div></div>}
   <button className="pg-btn pg-style-reset" disabled={busy||!dirty} onClick={()=>{setColor(saved.color||null);setDesign(saved.design||'solid');invalidate();setFeedback('Preview cancelled. No Busywork charged.');}}>Cancel this preview</button>
   <p ref={feedbackRef} className="pg-style-feedback" role="status" aria-live="polite">{feedback}</p>
  </section>;
@@ -6356,23 +6477,29 @@ function Customization({cat,me,pp,onSaved,preview=false}){
 function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear, onStyled, preview=false }) {
   const [inspected,setInspected]=useState(null);
   const [which, setWhich] = useState("vanity");
-  // The server quotes the price; quotes refresh on changing rates or on reopen.
-  const [quote, setQuote] = useState(null);
+  const [quote, setQuote] = useState(null),[quoteError,setQuoteError]=useState(''),[quoteLoading,setQuoteLoading]=useState(!preview);
+  const quoteSeq=useRef(0);
+  const refreshQuote=useCallback(async()=>{
+    const seq=++quoteSeq.current;setQuoteLoading(true);setQuoteError('');
+    try{
+      const q=await officeRead(api.fittingPrices());
+      if(!q?.prices||typeof q.prices!=='object'||Array.isArray(q.prices))throw Error('Server prices are unavailable.');
+      if(seq===quoteSeq.current)setQuote(q);
+    }catch(e){if(seq===quoteSeq.current){setQuote(null);setQuoteError(e.message||'Could not read server prices.');}}
+    finally{if(seq===quoteSeq.current)setQuoteLoading(false);}
+  },[]);
   useEffect(() => {
     if(preview)return;
-    let live = true;
-    api.fittingPrices().then((q) => { if (live) setQuote(q); }).catch(() => {});
-    const t = setInterval(() => {
-      api.fittingPrices().then((q) => { if (live) setQuote(q); }).catch(() => {});
-    }, 20000);
-    return () => { live = false; clearInterval(t); };
-  }, [preview, me?.id, me?.owned, me?.upgrades, me?.buffs, me?.equity, me?.heat, me?.frenzy_until]);
+    refreshQuote();
+    const t=setInterval(refreshQuote,20000);
+    return()=>{quoteSeq.current++;clearInterval(t);};
+  }, [preview,refreshQuote,me?.id,me?.owned,me?.upgrades,me?.cosmetic_rate_peak]);
   const list = (which === "vanity" ? cat.vanity : cat.office_kit) || [];
   const have = which === "vanity" ? (me?.vanity || {}) : (me?.kit || {});
   const slots = [...new Set(list.map((x) => x.slot))];
   const tierOf = (id) => (list.find((x) => x.id === id) || {}).tier || 0;
-  const priceOf = (x) => quote?.prices?.[x.id]
-    ?? Math.max(1000, x.min_cost || 0, (rate || 0) * (x.secs || 0));
+  const priceOf=x=>quote?.prices?.[x.id];
+  const confirmedPrice=x=>!preview&&!quoteLoading&&!quoteError&&Number.isFinite(priceOf(x))&&priceOf(x)>=0;
   const spell = (secs) => secs >= 86400 ? Math.round(secs / 86400) + "d of output"
                         : secs >= 3600  ? Math.round(secs / 3600) + "h of output"
                         : Math.round(secs / 60) + " min of output";
@@ -6381,8 +6508,9 @@ function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear, onStyled
     <div>
       <div className="pg-earnbar">
         None of this makes you a single point. Everybody can see all of it. Bought in order,
-        kept forever, survives a restructure.
+        kept forever, survives a restructure. Prices use your highest tracked base production; the server confirms the amount before Buy.
       </div>
+      {quoteError&&<div className="pg-note" role="alert">Prices unavailable. {quoteError}<button className="pg-btn" disabled={quoteLoading} onClick={refreshQuote}>Retry prices</button></div>}
       <div className="pg-catswitch">
         <button className={"pg-btn" + (which === "vanity" ? " on" : "")}
                 onClick={() => setWhich("vanity")}>Yourself</button>
@@ -6402,18 +6530,18 @@ function Catalogue({ cat, me, pp, rate, onFitting, pins, onPin, onWear, onStyled
                 const mine = x.tier <= owned;
                 const next = x.tier === owned + 1;
                 const price = priceOf(x);
-                const afford = pp >= price;
+                const confirmed=confirmedPrice(x),afford=confirmed&&pp>=price;
                 return (
                   <div key={x.id} data-fitting-entry={x.id}>
                   <button
                           className={"pg-row" + (i % 2 ? " alt" : "") + (mine ? " done" : "")
                                      + (next && !afford ? " poor" : "")}
-                          disabled={!next || !afford}
+                          disabled={preview||!next||!confirmed||!afford}
                           onClick={() => onFitting(which, x)}>
                     <FittingPreview item={x} kind={which} player={me}/><span className="pg-main"><b>{x.name}</b><span>{x.note}</span></span>
                     <span className="pg-right">
                       {mine ? <b>owned</b>
-                            : <><b>{fmt(price)}</b>
+                            : <><b>{preview?"Preview only":quoteLoading?"Checking price…":confirmed?fmt(price):"Price unavailable"}</b>
                                 <span>{next ? spell(x.secs) : "locked"}</span></>}
                     </span>
                   </button>
@@ -6464,7 +6592,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
                     <span>{hidden ? "Keep earning." : it.note}</span>
                   </span>
                   <span className="pg-right">
-                    <b>{fmt(c)} BW</b>
+                    <b>Hire · {fmt(c)} BW</b>
                     <span>+{fmt(it.rate * itemMult(ups, cat.upgrades, it.id))}/sec</span>
                   </span>
                 </button>
@@ -6480,7 +6608,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
                       onClick={() => onUp(u)} aria-busy={purchasePending === "upgrade:" + u.id} disabled={!!purchasePending || ups.includes(u.id) || pp < u.cost}>
                 <OfficeIcon kind={u.name+" upgrade"} /><span className="pg-ct">{ups.includes(u.id) ? "✓" : "—"}</span>
                 <span className="pg-main"><b>{u.name}</b><span>{u.note}</span></span>
-                <span className="pg-right"><b>{ups.includes(u.id) ? "owned" : fmt(u.cost)}</b>
+                <span className="pg-right"><b>{ups.includes(u.id) ? "owned" : "Buy · "+fmt(u.cost)}</b>
                   <span>×{u.mult}</span></span>
               </button>
             ))}
@@ -6504,7 +6632,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
               <p>You receive <b>{avail} Seniority</b>. Your current Busywork, staff, upgrades and temporary bonuses reset. Existing Seniority and lifetime earnings survive this restructure.</p>
             </div>
             <p>Your lifetime BW and weekly whiteboard score stay unchanged when you restructure.</p>
-            <p>Each unspent <b>Seniority</b> point adds <b>+3% output</b> for the rest of this game week.</p>
+            <p>Each <b>Seniority</b> point earned this week adds <b>+3% output</b>. Spending points keeps that earned bonus.</p>
             <p><b>Weekly reset: all Seniority and purchased Seniority perks are cleared every Friday at 4 PM Pacific.</b></p>
             <p className="pg-big">{avail} Seniority available</p>
             <p className="pg-small">You hold {me?.equity || 0} Seniority. Next point at {fmt(Math.pow(10, (avail + 1) / 1.6) * 1e9)} BW this cycle.</p>
@@ -6552,10 +6680,12 @@ function WeeklyDeadline({schedule, compact=false}) {
   </div>;
 }
 
-function Standings({ board, me, fund, feuds = [], schedule }) {
+function Standings({ board, me, fund, feuds = [], schedule, onPlayer }) {
+  const [profileId,setProfileId]=useState(null);
   const [tab, setTab] = useState("week");
   const ranked = [...board].sort((a, b) =>
     tab === "week" ? (b.week_pp || 0) - (a.week_pp || 0) : (b.lifetime || 0) - (a.lifetime || 0));
+  if(profileId)return <><button className="pg-btn" onClick={()=>setProfileId(null)}>Back to whiteboard</button><OfficeWeekPanel me={me} board={board} initialPlayer={profileId} onPlayer={onPlayer}/></>;
   const kindest = [...board].sort((a, b) => (b.goodwill || 0) - (a.goodwill || 0))[0];
   const worst = [...board].sort((a, b) => (b.notoriety || 0) - (a.notoriety || 0))[0];
   const hottest = [...board].sort((a, b) => (b.heat || 0) - (a.heat || 0))[0];
@@ -6577,10 +6707,10 @@ function Standings({ board, me, fund, feuds = [], schedule }) {
             <span className="pg-ct">{i + 1}</span>
             <Face src={p.avatar_url} name={p.name} look={p.look} size={34} />
             {p.last_seen && Date.now() - new Date(p.last_seen).getTime() < 120000 && (
-              <i className="pg-here" title="on the floor now" />
+              <i className="pg-here" title="Account recently updated; coworker actions can update this too" />
             )}
             <span className="pg-main">
-              <b>{p.name}{me && p.id === me.id ? " (you)" : ""}
+              <b><button className="pg-profile-link" aria-label={"View "+p.name+" profile"} onClick={()=>setProfileId(p.id)}>{p.name}{me && p.id === me.id ? " (you)" : ""}</button>
                 {p.pin && PIN_INDEX[p.pin] && (
                   <i className="pg-boardpin" title={PIN_INDEX[p.pin].name + " — " + PIN_INDEX[p.pin].note}
                      style={{ background: PIN_INDEX[p.pin].hue }}>{PIN_INDEX[p.pin].glyph}</i>
@@ -6878,7 +7008,7 @@ function Wire({ wire, feed, lifetime, onPineapple, testers, prices }) {
         return (
           <div key={d.id} className={"pg-row static" + (i % 2 ? " alt" : "")}>
             <span className={"pg-dot " + (T.good ? "good" : "bad")} />
-            <span className="pg-main"><b>{T.wire(d.from, d.toName, d.amount, COSTUMES[d.detail]?.name)}</b><span>{ago(d.created_at)}</span></span>
+            <span className="pg-main"><b>{officeIncidentText(d,T,true)}</b><span>{ago(d.created_at)}</span></span>
           </div>
         );
       })}
@@ -7032,7 +7162,7 @@ function Personnel({ me, lifetime, cat, onDept, spend, pins, onWear, onPet, onCl
           <div className="pg-stats">
             <div><b>{fmt(lifetime)}</b><span>lifetime BW</span></div>
             <div><b>{roleFor(me?.week_pp || 0)}</b><span>title this week</span></div>
-            <div><b>{me?.equity || 0}</b><span>Seniority · +{(me?.equity || 0) * 3}%</span></div>
+            <div><b>{me?.equity || 0}</b><span>available Seniority · {earnedSeniority(me)} earned · +{earnedSeniority(me)*3}%</span></div>
             <div><b>{me?.raises || 0}</b><span>raises · +{(me?.raises || 0) * 2}%</span></div>
             <div><b>{me?.goodwill || 0}</b><span>goodwill · +{Math.min(me?.goodwill || 0, 30)}%</span></div>
             <div><b>{me?.notoriety || 0}</b><span>notoriety</span></div>
@@ -7783,7 +7913,7 @@ function Wardrobe({ me, board, lifetime, pp, cool, cat, onDress, onChange, onCom
         <div className="pg-list">
           {list.map((c, i) => {
             const base = prices?.["cos_" + c.id] ?? Math.max(120, lifetime * c.cost);
-            const price = base * (mine ? 1 : 2);
+            const price = base * (mine ? 1 : 2) * (me?.dept === "contracts" ? 0.7 : 1);
             const broke = pp < price;
             const cooling = !mine && cool > 0;
             const disabled = broke || cooling;
@@ -7852,7 +7982,8 @@ function Mirror({ me, user, onSave, onLook, onBuyClothing }) {
         <h4 className="pg-h4">Company wardrobe · permanent purchases</h4>
         <p className="pg-fine">Spend Busywork on ridiculous outfits. Keep every purchased piece, even after restructuring. Clothes are cosmetic—no productivity bonuses.</p>
         <button className={"pg-row"+(look.clothing==="starter"?" mine":"")} type="button" disabled={busy} onClick={async ()=>{const next={...look,clothing:"starter"};setBusy(true);try{await saveClothingLook(next);setLook(next);}catch{}finally{setBusy(false);}}}><OfficeIcon kind="office shirt"/><span className="pg-main"><b>Standard Issue Outfit</b><span>Free. Disturbingly adequate.</span></span><span className="pg-right"><b>{look.clothing==="starter"?"Wearing":"Equip"}</b></span></button>
-        {WARDROBE.map(it=>{
+        <p className="pg-fine">Participation outfits are purchased in Office records → Boutique, then equipped here.</p>
+        {WARDROBE.filter(it=>!it.office||me?.wardrobe_owned?.includes(it.id)).map(it=>{
           const owned=Array.isArray(me?.wardrobe_owned)&&me.wardrobe_owned.includes(it.id);
           const active=look.clothing===it.id;
           return <button className={"pg-row"+(active?" mine":"")} type="button" key={it.id} disabled={busy} onClick={async ()=>{
@@ -8202,14 +8333,326 @@ function Today({ me, onClaim, onMail }) {
   );
 }
 
+/* BEGIN NEXT WEEK UI */
+/* Generated into index.html by build-next-week-client.py; no separate runtime dependency. */
+function officeRead(promise){
+ let timer;
+ return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Office records took too long. Please retry.')),15000);})]).finally(()=>clearTimeout(timer));
+}
+function earnedSeniority(p){return Math.max(0,Number(p?.seniority_earned??p?.equity??0));}
+const OFFICE_TOOL_LABELS={rescue:'Emergency Stapler',confetti:'Confetti Cartridge',filter:'Spam Filter',clip:'Receipt Clip'};
+const OFFICE_COLLECTIBLE_LABELS={nameplate:'Personalized nameplate',corkboard:'Incident Corkboard',plaque:'Project plaque',terrarium:'Desk terrarium',duck:'Rubber-duck consultant',lamp:'Executive lamp'};
+const OFFICE_COLLECTION_WEEKS={terrarium:2,duck:4,lamp:6};
+const OFFICE_CATEGORY_TEXT={work:'Do actual work at your desk',facilities:'Water a plant or file a printer apology',care:'Help a coworker with coffee, Cover or Rescue',playful:'Dress a coworker, nickname them or send confetti'};
+function OfficeCollectibleArt({item,name='EMPLOYEE',memento}){
+ if(item.startsWith('theme_'))return <DeskThemeArt item={item}/>;
+ return <svg viewBox="0 0 160 100" role="img" aria-label={OFFICE_COLLECTIBLE_LABELS[item]} fill="none" stroke="#2B2B2B" strokeWidth="3" strokeLinejoin="round">
+  {item==='nameplate'?<><path d="M10 80 26 28h110l16 52Z" fill="#C6A15F"/><path d="M31 36h100v32H31Z" fill="#FFF4D8"/><text x="81" y="56" textAnchor="middle" fill="#2B2B2B" stroke="none" fontSize="12">{name.slice(0,15)}</text></>:item==='corkboard'?<><rect x="15" y="9" width="130" height="82" rx="3" fill="#B78F5D"/><path d="M26 23h51v49H26Z" fill="#F8F1E3"/><path d="m89 26 40 4-5 39-40-4Z" fill="#FFD36B"/><circle cx="51" cy="26" r="4" fill="#F78B6B"/><path d="M34 42h31m-31 9h26m-26 10h28M93 46h25m-25 9h20"/></>:item==='terrarium'?<><path d="m45 13 70 0 18 69H27Z" fill="#C6DAD4"/><path d="M31 66h98l4 16H27Z" fill="#9B7653"/><path d="M79 68V32m0 21L62 39m17 21 23-20"/><path d="M79 46c-26 0-26-23-26-23 25 0 26 23 26 23Zm2-8c0-23 24-21 24-21-1 22-24 21-24 21Zm3 23c0-23 30-23 30-23-4 24-30 23-30 23Z" fill="#8FA67A"/><path d="m41 29-7 25m85-17 4 17" stroke="#FFF8E8"/></>:item==='duck'?<><path d="M36 61c-15-3-15-15-15-15 13 7 20 5 20 5 12-9 29-9 41-4-6-14-3-32 15-33 21-1 28 19 17 32 8 4 13 10 12 18-2 28-80 31-90-3Z" fill="#FFD36B"/><path d="m115 31 21 7-23 8Z" fill="#F78B6B"/><circle cx="104" cy="27" r="3" fill="#2B2B2B"/><path d="M53 57c19-6 31 7 26 15-14 8-31-1-26-15Z" fill="#C6A15F"/><path d="M29 85h105" stroke="#7B9CC4"/></>:item==='lamp'?<><path d="M50 87h63l-8-9H59Z" fill="#C6A15F"/><path d="M80 78V43" strokeWidth="7"/><path d="m49 14 57 0 20 35H31Z" fill="#8FA67A"/><path d="M38 50h80l-9 9H48Z" fill="#FFD36B"/><path d="M112 51v20"/><circle cx="112" cy="74" r="3" fill="#C6A15F"/></>:<><path d="M24 11h112v78H24Z" fill="#8FA67A"/><path d="M32 19h96v62H32Z" fill="#F8F1E3"/><path d="m80 25 6 12 13 2-10 10 2 14-11-7-12 7 3-14-10-10 13-2Z" fill={memento?.stretch?'#F78B6B':'#FFD36B'}/><text x="80" y="74" textAnchor="middle" stroke="none" fill="#2B2B2B" fontSize="8">{memento?.week||'WE DID A THING'}</text></>}
+ </svg>;
+}
+function OfficeCollectionDecor({player}){
+ const owned=(player?.office_display??player?.office_collectibles??[]).slice(0,3),confetti=Date.parse(player?.office_confetti?.until||'')>Date.now();
+ if(!owned.length&&!confetti)return null;
+ return <div className="pg-office-collection" aria-hidden="true">{owned.map(item=><span key={item}><OfficeCollectibleArt item={item} name={player.name} memento={item==='plaque'?player.office_memento:null}/></span>)}{confetti&&<i className="pg-confetti-desk">{Array.from({length:12},(_,i)=><b key={i} style={{left:(i*29%95)+'%',top:(i*17%65)+'%',background:['#F78B6B','#FFD36B','#7B9CC4'][i%3]}}/>)}</i>}</div>;
+}
+function OfficeShieldArt(){return <svg viewBox="0 0 160 100" role="img" aria-label="Return to Sender reflective shield" fill="none" stroke="#2B2B2B" strokeWidth="4" strokeLinejoin="round"><path d="m80 8 46 15v28c0 24-28 35-46 42-18-7-46-18-46-42V23Z" fill="#7B9CC4"/><path d="M49 34h62v39H49Z" fill="#F8F1E3"/><path d="m50 35 30 21 30-21"/><path d="M101 79H72c-23 0-26-32-4-32h18m-9-10 12 10-12 10" stroke="#F78B6B" strokeWidth="7"/></svg>;}
+function OfficeActivityChart({rows}){
+ const max=Math.max(1,...rows.map(r=>r.given+r.received));
+ return <svg className="pg-activity-chart" viewBox={`0 0 400 ${Math.max(40,rows.length*32)}`} role="img" aria-label="Actions given in blue and received in sage; exact counts are in the table below.">
+  <title>Recorded coworker actions</title>{rows.map((r,i)=><g key={r.kind+':'+r.category}><text x="0" y={i*32+19} fontSize="11" fill="currentColor">{r.label||DEED_TEXT[r.kind]?.label||r.kind}</text><rect x="165" y={i*32+5} width={205*r.given/max} height="19" fill="#7B9CC4"/><rect x={165+205*r.given/max} y={i*32+5} width={205*r.received/max} height="19" fill="#8FA67A"/></g>)}</svg>;
+}
+function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
+ const [tab,setTab]=useState(initialPlayer?'profiles':'project'),[status,setStatus]=useState(null),[profile,setProfile]=useState(null);
+ const [error,setError]=useState(''),[statusError,setStatusError]=useState(''),[statusLoading,setStatusLoading]=useState(false),[profileError,setProfileError]=useState(''),[busy,setBusy]=useState(false),[feedback,setFeedback]=useState('');
+ const [selected,setSelected]=useState(initialPlayer||me.id),[period,setPeriod]=useState('week'),[peer,setPeer]=useState(''),[target,setTarget]=useState(''),[slots,setSlots]=useState([]),[rewardWeek,setRewardWeek]=useState(''),[profileRetry,setProfileRetry]=useState(0),[errorSource,setErrorSource]=useState('');
+ const [quote,setQuote]=useState(null),[quoteError,setQuoteError]=useState(''),[quoteLoading,setQuoteLoading]=useState(false),[clock,setClock]=useState(Date.now()),[guideHidden,setGuideHidden]=useState(()=>{try{return localStorage.getItem('ih_office_guide_'+me.id)==='1';}catch{return false;}});
+ const quoteSeq=useRef(0),serverClock=useRef({server:Date.now(),client:Date.now()});
+ const locked=useRef(false),request=useRef(null),statusSeq=useRef(0),statusRef=useRef(null),slotsDirty=useRef(false),statusInFlight=useRef(false);
+ const loadStatus=useCallback(async()=>{
+  if(statusInFlight.current)return;
+  statusInFlight.current=true;setStatusLoading(true);
+  const seq=++statusSeq.current;
+  try{
+   const s=await officeRead(api.officeWeek());
+   if(s?.version!==1)throw Error('This package is waiting for its prepared backend.');
+   if(seq!==statusSeq.current)return;
+   const oldWeek=statusRef.current?.week,changed=!!oldWeek&&oldWeek!==s.week;
+   statusRef.current=s;setStatus(s);setStatusError('');
+   serverClock.current={server:Date.parse(s.server_now)||Date.now(),client:Date.now()};
+   if(changed){setQuote(null);quoteSeq.current++;setQuoteLoading(false);}
+   if(changed||!slotsDirty.current){setSlots(s.toolkit.slots);slotsDirty.current=false;}
+   setRewardWeek(current=>current&&current!==oldWeek?current:s.week);
+  }catch(e){if(seq===statusSeq.current)setStatusError(e.message||'Could not read office records.');}
+  finally{if(seq===statusSeq.current){statusInFlight.current=false;setStatusLoading(false);}}
+ },[]);
+ useEffect(()=>{loadStatus();return()=>{statusSeq.current++;};},[loadStatus]);
+ useEffect(()=>{
+  const refresh=()=>{if(document.visibilityState!=='hidden'&&!locked.current)loadStatus();};
+  const timer=setInterval(refresh,30000);document.addEventListener('visibilitychange',refresh);
+  return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',refresh);};
+ },[loadStatus]);
+ useEffect(()=>{const timer=setInterval(()=>setClock(Date.now()),1000);return()=>{clearInterval(timer);quoteSeq.current++;};},[]);
+ useEffect(()=>{
+  if(tab!=='profiles')return;
+  let live=true;setProfile(null);setProfileError('');
+  officeRead(api.officeProfile(selected,period,peer||null)).then(p=>{
+   if(!p?.player||!Array.isArray(p.by_kind)||!Array.isArray(p.daily))throw Error('The profile records are unavailable.');
+   if(live)setProfile(p);
+  }).catch(e=>{if(live)setProfileError(e.message||'Could not read this profile.');});
+  return()=>{live=false;};
+ },[tab,selected,period,peer,profileRetry]);
+ const mutate=async fn=>{
+  if(locked.current)return;
+  locked.current=true;statusSeq.current++;statusInFlight.current=false;setStatusLoading(false);setBusy(true);setError('');setFeedback('');
+  try{
+   const result=await fn();
+   setFeedback(result?.outcome||'Saved. The office has filed it.');
+   if(result?.player){
+    // A saved receipt can belong to an earlier week. Refresh current player/status
+    // rather than displaying the old receipt's balance, perks or remaining charges.
+    onPlayer(await api.sync());await loadStatus();
+   }else if(result?.id){onPlayer(result);await loadStatus();}
+   else if(result?.version===1){statusRef.current=result;setStatus(result);setSlots(result.toolkit.slots);slotsDirty.current=false;setStatusError('');}
+   else await loadStatus();
+   request.current=null;
+  }catch(e){setErrorSource(request.current?'action':'status');setError(e.message||'The office did not confirm this action. Retry deliberately.');}
+  finally{locked.current=false;setBusy(false);}
+ };
+ const act=(key,invoke)=>{
+  if(locked.current)return;
+  if(request.current?.key!==key)request.current={key,id:crypto.randomUUID(),invoke};
+  const sent=request.current;return mutate(()=>sent.invoke(sent.id));
+ };
+ const interact=action=>act(target+':'+action,id=>api.officeInteract(target,action,id));
+ const reviewShield=async()=>{
+  if(locked.current)return;
+  const seq=++quoteSeq.current;setQuoteLoading(true);setQuoteError('');setQuote(null);
+  try{const q=await officeRead(api.officeShieldQuote());if(!q?.quote||!Number.isFinite(q.price)||q.price<=0||!Number.isFinite(Date.parse(q.expires_at)))throw Error('A confirmed shield quote is unavailable.');if(seq===quoteSeq.current){setQuote(q);serverClock.current={server:Date.parse(q.server_now)||Date.now(),client:Date.now()};}}
+  catch(e){if(seq===quoteSeq.current)setQuoteError(e.message||'Could not read shield price.');}
+  finally{if(seq===quoteSeq.current)setQuoteLoading(false);}
+ };
+ const shownError=error||(tab==='profiles'?profileError:statusError);
+ const retry=()=>error&&errorSource==='action'&&request.current?mutate(()=>request.current.invoke(request.current.id)):tab==='profiles'&&profileError?setProfileRetry(n=>n+1):loadStatus();
+ const unsavedSlots=!!status&&slots.join(',')!==status.toolkit.slots.join(',');
+ const choices=board.some(p=>p.id===me.id)?board:[me,...board];
+ const mine=status?.project?.mine||[];
+ const rewardHistory=status?.reward_weeks||[];
+ const rewardRecord=rewardWeek===status?.week?status.project:rewardHistory.find(r=>r.week===rewardWeek);
+ const rewardMine=rewardRecord?.mine||[];
+ const depth=status?.depth_version===1,qualified=status?.collection?.qualified_weeks||0,display=status?.collection?.display||[],projectCategories=status?.project?.categories||Object.keys(OFFICE_CATEGORY_TEXT);
+ const dailyProject=status?.project?.credit_unit==='daily_category',projectMine=dailyProject?(status.project.mine_today||[]):mine;
+ const serverNow=serverClock.current.server+clock-serverClock.current.client,cooldown=Math.max(0,Math.ceil((Date.parse(status?.cooldown_until||'')-serverNow)/1000))||0;
+ const quoteSeconds=quote?Math.max(0,Math.ceil((Date.parse(quote.expires_at)-serverNow)/1000)):0;
+ const quoteValid=!!quote&&quote.week===status?.week&&quoteSeconds>0;
+ const nextCollection=Object.keys(OFFICE_COLLECTION_WEEKS).find(id=>!status?.collectibles.includes(id));
+ const collectionCards=(ids,permanent=false)=>ids.map(id=>{const label=OFFICE_COLLECTIBLE_LABELS[id],owned=status.collectibles.includes(id),required=OFFICE_COLLECTION_WEEKS[id],eligible=required?qualified>=required:id==='nameplate'?rewardMine.includes('work')&&rewardMine.includes('care'):id==='corkboard'?rewardMine.length>=3:rewardRecord?.completed&&(rewardRecord.categories||projectCategories).some(c=>rewardMine.includes(c));return <article key={id}><OfficeCollectibleArt item={id} name={me.name}/><h4>{label}</h4><p>{required?`${qualified} / ${required} qualifying weeks`:id==='nameplate'?'Work + care stamps':id==='corkboard'?'Three different category stamps':'Complete the project and contribute'}</p><button className="pg-btn" disabled={busy||owned||!eligible} onClick={()=>mutate(()=>api.officeCollectible(id,rewardWeek))}>{owned?'Owned':eligible?'Claim reward':'Keep playing'}</button>{permanent&&owned&&<button className="pg-btn" aria-pressed={display.includes(id)} disabled={busy||(!display.includes(id)&&display.length>=3)} onClick={()=>mutate(()=>api.officeDisplay(display.includes(id)?display.filter(x=>x!==id):[...display,id]))}>{display.includes(id)?`Hide ${label}`:`Display ${label}`}</button>}</article>;});
+ return <div className="pg-next-week" data-depth={depth?'true':'false'} data-testid="next-week-office"><nav aria-label="Office records" className="pg-tabs">{[['project','This week'],['profiles','Player profiles'],['tools','Toolkit'],...(depth?[['collection','Collection'],['boutique','Boutique'],['records','Record book']]:[])].map(([id,label])=><button key={id} className={'pg-tab'+(tab===id?' on':'')} onClick={()=>{setTab(id);setError('');}}>{label}</button>)}</nav>
+  <button className="pg-btn" disabled={busy||statusLoading} onClick={loadStatus}>{statusLoading?"Refreshing office records…":"Refresh office records"}</button>
+  {shownError&&<div className="pg-next-error" role="alert">{shownError}<button className="pg-btn" disabled={busy} onClick={retry}>{error&&errorSource==='action'?'Retry action':tab==='profiles'&&profileError?'Retry profile':'Retry records'}</button></div>}
+  {tab==='project'&&<><h3>{status?.project.title||'This week in the office'}</h3>{!status&&!statusError&&<p role="status">Reading the committee notes…</p>}{status&&<>
+   <p>{status.project.description||'Contribute to the break room together.'} {dailyProject?'Each person can add one contribution per listed category per Pacific date. Repeating the same category today adds no extra project progress.':'Earn one stamp in each listed category per week.'} No Busywork donations needed.</p>
+   <label className="pg-next-progress">{status.project.total} / {status.project.goal} {dailyProject?'daily contributions':'stamps'} · {status.project.contributors} / {status.project.minimum_contributors} contributors{dailyProject&&<> · {status.project.active_days} / {status.project.minimum_days} active Pacific dates</>}<progress max={status.project.goal} value={Math.min(status.project.total,status.project.goal)}/></label>
+   <p>{status.project.completed?'Complete. Facilities has filed a surprised memo.':dailyProject?'The office needs all three: contributions, contributors and different active dates.':'The project needs both the stamp goal and the contributor goal.'}</p>
+   {dailyProject&&<h4>Your project contributions today · {status.project.today}</h4>}
+   <ul>{projectCategories.map(id=><li key={id}>{projectMine.includes(id)?'✓ ':'○ '}{OFFICE_CATEGORY_TEXT[id]}</li>)}</ul>
+   {dailyProject&&projectCategories.every(id=>projectMine.includes(id))&&!status.project.stretch_completed&&<p className="pg-note">Your project contributions for today are complete. Come back on another Pacific date to add more; you can still help, prank and work now.</p>}
+   {depth&&<><p className="pg-small">This theme stays fixed until Friday. Other activities still count toward your personal collection and supplies. {dailyProject&&'Personal starter rewards still use your weekly category stamps.'}</p><details><summary>Optional stretch · {status.project.stretch_goal} {dailyProject?'contributions':'stamps'} / {status.project.stretch_contributors} contributors{dailyProject&&<> / {status.project.stretch_days} active dates</>}</summary><p>{status.project.stretch_completed?'Stretch complete. The scrapbook gets a special stamp.':'A cosmetic distinction for the same project. Base rewards never require the stretch goal.'}</p></details><aside className="pg-next-goal"><h4>Next thing to work towards</h4><p>{nextCollection?`${OFFICE_COLLECTIBLE_LABELS[nextCollection]} · ${qualified} / ${OFFICE_COLLECTION_WEEKS[nextCollection]} qualifying weeks`:'Your collection is complete. Earn this week’s dated memento for the scrapbook.'}</p><p>A qualifying week means work + another activity across two Pacific dates. Missed weeks never erase progress.</p><button className="pg-btn" onClick={()=>setTab('collection')}>View lasting collection</button></aside>{!guideHidden&&<details className="pg-next-guide"><summary>A short route through the office</summary><ol><li>Do actual work at your desk.</li><li>Water a plant or file a printer apology for free.</li><li>Help a coworker or try a harmless prank.</li><li>Return here to see stamps, earned supplies and your next reward.</li></ol><p>Friday refreshes the competition and tool supplies. Your collection, scrapbook and tracked lifetime history stay.</p><button className="pg-btn" onClick={()=>{setGuideHidden(true);try{localStorage.setItem('ih_office_guide_'+me.id,'1');}catch{}}}>Dismiss office route</button></details>}</>}
+   <h4>Permanent things to earn</h4><p>These survive Friday and never increase output. Earn by playing; previewing is free.</p>
+   <label>Claim from week <select value={rewardWeek} onChange={e=>setRewardWeek(e.target.value)}>{[...new Set([status.week,...rewardHistory.map(r=>r.week),...status.completed_weeks])].map(w=><option key={w}>{w}</option>)}</select></label>
+   <div className="pg-collectible-grid">{collectionCards(['nameplate','corkboard','plaque'])}</div>
+  </>}</>}
+  {tab==='boutique'&&depth&&<OfficeBoutique me={me} onPlayer={async p=>{onPlayer(p);await loadStatus();}} status={status} onDisplay={(id,shown)=>mutate(()=>api.officeDisplay(shown?display.filter(x=>x!==id):[...display,id]))}/>}
+  {tab==='records'&&depth&&<OfficeRecordBook me={me} board={board}/>}
+  {tab==='collection'&&depth&&<><h3>A desk with a history</h3><p>{qualified} qualifying weeks. Work + another activity across two Pacific dates earns one week; it never needs a streak.</p><p>Display up to three owned decorations. Hide one to make room; nothing is sold or lost.</p><div className="pg-collectible-grid">{collectionCards(Object.keys(OFFICE_COLLECTIBLE_LABELS),true)}</div><h3>Dated project scrapbook</h3><p>Complete the office project and contribute in one of its listed categories. Mementos are saved automatically, including for later contributors. Select one for your project plaque.</p>{!status.scrapbook?.length?<p>No dated mementos yet. This week’s project is a place to start.</p>:<div className="pg-scrapbook">{status.scrapbook.map(m=><article key={m.week}><OfficeCollectibleArt item="plaque" memento={m}/><div><h4>{m.title}</h4><p>{new Date(m.starts_at).toLocaleDateString(undefined,{timeZone:'America/Los_Angeles'})} · {m.week} · {m.stretch?'Stretch finish':'Base finish'}</p><button className="pg-btn" disabled={busy||m.selected} onClick={()=>mutate(()=>api.officeMemento(m.week))}>{m.selected?'Selected for plaque':'Select for plaque'}</button></div></article>)}</div>}</>}
+  {tab==='profiles'&&<><div className="pg-next-selects"><label>Player<select value={selected} onChange={e=>{setSelected(e.target.value);setPeer('');}}>{choices.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label><label>Period<select value={period} onChange={e=>setPeriod(e.target.value)}><option value="week">This week</option><option value="lifetime">Tracked lifetime</option></select></label><label>Coworker<select value={peer} onChange={e=>setPeer(e.target.value)}><option value="">Everyone</option>{choices.filter(p=>p.id!==selected).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label></div>
+   {!profile&&!profileError&&<p role="status">Reading the personnel file…</p>}{profile&&<><h3>{profile.player.name}'s office story</h3><p className="pg-small">Retained records from {new Date(profile.since).toLocaleDateString()}. Continuous tracking starts {new Date(profile.continuous_since||profile.since).toLocaleDateString()}. Earlier records may be incomplete. {profile.privacy}</p>
+   {profile.reflections&&<p>Shield protections: {profile.reflections.protected} · Sabotages returned to this sender: {profile.reflections.returned_to_sender}. Reflected attempts are counted once under blocked.</p>}
+   {profile.by_kind.length?<><table><caption>How this player plays</caption><thead><tr><th>Category</th><th>Given</th><th>Received</th></tr></thead><tbody>{['help','sabotage','playful','blocked','other'].map(category=>{const rows=profile.by_kind.filter(r=>r.category===category);return rows.length>0&&<tr key={category}><th>{category}</th><td>{rows.reduce((n,r)=>n+r.given,0)}</td><td>{rows.reduce((n,r)=>n+r.received,0)}</td></tr>;})}</tbody></table><OfficeActivityChart rows={profile.by_kind}/><table><caption>Recorded actions · blue given / sage received</caption><thead><tr><th>Action</th><th>Category</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.by_kind.map(r=><tr key={r.kind+':'+r.category}><th>{r.label||DEED_TEXT[r.kind]?.label||r.kind}</th><td>{r.category}</td><td>{r.given}</td><td>{r.received}</td></tr>)}</tbody></table><h4>Daily actions · last 30 days of selected period</h4><OfficeActivityChart rows={profile.daily.map(d=>({...d,kind:d.day,label:d.day,category:'daily'}))}/><table><thead><tr><th>Pacific date</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.daily.map(d=><tr key={d.day}><th>{d.day}</th><td>{d.given}</td><td>{d.received}</td></tr>)}</tbody></table>{profile.coworkers?.length>0&&<><h4>Coworker history</h4><table><thead><tr><th>Coworker</th><th>Given</th><th>Received</th></tr></thead><tbody>{profile.coworkers.map(p=><tr key={p.id}><th>{p.name}</th><td>{p.given}</td><td>{p.received}</td></tr>)}</tbody></table></>}</>:<p>No recorded public actions in this selection.</p>}</>}
+  </>}
+  {tab==='tools'&&<>{!status?<p>Read the office records before using tools.</p>:<><h3>Choose two tools</h3><p>Two charges per tool each week. Swapping tools does not refill them. Rescue and Confetti share the ordinary coworker-action cooldown.</p><div className="pg-tool-grid">{Object.entries(OFFICE_TOOL_LABELS).filter(([id])=>depth||id!=='clip').map(([id,label])=><button className="pg-btn" key={id} aria-pressed={slots.includes(id)} disabled={busy||(!slots.includes(id)&&slots.length>=2)} onClick={()=>{slotsDirty.current=true;setSlots(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);}}>{label}<small>{status.toolkit.charges[id]} charges</small></button>)}</div><button className="pg-btn" disabled={busy} onClick={()=>mutate(()=>api.officeTools(slots))}>Save two-slot toolkit</button>
+   {unsavedSlots&&<p role="status">Save your tool choices before using them. Refreshing preserves unsaved choices.</p>}
+   <p>Spam Filter automatically blocks one eligible output debuff while equipped. It does not block credit stealing. Rescue clears one active meeting, chair, mute or reply-all penalty. Confetti lasts ten minutes and has no output penalty.{depth?' Receipt Clip halves one positive credit theft after passive defenses. Empty thefts use no charge.':''}</p>
+   <label>Coworker<select aria-label="Toolkit recipient" disabled={busy||errorSource==='action'&&!!error} value={target} onChange={e=>{setTarget(e.target.value);request.current=null;}}><option value="">Choose someone</option>{choices.filter(p=>p.id!==me.id).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
+   {errorSource==='action'&&error&&<p>Retry the same request below. An accepted request will not be charged again.</p>}{cooldown>0&&<p role="status">Coworker actions ready in {cooldown}s. Defensive shields and automatic tools work independently.</p>}<div className="pg-next-actions">{['rescue','confetti'].map(id=><button className="pg-btn" key={id} disabled={busy||unsavedSlots||cooldown>0||!target||!status.toolkit.slots.includes(id)||status.toolkit.charges[id]<1} onClick={()=>interact(id)}>{id==='rescue'?'Rescue coworker':'Send confetti'}</button>)}</div>
+   {depth&&<><section className="pg-next-supply" aria-label="Earned resupply"><h4>The supply cupboard</h4><p>{status.resupply.used_this_week} / {status.resupply.weekly_limit} weekly refills · {status.resupply.claimed_today?'Today’s refill used':status.resupply.eligible?'Today’s refill earned':'Work + a different activity today to earn one refill'}</p><p>One charge per Pacific date, up to three each week. Maximum two remaining per tool. Choose a depleted tool; no Busywork payment.</p><div className="pg-next-actions">{Object.entries(OFFICE_TOOL_LABELS).map(([id,label])=><button className="pg-btn" key={id} disabled={busy||!status.resupply.eligible||status.toolkit.charges[id]>=2} onClick={()=>act('resupply:'+id,requestId=>api.officeResupply(id,requestId))}>Refill {label}</button>)}</div></section><details className="pg-next-shield" aria-label="Reflective shield"><summary>Return to Sender · {status.shield.armed?'Armed':'Review a shield'}</summary><OfficeShieldArt/><h3>Return to Sender</h3><p><b>{status.shield.armed?'One shield armed':'No shield armed'}</b></p><p>Reflect the next credit theft, output sabotage or blame back onto its sender. The sender pays their attack cost and cooldown; their passive defenses apply. No bouncing between shields. Reflection uses your shield before Filter or Clip, preserving those charges. Helpful deeds and playful pranks pass through.</p><p>One armed shield, purchased separately from tool slots. It protects a future attack; Rescue removes existing penalties. An unused charge expires Friday. Its price benchmark starts fresh each Friday; restructuring within the week never discounts or refills it.</p><button className="pg-btn" disabled={busy||quoteLoading||status.shield.armed} onClick={reviewShield}>{quoteLoading?'Reading shield price…':quote?'Refresh shield price':'Review shield price'}</button>{quoteError&&<p role="alert">{quoteError} <button className="pg-btn" disabled={busy||quoteLoading} onClick={reviewShield}>Retry shield price</button></p>}{quote&&<div className="pg-shield-quote"><p>Confirmed price: <b>{fmt(quote.price)} BW</b> · Your balance: {fmt(me.pp)} BW</p><p>{quote.basis}. Twice your highest base sabotage quote ({fmt(quote.attack_reference)} BW); other players’ live costs can differ.</p><p>{quoteValid?`Quote valid for ${quoteSeconds}s`:'Quote expired. Review a fresh price before buying.'}</p><button className="pg-btn primary" disabled={busy||statusLoading||!!statusError||status.shield.armed||!quoteValid||me.pp<quote.price} onClick={()=>act('shield:'+quote.quote,requestId=>api.officeBuyShield(quote.quote,requestId))}>Buy and arm for {fmt(quote.price)} BW</button></div>}</details></>}
+   {Date.parse(status.confetti?.until||'')>Date.now()&&<button className="pg-btn" disabled={busy} onClick={()=>mutate(()=>api.officeClearConfetti())}>Clear confetti from my desk</button>}
+   <p className="pg-small" role="status">{busy?'Waiting for the server…':feedback||'Actions and remaining charges are confirmed by the server.'}</p>
+  </>}</>}
+ </div>;
+}
+
+/* Permanent cosmetic shop and true season records, generated with the office UI. */
+const OFFICE_BOUTIQUE_ITEMS=[
+ {id:'coffee_tech',name:'Emergency Coffee Technician',kind:'clothing',note:'Apron, utility belt and an oversized emergency flask.'},
+ {id:'meeting_survivor',name:'Meeting Survivor',kind:'clothing',note:'Rolled sleeves, a loosened tie and meeting stickers.'},
+ {id:'theme_facilities',name:'Facilities Desk Set',kind:'desk'},
+ {id:'theme_accounting',name:'Accounting Desk Set',kind:'desk'},
+ {id:'theme_it',name:'IT Desk Set',kind:'desk'},
+ {id:'theme_chaos',name:'Office Chaos Desk Set',kind:'desk'}
+];
+function DeskThemeArt({item}){
+ const theme=item.replace('theme_',''),color={facilities:'#8FA67A',accounting:'#C6A15F',it:'#7B9CC4',chaos:'#F78B6B'}[theme]||'#8FA67A';
+ return <svg viewBox="0 0 160 100" role="img" aria-label={OFFICE_BOUTIQUE_ITEMS.find(x=>x.id===item)?.name||'Desk theme'} fill="none" stroke="#2B2B2B" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
+ <path d="m12 65 20-13h98l20 13-5 26H17Z" fill={color}/><path d="M23 72h113m-108 9h102" stroke="#F8F1E3" opacity=".55"/>
+ {theme==='facilities'&&<><path d="M29 37h58v30H29Z" fill="#C6A15F"/><path d="M32 41h52M43 37V20q15-12 30 0v17"/><path d="m43 38-8-25m5-4-9 3m23 26V9m-5 0h10" strokeWidth="5"/><path d="m100 18 29 3-4 46-29-3Z" fill="#F8F1E3"/><path d="m101 34 4 4 7-9m-8 17 4 4 7-9m4-9 5 1m-7 11 5 1" strokeWidth="2"/></>}
+ {theme==='accounting'&&<><path d="M27 19h49v46H27Z" fill="#F8F1E3"/><path d="M34 29h34m-34 9h34m-34 9h34M52 24v35" strokeWidth="1.5"/><rect x="82" y="27" width="28" height="39" rx="3" fill="#4C6068"/><path d="M87 32h18v8H87Z" fill="#C6DAD4"/>{[47,55].map(y=><path key={y} d={`M88 ${y}h3m5 0h3m5 0h1`} stroke="#F8F1E3"/>)}<path d="M121 39h20v27h-20Z" fill="#C6A15F"/><path d="m124 39-3-19m13 19 5-22" strokeWidth="4"/></>}
+ {theme==='it'&&<><rect x="29" y="13" width="42" height="54" rx="3" fill="#4C6068"/>{[22,36,50].map(y=><g key={y}><path d={`M35 ${y}h29v9H35Z`} fill="#7B9CC4"/><circle cx="60" cy={y+4} r="2" fill="#8FA67A" stroke="none"/></g>)}<path d="M75 61q20-16 22 0t20-4q4-13 14 0" strokeWidth="4"/><path d="M95 23h37v22H95Z" fill="#C6DAD4"/><path d="m102 31 4 4-4 4m10 1h9" strokeWidth="2"/></>}
+ {theme==='chaos'&&<><path d="m30 17 38 5-6 44-38-5Z" fill="#F8F1E3"/><path d="m66 28 29-8 11 36-30 8Z" fill="#FFD36B"/><path d="m35 32 20 3m-22 5 20 3m-21 5 15 2" strokeWidth="1.5"/><path d="M113 42h25v23h-25Z" fill="#7B9CC4"/><path d="M138 46q16 0 0 12M121 34q-7-8 1-14"/><path d="m106 17 3-9m11 14 9-4m-22 61 10 3m9-8 6-6" stroke="#F8F1E3" strokeWidth="4"/><path d="m46 68 18 7-13 11-12-9Z" fill="#FFD36B"/></>}
+ </svg>;
+}
+function OfficeBoutiqueArt({item,player}){
+ return item.kind==='desk'?<DeskThemeArt item={item.id}/>:<div className="pg-costume-preview large" role="img" aria-label={item.name+' outfit preview'}><Body p={{name:player?.name||'Employee',avatar_url:player?.avatar_url,look:{...normalizedAvatar(lookFor(player)),clothing:item.id}}}/></div>;
+}
+function OfficeBoutique({me,onPlayer,status,onDisplay}){
+ const [shop,setShop]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[selected,setSelected]=useState(null),[quote,setQuote]=useState(null),[feedback,setFeedback]=useState(''),[clock,setClock]=useState(Date.now());
+ const reviewArea=useRef(null);
+ const lock=useRef(false),pending=useRef(null),seq=useRef(0),server=useRef({at:Date.now(),local:Date.now()});
+ const load=useCallback(async()=>{try{const s=await officeRead(api.officeShop());if(s?.version!==1||!Array.isArray(s.items))throw Error('Boutique records are unavailable.');setShop(s);setError('');}catch(e){setError(e.message||'Could not read boutique.');}},[]);
+ useEffect(()=>{let active=true;officeRead(api.officeShop()).then(s=>{if(s?.version!==1||!Array.isArray(s.items))throw Error('Boutique records are unavailable.');if(active)setShop(s);}).catch(e=>{if(active)setError(e.message);});return()=>{active=false;seq.current++;};},[]);
+ useEffect(()=>{const t=setInterval(()=>setClock(Date.now()),1000);return()=>clearInterval(t);},[]);
+ const review=async item=>{if(lock.current)return;const n=++seq.current;setSelected(item);setQuote(null);setError('');setFeedback('');setBusy(true);lock.current=true;
+  try{const q=await officeRead(api.officeShopQuote(item.id));if(!q?.quote||q.item!==item.id||!Number.isFinite(q.price)||q.price<=0||!Number.isFinite(Date.parse(q.expires_at)))throw Error('A confirmed item price is unavailable.');if(n===seq.current){setQuote(q);server.current={at:Date.parse(q.server_now)||Date.now(),local:Date.now()};}}
+  catch(e){if(n===seq.current)setError(e.message);}finally{if(n===seq.current){setBusy(false);lock.current=false;}}
+ };
+ const purchase=async()=>{if(lock.current||!quote)return;lock.current=true;setBusy(true);setError('');if(!pending.current)pending.current={quote:quote.quote,id:crypto.randomUUID()};const sent=pending.current;
+  try{const r=await api.officeShopBuy(sent.quote,sent.id);await onPlayer(await api.sync());setFeedback(r.outcome||'Purchased.');pending.current=null;setQuote(null);setSelected(null);await load();}
+  catch(e){setError(e.message||'Purchase not confirmed. Retry the same request.');}finally{lock.current=false;setBusy(false);}
+ };
+ const recover=async()=>{if(lock.current)return;lock.current=true;setBusy(true);try{await onPlayer(await api.sync());const fresh=await officeRead(api.officeShop());if(fresh?.version!==1||!Array.isArray(fresh.items))throw Error('Could not confirm owned items.');setShop(fresh);setFeedback(fresh.items.find(i=>i.id===selected?.id)?.owned?'This item is owned. Your purchase was confirmed.':'Ownership refreshed. Review a fresh price to try again.');pending.current=null;setQuote(null);setSelected(null);setError('');}catch(e){setError(e.message);}finally{lock.current=false;setBusy(false);}};
+ const remaining=quote?Math.max(0,Math.ceil((Date.parse(quote.expires_at)-(server.current.at+clock-server.current.local))/1000)):0;
+ const retryPending=!!pending.current;
+ useEffect(()=>{if(selected||feedback){reviewArea.current?.focus({preventScroll:true});reviewArea.current?.scrollIntoView({block:'nearest'});}},[selected?.id,quote?.quote,error,feedback]);
+ return <section aria-label="Office Boutique"><h3>Office Boutique</h3><p>Permanent, cosmetic and entirely unofficial. Desk sets use one of your three display slots. Outfits are equipped free in the Mirror. No income bonuses.</p><p>Prices use your retained permanent production benchmark. Work toward participation requirements, then review the exact price before buying.</p>
+ <div className="pg-boutique-notice" ref={reviewArea} tabIndex={-1}>
+ {error&&<div role="alert" className="pg-next-error">{error}{retryPending&&<button className="pg-btn" disabled={busy} onClick={recover}>Refresh owned items</button>}{!retryPending&&<button className="pg-btn" disabled={busy} onClick={()=>selected?review(selected):load()}>Retry boutique</button>}</div>}
+ {selected&&<aside className="pg-next-goal" aria-label="Reviewed boutique purchase"><h4>{selected.name}</h4>{!quote&&!error&&<p>Reading current price…</p>}{quote&&<><p>Confirmed price: <b>{fmt(quote.price)} BW</b> · Available: {fmt(me.pp)} BW</p><p>{quote.basis}</p><p>{remaining>0?`Quote valid for ${remaining}s`:'Quote expired. Review a fresh price.'}</p><button className="pg-btn primary" disabled={busy||(!retryPending&&(remaining<=0||quote.week!==shop?.week||me.pp<quote.price))} onClick={purchase}>{retryPending?'Retry unconfirmed purchase':'Buy '+selected.name+' for '+fmt(quote.price)+' BW'}</button>{!retryPending&&<button className="pg-btn" disabled={busy} onClick={()=>{seq.current++;setSelected(null);setQuote(null);setError('');}}>Cancel purchase</button>}</>}</aside>}
+ {feedback&&<p role="status">{feedback}</p>}
+ </div>
+ {!shop&&!error&&<p role="status">Opening the supply requisition…</p>}
+ {shop&&<><p>{shop.care_days} helping dates · {shop.qualified_weeks} qualifying weeks. Helping dates start with this package’s tracked activity.</p><div className="pg-collectible-grid pg-boutique-grid">{shop.items.map(item=>{const shown=(status?.collection?.display||[]).includes(item.id),full=(status?.collection?.display||[]).length>=3;return <article key={item.id}><OfficeBoutiqueArt item={item} player={me}/><h4>{item.name}</h4><p>{item.note}</p><p>{item.care_days>0?`${item.care_days} different helping dates`:item.weeks>0?`${item.weeks} qualifying weeks`:'No participation requirement'} · {item.seconds/3600} hours pricing basis; minimum {fmt(item.minimum)} BW</p><p>{item.owned?'Owned permanently':item.eligible?'Available to purchase':'Participation required'}</p><button className="pg-btn" disabled={busy||retryPending||item.owned||!item.eligible} onClick={()=>review(item)}>{item.owned?'Owned':'Review '+item.name}</button>{item.owned&&item.kind==='desk'&&<button className="pg-btn" disabled={busy||retryPending||(!shown&&full)} onClick={()=>onDisplay(item.id,shown)}>{shown?'Hide ':'Display '}{item.name}</button>}</article>;})}</div></>}
+
+
+ </section>;
+}
+function OfficeSeasonRecords({me,board}){
+ const [book,setBook]=useState(null),[week,setWeek]=useState(''),[player,setPlayer]=useState(me.id),[error,setError]=useState(''),[retry,setRetry]=useState(0);
+ useEffect(()=>{let live=true;setBook(null);setError('');officeRead(api.officeRecordbook(week,player)).then(r=>{if(r?.version!==1||!Array.isArray(r.seasons)||!Array.isArray(r.standings))throw Error('Season records are unavailable.');if(live)setBook(r);}).catch(e=>{if(live)setError(e.message||'Could not read season records.');});return()=>{live=false;};},[week,player,retry]);
+ const choices=board.some(p=>p.id===me.id)?board:[me,...board];
+ return <section aria-label="Season record book"><h3>The office record book</h3><p>Completed competitions, final standings and personal bests. Friday resets the competition; these records remain.</p>{error&&<div role="alert">{error}<button className="pg-btn" onClick={()=>setRetry(x=>x+1)}>Retry season records</button></div>}{!book&&!error&&<p role="status">Finding the old score sheets…</p>}{book&&<>
+ <div className="pg-next-selects"><label>Completed week<select aria-label="Completed week" value={week||book.selected_week||''} onChange={e=>setWeek(e.target.value)}>{book.seasons.length?book.seasons.map(s=><option key={s.week} value={s.week}>{s.week}{s.coverage==='winner_only'?' · winner only':''}</option>):<option value="">No completed records yet</option>}</select></label><label>Personal best for<select aria-label="Personal best for" value={player} onChange={e=>setPlayer(e.target.value)}>{choices.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label></div>
+ <aside className="pg-next-goal"><h4>Best recorded weekly earnings</h4>{book.personal_best?<p>{fmt(book.personal_best.earnings)} BW · {book.personal_best.week} · place {book.personal_best.place}</p>:<p>No complete standings recorded for this player yet. Older winner-only summaries cannot supply a personal best.</p>}</aside>
+ {!book.season?<p>The first completed season will appear after normal rollover.</p>:<><h4>{book.season.week} · {book.season.winner_name||'No winner recorded'}</h4><p>Closed {new Date(book.season.closed_at).toLocaleString(undefined,{timeZone:'America/Los_Angeles'})} Pacific · Winning earnings: {fmt(book.season.top)} BW</p>{book.season.coverage==='standings'?<table><caption>Final game-recorded standings · tied earnings share a place</caption><thead><tr><th>Place</th><th>Employee</th><th>Weekly earnings</th></tr></thead><tbody>{book.standings.map(p=><tr key={p.player}><td>{p.place}</td><th>{p.name}</th><td>{fmt(p.earnings)} BW</td></tr>)}</tbody></table>:<p>Winner-only historical summary. Individual standings were not preserved for this week.</p>}
+ {book.awards?.length>0&&<><h4>From the retained public action history</h4><ul>{book.awards.map(a=><li key={a.category+a.player}>{({help:'Helping hand',playful:'Office stylist and prankster',sabotage:'Office menace'})[a.category]}: {a.name} · {a.actions} actions</li>)}</ul></>}</>}
+ <p className="pg-small">{book.note}</p>
+ </>}</section>;
+}
+
+/* Recorded race views: no extrapolated earnings, wallet disclosure or mutation RPCs. */
+const RACE_COLORS=['#385D81','#8B4638','#45643D','#775288'];
+function raceStamp(value){return new Date(value).toLocaleString('en-US',{timeZone:'America/Los_Angeles',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});}
+function raceValue(point,metric){return metric==='rank'?point.place:metric==='balance'?point.balance:point.weekly_earnings;}
+function racePlot(points,players,metric,scale,from,to,width=640,minutes=5){
+ const w=Math.max(260,width),h=260,left=62,right=w-15,top=18,bottom=220;
+ const selected=points.filter(p=>players.includes(p.player)&&Number.isFinite(raceValue(p,metric))&&Number.isFinite(Date.parse(p.at)));
+ const transform=v=>scale==='log'&&metric!=='rank'?Math.sign(v)*Math.log10(1+Math.abs(v)):v;
+ const values=selected.map(p=>transform(raceValue(p,metric))),min=metric==='rank'?1:Math.min(0,...values),max=metric==='rank'?Math.max(2,...values):Math.max(1,...values);
+ const x=t=>left+(right-left)*(Date.parse(t)-from)/Math.max(1,to-from),y=v=>metric==='rank'?top+(bottom-top)*(transform(v)-min)/Math.max(1,max-min):bottom-(bottom-top)*(transform(v)-min)/Math.max(1,max-min);
+ const lines=players.map((id,index)=>{const rows=selected.filter(p=>p.player===id).sort((a,b)=>Date.parse(a.at)-Date.parse(b.at));let previous=null,path='';for(const p of rows){const gap=previous&&Date.parse(p.at)-Date.parse(previous.at)>minutes*60000*3;path+=(previous&&!gap?' L':' M')+x(p.at).toFixed(2)+' '+y(raceValue(p,metric)).toFixed(2);previous=p;}return {id,index,rows,path};});
+ return {width:w,height:h,left,right,top,bottom,x,y,min,max,lines};
+}
+function OfficeRecordBook(props){
+ const [view,setView]=useState('seasons');
+ return <section aria-label="Office record views"><nav className="pg-next-actions" aria-label="Record views"><button className="pg-btn" aria-pressed={view==='seasons'} onClick={()=>setView('seasons')}>Completed seasons</button><button className="pg-btn" aria-pressed={view==='race'} onClick={()=>setView('race')}>Weekly Race</button></nav>{view==='race'?<OfficeWeeklyRace {...props}/>:<OfficeSeasonRecords {...props}/>}</section>;
+}
+function OfficeWeeklyRace({me,board}){
+ const [data,setData]=useState(null),[week,setWeek]=useState(''),[day,setDay]=useState(''),[metric,setMetric]=useState('rank'),[scale,setScale]=useState('linear'),[selected,setSelected]=useState(()=>[...new Set([me.id,board[0]?.id].filter(Boolean))]),[error,setError]=useState(''),[loading,setLoading]=useState(true),[retry,setRetry]=useState(0),[inspectAt,setInspectAt]=useState(null),[event,setEvent]=useState(null),[width,setWidth]=useState(640);
+ const plotRef=useRef(null),keyRef=useRef('');
+ useEffect(()=>{let live=true;const key=week+'|'+day;if(keyRef.current!==key){setData(null);setInspectAt(null);setEvent(null);}keyRef.current=key;setLoading(true);setError('');officeRead(api.officeRace(week,day)).then(r=>{if(r?.version!==1||!Array.isArray(r.points)||!Array.isArray(r.players)||!Array.isArray(r.events)||!Array.isArray(r.weeks)||!Array.isArray(r.days)||!['starts_at','ends_at','server_now','not_before'].every(k=>Number.isFinite(Date.parse(r[k]))))throw Error('Race records are unavailable.');if(!live)return;setData(r);setSelected(ids=>{const valid=ids.filter(id=>r.players.some(p=>p.id===id));return valid.length?valid.slice(0,4):[r.players.some(p=>p.id===me.id)?me.id:r.players[0]?.id].filter(Boolean);});}).catch(e=>{if(live)setError(e.message||'Could not read race history.');}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;};},[week,day,retry,me.id]);
+ useEffect(()=>{const refresh=()=>{if(document.visibilityState!=='hidden')setRetry(n=>n+1);};const t=setInterval(refresh,60000);document.addEventListener('visibilitychange',refresh);return()=>{clearInterval(t);document.removeEventListener('visibilitychange',refresh);};},[]);
+ useEffect(()=>{if(!plotRef.current)return;const el=plotRef.current;const measure=()=>setWidth(Math.max(260,Math.floor(el.getBoundingClientRect().width)));measure();const observer=new ResizeObserver(measure);observer.observe(el);return()=>observer.disconnect();},[!!data,data?.points?.length,metric,selected.join('|')]);
+ const active=metric==='balance'?[me.id]:selected;
+ const points=(data?.points||[]).filter(p=>active.includes(p.player)&&Number.isFinite(raceValue(p,metric))&&Number.isFinite(Date.parse(p.at)));
+ const times=[...new Set(points.map(p=>p.at))].sort((a,b)=>Date.parse(a)-Date.parse(b));
+ const inspected=times.includes(inspectAt)?inspectAt:times[times.length-1],index=Math.max(0,times.indexOf(inspected));
+ const from=Date.parse(data?.range_start||data?.starts_at)||0,to=Math.max(from+1,Math.min(Date.parse(data?.range_end||data?.ends_at)||from+1,Date.parse(data?.server_now)||Date.now()));
+ const geometry=racePlot(points,active,metric,scale,from,to,width,data?.resolution_minutes||5);
+ const person=id=>data?.players.find(p=>p.id===id)?.name||'Former coworker';
+ const toggle=id=>setSelected(ids=>ids.includes(id)?ids.length>1?ids.filter(v=>v!==id):ids:ids.length<4?[...ids,id]:ids);
+ const inspectPointer=e=>{if(!times.length)return;const bounds=e.currentTarget.getBoundingClientRect(),local=(e.clientX-bounds.left)*geometry.width/bounds.width,t=from+(to-from)*(local-geometry.left)/(geometry.right-geometry.left);setInspectAt(times.reduce((a,b)=>Math.abs(Date.parse(a)-t)<=Math.abs(Date.parse(b)-t)?a:b));setEvent(null);};
+ const events=(data?.events||[]).filter(e=>active.includes(e.player)||active.includes(e.target));
+ const eventText=e=>e.source==='restructure'?person(e.player)+' restructured':person(e.player)+' → '+person(e.target)+' · '+(e.category==='blocked'?'blocked attempt':DEED_TEXT[e.kind]?.label||e.kind)+' (recorded public action)';
+ return <section className="pg-weekly-race" aria-label="Weekly Race" aria-busy={loading}>
+ <h3>The weekly race</h3><p>Follow the overtakes, comebacks and very expensive decisions. Weekly earnings, leaderboard position and spendable balance tell different stories.</p>
+ <div className="pg-next-actions"><button className="pg-btn" disabled={loading} onClick={()=>setRetry(n=>n+1)}>Refresh race records</button><button className="pg-btn" onClick={()=>{setWeek('');setDay('');}}>Current week</button></div>
+ {error&&<div role="alert" className="pg-next-error">{error}<button className="pg-btn" onClick={()=>setRetry(n=>n+1)}>Retry race records</button>{data&&<p>Showing the last successful response.</p>}</div>}
+ {loading&&!data&&<p role="status">Finding the race sheets…</p>}
+ {data&&<><div className="pg-next-selects"><label>Race week<select aria-label="Race week" value={week||data.selected_week} onChange={e=>{setWeek(e.target.value);setDay('');}}>{data.weeks.map(w=><option key={w.week} value={w.week}>{w.week}{!w.first_sample_at?' · no samples yet':''}</option>)}</select></label><label>Time window<select aria-label="Race time window" value={day} onChange={e=>setDay(e.target.value)}><option value="">Whole week</option>{data.days.map(d=><option key={d} value={d}>{d} · Pacific</option>)}</select></label><label>Chart view<select aria-label="Race chart view" value={metric} onChange={e=>{setMetric(e.target.value);setInspectAt(null);setEvent(null);}}><option value="rank">Leaderboard position</option><option value="earnings">Weekly Busywork earned</option><option value="balance">My spendable balance</option></select></label>{metric!=='rank'&&<label>Chart scale<select aria-label="Race chart scale" value={scale} onChange={e=>setScale(e.target.value)}><option value="linear">Linear</option><option value="log">Logarithmic · large differences</option></select></label>}</div>
+ <p className="pg-race-health" role="status">{data.health==='scheduled'?`Recording begins no earlier than ${raceStamp(data.not_before)}.`:data.health==='paused'?'Recording is paused; saved history remains available.':data.health==='awaiting_rollover'?'Waiting for the normal weekly rollover. No old-week scores will be sampled as a new week.':data.health==='delayed'?'Recording is delayed. Available saved points are shown; missing time stays a gap.':data.health==='archived'?'Saved weekly race.':data.last_sample_at?'Recording every five minutes.':'Waiting for the first server snapshot.'}{data.last_sample_at&&` Last saved: ${raceStamp(data.last_sample_at)}.`}</p>
+ {data.first_sample_at&&<p className="pg-small">{Date.parse(data.first_sample_at)>Date.parse(data.starts_at)+300000?'Partial coverage. ':''}Recorded coverage starts {raceStamp(data.first_sample_at)}. Earlier hours are unknown. {day?'Available samples for the selected Pacific date.':'Whole-week view uses actual hourly samples.'}</p>}
+ <p className="pg-small">{data.note}</p>
+ {metric==='balance'?<p>Only your wallet is shown. Purchases, theft and restructuring can lower this balance without erasing your weekly earnings.</p>:<fieldset><legend>Compare up to four coworkers</legend><div className="pg-race-players">{data.players.map((p,i)=><button className="pg-btn" key={p.id} aria-pressed={selected.includes(p.id)} disabled={!selected.includes(p.id)&&selected.length>=4} onClick={()=>toggle(p.id)}><span className="pg-race-swatch" style={{background:active.includes(p.id)?RACE_COLORS[active.indexOf(p.id)%4]:'#B6AA96'}} aria-hidden="true"/>{p.name}</button>)}</div></fieldset>}
+ {!times.length?<p className="pg-race-empty">No recorded samples for this selection. No earlier curve has been reconstructed.</p>:<>
+ <div className="pg-race-plot" ref={plotRef}><svg data-testid="race-chart" width="100%" viewBox={`0 0 ${geometry.width} 260`} role="img" aria-label={metric==='rank'?'Recorded leaderboard position; first place is at the top. Use the snapshot slider and table for exact values.':metric==='balance'?'Your recorded spendable balance. Use the snapshot slider and table for exact values.':'Recorded weekly Busywork earned. Use the snapshot slider and table for exact values.'} onPointerDown={inspectPointer}>
+ <title>Recorded weekly race · {data.selected_week}</title>
+ {[0,1,2,3,4].map(i=>{const y=geometry.top+(geometry.bottom-geometry.top)*i/4,t=metric==='rank'?geometry.min+(geometry.max-geometry.min)*i/4:geometry.max-(geometry.max-geometry.min)*i/4,v=scale==='log'&&metric!=='rank'?Math.sign(t)*(Math.pow(10,Math.abs(t))-1):t;return <g key={i}><path d={`M${geometry.left} ${y}H${geometry.right}`} stroke="#B6AA96"/><text x={geometry.left-6} y={y+4} textAnchor="end" fontSize="11" fill="currentColor">{metric==='rank'?Number.isInteger(v)?'#'+v:'':fmt(v)}</text></g>;})}
+ {[0,.5,1].map((part,i)=>{const at=from+(to-from)*part,x=geometry.left+(geometry.right-geometry.left)*part;return <text key={i} x={x} y="245" textAnchor={i===0?'start':i===2?'end':'middle'} fontSize="10" fill="currentColor">{new Date(at).toLocaleString('en-US',{timeZone:'America/Los_Angeles',month:'numeric',day:'numeric',hour:'numeric',minute:'2-digit'})}</text>;})}
+ {events.filter(e=>Date.parse(e.at)>=from&&Date.parse(e.at)<=to).map((e,i)=><path key={i} d={`M${geometry.x(e.at)} ${geometry.top}V${geometry.bottom}`} stroke="#C6A15F" strokeDasharray="2 5" opacity=".45"/>)}
+ {geometry.lines.map((line,i)=><g key={line.id}><path d={line.path} fill="none" stroke={RACE_COLORS[i%4]} strokeWidth="2.5" data-race-player={line.id}/>{line.rows.filter(p=>p.at===inspected||line.rows.length===1).map(p=><circle key={p.at} cx={geometry.x(p.at)} cy={geometry.y(raceValue(p,metric))} r="4" fill={RACE_COLORS[i%4]} stroke="#F8F1E3"/>)}</g>)}
+ <path d={`M${geometry.x(inspected)} ${geometry.top}V${geometry.bottom}`} stroke="#2B2B2B" strokeDasharray="4 3"/>
+ </svg></div>
+ <label className="pg-race-slider">Inspect recorded snapshot<input type="range" aria-label="Inspect recorded snapshot" min="0" max={times.length-1} value={index} onChange={e=>{setInspectAt(times[Number(e.target.value)]);setEvent(null);}}/></label>
+ <p aria-live="polite">{raceStamp(inspected)} · exact values below</p><table><caption>Selected recorded snapshot</caption><thead><tr><th>Coworker</th><th>{metric==='rank'?'Position':metric==='balance'?'Available BW':'Weekly BW'}</th><th>Last earnings settlement</th></tr></thead><tbody>{active.map((id,i)=>{const p=points.find(p=>p.player===id&&p.at===inspected);return <tr key={id}><th><span className="pg-race-swatch" style={{background:RACE_COLORS[i%4]}} aria-hidden="true"/>{person(id)}</th><td>{p?metric==='rank'?'#'+p.place:fmt(raceValue(p,metric)):'No sample'}</td><td>{p?.last_settled?raceStamp(p.last_settled):'Not recorded'}{p&&Date.parse(p.at)-Date.parse(p.last_settled)>900000&&<small> · delayed/offline settlement</small>}</td></tr>;})}</tbody></table>
+ </>}
+ {events.length>0&&<details><summary>Recorded public events · {events.length}</summary><p className="pg-small">Markers identify recorded events, not the proven cause of balance movement. Hushed actions are excluded.</p><ul className="pg-race-events">{events.map((e,i)=><li key={i}><button className="pg-btn" onClick={()=>{setEvent(e);if(times.length)setInspectAt(times.reduce((a,b)=>Math.abs(Date.parse(a)-Date.parse(e.at))<=Math.abs(Date.parse(b)-Date.parse(e.at))?a:b));}}>{raceStamp(e.at)} · {eventText(e)}</button></li>)}</ul></details>}
+ {event&&<p role="status">{raceStamp(event.at)} · {eventText(event)}. The chart selects the nearest recorded snapshot, not an exact transaction balance.</p>}
+ {data.omitted_events>0&&<p>Only the latest 200 public event markers are included; {data.omitted_events} older markers are omitted from this view.</p>}
+ </>}
+ </section>;
+}
+
+// Update this manifest for every player-facing release. Acknowledgement is local
+// to this player/browser, never an economic action or a claim of cross-device sync.
+const RELEASE_NOTES = {
+ id: "195",
+ title: "The office remembers",
+ changes: [
+  ["Lifetime profiles and charts", "Helping, sabotage and playful actions now have lasting records, including received actions and coworker relationships. Recorded history survives Friday. Older gaps stay labelled."],
+  ["Weekly Race", "Compare recorded weekly earnings and leaderboard positions over time. Your spendable-balance history is private to you. Five-minute recording starts after release activation; earlier points are not reconstructed."],
+  ["Seniority that stays useful", "Your 3% output bonus uses Seniority earned this week. Spending points on perks no longer removes that earned bonus. Both weekly points and perks still reset Friday."],
+  ["Fairer prices and Cover", "Cover gives a coworker +15% output for 20 minutes instead of transferring cash. Permanent cosmetic prices retain your highest tracked base production, so restructuring cannot make the whole catalogue cheap."],
+  ["Phone movement", "Tap to walk, then use a nearby action button. Passing furniture no longer opens it unexpectedly. Minimap and emotes can collapse."],
+  ["New ways to help and prank", "IT Rescue removes an eligible negative effect. Confetti adds a temporary desk prank without an income penalty. Normal sabotage stacking stays."],
+  ["Tools and reflection", "Choose two toolkit items. Earn limited refills through varied activity. Receipt Clip reduces one eligible theft; the separately purchased Return to Sender shield reflects one eligible sabotage without reflection chains."],
+  ["Projects and lasting collections", "Add one project contribution per listed category per person per Pacific date. The shared goal needs 36 contributions, three people and four active dates; stretch needs 60, five people and six dates. Personal starter rewards stay quick. Earn dated plaques and multi-week terrarium, duck and lamp rewards; qualifying weeks need not be consecutive."],
+  ["Costumes, outfits and desk sets", "Try Budget Wizard and Walking Filing Cabinet costumes. Earn Emergency Coffee Technician and Meeting Survivor outfits, plus Facilities, Accounting, IT and Chaos desk sets."],
+  ["Your look, your choice", "Owned items are grouped by type. Switching owned glows or atmospheres, hiding effects and choosing empty hands are free. Recolor effects with the existing confirmed-price customization flow. Ownership and saved finishes survive removal and Friday resets."],
+  ["Season records and safer purchases", "The record book keeps complete final standings from preserved seasons, ties and personal bests. Quotes, errors and retries are clearer, and repeated requests do not duplicate confirmed purchases."]
+ ]
+};
+function releaseNotesSeen(player){
+ try{return JSON.parse(localStorage.getItem('ih_release_notes_'+player))===RELEASE_NOTES.id;}catch{return false;}
+}
+function ReleaseNotes({onClose}){
+ return <Modal label="What's new" onClose={onClose}><section data-testid="release-notes">
+  <div className="pg-stamp">What's new · build {RELEASE_NOTES.id}</div><h2>{RELEASE_NOTES.title}</h2>
+  <p>New things to do, lasting progress and more ways to make the office your own.</p>
+  <ul className="pg-helplist">{RELEASE_NOTES.changes.map(([title,body])=><li key={title}><b>{title}</b><br/>{body}</li>)}</ul>
+  <p className="pg-fine">You can reopen this list in Help → What's new. Dismissal is remembered for your player in this browser.</p>
+  <button className="pg-btn primary" style={{minHeight:44}} onClick={onClose}>Got it · back to the office</button>
+ </section></Modal>;
+}
+
+/* END NEXT WEEK UI */
+
 function EquityShop({ me, cat, onBuy }) {
   const perks = cat?.perks || [];
   const have = (id) => Number((me?.perks || {})[id] || 0);
   return (
     <div className="pg-equity">
       <div className="pg-mailhead">Spend Seniority</div>
-      <p className="pg-small">Keep Seniority for its +3% output bonus per point, or spend it here on perks.
+      <p className="pg-small">Earned Seniority keeps its +3% output bonus per point when you spend available points on perks.
         Both Seniority and these perks survive restructuring but reset every Friday at 4 PM Pacific.</p>
+      <p><b>{earnedSeniority(me)} earned this week</b> · {me?.equity||0} available to spend. Spending never removes the earned bonus.</p>
       <div className="pg-list">
         {perks.map((k, i) => {
           const n = have(k.id), maxed = n >= k.max;
@@ -8218,8 +8661,8 @@ function EquityShop({ me, cat, onBuy }) {
             <button key={k.id} className={"pg-row" + (i % 2 ? " alt" : "") + (maxed || !afford ? " poor" : "")}
                     disabled={maxed || !afford} onClick={() => onBuy(k.id)}>
               <OfficeIcon kind={k.name+" senior badge"} compact/><span className="pg-ct">{n}/{k.max}</span>
-              <span className="pg-main"><b>{k.name}</b><span>{k.note?.replace(", permanently, each.", " per level until the weekly reset.")}</span></span>
-              <span className="pg-right"><b>{maxed ? "maxed" : k.cost + " eq"}</b></span>
+              <span className="pg-main"><b>{k.name}</b><span>{k.note?.replace(", permanently, each.", " per level until the weekly reset.")}</span>{k.id==="compound"&&!maxed&&<span>Output perk ×{(1+0.05*n).toFixed(2)} → ×{(1+0.05*(n+1)).toFixed(2)}. Earned Seniority stays +{earnedSeniority(me)*3}%.</span>}</span>
+              <span className="pg-right"><b>{maxed ? "maxed" : k.cost + " Seniority"}</b></span>
             </button>
           );
         })}
@@ -8464,13 +8907,15 @@ function ArtPreview(){
  const types=["paper","badge","mug","chair","computer","plant","binder","wood","phone","person","star","shirt","notice","reset","gear"];
  const colors=[["Paper","#F8F1E3"],["Sage","#8FA67A"],["Blue","#7B9CC4"],["Note","#FFD36B"],["Orange","#F78B6B"],["Ink","#2B2B2B"]];
  return <main className="pg-artreview" data-testid="art-preview">
+  <section className="ar-grid" aria-label="New office costumes and desk sets">{['budget_wizard','filing_cabinet'].map(id=><div className="ar-cell" key={id}><CostumePreview id={id} player={{name:'Preview Employee',look:demoAvatar}} large/><b>{COSTUMES[id].name}</b></div>)}{OFFICE_BOUTIQUE_ITEMS.map(item=><div className="ar-cell" key={item.id}><OfficeBoutiqueArt item={item} player={{name:'Preview Employee',look:demoAvatar}}/><b>{item.name}</b></div>)}</section>
+  <section className="ar-grid" aria-label="Earned office collectibles">{Object.keys(OFFICE_COLLECTIBLE_LABELS).map(item=><div className="ar-cell" key={item}><OfficeCollectibleArt item={item} name="QA Employee"/><b>{OFFICE_COLLECTIBLE_LABELS[item]}</b></div>)}<div className="ar-cell"><OfficeShieldArt/><b>Return to Sender</b></div></section>
   <header><h1>IDLE HANDS · ART QA</h1><p>Original 2D cutout office satire · QA gallery only · Never touches game accounts or Busywork.</p></header>
   <h2>0. Shared character creator · free appearance choices</h2>
   <div data-testid="avatar-qa" style={{background:"#FFFDF5",padding:15,border:"2px solid #2B2B2B",maxWidth:760,margin:"0 auto"}}>
     <div className="pg-avatar-preview"><Body p={{name:"New Employee",look:demoAvatar}}/><strong>First day: make your employee</strong></div>
     <AvatarControls value={demoAvatar} onChange={setDemoAvatar}/>
     <p>Clothing progression · {WARDROBE.length} server-backed permanent outfits</p>
-    <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><WardrobeIcon id={it.id}/><strong>{it.name}</strong><small>{fmt(it.cost)} BW</small></div>)}</div>
+    <div className="ar-grid">{WARDROBE.map(it=><div className="ar-cell" key={it.id}><WardrobeIcon id={it.id}/><strong>{it.name}</strong><small>{it.office?"Earn + buy in Office Boutique":fmt(it.cost)+" BW"}</small></div>)}</div>
   </div>
   <h2>0b. Actual new-employee onboarding screen · read-only QA</h2>
   <section data-testid="onboard-qa" style={{border:"2px dashed #2B2B2B",maxWidth:760,margin:"0 auto 18px",padding:6}}>
@@ -8548,7 +8993,7 @@ function ArtPreview(){
 }
 
 try {
-  ReactDOM.createRoot(document.getElementById("root")).render(new URLSearchParams(location.search).get("art-preview")==="1" ? <ArtPreview/> : <OfficeFloor />);
+  ReactDOM.createRoot(document.getElementById("root")).render(new URLSearchParams(location.search).get("art-preview")==="1" ? <ArtPreview/> : PREVIEW_HOLD ? <main className="pg-hirepage"><h1>Next week is being prepared</h1><p>This held preview has no access to live player actions.</p><a href="?art-preview=1">Inspect the read-only art gallery</a><p>Gameplay is tested with isolated fixtures. Production remains on the current release.</p></main> : <OfficeFloor />);
 } catch (err) {
   window.__boot(err && err.stack ? err.stack : String(err));
 }

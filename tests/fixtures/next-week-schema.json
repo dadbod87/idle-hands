@@ -1,0 +1,1115 @@
+[
+  {
+    "table_name": "birthday_card",
+    "column_name": "week_key",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "birthday_card",
+    "column_name": "signers",
+    "udt_name": "jsonb",
+    "column_default": "'[]'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "birthday_card",
+    "column_name": "pot",
+    "udt_name": "float8",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "birthday_card",
+    "column_name": "paid",
+    "udt_name": "bool",
+    "column_default": "false",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "birthday_card",
+    "column_name": "started",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "catalog",
+    "column_name": "key",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "catalog",
+    "column_name": "data",
+    "udt_name": "jsonb",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "chair_claims",
+    "column_name": "window_id",
+    "udt_name": "int8",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "chair_claims",
+    "column_name": "taker",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "chair_claims",
+    "column_name": "name",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "chair_claims",
+    "column_name": "at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "code_attempts",
+    "column_name": "day",
+    "udt_name": "date",
+    "column_default": "CURRENT_DATE",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "code_attempts",
+    "column_name": "fails",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "id",
+    "udt_name": "int4",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "week_key",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "unlock_at",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "taken_by",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "taken_at",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "orbs",
+    "udt_name": "int4",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "secs_per_orb",
+    "udt_name": "float8",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "loot",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "finished",
+    "udt_name": "bool",
+    "column_default": "false",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "cow_state",
+    "column_name": "pin_next",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "deeds",
+    "column_name": "id",
+    "udt_name": "int8",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "deeds",
+    "column_name": "actor",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "deeds",
+    "column_name": "target",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "deeds",
+    "column_name": "kind",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "deeds",
+    "column_name": "amount",
+    "udt_name": "float8",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "deeds",
+    "column_name": "hush",
+    "udt_name": "bool",
+    "column_default": "false",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "deeds",
+    "column_name": "claimed",
+    "udt_name": "bool",
+    "column_default": "false",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "deeds",
+    "column_name": "created_at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "deeds",
+    "column_name": "detail",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "meeting_claims",
+    "column_name": "window_id",
+    "udt_name": "int8",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "meeting_claims",
+    "column_name": "attendee",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "meeting_claims",
+    "column_name": "name",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "meeting_claims",
+    "column_name": "joined_at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "meeting_claims",
+    "column_name": "paid",
+    "udt_name": "bool",
+    "column_default": "false",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_door",
+    "column_name": "id",
+    "udt_name": "int4",
+    "column_default": "1",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_door",
+    "column_name": "code",
+    "udt_name": "text",
+    "column_default": "'fixture-only'::text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_door",
+    "column_name": "max_players",
+    "udt_name": "int4",
+    "column_default": "12",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_door",
+    "column_name": "open",
+    "udt_name": "bool",
+    "column_default": "true",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_door",
+    "column_name": "tz",
+    "udt_name": "text",
+    "column_default": "'America/New_York'::text",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_door",
+    "column_name": "hire_bonus_pct",
+    "udt_name": "float8",
+    "column_default": "0.5",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_door",
+    "column_name": "admin",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "office_play_actions",
+    "column_name": "week",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_actions",
+    "column_name": "actor",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_actions",
+    "column_name": "day",
+    "udt_name": "date",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_actions",
+    "column_name": "kind",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_actions",
+    "column_name": "n",
+    "udt_name": "int2",
+    "column_default": "1",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_actions",
+    "column_name": "updated_at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_nominations",
+    "column_name": "week",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_nominations",
+    "column_name": "voter",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_nominations",
+    "column_name": "category",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_nominations",
+    "column_name": "recipient",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_nominations",
+    "column_name": "updated_at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_votes",
+    "column_name": "week",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_votes",
+    "column_name": "voter",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_votes",
+    "column_name": "choice",
+    "udt_name": "int2",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "office_play_votes",
+    "column_name": "updated_at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "id",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "name",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "avatar_url",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "pp",
+    "udt_name": "float8",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "lifetime",
+    "udt_name": "float8",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "cycle",
+    "udt_name": "float8",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "owned",
+    "udt_name": "jsonb",
+    "column_default": "'{}'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "upgrades",
+    "udt_name": "jsonb",
+    "column_default": "'[]'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "buffs",
+    "udt_name": "jsonb",
+    "column_default": "'[]'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "equity",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "goodwill",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "notoriety",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "heat",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "raises",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "busted",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "grabs",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "hush",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "quits",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "kind_received",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "tally",
+    "udt_name": "jsonb",
+    "column_default": "'{}'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "hits",
+    "udt_name": "jsonb",
+    "column_default": "'{}'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "achievements",
+    "udt_name": "jsonb",
+    "column_default": "'[]'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "frenzy_until",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "last_tick",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "last_deed",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "last_seen",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "created_at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "outfit",
+    "udt_name": "jsonb",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "last_break",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "week_pp",
+    "udt_name": "float8",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "trophies",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "last_work",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "seen_recap",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "rivalries",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "signed_at",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "signature",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "agreement_version",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "streak",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "last_checkin",
+    "udt_name": "date",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "look",
+    "udt_name": "jsonb",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "dept",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "perks",
+    "udt_name": "jsonb",
+    "column_default": "'{}'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "today",
+    "udt_name": "jsonb",
+    "column_default": "'{}'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "day_pp",
+    "udt_name": "float8",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "contracts",
+    "udt_name": "jsonb",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "mail",
+    "udt_name": "jsonb",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "nickname",
+    "udt_name": "jsonb",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "ooo",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "last_nick",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "last_vend",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "vanity",
+    "udt_name": "jsonb",
+    "column_default": "'{}'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "kit",
+    "udt_name": "jsonb",
+    "column_default": "'{}'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "last_restructure",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "spent",
+    "udt_name": "float8",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "extras",
+    "udt_name": "jsonb",
+    "column_default": "'[]'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "pin",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "cow",
+    "udt_name": "jsonb",
+    "column_default": "'[]'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "pet",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "mount",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "players",
+    "column_name": "cow_seen",
+    "udt_name": "bool",
+    "column_default": "false",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "wardrobe_owned",
+    "udt_name": "jsonb",
+    "column_default": "'[]'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "cosmetic_styles",
+    "udt_name": "jsonb",
+    "column_default": "'{}'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "cosmetic_equipped",
+    "udt_name": "jsonb",
+    "column_default": "'{}'::jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "players",
+    "column_name": "cosmetic_revision",
+    "udt_name": "int8",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "printer_claims",
+    "column_name": "window_id",
+    "udt_name": "int8",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "printer_claims",
+    "column_name": "fixer",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "printer_claims",
+    "column_name": "name",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "printer_claims",
+    "column_name": "at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "season_state",
+    "column_name": "id",
+    "udt_name": "int4",
+    "column_default": "1",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "season_state",
+    "column_name": "current_week",
+    "udt_name": "text",
+    "column_default": "to_char(now(), 'IYYY-IW'::text)",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "season_state",
+    "column_name": "mw",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "season_state",
+    "column_name": "mhit",
+    "udt_name": "bool",
+    "column_default": "false",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "season_state",
+    "column_name": "streak",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "season_state",
+    "column_name": "best",
+    "udt_name": "int4",
+    "column_default": "0",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "season_state",
+    "column_name": "target",
+    "udt_name": "float8",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "season_state",
+    "column_name": "target_week",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "seasons",
+    "column_name": "week_key",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "seasons",
+    "column_name": "winner",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "seasons",
+    "column_name": "winner_name",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "seasons",
+    "column_name": "top",
+    "udt_name": "float8",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "seasons",
+    "column_name": "closed_at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "seasons",
+    "column_name": "stats",
+    "udt_name": "jsonb",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "player_id",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "id",
+    "udt_name": "uuid",
+    "column_default": "gen_random_uuid()",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "item",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "color",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "design",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "color_fee",
+    "udt_name": "float8",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "design_fee",
+    "udt_name": "float8",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "rate",
+    "udt_name": "float8",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "revision",
+    "udt_name": "int8",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "week",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "expires_at",
+    "udt_name": "timestamptz",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "style_quotes",
+    "column_name": "applied",
+    "udt_name": "bool",
+    "column_default": "false",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "suggestions",
+    "column_name": "id",
+    "udt_name": "int8",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "suggestions",
+    "column_name": "author",
+    "udt_name": "uuid",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "suggestions",
+    "column_name": "author_name",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "table_name": "suggestions",
+    "column_name": "text",
+    "udt_name": "text",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "suggestions",
+    "column_name": "approved",
+    "udt_name": "bool",
+    "column_default": "false",
+    "is_nullable": "NO"
+  },
+  {
+    "table_name": "suggestions",
+    "column_name": "created_at",
+    "udt_name": "timestamptz",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  }
+]

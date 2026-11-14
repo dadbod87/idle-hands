@@ -22,11 +22,11 @@ for(const mode of ['desktop','mobile'])test(mode+': lived-in scenery preserves r
   await page.locator('.pg-panel .pg-x').click();
   const prop=page.locator('.pg-room').getByRole('button',{name:label,exact:true});
   await expect(prop).toBeInViewport();
-  if(mode==='mobile')await prop.tap();else {await prop.focus();await page.keyboard.press('Enter');}
+  if(mode==='mobile'){await prop.tap();await expect(page.getByRole('dialog')).toHaveCount(0);await page.locator('.pg-prompt .pg-open').click();}else {await prop.focus();await page.keyboard.press('Enter');}
   await expect(page.getByRole('dialog',{name:label,exact:true})).toBeVisible();
   await expect(page.getByTestId('prop-inspection')).toContainText(copy);
   await page.screenshot({path:'test-results/'+mode+'-'+(destination==='The Printer'?'printer-note':'calendar')+'.png',fullPage:true});
-  await page.keyboard.press('Escape');await expect(prop).toBeFocused();
+  await page.keyboard.press('Escape');if(mode==='desktop')await expect(prop).toBeFocused();
   if(destination==='The Printer'){
    const printer=page.locator('.pg-room .pg-fx').filter({hasText:'The Printer'}),label=printer.locator('.pg-fxlabel');
    const paperBox=await prop.boundingBox(),printerBox=await printer.boundingBox();expect(paperBox.width).toBeLessThan(printerBox.width*.6);expect(paperBox.height).toBeLessThan(printerBox.height);
@@ -43,18 +43,19 @@ for(const mode of ['desktop','mobile'])test(mode+': lived-in scenery preserves r
  for(const [x,y,id,label] of [[850,1110,'bench','Take a minute on the couch'],[1000,700,'break-notice','Read the break room notice'],[1930,1170,'office-shelf','Browse Misc. Urgent']]){
   await walkAxis('left',x);await walkAxis('top',y);
   const prop=page.locator('.pg-room [data-scenery="'+id+'"]');await expect(prop).toBeInViewport();
-  if(mode==='mobile')await prop.tap();else await prop.click();
+  if(mode==='mobile'){await prop.tap();await expect(page.getByRole('dialog')).toHaveCount(0);await page.locator('.pg-prompt .pg-open').click();}else await prop.click();
   await expect(page.getByRole('dialog',{name:label,exact:true})).toBeVisible();
   await expect(page.getByTestId('prop-inspection').locator('.pg-note')).not.toBeEmpty();
   await page.screenshot({path:'test-results/'+mode+'-'+id+'-reading.png',fullPage:true});
   if(id!=='office-shelf')await expect(page.getByRole('button',{name:'Head to the break table',exact:true})).toBeVisible();
-  await page.keyboard.press('Escape');await expect(prop).toBeFocused();
+  await page.keyboard.press('Escape');if(mode==='desktop')await expect(prop).toBeFocused();
  }
  // The couch's useful exit follows the existing walk route and opens real break activities.
  await walkAxis('left',850);await walkAxis('top',1110);
  await page.locator('.pg-room [data-scenery="bench"]').click();await page.getByRole('button',{name:'Head to the break table',exact:true}).click();
  await expect(page.locator('.pg-panelhead')).toContainText('Break room',{timeout:20000});await page.locator('.pg-panel .pg-x').click();
 
+ if(mode==='mobile')await page.getByRole('button',{name:'Emotes',exact:true}).click();
  await page.getByTitle('Wave',{exact:true}).click();await expect(page.locator('.pg-room .pg-body.me')).toHaveClass(/em-wave/);
  expect(fixture.player.pp).toBe(500000);expect(fixture.player.equity).toBe(2);expect(fixture.player.kit.desk).toBe('d3');
  expect(fixture.calls.some(x=>['buy_item','buy_fitting','do_deed','set_look'].includes(x.rpc))).toBe(false);

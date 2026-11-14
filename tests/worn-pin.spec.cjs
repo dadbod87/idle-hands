@@ -19,6 +19,7 @@ for(const mode of ['desktop','mobile'])test(mode+': HR pin equips on character, 
  await expect(panel.getByRole('status')).toContainText('Wearing: Beta Tester');
  await expect(pin).toHaveAttribute('data-worn-pin','beta');expect(fixture.player.pin).toBe('beta');
  await panel.getByRole('button',{name:'close',exact:true}).click();
+ if(await page.getByRole('button',{name:'Emotes',exact:true}).isVisible())await page.getByRole('button',{name:'Emotes',exact:true}).click();
  await page.getByTitle('Wave',{exact:true}).click();await expect(page.locator('.pg-body.me')).toHaveClass(/em-wave/);
  await expect(pin).toBeVisible();
  const inside=await pin.evaluate(el=>{const p=el.getBoundingClientRect(),t=el.closest('.pg-rig').querySelector('.pg-torso').getBoundingClientRect();return p.top>=t.top&&p.bottom<=t.bottom&&p.left>=t.left&&p.right<=t.right;});expect(inside).toBe(true);

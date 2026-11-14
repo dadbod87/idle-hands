@@ -107,3 +107,7 @@ Keep the playful colors and add a separate Natural tones group: walnut, oak, che
 ## Build 193 rug identity
 
 A custom finish changes the rug fabric, never removes its tier design. Retain r1's plain field, r2's diamond row, r3's central medallion and r4's woven lines, plus the shared border/fringe. Draw those motifs above custom patterns, adjusting motif accents for contrast when a custom color is selected. Use the same renderer in catalogue/editor previews and on the office floor; saved custom finishes receive this presentation correction without a new purchase.
+
+## Build 195 owned atmosphere and glow choices
+
+Keep all existing tier IDs, ownership, prices and effect silhouettes. Owned atmosphere tiers select dust motes, shimmer or flames; use the shared SVG material helper for confirmed colors/designs while keeping original outlines and pointer-transparent layers. Owned glows select their existing tier intensity; custom colors change the shared Body filter in previews and the world. Glows have no pattern surface, so hide design controls and reject non-solid glow quotes on the server. Free hide/equip never spends BW or lowers highest ownership. Inspect portrait, landscape, desktop and actual-size character screenshots. The What's new notice uses the existing scrollable, focus-trapped paper notice, readable text and a 44px dismissal control, with no competing startup dialog.

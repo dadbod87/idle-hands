@@ -1,6 +1,7 @@
 // Runs the unmodified game UI and real Supabase client against intercepted HTTP.
 // Every Supabase request is fulfilled locally. No production credentials or writes.
 const fixtureId='00000000-0000-4000-8000-000000000001';
+const releaseNotesId=require('node:fs').readFileSync(require('node:path').join(__dirname,'../tools/release-notes-ui.jsx'),'utf8').match(/id: "([^"]+)"/)[1];
 
 function makeOfficePlayFixture(){
  const votes={},nominations={},actions={},people={};
@@ -18,12 +19,13 @@ async function installGameFixture(page,options={}) {
  look:{build:'regular',bottom:'trousers',gender:'neutral',hair:'messy',hairColor:1,skin:0,eyes:'tired',expression:'deadpan',top:0,legs:0,clothing:'starter'},
  extras:options.ownedPins||[],pin:options.pin||null,vanity:{},kit:{desk:'d3',chair:'c2',rug:'r2'},streak:0,goodwill:0,notoriety:0};
  const uploads=[];const storedPhotos=new Map();const calls=[];const officePlay=options.playStore||makeOfficePlayFixture();officePlay.people[player.id]=player.name;for(const p of options.coworkers||[])officePlay.people[p.id]=p.name;
- await page.addInitScript(({id})=>{
+ await page.addInitScript(({id,releaseNotesId,releaseNotes})=>{
   const exp=Math.floor(Date.now()/1000)+3600;
   const token=btoa(JSON.stringify({alg:'HS256',typ:'JWT'}))+'.'+btoa(JSON.stringify({sub:id,role:'authenticated',exp}))+'.fixture';
   localStorage.setItem('sb-wbakpxbvqxppqbrwuokp-auth-token',JSON.stringify({access_token:token,refresh_token:'isolated-fixture',expires_at:exp,expires_in:3600,token_type:'bearer',user:{id,is_anonymous:false,aud:'authenticated',role:'authenticated'}}));
   if(localStorage.getItem('ih_muted')===null)localStorage.setItem('ih_muted','1');
- },{id:player.id});
+  if(!releaseNotes)localStorage.setItem('ih_release_notes_'+id,JSON.stringify(releaseNotesId));
+ },{id:player.id,releaseNotesId,releaseNotes:!!options.releaseNotes});
  await page.routeWebSocket('**/wbakpxbvqxppqbrwuokp.supabase.co/**', ws=>options.liveBus?options.liveBus.connect(ws):ws.close());
  await page.route('https://wbakpxbvqxppqbrwuokp.supabase.co/**',async route=>{
   const req=route.request(),url=new URL(req.url());
@@ -39,9 +41,11 @@ async function installGameFixture(page,options={}) {
    storedPhotos.set(url.pathname,image);uploads.push({path:url.pathname,body,...image});result={Key:url.pathname.replace('/storage/v1/object/','')};
   }else if(url.pathname.includes('/auth/'))result={id:player.id,is_anonymous:false};
   else if(url.pathname.includes('/rpc/')){
-   const rpc=url.pathname.split('/').pop(),args=req.postDataJSON()||{};
+   let rpc=url.pathname.split('/').pop();const wireRpc=rpc,args=req.postDataJSON()||{};
    calls.push({rpc,args});
    if(options.handleRpc){const handled=await options.handleRpc(rpc,args,player);if(handled!==undefined){await route.fulfill({status:handled.status||200,contentType:'application/json',body:JSON.stringify(handled.body)});return;}}
+   // Simulate the new authoritative receipt wrapper delegating to the old deed body.
+   if(rpc==='office_deed'){rpc='do_deed';calls.push({rpc,args});}
    if(options.failRpcs?.includes(rpc)){await route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({message:'Fixture request declined',code:'P0001'})});return;}
    if(rpc==='cow_try')result=options.onCowTry?options.onCowTry(player):null;
    else if(rpc==='upsert_player'){player.name=args.p_name;if(args.p_avatar)player.avatar_url=args.p_avatar;result=player;}
@@ -68,6 +72,7 @@ async function installGameFixture(page,options={}) {
    else if(rpc==='buy_fitting'){const item=(options.fittings?.[args.p_key]||[]).find(x=>x.id===args.p_id);const key=args.p_key==='vanity'?'vanity':'kit';player[key]={...player[key],[item.slot]:item.id};player.pp-=options.fittingPrices?.[item.id]??Math.max(1000,item.min_cost||0);result=player;}
    else if(rpc==='claim_office_awards'){player.achievements=[...new Set([...player.achievements,...(options.officeAwards||[])])];result=player;}
    else if(['claim_incoming','weekly_pins','spend_board','beta_testers'].includes(rpc))result=[];
+   if(wireRpc==='office_deed')result={player:result,outcome:null,reflected:false};
   }else if(url.pathname.endsWith('/catalog'))result=Object.entries({items:options.items||[{id:'intern',name:'Office Intern',cost:100,rate:1,desc:'An isolated test hire.'}],upgrades:options.upgrades||[],deeds:{},tuning:{growth:1.35},drinks:[],costumes:options.costumes||[],special_pins:[{id:'beta',name:'Beta Tester',hue:'#8A6A2A',glyph:'β',note:'Here before it worked.'}],weekly_pins:[{id:'p01',name:'Five Year Pin',hue:'#C9A253',glyph:'★',note:'Nobody can confirm the five years.'}],office_kit:options.fittings?.office_kit||[],vanity:options.fittings?.vanity||[]}).map(([key,data])=>({key,data}));
   else if(url.pathname.endsWith('/players'))result=url.searchParams.has('id')?player:[player,...(options.coworkers||[])];
   else if(url.pathname.endsWith('/deeds'))result=options.deeds||[];
@@ -76,13 +81,16 @@ async function installGameFixture(page,options={}) {
  });
  return {player,calls,uploads};
 }
+// At most one real 60-second Doug pause can occur during any of these short tests.
+// Do not extend a long loop's global timeout on every visit to the same desk.
+const deskTimeoutAllowance=new WeakSet();
 // Use the persistent work shortcut and actual owned desk instead of a directory entry.
 async function openOwnDesk(page){
  const {expect,test}=require('@playwright/test');
  const work=page.locator('.pg-bar>.pg-work'),info=test.info();
  // Doug's real 60-second pause may start before navigation or during the walk.
  // The stable away class distinguishes navigation from earning a work point.
- info.setTimeout(info.timeout+65000);
+ if(!deskTimeoutAllowance.has(info)){info.setTimeout(info.timeout+65000);deskTimeoutAllowance.add(info);}
  await expect(work).toBeEnabled({timeout:65000});
  const go=page.locator('.pg-bar>.pg-work.away');
  if(await go.isVisible())await go.click({timeout:65000});
