@@ -1741,6 +1741,10 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .pg-play-shell .pg-wirestrip .pg-wl{display:none}
  .pg-play-shell .pg-build{margin:0;border:0;padding:0;font-size:7px}
 }
+@media(max-width:360px){
+ .pg-play-shell .pg-hud{grid-template-columns:36px minmax(0,1fr) 105px;padding:6px;gap:5px}
+ .pg-play-shell .pg-hudbtns{flex-wrap:nowrap}
+}
 @media(max-height:500px) and (min-width:601px) and (max-width:1000px) and (pointer:coarse){
  .pg-play-shell .pg-hud{padding:4px;gap:4px}
  .pg-play-shell .pg-hudpp .pg-ppnum{font-size:18px}
