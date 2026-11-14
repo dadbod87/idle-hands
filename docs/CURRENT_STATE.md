@@ -1,3 +1,7 @@
+## Build 196 — confetti catastrophe (November 13, 2026)
+
+Replaces twelve tiny flecks with a desk-sized outlined paper mound, trailing streamers and a continuous local shower. The incident renders independently of collectible placement, remains pointer-transparent and becomes static with reduced motion. Existing ten-minute server expiry, cleanup, charges and income rules remain unchanged. The safe art gallery includes the actual desk effect; responsive fixture checks cover severity, input passthrough, expiry/cleanup and reduced motion. Build 195 was released as merge 8f06fa7a; its migration/deployment and first scheduled recording evidence is recorded in PR #56. Build 196 publication and exact-head checks are recorded in its release PR.
+
 ## Multi-day weekly projects — held, November 13
 
 The earlier nine/fifteen weekly-stamp project could finish in one session. Shared progress now uses the first eligible actor/category contribution per Pacific date: base 36 contributions, three people and four active dates; stretch 60/five/six. All three conditions must pass. Personal weekly stamps, quick starter rewards, collection qualification and refill caps stay separate. Project records expose today's checks and contribution/people/date counters. The private project clock is SELECT now(); only disposable tests substitute time. The default-threshold suite rejects seven-player spam and a twelve-hour midnight rush, tests contributor/date/quantity gates, rewards and rollover without changing player rows. Exact candidate hashes and green checks belong to PR #56 and the updated release task. Nothing new is live.
@@ -514,3 +518,4 @@ Two-player browser test relays the actual Supabase client's broadcast protocol i
 ## Build 164: sound on at 100%
 
 User requested sound enabled at full volume by default. Fresh browsers now start with muted=false and soundLevel=1. Existing explicit ih_muted/ih_sound_level settings still take precedence; an untouched former 35% default was never stored and becomes 100% on reload. No database/player changes. Existing sound contract verifies fresh defaults and saved-setting reload. Parser/name/audio/social checks and required CI must pass before merge; deployment evidence in release PR. Frontend-only rollback.
+

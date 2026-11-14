@@ -14,10 +14,20 @@ function OfficeCollectibleArt({item,name='EMPLOYEE',memento}){
   {item==='nameplate'?<><path d="M10 80 26 28h110l16 52Z" fill="#C6A15F"/><path d="M31 36h100v32H31Z" fill="#FFF4D8"/><text x="81" y="56" textAnchor="middle" fill="#2B2B2B" stroke="none" fontSize="12">{name.slice(0,15)}</text></>:item==='corkboard'?<><rect x="15" y="9" width="130" height="82" rx="3" fill="#B78F5D"/><path d="M26 23h51v49H26Z" fill="#F8F1E3"/><path d="m89 26 40 4-5 39-40-4Z" fill="#FFD36B"/><circle cx="51" cy="26" r="4" fill="#F78B6B"/><path d="M34 42h31m-31 9h26m-26 10h28M93 46h25m-25 9h20"/></>:item==='terrarium'?<><path d="m45 13 70 0 18 69H27Z" fill="#C6DAD4"/><path d="M31 66h98l4 16H27Z" fill="#9B7653"/><path d="M79 68V32m0 21L62 39m17 21 23-20"/><path d="M79 46c-26 0-26-23-26-23 25 0 26 23 26 23Zm2-8c0-23 24-21 24-21-1 22-24 21-24 21Zm3 23c0-23 30-23 30-23-4 24-30 23-30 23Z" fill="#8FA67A"/><path d="m41 29-7 25m85-17 4 17" stroke="#FFF8E8"/></>:item==='duck'?<><path d="M36 61c-15-3-15-15-15-15 13 7 20 5 20 5 12-9 29-9 41-4-6-14-3-32 15-33 21-1 28 19 17 32 8 4 13 10 12 18-2 28-80 31-90-3Z" fill="#FFD36B"/><path d="m115 31 21 7-23 8Z" fill="#F78B6B"/><circle cx="104" cy="27" r="3" fill="#2B2B2B"/><path d="M53 57c19-6 31 7 26 15-14 8-31-1-26-15Z" fill="#C6A15F"/><path d="M29 85h105" stroke="#7B9CC4"/></>:item==='lamp'?<><path d="M50 87h63l-8-9H59Z" fill="#C6A15F"/><path d="M80 78V43" strokeWidth="7"/><path d="m49 14 57 0 20 35H31Z" fill="#8FA67A"/><path d="M38 50h80l-9 9H48Z" fill="#FFD36B"/><path d="M112 51v20"/><circle cx="112" cy="74" r="3" fill="#C6A15F"/></>:<><path d="M24 11h112v78H24Z" fill="#8FA67A"/><path d="M32 19h96v62H32Z" fill="#F8F1E3"/><path d="m80 25 6 12 13 2-10 10 2 14-11-7-12 7 3-14-10-10 13-2Z" fill={memento?.stretch?'#F78B6B':'#FFD36B'}/><text x="80" y="74" textAnchor="middle" stroke="none" fill="#2B2B2B" fontSize="8">{memento?.week||'WE DID A THING'}</text></>}
  </svg>;
 }
+function OfficeConfettiArt(){
+ const colors=['#F78B6B','#FFD36B','#7B9CC4','#8FA67A','#BB76A5','#FFF8E8'];
+ return <div className="pg-confetti-incident" data-testid="confetti-incident" aria-hidden="true"><svg viewBox="0 0 240 190" fill="none" stroke="#2B2B2B" strokeWidth="1.5">
+  <path className="pg-confetti-streamers" d="M24 27q28-26 16 7t19 20M104 10q-22 12 4 23t-7 24M198 19q-23 15 0 26t-8 24" stroke="#F78B6B" strokeWidth="7"/>
+  <path d="M18 124q19-27 38-11 16-40 39-16 20-32 43-7 22-17 35 13 29-13 49 20l-10 25H28Z" fill="#FFD36B" strokeWidth="3"/>
+  {Array.from({length:72},(_,i)=>{const x=18+i*47%207,y=99+i*23%49;return <rect key={i} x={x} y={y} width={9+i%4} height={5+i%3} rx="1" fill={colors[i%colors.length]} transform={`rotate(${i*37%150-75} ${x} ${y})`}/>;})}
+  <path d="M29 133q-19 27 5 40m37-38q28 20 6 40m103-44q-23 28 1 43m24-49q27 23 3 40" stroke="#7B9CC4" strokeWidth="6"/>
+  {Array.from({length:36},(_,i)=>{const x=12+i*43%216,y=8+i*19%92;return <g className="pg-confetti-fall" key={i} style={{animationDelay:-(i%12)*.31+'s',animationDuration:3+i%5*.35+'s','--confetti-drift':(i%2?14:-14)+'px'}}><rect x={x} y={y} width={8+i%4} height={5+i%3} rx="1" fill={colors[(i+2)%colors.length]} transform={`rotate(${i*31%160} ${x} ${y})`}/></g>;})}
+ </svg></div>;
+}
 function OfficeCollectionDecor({player}){
  const owned=(player?.office_display??player?.office_collectibles??[]).slice(0,3),confetti=Date.parse(player?.office_confetti?.until||'')>Date.now();
  if(!owned.length&&!confetti)return null;
- return <div className="pg-office-collection" aria-hidden="true">{owned.map(item=><span key={item}><OfficeCollectibleArt item={item} name={player.name} memento={item==='plaque'?player.office_memento:null}/></span>)}{confetti&&<i className="pg-confetti-desk">{Array.from({length:12},(_,i)=><b key={i} style={{left:(i*29%95)+'%',top:(i*17%65)+'%',background:['#F78B6B','#FFD36B','#7B9CC4'][i%3]}}/>)}</i>}</div>;
+ return <>{owned.length>0&&<div className="pg-office-collection" aria-hidden="true">{owned.map(item=><span key={item}><OfficeCollectibleArt item={item} name={player.name} memento={item==='plaque'?player.office_memento:null}/></span>)}</div>}{confetti&&<OfficeConfettiArt/>}</>;
 }
 function OfficeShieldArt(){return <svg viewBox="0 0 160 100" role="img" aria-label="Return to Sender reflective shield" fill="none" stroke="#2B2B2B" strokeWidth="4" strokeLinejoin="round"><path d="m80 8 46 15v28c0 24-28 35-46 42-18-7-46-18-46-42V23Z" fill="#7B9CC4"/><path d="M49 34h62v39H49Z" fill="#F8F1E3"/><path d="m50 35 30 21 30-21"/><path d="M101 79H72c-23 0-26-32-4-32h18m-9-10 12 10-12 10" stroke="#F78B6B" strokeWidth="7"/></svg>;}
 function OfficeActivityChart({rows}){
@@ -144,3 +154,4 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
   </>}</>}
  </div>;
 }
+

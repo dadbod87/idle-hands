@@ -1,9 +1,10 @@
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "195",
- title: "The office remembers",
+ id: "196",
+ title: "Confetti catastrophe",
  changes: [
+  ["Confetti catastrophe", "Confetti Incidents now bury the desk in a bright mound, hang streamers over the edges and keep showering paper until cleared or expired. The ten-minute prank is still removable from Toolkit and has no output penalty."],
   ["Lifetime profiles and charts", "Helping, sabotage and playful actions now have lasting records, including received actions and coworker relationships. Recorded history survives Friday. Older gaps stay labelled."],
   ["Weekly Race", "Compare recorded weekly earnings and leaderboard positions over time. Your spendable-balance history is private to you. Five-minute recording starts after release activation; earlier points are not reconstructed."],
   ["Seniority that stays useful", "Your 3% output bonus uses Seniority earned this week. Spending points on perks no longer removes that earned bonus. Both weekly points and perks still reset Friday."],
@@ -29,3 +30,4 @@ function ReleaseNotes({onClose}){
   <button className="pg-btn primary" style={{minHeight:44}} onClick={onClose}>Got it · back to the office</button>
  </section></Modal>;
 }
+

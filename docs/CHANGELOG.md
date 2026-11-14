@@ -1,3 +1,7 @@
+## Build 196 — confetti catastrophe (November 13, 2026)
+
+Replaces twelve tiny flecks with a desk-sized outlined paper mound, trailing streamers and a continuous local shower. The incident renders independently of collectible placement, remains pointer-transparent and becomes static with reduced motion. Existing ten-minute server expiry, cleanup, charges and income rules remain unchanged. The safe art gallery includes the actual desk effect; responsive fixture checks cover severity, input passthrough, expiry/cleanup and reduced motion. Build 195 was released as merge 8f06fa7a; its migration/deployment and first scheduled recording evidence is recorded in PR #56. Build 196 publication and exact-head checks are recorded in its release PR.
+
 ## Weekly project pacing — held, November 13
 
 Replaces the one-session nine/fifteen-stamp project with shared daily contributions: base 36 contributions from three people across four Pacific dates; stretch 60 from five across six dates. Count each actor/category/date once and require quantity, people and dates together. Reuse private daily activity while preserving weekly personal stamps, quick starter rewards and existing collection/refill rules. Add today's checklist, separate date progress and explicit tomorrow feedback. A normal Friday start cannot finish the base before Monday or stretch before Wednesday, even with coordinated play. Default-threshold SQL and responsive/API checks cover rush/spam refusal, exact stretch quantity, privacy, archived rewards and weekly isolation. Older green candidates do not certify this continuation; the PR/release task pins current evidence. No new live changes.
@@ -470,4 +474,5 @@ Original vector-cutout illustrations integrated into existing hiring rows, appro
 - Remeasure bubbles on actual size changes, including font/layout changes.
 - Add deterministic checks using the actual camera helper for tall props, varied text/viewport heights and impossible room-edge/short layouts.
 - Recovery session verified the saved PR/main heads and failed CI logs. Local parser/economy/name/sound/social/chair/comedy checks passed. Production migration/release remain blocked by Supabase SQL approval denial and Vercel team-scope 403; live TV screenshots remain unperformed. No player data changed.
+
 
