@@ -15,7 +15,7 @@ for(const mode of ['desktop','mobile'])test(mode+': distant good chair renders a
   p.grabs=(p.grabs||0)+1;p.frenzy_until=new Date(window*420000+78000).toISOString();state.chair={window,by:p.name,mine:true};
  }});
  await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});
- const chair=page.getByRole('button',{name:'Grab the good chair',exact:true}),actor=page.locator('.pg-me:not(.pg-wes)');
+ const chair=page.locator('button.pg-chair'),actor=page.locator('.pg-me:not(.pg-wes)');
  expect(await chair.evaluate(el=>({x:parseFloat(el.style.left),y:parseFloat(el.style.top)}))).toEqual({x:point.x,y:point.y});
  async function walk(axis,target){const initial=await actor.evaluate((el,k)=>parseFloat(el.style[k]),axis);if(Math.abs(initial-target)<20)return;const key=axis==='left'?(initial<target?'ArrowRight':'ArrowLeft'):(initial<target?'ArrowDown':'ArrowUp');
   try{await page.keyboard.down(key);await expect.poll(()=>actor.evaluate((el,k)=>parseFloat(el.style[k]),axis),{timeout:20000,intervals:[50]})[initial<target?'toBeGreaterThan':'toBeLessThan'](target);}finally{await page.keyboard.up(key);}}
