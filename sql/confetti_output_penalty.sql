@@ -164,7 +164,7 @@ WITH ticks AS (
 )
 SELECT coalesce(sum(extract(epoch from (nxt-t))*public.live_mult_at(p,t+(nxt-t)/2)),0)*public.calc_rate(p)
 FROM ordered WHERE nxt IS NOT NULL
-$function$
+$function$;
 
 NOTIFY pgrst,'reload schema';
 COMMIT;
