@@ -1740,9 +1740,12 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .pg-play-shell .pg-more-content .pg-btn{display:flex!important;min-height:44px;align-items:center;gap:8px;white-space:normal;text-align:left}
  .pg-play-shell .pg-emotes{grid-column:1/-1;grid-row:2;flex-wrap:nowrap;justify-content:space-between}
  .pg-play-shell .pg-emotes .pg-emote{min-height:44px;min-width:0;flex:1;padding:2px}
- .pg-play-shell .pg-prompt{grid-column:1/-1;grid-row:3;min-width:0;min-height:44px;font-size:10px;flex-wrap:wrap}
+ /* A nearby action must never resize the floor or change its zoom. */
+ .pg-play-shell .pg-floor-prompt{position:absolute;left:6px;right:6px;bottom:6px;z-index:50;max-width:440px;pointer-events:none}
+ .pg-play-shell .pg-floor-prompt .pg-prompt{display:flex;min-width:0;height:48px;min-height:48px;gap:8px;padding-left:8px;border:2px solid var(--ink);border-radius:5px;background:var(--paper);font-size:10px;flex-wrap:nowrap;pointer-events:auto;box-shadow:2px 2px 0 #2B2B2B44}
  .pg-play-shell .pg-prompt:not(:has(.pg-open)){display:none}
- .pg-play-shell .pg-prompt>.pg-open{margin-left:auto;min-height:44px;min-width:54px}
+ .pg-play-shell .pg-context-copy{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .pg-play-shell .pg-prompt>.pg-open{margin-left:auto;min-height:44px;min-width:54px;max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
  .pg-play-shell .pg-wirestrip{padding:2px 8px}
  .pg-play-shell .pg-wirestrip .pg-wl{display:none}
  .pg-play-shell .pg-build{margin:0;border:0;padding:0;font-size:7px}
@@ -3728,7 +3731,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 200 · hub, front and center";
+const BUILD = "build 201 · steady on your feet";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3885,7 +3888,9 @@ function OfficeFloor() {
   const [stage, setStage] = useState({ w: 900, h: 560 });
   // A phone is ~400 CSS px wide against a 3400px floor. Without a zoom you see
   // a tenth of the room and every object looks enormous.
-  const compactFloor=window.matchMedia(PHONE_PLAY_QUERY).matches&&stage.h<300;
+  const [phonePlay,setPhonePlay]=useState(()=>window.matchMedia(PHONE_PLAY_QUERY).matches);
+  useEffect(()=>{const media=window.matchMedia(PHONE_PLAY_QUERY),change=()=>setPhonePlay(media.matches);media.addEventListener("change",change);return()=>media.removeEventListener("change",change);},[]);
+  const compactFloor=phonePlay&&stage.h<300;
   const baseZoom=clamp(stage.w/820,0.7,1);
   const zoom=compactFloor?Math.min(baseZoom,Math.max(0.35,stage.h/300)):baseZoom;
   const view = { w: stage.w / zoom, h: stage.h / zoom };
@@ -4774,14 +4779,17 @@ function OfficeFloor() {
     x: ROOM.w <= view.w ? 0 : clamp(pos.x - view.w / 2, 0, ROOM.w - view.w),
     y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h / 2, 0, ROOM.h - view.h),
   };
-  // Contextual controls also consume short-screen height. Frame the nearby target
-  // and the actor together, rather than hiding wall furniture above the floor.
+  // Keep wall targets visible on short floors. Ease in passive nearby framing
+  // across the reach boundary instead of snapping when the prompt changes.
   if(compactFloor){
     const focusY=worldIntent?.visualY??(near?near.y+near.h/2:null);
     if(Number.isFinite(focusY)){
       const low=Math.max(0,pos.y+40-view.h,focusY+24/zoom-view.h);
       const high=Math.min(ROOM.h-view.h,pos.y-90,Math.max(0,focusY-24/zoom));
-      if(low<=high)cam.y=clamp(cam.y,low,high);
+      if(low<=high){
+        const blend=worldIntent?1:clamp((REACH-dist(pos,{x:near.x+near.w/2,y:near.y+near.h/2+40}))/60,0,1);
+        cam.y+=(clamp(cam.y,low,high)-cam.y)*blend;
+      }
     }
   }
   if(propScene&&!compactFloor)cam.y=propCameraY(cam.y,propScene,pos,view,propBubbleHeight,ROOM.h);
@@ -4916,6 +4924,15 @@ function OfficeFloor() {
     e?.stopPropagation?.();          // the jam banner calls this with no event
     routeTo(f.x + f.w / 2, Math.min(ROOM.h - 50, f.y + f.h + 60), f.id);
   };
+
+  // One prompt instance: phone controls float inside the floor, desktop keeps its footer.
+  const interactionPrompt=(
+        <div className="pg-prompt">
+          {worldIntent?<><span className="pg-context-copy"><b>{dist(pos,worldIntent)>180?"Walk closer to "+worldIntent.label.toLowerCase():"Ready"}</b></span><button className="pg-open" disabled={dist(pos,worldIntent)>180} onClick={()=>{worldActivation.current?.();setWorldIntent(null);worldActivation.current=null;}}> {worldIntent.label}</button></>:near
+            ? (<><span className="pg-context-copy"><b>{near.label}</b> — {near.sub}</span><button className="pg-open" onClick={() => openFixture(near)}>Open</button></>)
+            : <><span className="pg-walk-hint">Tap the floor to walk (arrow keys work too). Walk up to anything and open it.</span><span className="pg-walk-hint-short">Tap the floor to walk. Help has the rest.</span></>}
+        </div>
+  );
 
   /* ------------------------------- ui ----------------------------- */
   if (phase === "boot") return <div className="pg-root"><div className="pg-boot">Retrieving personnel file…</div></div>;
@@ -5286,6 +5303,7 @@ function OfficeFloor() {
                   emote={emote && emote.until > Date.now() ? emote.id : null} />
           </div>
         </div>
+        {phonePlay&&<div className="pg-floor-prompt">{interactionPrompt}</div>}
         {(!touchMovement||mapOpen)&&<MiniMap pos={pos} board={board} meId={me?.id} cam={cam} view={view} chair={chair} />}
         {worldIntent&&<div className="pg-destination" aria-hidden="true" style={{left:(worldIntent.x-cam.x)*zoom,top:(worldIntent.y-cam.y)*zoom}}>◇</div>}
         {chair && (chair.x < cam.x || chair.x > cam.x + view.w ||
@@ -5321,11 +5339,7 @@ function OfficeFloor() {
             <EmoteButton key={e.id} item={e} active={emote?.id===e.id&&emote.until>Date.now()} onClick={()=>doEmote(e.id)}/>
           ))}
         </div>
-        <div className="pg-prompt">
-          {worldIntent?<><b>{dist(pos,worldIntent)>180?"Walk closer to "+worldIntent.label.toLowerCase():"Ready"}</b><button className="pg-open" disabled={dist(pos,worldIntent)>180} onClick={()=>{worldActivation.current?.();setWorldIntent(null);worldActivation.current=null;}}> {worldIntent.label}</button></>:near
-            ? (<><b>{near.label}</b> — {near.sub}<button className="pg-open" onClick={() => openFixture(near)}>Open</button></>)
-            : <><span className="pg-walk-hint">Tap the floor to walk (arrow keys work too). Walk up to anything and open it.</span><span className="pg-walk-hint-short">Tap the floor to walk. Help has the rest.</span></>}
-        </div>
+        {!phonePlay&&interactionPrompt}
       </div>
 
       <div className="pg-wirestrip">
@@ -8808,9 +8822,10 @@ function OfficeWeeklyRace({me,board}){
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "200",
- title: "Hub, front and center",
+ id: "201",
+ title: "Steady on your feet",
  changes: [
+  ["Steadier phone walking", "Nearby Open controls now float inside the floor instead of resizing it. Walking past objects no longer makes the screen shrink, grow or briefly change zoom."],
   ["Office hub, beside Work", "The large Office hub button in the bottom controls opens projects, player profiles, toolkit, collection, boutique and records directly. No player-name click or walking required. On phones, Emotes are in More and Places opens the office directory."],
   ["Your rewards belong in your office", "Displayed nameplates now show your actual name in a readable desk plate. Incident Corkboards are mounted on the cubicle wall, and other collectibles sit on the desk."],
   ["One visible Office hub", "Use the always-visible Office hub button for This week, Player profiles, Toolkit, Collection, Boutique and Record book. The whiteboard keeps the full rankings; Employee of the Week opens a distinct current-leader spotlight."],
