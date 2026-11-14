@@ -1702,6 +1702,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 
 
 /* Phone play stays inside the dynamic browser viewport; dialogs scroll themselves. */
+.pg-stage[data-compact-floor] .pg-prop-bubble{visibility:hidden!important}
 .pg-bulletins>summary{display:none}
 .pg-bulletins-content{display:contents}
 @media(max-width:600px),(max-width:1000px) and (pointer:coarse){
@@ -4763,7 +4764,7 @@ function OfficeFloor() {
     x: ROOM.w <= view.w ? 0 : clamp(pos.x - view.w / 2, 0, ROOM.w - view.w),
     y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h * (compactFloor?0.82:0.5), 0, ROOM.h - view.h),
   };
-  if(propScene)cam.y=propCameraY(cam.y,propScene,pos,view,propBubbleHeight,ROOM.h);
+  if(propScene&&!compactFloor)cam.y=propCameraY(cam.y,propScene,pos,view,propBubbleHeight,ROOM.h);
   const inspectedProp=panel?.startsWith("prop:")?propSceneTarget(panel.slice(5)):null;
   const jamClaim = office?.printer || null;
   const jamFixedBy = jam && jamClaim && jamClaim.window === jam.window ? jamClaim.by : null;
@@ -5081,7 +5082,7 @@ function OfficeFloor() {
       </OfficeBulletins>
 
       {activeBreak&&<div className="pg-live-break" data-testid="live-break-invite"><UtilityIcon kind="sound"/><span><b>{activeBreak.id===me?.id?"Your coffee break":names[activeBreak.id]+" signaled a coffee break"}</b><small>Live player invitation · {Math.max(0,Math.ceil((activeBreak.until-momentNow)/1000))}s · {nearbyBreak} nearby</small></span><button className="pg-btn" onClick={joinCoffeeBreak}>Walk over</button><button className="pg-x" aria-label="Dismiss coffee break invitation" onClick={()=>setBreakInvite(null)}>×</button></div>}
-      <div ref={stageRef} className="pg-stage" style={{ height: stage.h }}>
+      <div ref={stageRef} className="pg-stage" data-compact-floor={compactFloor?true:undefined} style={{ height: stage.h }}>
         <div ref={roomRef} className="pg-room"
              style={{ width: ROOM.w, height: ROOM.h, transformOrigin: "0 0",
                       transform: `scale(${zoom}) translate(${-cam.x}px, ${-cam.y}px)` }}
