@@ -1687,6 +1687,19 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .pg-action-reason{font-size:14px!important;max-width:28em}
 /* Office records supplies its own persistent action feedback. Keep purchase receipt geometry intact elsewhere. */
 .pg-panel:has(.pg-next-week) .pg-panel-receipt{display:none}
+
+/* Earned items have deliberate mounts; avoid legacy generic desk span/b selectors. */
+.pg-personal-nameplate{position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);width:max-content;min-width:100px;max-width:190px;padding:6px 10px;border:3px solid #745623;border-radius:3px;background:#ffe4a1;color:#2B2B2B;box-shadow:0 3px 0 #604923;font:bold 14px/1.2 var(--sans);text-align:center;overflow-wrap:anywhere;pointer-events:none;z-index:8}
+.pg-mounted-corkboard{position:absolute;left:14px;top:82px;width:96px;height:62px;z-index:5;pointer-events:none;filter:drop-shadow(2px 3px 0 #574a3b55)}
+.pg-mounted-corkboard>svg{display:block;width:100%;height:100%}.pg-mounted-corkboard>i{position:absolute;left:50%;top:3px;width:5px;height:5px;border-radius:50%;background:#2b2b2b}
+.pg-office-collection{inset:-22px 6px auto;height:44px;gap:3px;align-items:flex-end}
+.pg-office-collection>.pg-desk-collectible{position:relative;flex:0 1 56px;min-width:0;height:44px}
+.pg-hub-shortcut>.pg-iconart{width:20px;height:20px}.pg-hudbtns{flex-wrap:wrap}
+.pg-next-week>nav.pg-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:sticky;top:0;z-index:3;background:#F8F1E3}
+.pg-next-week>nav.pg-tabs>.pg-tab{min-width:0;white-space:normal;overflow-wrap:anywhere}
+.pg-employee-spotlight{padding:16px}.pg-employee-spotlight article{border:2px solid #b38a3a;padding:16px;margin-bottom:12px;text-align:center}
+@media(min-width:700px){.pg-next-week>nav.pg-tabs{grid-template-columns:repeat(6,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -2184,7 +2197,7 @@ function fundTierList(raw){
 const FIXTURES = [
   { id: "bulletin", panel: "wire", label: "Bulletin Board", sub: "Office wire", x: 760, y: 22, w: 216, h: 86 },
   { id: "whiteboard", panel: "standings", label: "Whiteboard", sub: "Busywork leaderboard", x: 1040, y: 14, w: 330, h: 100 },
-  { id: "portrait", panel: "standings", label: "Employee Of The Week", sub: "Whoever is winning right now", x: 1430, y: 12, w: 158, h: 108 },
+  { id: "portrait", panel: "spotlight", label: "Employee Of The Week", sub: "Whoever is winning right now", x: 1430, y: 12, w: 158, h: 108 },
   { id: "hr", panel: "personnel", label: "HR Cabinet", sub: "Personnel file", x: 1640, y: 16, w: 150, h: 96 },
   { id: "owner", panel: "owner", label: "Dave's Office", sub: "The owner wants a word", x: 1990, y: 8, w: 170, h: 114 },
   { id: "coffee", panel: "kindness", label: "The Break Table", sub: "Be nice to someone", x: 560, y: 830, w: 112, h: 132 },
@@ -3737,6 +3750,7 @@ function OfficeFloor() {
   const [drift, setDrift] = useState(0);          // points earned since last server sync
   const [feed, setFeed] = useState([]);
   const [panel, setPanel] = useState(null);
+  const [hubPlayer,setHubPlayer]=useState(null),[hubOrigin,setHubOrigin]=useState(null),[standingsTab,setStandingsTab]=useState("week");
   const [confirmRestructure,setConfirmRestructure]=useState(false),[restructureBusy,setRestructureBusy]=useState(false),[restructureError,setRestructureError]=useState("");
   const [incidents, setIncidents] = useState([]);
   const [bootNoticesReady,setBootNoticesReady]=useState(false),[incomingNoticesReady,setIncomingNoticesReady]=useState(false);
@@ -4909,6 +4923,7 @@ function OfficeFloor() {
           </div>
         </div>
         <div className="pg-hudbtns">
+          <button className="pg-help pg-utility-button pg-hub-shortcut" aria-label="Office hub" title="Projects, profiles, toolkit, collection, boutique and records" onClick={()=>{setMoreOpen(false);setHubPlayer(null);setHubOrigin(null);setPanel("officeweek");}}><OfficeIcon kind="notice" compact/><span>Office hub</span></button>
           <button className="pg-help pg-utility-button" aria-label="How to play" title="How to play" onClick={() => setShowHelp(true)}><UtilityIcon kind="help"/><span>Help</span></button>
         <button className="pg-help pg-utility-button" aria-label="Sound & feel" aria-haspopup="dialog" onClick={() => {wakeAudio();setPanel("sound");}}
                 title={mute ? "Sound & feel · muted" : "Sound & feel"}><UtilityIcon kind={mute?"muted":"sound"}/><span>Sound</span></button>
@@ -5075,6 +5090,7 @@ function OfficeFloor() {
                             zIndex: Math.round(o.y) }}>
                 <div className={"pg-officefloor" + (physicalId(p,"rug") ? " has-rug rug-" + physicalId(p,"rug") : "")}>{physicalId(p,"rug")&&<OfficeRugArt tier={physicalId(p,"rug")} style={itemStyle(p,physicalId(p,"rug"))}/>}</div>
                 {physicalId(p,"art") && <div className={"pg-officeart art-" + physicalId(p,"art")}><OfficeWallArt tier={physicalId(p,"art")} style={itemStyle(p,physicalId(p,"art"))}/></div>}
+                <OfficeWallCollectibles player={p}/>
                 {physicalId(p,"tv")==="tv1"&&<OfficeTelevision owner={p.name} style={itemStyle(p,"tv1")}/>}
 
                 <div className="pg-officedoor"
@@ -5102,7 +5118,7 @@ function OfficeFloor() {
                      }}>
                   <OfficeDeskArt tier={physicalId(p,"desk")} style={itemStyle(p,physicalId(p,"desk"))}/>
                   <OfficeCollectionDecor player={p}/>
-                  {mine && <div className="pg-fxlabel">Your Desk</div>}
+                  {mine && !officeDisplayItems(p).includes("nameplate") && <div className="pg-fxlabel">Your Desk</div>}
                 </div>
               </React.Fragment>
             );
@@ -5214,7 +5230,7 @@ function OfficeFloor() {
         <div className={"pg-more"+(moreOpen?" open":"")}>
           <button className="pg-btn pg-more-toggle" aria-expanded={moreOpen} aria-controls="office-more-actions" onClick={()=>setMoreOpen(v=>!v)}><span aria-hidden="true">•••</span>More</button>
           <div id="office-more-actions" className="pg-more-content">
-            <button className="pg-btn" onClick={()=>{setMoreOpen(false);setPanel('officeweek');}}>This week &amp; player profiles</button>
+
             {touchMovement&&<button className="pg-btn" aria-pressed={mapOpen} onClick={()=>setMapOpen(v=>!v)}>{mapOpen?'Hide minimap':'Show minimap'}</button>}
             <button className="pg-btn" title="Office votes, bingo, assignments, the cigar lounge and commendations" onClick={()=>{setMoreOpen(false);setFunOpen(true);}}><OfficeIcon kind="paper" compact/> Office Nonsense</button>
             <button className="pg-btn" aria-label="Office field guide" onClick={openGuide}><UtilityIcon kind="help"/>Office field guide{!guideSeen&&<b className="pg-guide-new">new</b>}</button>
@@ -5277,10 +5293,11 @@ function OfficeFloor() {
                   onBuy={buy} onUp={buyUp} guard={guard} flash={flash}
                   onRestructure={()=>{setRestructureError("");setConfirmRestructure(true);}} />
           )}
-          {panel === "officeweek" && <OfficeWeekPanel me={me} board={board} onPlayer={applyServer}/>}
+          {panel === "officeweek" && <>{hubPlayer&&<button className="pg-btn" onClick={()=>{setPanel(hubOrigin||"standings");setHubPlayer(null);setHubOrigin(null);}}>{hubOrigin==="spotlight"?"Back to Employee of the Week":"Back to whiteboard"}</button>}<OfficeWeekPanel key={hubPlayer||"office-hub"} me={me} board={board} initialPlayer={hubPlayer} onPlayer={applyServer}/></>}
           {panel === "sound" && <SoundPanel muted={mute} volume={volume} onMute={()=>setMute(setMuted(!mute))} onVolume={v=>setVolume(setSoundLevel(v))}/>}
-          {panel === "directory" && <OfficeDirectory onGo={id=>{setPanel(null);if(id==="desk"&&myOffice)routeTo(myOffice.cx,myOffice.cy+40,"desk",myOffice);else{const f=FIXTURES.find(x=>x.id===id);if(f)walkTo(f);}}}/>}
-          {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} schedule={weekSchedule} onPlayer={applyServer} />}
+          {panel === "directory" && <OfficeDirectory onGo={id=>{if(id==="officehub"){setHubPlayer(null);setHubOrigin(null);setPanel("officeweek");return;}setPanel(null);if(id==="desk"&&myOffice)routeTo(myOffice.cx,myOffice.cy+40,"desk",myOffice);else{const f=FIXTURES.find(x=>x.id===id);if(f)walkTo(f);}}}/>}
+          {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} schedule={weekSchedule} onPlayer={applyServer} selectedTab={standingsTab} onTabChange={setStandingsTab} onProfile={id=>{setHubPlayer(id);setHubOrigin("standings");setPanel("officeweek");}} />}
+          {panel === "spotlight" && <EmployeeSpotlight board={board} schedule={weekSchedule} onBoard={()=>{setStandingsTab("week");setPanel("standings");}} onProfile={id=>{setHubPlayer(id);setHubOrigin("spotlight");setPanel("officeweek");}} />}
           {(panel === "kindness" || panel === "sabotage") && (
             <>
             {panel==="kindness"&&<OfficeMoments wire={wire} meId={me?.id} variant={officeSceneAt(funTick)} office={office} invite={activeBreak} names={names} liveReady={liveReady} inviting={inviting} canInvite={Date.now()-inviteLast.current>=60000} onInvite={inviteCoffeeBreak} onWave={waveTogether} onInspect={(kind,line)=>{reactTo("oops",line);sfx("pop");const prop=SCENERY.find(p=>p.kind===kind);if(prop)sayAt(prop.x+prop.w/2,prop.y,line,5000);}}/>}
@@ -5606,7 +5623,7 @@ function prettyError(e) {
 }
 
 const PANEL_TITLES = {
-  officeweek:"The office has a record",
+  officeweek:"Office hub", spotlight:"Employee of the Week",
   sound: "Sound & feel", directory: "Office directory", shop: "Your desk", standings: "The whiteboard", kindness: "Break room",
   sabotage: "Meeting room", wire: "Bulletin board", personnel: "Personnel file",
   fund: "Office fund", owner: "Dave's office", account: "Your account",
@@ -5915,6 +5932,7 @@ function EmoteButton({item,active,onClick}) {
 
 const DIRECTORY_STOPS=[
  {id:"bulletin",kind:"bulletin",purpose:"Coworker activity and the office wire",note:"Names attached. Receipts retained."},
+ {id:"portrait",kind:"star",purpose:"This week’s current leader and award deadline",note:"The full standings live on the whiteboard."},
  {id:"whiteboard",kind:"trophy",purpose:"Weekly race and the Friday deadline",note:"Friendly competition. Aggressive stationery."},
  {id:"hr",kind:"badge",purpose:"Your collection, pins and awards",note:"A file thick enough to be furniture."},
  {id:"mirror",kind:"person",purpose:"Change your face, hair and outfit",note:"New look. Same inbox."},
@@ -5929,7 +5947,7 @@ const DIRECTORY_STOPS=[
 ];
 function OfficeDirectory({onGo}) {
  return <section className="pg-directory" data-testid="office-directory"><div className="pg-directory-intro"><UtilityIcon kind="map"/><div><h3>Find your people. Find the coffee.</h3><p>Pick a stop. Your employee will walk there and open it.</p></div><span className="pg-directory-note">You are here.<br/>HR is aware.</span></div>
- <div className="pg-directory-grid">{DIRECTORY_STOPS.map(stop=>{const f=FIXTURES.find(x=>x.id===stop.id),name=stop.name||f?.label;return <button key={stop.id} className="pg-directory-stop" aria-label={"Walk to "+name} onClick={()=>onGo(stop.id)}><OfficeIcon kind={stop.kind}/><span><b>{name}</b><span>{stop.purpose}</span><small>{stop.note}</small></span><i aria-hidden="true">→</i></button>;})}</div></section>;
+ <button className="pg-btn primary" onClick={()=>onGo("officehub")}>Open Office hub</button><div className="pg-directory-grid">{DIRECTORY_STOPS.map(stop=>{const f=FIXTURES.find(x=>x.id===stop.id),name=stop.name||f?.label;return <button key={stop.id} className="pg-directory-stop" aria-label={"Walk to "+name} onClick={()=>onGo(stop.id)}><OfficeIcon kind={stop.kind}/><span><b>{name}</b><span>{stop.purpose}</span><small>{stop.note}</small></span><i aria-hidden="true">→</i></button>;})}</div></section>;
 }
 
 const EMOTE_ICON = {
@@ -6322,7 +6340,7 @@ function useDialogFocus(onClose){
  },[]);
  return ref;
 }
-const PANEL_PURPOSES={"The office has a record":"Weekly projects, lasting rewards, player history and your two-tool toolkit.","Your desk":"Hire staff, buy output upgrades, collect daily rewards and customize your office.","The whiteboard":"Compare weekly earnings and all-time progress. The competition resets Friday at 4 PM Pacific.","Bulletin board":"Recorded coworker actions are below. The separate office memos are just office nonsense.","Personnel file":"Choose a department, manage pins and companions, or review your stats and awards.","Break room":"Choose a coworker, then a helpful action. Costs and effects appear before you act.","Meeting room":"Choose a coworker, then a sabotage. They will be told who sent it.","Dave's office":"Manage heat, ask for a raise or pass the blame.","Office fund":"Review the shared office goal, vending machine and birthday card.","Supply closet":"Temporary costumes for you or a coworker. Previews are free; costumes last 45 minutes.","The mirror":"Change your badge and permanent outfit. Temporary costumes are in the Supply Closet.","Your account":"Keep this desk accessible across devices by linking an email.","The coffee bar":"Choose coffee and review its price, effect and availability.","The fridge":"Choose a drink and review its price, effect and availability.","The Merican cooler":"Review today's cooler choices and opening hours.","Suggestion box":"Send a suggestion to the office and see its review status.","The printer":"Check the printer and fix a jam when one appears.","Sound & feel":"Control audio without changing your game progress.","Office directory":"Choose a destination and your employee will walk there."};
+const PANEL_PURPOSES={"Office hub":"Projects, player profiles, your toolkit, collection, boutique and records. Choose a section below.","Employee of the Week":"The current weekly leader. The whiteboard has the full standings.","The office has a record":"Weekly projects, lasting rewards, player history and your two-tool toolkit.","Your desk":"Hire staff, buy output upgrades, collect daily rewards and customize your office.","The whiteboard":"Compare weekly earnings and all-time progress. The competition resets Friday at 4 PM Pacific.","Bulletin board":"Recorded coworker actions are below. The separate office memos are just office nonsense.","Personnel file":"Choose a department, manage pins and companions, or review your stats and awards.","Break room":"Choose a coworker, then a helpful action. Costs and effects appear before you act.","Meeting room":"Choose a coworker, then a sabotage. They will be told who sent it.","Dave's office":"Manage heat, ask for a raise or pass the blame.","Office fund":"Review the shared office goal, vending machine and birthday card.","Supply closet":"Temporary costumes for you or a coworker. Previews are free; costumes last 45 minutes.","The mirror":"Change your badge and permanent outfit. Temporary costumes are in the Supply Closet.","Your account":"Keep this desk accessible across devices by linking an email.","The coffee bar":"Choose coffee and review its price, effect and availability.","The fridge":"Choose a drink and review its price, effect and availability.","The Merican cooler":"Review today's cooler choices and opening hours.","Suggestion box":"Send a suggestion to the office and see its review status.","The printer":"Check the printer and fix a jam when one appears.","Sound & feel":"Control audio without changing your game progress.","Office directory":"Choose a destination and your employee will walk there."};
 function Panel({ title, children, onClose, receipt=null, stablePurchases=false }) {
   const dialogRef=useDialogFocus(onClose),titleId=React.useId();
   return (
@@ -6746,20 +6764,23 @@ function WeeklyDeadline({schedule, compact=false}) {
   </div>;
 }
 
-function Standings({ board, me, fund, feuds = [], schedule, onPlayer }) {
-  const [profileId,setProfileId]=useState(null);
-  const [tab, setTab] = useState("week");
+function EmployeeSpotlight({board,schedule,onBoard,onProfile}){
+ const best=Math.max(0,...board.map(p=>p.week_pp||0)),leaders=best>0?board.filter(p=>(p.week_pp||0)===best):[];
+ return <section className="pg-employee-spotlight"><h3>{leaders.length>1?'Sharing the lead':'Leading this week'}</h3>{leaders.length?leaders.map(p=><article key={p.id}><Face src={p.avatar_url} name={p.name} look={p.look} size={72}/><h4>{p.name}</h4><p>{fmt(p.week_pp)} BW earned this week</p><button className="pg-btn" onClick={()=>onProfile(p.id)}>View {p.name}'s profile</button></article>):<p>No Busywork recorded yet this week. The frame awaits an employee.</p>}<p>This is the current lead, not a completed award. The weekly trophy is awarded at the normal Friday 4 PM Pacific reset.</p><WeeklyDeadline schedule={schedule}/><button className="pg-btn primary" onClick={onBoard}>View full whiteboard</button></section>;
+}
+function Standings({ board, me, fund, feuds = [], schedule, onPlayer, onProfile, selectedTab, onTabChange }) {
+  const [localTab,setLocalTab]=useState("week");
+  const tab=selectedTab||localTab,setTab=onTabChange||setLocalTab;
   const ranked = [...board].sort((a, b) =>
     tab === "week" ? (b.week_pp || 0) - (a.week_pp || 0) : (b.lifetime || 0) - (a.lifetime || 0));
-  if(profileId)return <><button className="pg-btn" onClick={()=>setProfileId(null)}>Back to whiteboard</button><OfficeWeekPanel me={me} board={board} initialPlayer={profileId} onPlayer={onPlayer}/></>;
   const kindest = [...board].sort((a, b) => (b.goodwill || 0) - (a.goodwill || 0))[0];
   const worst = [...board].sort((a, b) => (b.notoriety || 0) - (a.notoriety || 0))[0];
   const hottest = [...board].sort((a, b) => (b.heat || 0) - (a.heat || 0))[0];
   return (
     <div>
       <div className="pg-tabs">
-        <button className={"pg-tab" + (tab === "week" ? " on" : "")} onClick={() => setTab("week")}>This week</button>
-        <button className={"pg-tab" + (tab === "all" ? " on" : "")} onClick={() => setTab("all")}>All time</button>
+        <button className={"pg-tab" + (tab === "week" ? " on" : "")} aria-pressed={tab==="week"} onClick={() => setTab("week")}>This week</button>
+        <button className={"pg-tab" + (tab === "all" ? " on" : "")} aria-pressed={tab==="all"} onClick={() => setTab("all")}>All time</button>
       </div>
       <div className="pg-earnbar">
         {tab === "week"
@@ -6776,7 +6797,7 @@ function Standings({ board, me, fund, feuds = [], schedule, onPlayer }) {
               <i className="pg-here" title="Account recently updated; coworker actions can update this too" />
             )}
             <span className="pg-main">
-              <b><button className="pg-profile-link" aria-label={"View "+p.name+" profile"} onClick={()=>setProfileId(p.id)}>{p.name}{me && p.id === me.id ? " (you)" : ""}</button>
+              <b><button className="pg-profile-link" aria-label={"View "+p.name+" profile"} onClick={()=>onProfile?.(p.id)}>{p.name}{me && p.id === me.id ? " (you)" : ""}</button>
                 {p.pin && PIN_INDEX[p.pin] && (
                   <i className="pg-boardpin" title={PIN_INDEX[p.pin].name + " — " + PIN_INDEX[p.pin].note}
                      style={{ background: PIN_INDEX[p.pin].hue }}>{PIN_INDEX[p.pin].glyph}</i>
@@ -7301,7 +7322,7 @@ function Fund({ fund, tiers=FUND_TIERS, nextTier, prevTier, office, card, pp, me
       <div className={"pg-margbox" + (office?.hit ? " won" : "")}>
         <div className="pg-mailhead">This week's office goal</div>
         <b className="pg-marghead">{g.name || "The Margarita Machine"}</b>
-        <p className="pg-small">{g.blurb}</p>
+        <p className="pg-small">{g.blurb}</p>{g.target_policy_version===2&&<p className="pg-note">{g.target_policy}</p>}
         <div className="pg-progress"><i style={{ width: pct + "%" }} /></div>
         <p className="pg-small">
           <b>{fmt(office?.total || 0)}</b> of {fmt(office?.target || 0)} BW earned by the office
@@ -8430,10 +8451,17 @@ function OfficeConfettiArt(){
   {Array.from({length:36},(_,i)=>{const x=12+i*43%216,y=8+i*19%92;return <g className="pg-confetti-fall" key={i} style={{animationDelay:-(i%12)*.31+'s',animationDuration:3+i%5*.35+'s','--confetti-drift':(i%2?14:-14)+'px'}}><rect x={x} y={y} width={8+i%4} height={5+i%3} rx="1" fill={colors[(i+2)%colors.length]} transform={`rotate(${i*31%160} ${x} ${y})`}/></g>;})}
  </svg></div>;
 }
+function officeDisplayItems(player){
+ const ids=player?.office_display??player?.office_collectibles??[];
+ return Array.isArray(ids)?[...new Set(ids)].filter(id=>OFFICE_COLLECTIBLE_LABELS[id]).slice(0,3):[];
+}
+function OfficeWallCollectibles({player}){
+ if(!officeDisplayItems(player).includes('corkboard'))return null;
+ return <div className="pg-mounted-corkboard" data-office-corkboard={player.id} role="img" aria-label={player.name+"'s wall-mounted Incident Corkboard"}><OfficeCollectibleArt item="corkboard"/><i aria-hidden="true"/></div>;
+}
 function OfficeCollectionDecor({player}){
- const owned=(player?.office_display??player?.office_collectibles??[]).slice(0,3),confetti=Date.parse(player?.office_confetti?.until||'')>Date.now();
- if(!owned.length&&!confetti)return null;
- return <>{owned.length>0&&<div className="pg-office-collection" aria-hidden="true">{owned.map(item=><span key={item}><OfficeCollectibleArt item={item} name={player.name} memento={item==='plaque'?player.office_memento:null}/></span>)}</div>}{confetti&&<OfficeConfettiArt/>}</>;
+ const owned=officeDisplayItems(player),deskItems=owned.filter(id=>id!=='nameplate'&&id!=='corkboard'),confetti=Date.parse(player?.office_confetti?.until||'')>Date.now();
+ return <>{owned.includes('nameplate')&&<div className="pg-personal-nameplate" data-desk-nameplate={player.id} aria-label={"Personalized nameplate: "+player.name}>{player.name}</div>}{deskItems.length>0&&<div className="pg-office-collection" aria-hidden="true">{deskItems.map(item=><div className="pg-desk-collectible" key={item}><OfficeCollectibleArt item={item} name={player.name} memento={item==='plaque'?player.office_memento:null}/></div>)}</div>}{confetti&&<OfficeConfettiArt/>}</>;
 }
 function OfficeShieldArt(){return <svg viewBox="0 0 160 100" role="img" aria-label="Return to Sender reflective shield" fill="none" stroke="#2B2B2B" strokeWidth="4" strokeLinejoin="round"><path d="m80 8 46 15v28c0 24-28 35-46 42-18-7-46-18-46-42V23Z" fill="#7B9CC4"/><path d="M49 34h62v39H49Z" fill="#F8F1E3"/><path d="m50 35 30 21 30-21"/><path d="M101 79H72c-23 0-26-32-4-32h18m-9-10 12 10-12 10" stroke="#F78B6B" strokeWidth="7"/></svg>;}
 function OfficeActivityChart({rows}){
@@ -8526,7 +8554,7 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
  const quoteValid=!!quote&&quote.week===status?.week&&quoteSeconds>0;
  const nextCollection=Object.keys(OFFICE_COLLECTION_WEEKS).find(id=>!status?.collectibles.includes(id));
  const collectionCards=(ids,permanent=false)=>ids.map(id=>{const label=OFFICE_COLLECTIBLE_LABELS[id],owned=status.collectibles.includes(id),required=OFFICE_COLLECTION_WEEKS[id],eligible=required?qualified>=required:id==='nameplate'?rewardMine.includes('work')&&rewardMine.includes('care'):id==='corkboard'?rewardMine.length>=3:rewardRecord?.completed&&(rewardRecord.categories||projectCategories).some(c=>rewardMine.includes(c));return <article key={id}><OfficeCollectibleArt item={id} name={me.name}/><h4>{label}</h4><p>{required?`${qualified} / ${required} qualifying weeks`:id==='nameplate'?'Work + care stamps':id==='corkboard'?'Three different category stamps':'Complete the project and contribute'}</p><button className="pg-btn" disabled={busy||owned||!eligible} onClick={()=>mutate(()=>api.officeCollectible(id,rewardWeek))}>{owned?'Owned':eligible?'Claim reward':'Keep playing'}</button>{permanent&&owned&&<button className="pg-btn" aria-pressed={display.includes(id)} disabled={busy||(!display.includes(id)&&display.length>=3)} onClick={()=>mutate(()=>api.officeDisplay(display.includes(id)?display.filter(x=>x!==id):[...display,id]))}>{display.includes(id)?`Hide ${label}`:`Display ${label}`}</button>}</article>;});
- return <div className="pg-next-week" data-depth={depth?'true':'false'} data-testid="next-week-office"><nav aria-label="Office records" className="pg-tabs">{[['project','This week'],['profiles','Player profiles'],['tools','Toolkit'],...(depth?[['collection','Collection'],['boutique','Boutique'],['records','Record book']]:[])].map(([id,label])=><button key={id} className={'pg-tab'+(tab===id?' on':'')} onClick={()=>{setTab(id);setError('');}}>{label}</button>)}</nav>
+ return <div className="pg-next-week" data-depth={depth?'true':'false'} data-testid="next-week-office"><nav aria-label="Office records" className="pg-tabs">{[['project','This week'],['profiles','Player profiles'],['tools','Toolkit'],...(depth?[['collection','Collection'],['boutique','Boutique'],['records','Record book']]:[])].map(([id,label])=><button key={id} aria-pressed={tab===id} className={'pg-tab'+(tab===id?' on':'')} onClick={()=>{setTab(id);setError('');}}>{label}</button>)}</nav>
   <button className="pg-btn" disabled={busy||statusLoading} onClick={loadStatus}>{statusLoading?"Refreshing office records…":"Refresh office records"}</button>
   {shownError&&<div className="pg-next-error" role="alert">{shownError}<button className="pg-btn" disabled={busy} onClick={retry}>{error&&errorSource==='action'?'Retry action':tab==='profiles'&&profileError?'Retry profile':'Retry records'}</button></div>}
   {tab==='project'&&<><h3>{status?.project.title||'This week in the office'}</h3>{!status&&!statusError&&<p role="status">Reading the committee notes…</p>}{status&&<>
@@ -8695,6 +8723,9 @@ const RELEASE_NOTES = {
  id: "199",
  title: "Facilities approved",
  changes: [
+  ["Your rewards belong in your office", "Displayed nameplates now show your actual name in a readable desk plate. Incident Corkboards are mounted on the cubicle wall, and other collectibles sit on the desk."],
+  ["One visible Office hub", "Use the always-visible Office hub button for This week, Player profiles, Toolkit, Collection, Boutique and Record book. The whiteboard keeps the full rankings; Employee of the Week opens a distinct current-leader spotlight."],
+  ["A harder Margarita Friday", "Future weekly targets use at least 150% of the previous completed week instead of the old fixed ceiling. Already-set targets and earned rewards are preserved. The 24-hour prize itself stays the same."],
   ["A toolkit you can read", "Two visible slots show equipped tools, remaining charges and automatic defenses. Change or remove a tool directly; changes save immediately and never refill charges. Unavailable actions explain what is needed."],
   ["Less confusing paperwork", "Panels explain their purpose, notices share a close control, coworker actions guide you through choosing a recipient, and restructuring uses an in-game confirmation. Invite connection failures now let you retry the same code. Onboarding puts Start the shift before optional appearance controls."],
   ["Confetti hurts output", "New Confetti Incidents cut output by 35% for ten minutes before Systems and Thick Skin defenses. Cleanup or IT Rescue restores the rate. Spam Filter blocks it and Return to Sender can reflect it. Sending one adds heat. Saved Busywork is never drained, and earlier cosmetic-only confetti stays harmless."],

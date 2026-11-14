@@ -23,7 +23,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
   // A dedicated close-up includes the complete shower above and ribbons below the desk.
   await effect.screenshot({path:`test-results/confetti-effect-${viewport.width}.jpg`,type:'jpeg',quality:75});
   if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();
-  await page.getByRole('button',{name:'This week & player profiles',exact:true}).click();await page.getByRole('button',{name:'Toolkit',exact:true}).click();
+  await page.getByRole('button',{name:'Office hub',exact:true}).click();await page.getByRole('button',{name:'Toolkit',exact:true}).click();
   await page.getByRole('button',{name:'Clear confetti from my desk',exact:true}).click();await expect(effect).toHaveCount(0,{timeout:15000});
   expect(f.calls.filter(c=>c.rpc==='office_clear_confetti')).toHaveLength(1);
   expect(f.calls.filter(c=>['buy_item','do_deed','office_interact'].includes(c.rpc))).toHaveLength(0);

@@ -14,7 +14,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
  expect(f.calls.filter(c=>c.rpc==='office_week_status')).toHaveLength(0);
  if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();
- await page.getByRole('button',{name:'This week & player profiles',exact:true}).click();
+ await page.getByRole('button',{name:'Office hub',exact:true}).click();
  await expect(page.getByRole('heading',{name:state.project.title})).toBeVisible();
  await page.screenshot({path:`test-results/office-project-${viewport.width}.jpg`,type:'jpeg',quality:60,fullPage:true});
  await page.getByRole('button',{name:'Claim reward',exact:true}).first().click();await expect(page.getByRole('button',{name:'Owned',exact:true})).toHaveCount(1);
@@ -53,7 +53,7 @@ for(const viewport of [{width:390,height:640},{width:390,height:844},{width:844,
 
 function recordsState(){return {version:1,confetti_rules:{version:1,mult:0.65,minutes:10},week:'2026-47',server_now:new Date().toISOString(),project:{title:'The Break Room Has Standards Now',goal:12,minimum_contributors:3,total:5,contributors:3,mine:['work','care'],completed:false},toolkit:{slots:['rescue','confetti'],charges:{rescue:2,confetti:2,filter:2}},collectibles:[],completed_weeks:[],reward_weeks:[],history_since:'2026-11-07T00:00:00Z'};}
 function recordsProfile(p){return {player:{id:p.id,name:p.name},period:'week',since:'2026-11-07T00:00:00Z',by_kind:[],daily:[],coworkers:[]};}
-async function openRecords(page){await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();await page.getByRole('button',{name:'This week & player profiles',exact:true}).click();}
+async function openRecords(page){await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();if(await page.getByRole('button',{name:'More',exact:true}).isVisible())await page.getByRole('button',{name:'More',exact:true}).click();await page.getByRole('button',{name:'Office hub',exact:true}).click();}
 
 test('next week reliability: late project success cannot erase a failed profile or its retry',async({page})=>{
  let release,firstProfile=true;const gate=new Promise(r=>release=r),state=recordsState();

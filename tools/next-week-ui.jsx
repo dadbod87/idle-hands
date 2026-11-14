@@ -25,10 +25,17 @@ function OfficeConfettiArt(){
   {Array.from({length:36},(_,i)=>{const x=12+i*43%216,y=8+i*19%92;return <g className="pg-confetti-fall" key={i} style={{animationDelay:-(i%12)*.31+'s',animationDuration:3+i%5*.35+'s','--confetti-drift':(i%2?14:-14)+'px'}}><rect x={x} y={y} width={8+i%4} height={5+i%3} rx="1" fill={colors[(i+2)%colors.length]} transform={`rotate(${i*31%160} ${x} ${y})`}/></g>;})}
  </svg></div>;
 }
+function officeDisplayItems(player){
+ const ids=player?.office_display??player?.office_collectibles??[];
+ return Array.isArray(ids)?[...new Set(ids)].filter(id=>OFFICE_COLLECTIBLE_LABELS[id]).slice(0,3):[];
+}
+function OfficeWallCollectibles({player}){
+ if(!officeDisplayItems(player).includes('corkboard'))return null;
+ return <div className="pg-mounted-corkboard" data-office-corkboard={player.id} role="img" aria-label={player.name+"'s wall-mounted Incident Corkboard"}><OfficeCollectibleArt item="corkboard"/><i aria-hidden="true"/></div>;
+}
 function OfficeCollectionDecor({player}){
- const owned=(player?.office_display??player?.office_collectibles??[]).slice(0,3),confetti=Date.parse(player?.office_confetti?.until||'')>Date.now();
- if(!owned.length&&!confetti)return null;
- return <>{owned.length>0&&<div className="pg-office-collection" aria-hidden="true">{owned.map(item=><span key={item}><OfficeCollectibleArt item={item} name={player.name} memento={item==='plaque'?player.office_memento:null}/></span>)}</div>}{confetti&&<OfficeConfettiArt/>}</>;
+ const owned=officeDisplayItems(player),deskItems=owned.filter(id=>id!=='nameplate'&&id!=='corkboard'),confetti=Date.parse(player?.office_confetti?.until||'')>Date.now();
+ return <>{owned.includes('nameplate')&&<div className="pg-personal-nameplate" data-desk-nameplate={player.id} aria-label={"Personalized nameplate: "+player.name}>{player.name}</div>}{deskItems.length>0&&<div className="pg-office-collection" aria-hidden="true">{deskItems.map(item=><div className="pg-desk-collectible" key={item}><OfficeCollectibleArt item={item} name={player.name} memento={item==='plaque'?player.office_memento:null}/></div>)}</div>}{confetti&&<OfficeConfettiArt/>}</>;
 }
 function OfficeShieldArt(){return <svg viewBox="0 0 160 100" role="img" aria-label="Return to Sender reflective shield" fill="none" stroke="#2B2B2B" strokeWidth="4" strokeLinejoin="round"><path d="m80 8 46 15v28c0 24-28 35-46 42-18-7-46-18-46-42V23Z" fill="#7B9CC4"/><path d="M49 34h62v39H49Z" fill="#F8F1E3"/><path d="m50 35 30 21 30-21"/><path d="M101 79H72c-23 0-26-32-4-32h18m-9-10 12 10-12 10" stroke="#F78B6B" strokeWidth="7"/></svg>;}
 function OfficeActivityChart({rows}){
@@ -121,7 +128,7 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
  const quoteValid=!!quote&&quote.week===status?.week&&quoteSeconds>0;
  const nextCollection=Object.keys(OFFICE_COLLECTION_WEEKS).find(id=>!status?.collectibles.includes(id));
  const collectionCards=(ids,permanent=false)=>ids.map(id=>{const label=OFFICE_COLLECTIBLE_LABELS[id],owned=status.collectibles.includes(id),required=OFFICE_COLLECTION_WEEKS[id],eligible=required?qualified>=required:id==='nameplate'?rewardMine.includes('work')&&rewardMine.includes('care'):id==='corkboard'?rewardMine.length>=3:rewardRecord?.completed&&(rewardRecord.categories||projectCategories).some(c=>rewardMine.includes(c));return <article key={id}><OfficeCollectibleArt item={id} name={me.name}/><h4>{label}</h4><p>{required?`${qualified} / ${required} qualifying weeks`:id==='nameplate'?'Work + care stamps':id==='corkboard'?'Three different category stamps':'Complete the project and contribute'}</p><button className="pg-btn" disabled={busy||owned||!eligible} onClick={()=>mutate(()=>api.officeCollectible(id,rewardWeek))}>{owned?'Owned':eligible?'Claim reward':'Keep playing'}</button>{permanent&&owned&&<button className="pg-btn" aria-pressed={display.includes(id)} disabled={busy||(!display.includes(id)&&display.length>=3)} onClick={()=>mutate(()=>api.officeDisplay(display.includes(id)?display.filter(x=>x!==id):[...display,id]))}>{display.includes(id)?`Hide ${label}`:`Display ${label}`}</button>}</article>;});
- return <div className="pg-next-week" data-depth={depth?'true':'false'} data-testid="next-week-office"><nav aria-label="Office records" className="pg-tabs">{[['project','This week'],['profiles','Player profiles'],['tools','Toolkit'],...(depth?[['collection','Collection'],['boutique','Boutique'],['records','Record book']]:[])].map(([id,label])=><button key={id} className={'pg-tab'+(tab===id?' on':'')} onClick={()=>{setTab(id);setError('');}}>{label}</button>)}</nav>
+ return <div className="pg-next-week" data-depth={depth?'true':'false'} data-testid="next-week-office"><nav aria-label="Office records" className="pg-tabs">{[['project','This week'],['profiles','Player profiles'],['tools','Toolkit'],...(depth?[['collection','Collection'],['boutique','Boutique'],['records','Record book']]:[])].map(([id,label])=><button key={id} aria-pressed={tab===id} className={'pg-tab'+(tab===id?' on':'')} onClick={()=>{setTab(id);setError('');}}>{label}</button>)}</nav>
   <button className="pg-btn" disabled={busy||statusLoading} onClick={loadStatus}>{statusLoading?"Refreshing office records…":"Refresh office records"}</button>
   {shownError&&<div className="pg-next-error" role="alert">{shownError}<button className="pg-btn" disabled={busy} onClick={retry}>{error&&errorSource==='action'?'Retry action':tab==='profiles'&&profileError?'Retry profile':'Retry records'}</button></div>}
   {tab==='project'&&<><h3>{status?.project.title||'This week in the office'}</h3>{!status&&!statusError&&<p role="status">Reading the committee notes…</p>}{status&&<>
