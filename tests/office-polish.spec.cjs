@@ -14,7 +14,9 @@ for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and dir
  }
  await page.screenshot({path:'test-results/'+mode+'-polish-controls.png',fullPage:true});
  await page.getByRole('button',{name:'Office directory',exact:true}).click();const directory=page.getByTestId('office-directory');
- await expect(directory.getByRole('button',{name:/^Walk to /})).toHaveCount(12);
+ await expect(directory.getByRole('button',{name:/^Walk to /})).toHaveCount(13);
+ await expect(directory.getByRole('button',{name:'Walk to Employee Of The Week',exact:true})).toHaveCount(1);
+ await expect(directory.getByRole('button',{name:'Open Office hub',exact:true})).toBeVisible();
  await expect(directory.getByRole('button',{name:'Walk to Your desk',exact:true})).toHaveCount(0);
  await expect(directory.getByRole('button',{name:'Walk to Suggestion Box',exact:true})).toHaveCount(0);
  const fridge=directory.getByRole('button',{name:'Walk to The Fridge',exact:true});

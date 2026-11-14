@@ -7,7 +7,7 @@ for(const viewport of [{width:390,height:640},{width:844,height:390}]){
   await installGameFixture(page);
   await page.goto('http://127.0.0.1:8765/');
   await expect(page.locator('.pg-stage')).toBeVisible();
-  await page.locator('.pg-hud .pg-help').first().tap();
+  await page.getByRole('button',{name:'How to play',exact:true}).tap();
   const card=page.locator('.pg-card');
   await expect(card.getByText('Your first five minutes',{exact:true})).toBeVisible();
   const bounds=await card.boundingBox();

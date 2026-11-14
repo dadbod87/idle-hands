@@ -4923,13 +4923,13 @@ function OfficeFloor() {
           </div>
         </div>
         <div className="pg-hudbtns">
-          <button className="pg-help pg-utility-button pg-hub-shortcut" aria-label="Office hub" title="Projects, profiles, toolkit, collection, boutique and records" onClick={()=>{setMoreOpen(false);setHubPlayer(null);setHubOrigin(null);setPanel("officeweek");}}><OfficeIcon kind="notice" compact/><span>Office hub</span></button>
           <button className="pg-help pg-utility-button" aria-label="How to play" title="How to play" onClick={() => setShowHelp(true)}><UtilityIcon kind="help"/><span>Help</span></button>
         <button className="pg-help pg-utility-button" aria-label="Sound & feel" aria-haspopup="dialog" onClick={() => {wakeAudio();setPanel("sound");}}
                 title={mute ? "Sound & feel · muted" : "Sound & feel"}><UtilityIcon kind={mute?"muted":"sound"}/><span>Sound</span></button>
         <button className="pg-help pg-utility-button" aria-label="Your account" onClick={() => setPanel("account")} title="Your account">
           <UtilityIcon kind="account"/><span>{user?.is_anonymous?"Save":"Account"}</span>
         </button>
+          <button className="pg-help pg-utility-button pg-hub-shortcut" aria-label="Office hub" title="Projects, profiles, toolkit, collection, boutique and records" onClick={()=>{setMoreOpen(false);setHubPlayer(null);setHubOrigin(null);setPanel("officeweek");}}><OfficeIcon kind="notice" compact/><span>Office hub</span></button>
         </div>
       </div>
 
