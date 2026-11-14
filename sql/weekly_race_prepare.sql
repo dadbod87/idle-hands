@@ -3,7 +3,7 @@
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA pg_catalog;
 GRANT USAGE ON SCHEMA cron TO CURRENT_USER;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA cron TO CURRENT_USER;
+GRANT SELECT ON cron.job,cron.job_run_details TO CURRENT_USER;
 DO $prepare_race$
 DECLARE clock timestamptz:=office_private.race_now();j bigint;actual text;
 BEGIN
