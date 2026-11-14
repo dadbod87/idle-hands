@@ -13,6 +13,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
   const d=await desk.boundingBox(),b=await board.boundingBox();expect(b.y+b.height).toBeLessThanOrEqual(d.y+2);expect(b.width).toBeGreaterThan(50);
   expect(await board.evaluate(el=>getComputedStyle(el).pointerEvents)).toBe('none');
   expect(await desk.locator('.pg-desk-collectible').evaluate(el=>getComputedStyle(el).position)).toBe('relative');
+  const tabletop=await desk.locator('.pg-desk-collectible').boundingBox();expect(tabletop.y+tabletop.height).toBeGreaterThanOrEqual(d.y+d.height*.4);expect(tabletop.y+tabletop.height).toBeLessThanOrEqual(d.y+d.height*.7);
   await page.screenshot({path:'test-results/hub-decor-'+viewport.width+'.png',fullPage:true});
   f.player.office_display=[];await page.reload();await expect(page.locator('.pg-stage')).toBeVisible();
   await expect(page.locator('[data-desk-nameplate]')).toHaveCount(0);await expect(page.locator('[data-office-corkboard]')).toHaveCount(0);
