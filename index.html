@@ -5485,7 +5485,7 @@ function OfficeFloor() {
                 <Face name={g.from} size={38} />
                 <div>
                   <b>{g.from}</b>
-                  <span className={T.good||g.detail==="reflected:shield"||g.detail==="blocked:filter" ? "good" : "bad"}>{g.detail==="reflected:shield"?"Returned to sender":g.detail==="blocked:filter"?"Blocked by your Spam Filter":g.detail==="protected:clip"?"Receipt Clip halved the theft":T.eff}{g.amount ? ` · ${fmt(g.amount)} BW` : ""}</span>
+                  <span className={T.good||g.detail==="reflected:shield"||g.detail==="blocked:filter" ? "good" : "bad"}>{g.detail==="reflected:shield"?"Returned to sender":g.detail==="blocked:filter"?"Blocked by your Spam Filter":g.detail==="protected:clip"?"Receipt Clip halved the theft":g.kind==="confetti"&&g.detail!=="sabotage:confetti"?"Cosmetic confetti · no output penalty":T.eff}{g.amount ? ` · ${fmt(g.amount)} BW` : ""}</span>
                   <em>{officeIncidentText(g,T)}</em>
                 </div>
               </div>
@@ -5511,6 +5511,7 @@ function officeIncidentText(d,T,wire=false){
  if(d.detail==='reflected:shield')return `${owner} Return to Sender reflected ${d.from}’s ${T.label}. One shield was used; the original target took no sabotage.`;
  if(d.detail==='blocked:filter')return `${owner} Spam Filter blocked ${d.from}’s ${T.label}. One filter charge was used.`;
  if(d.detail==='protected:clip')return `${owner} Receipt Clip halved ${d.from}’s theft. The actual loss was ${fmt(d.amount)} BW.`;
+ if(d.kind==='confetti'&&d.detail!=='sabotage:confetti')return wire?`${d.from} delivered cosmetic confetti to ${d.toName}.`:`${d.from} decorated your desk with cosmetic confetti. No output penalty was applied.`;
  return wire?T.wire(d.from,d.toName,d.amount,COSTUMES[d.detail]?.name):T.hit(d.from,COSTUMES[d.detail]?.name);
 }
 

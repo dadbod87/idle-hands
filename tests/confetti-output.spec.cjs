@@ -22,3 +22,9 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  expect(f.calls.filter(c=>['buy_item','do_deed','office_interact'].includes(c.rpc))).toHaveLength(0);
  await ctx.close();
 });
+
+test('older cosmetic confetti keeps its honest incident wording',async({page})=>{
+ await installGameFixture(page,{handleRpc:async(name)=>name==='claim_incoming'?{body:[{id:901,kind:'confetti',from:'Fixture coworker',detail:'Confetti delivered. No income penalty.'}]}:undefined});
+ await page.goto('http://127.0.0.1:8765/');await expect(page.getByText('Cosmetic confetti · no output penalty',{exact:true})).toBeVisible();
+ await expect(page.getByText('Fixture coworker decorated your desk with cosmetic confetti. No output penalty was applied.',{exact:true})).toBeVisible();
+});
