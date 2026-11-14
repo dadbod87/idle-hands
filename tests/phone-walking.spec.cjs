@@ -15,7 +15,7 @@ for(const viewport of [{width:390,height:640},{width:393,height:851},{width:844,
  });
  // Real touch taps on empty floor walk away from the cabinet across its reach boundary.
  for(let i=0;i<5;i++){
-  const point=await page.evaluate(()=>{const floor=document.querySelector('.pg-stage').getBoundingClientRect(),room=document.querySelector('.pg-room'),actor=room.querySelector('.pg-body.me').closest('.pg-me'),matrix=new DOMMatrix(getComputedStyle(room).transform),y=parseFloat(actor.style.top);return {oldY:y,x:floor.left+parseFloat(actor.style.left)*matrix.a+matrix.e,y:Math.min(floor.bottom-62,floor.top+(y+65)*matrix.a+matrix.f)};});
+  const point=await page.evaluate(()=>{const floor=document.querySelector('.pg-stage').getBoundingClientRect(),room=document.querySelector('.pg-room'),actor=room.querySelector('.pg-body.me').closest('.pg-me'),matrix=new DOMMatrix(getComputedStyle(room).transform),y=parseFloat(actor.style.top);return {oldY:y,x:floor.left+parseFloat(actor.style.left)*matrix.a+matrix.e,y:Math.min(floor.bottom-14,floor.top+(y+65)*matrix.a+matrix.f)};});
   await page.touchscreen.tap(point.x,point.y);
   await expect.poll(()=>page.locator('.pg-room .pg-body.me').evaluate(el=>parseFloat(el.closest('.pg-me').style.top)),{timeout:4000}).toBeGreaterThan(point.oldY+25);
   await page.waitForTimeout(250);
