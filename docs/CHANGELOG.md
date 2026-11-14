@@ -1,3 +1,7 @@
+## Build 197 — within reach (November 13, 2026)
+
+On touch devices, tapping your own desk or the good chair within the existing reach radius now opens the desk or attempts the chair claim immediately. A distant tap only walks, and arrival never automatically opens or claims anything. Drag/cancel suppression, other fixture controls and keyboard/mouse behavior remain unchanged. The chair still validates its current timed spawn and server claim outcome. No database or economy changes. Responsive tests cover direct desk taps, drag suppression, far-chair walking without claims, nearby claim/refusal/retry and unchanged balances. Build 196 is live at b1290010; exact build 197 checks and publication evidence belong to its release PR.
+
 ## Build 196 — confetti catastrophe (November 13, 2026)
 
 Replaces twelve tiny flecks with a desk-sized outlined paper mound, trailing streamers and a continuous local shower. The incident renders independently of collectible placement, remains pointer-transparent and becomes static with reduced motion. Existing ten-minute server expiry, cleanup, charges and income rules remain unchanged. The safe art gallery includes the actual desk effect; responsive fixture checks cover severity, input passthrough, expiry/cleanup and reduced motion. Build 195 was released as merge 8f06fa7a; its migration/deployment and first scheduled recording evidence is recorded in PR #56. Build 196 publication and exact-head checks are recorded in its release PR.

@@ -3625,7 +3625,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 196 · confetti catastrophe";
+const BUILD = "build 197 · within reach";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -4712,8 +4712,8 @@ function OfficeFloor() {
     const r = stageRef.current.getBoundingClientRect();
     routeTo((e.clientX - r.left) / zoom + cam.x, (e.clientY - r.top) / zoom + cam.y);
   };
-  // Pointer movement and interaction are separate intents on phones. Keyboard
-  // activation (detail=0) and explicitly labeled directory routes remain intentional.
+  // On phones, a deliberate nearby desk/chair tap acts directly. Distant taps
+  // still walk without queuing an action; drags never activate furniture.
   const captureWorldTap=e=>{
     const pointerType=e.nativeEvent.pointerType||touchGesture.current?.type;
     if(e.detail===0||pointerType!=="touch")return;
@@ -4721,12 +4721,13 @@ function OfficeFloor() {
     if(touchGesture.current?.dragged){goRef.current=null;setWorldIntent(null);worldActivation.current=null;return;}
     const el=e.target.closest('[data-fixture],.pg-officedesk,[data-scenery],.pg-chair,.pg-office-tv');
     const fx=el?.dataset.fixture&&FIXTURES.find(f=>f.id===el.dataset.fixture),prop=el?.dataset.scenery&&SCENERY.find(p=>p.id===el.dataset.scenery);
-    let point=null,label='',activate=null;
+    let point=null,label='',activate=null,directReach=null;
     if(fx){point={x:fx.x+fx.w/2,y:Math.min(ROOM.h-50,fx.y+fx.h+60)};label='Open '+fx.label;activate=()=>openFixture(fx);}
     else if(prop){point={x:prop.x+prop.w/2,y:prop.y+prop.h+35};label='Inspect '+(prop.label||PROP_LABELS[prop.kind]);activate=()=>setPanel('prop:'+prop.id);}
-    else if(el?.classList.contains('pg-officedesk')&&el.classList.contains('mine')&&myOffice){point={x:myOffice.cx,y:myOffice.cy+40};label='Open your desk';activate=()=>setPanel('shop');}
-    else if(el?.classList.contains('pg-chair')&&chair){point={x:chair.x,y:chair.y+45};label='Grab the good chair';activate=grabChair;}
+    else if(el?.classList.contains('pg-officedesk')&&el.classList.contains('mine')&&myOffice){point={x:myOffice.cx,y:myOffice.cy+40};label='Open your desk';activate=()=>setPanel('shop');directReach=point;}
+    else if(el?.classList.contains('pg-chair')&&chair){point={x:chair.x,y:chair.y+45};label='Grab the good chair';activate=grabChair;directReach={x:chair.x+23,y:chair.y+27};}
     else if(el?.classList.contains('pg-office-tv')){const r=el.getBoundingClientRect(),stageBox=stageRef.current.getBoundingClientRect();point={x:(r.left+r.width/2-stageBox.left)/zoom+cam.x,y:(r.bottom-stageBox.top)/zoom+cam.y+40};label='Change TV channel';activate=()=>el.click();}
+    if(directReach&&dist(posRef.current,directReach)<=REACH){goRef.current=null;setWorldIntent(null);worldActivation.current=null;activate();return;}
     if(point){routeTo(point.x,point.y);setWorldIntent({...point,label});worldActivation.current=activate;}
     else{setWorldIntent(null);worldActivation.current=null;walkClick(e);}
   };
@@ -8630,15 +8631,16 @@ function OfficeWeeklyRace({me,board}){
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "196",
- title: "Confetti catastrophe",
+ id: "197",
+ title: "Within reach",
  changes: [
+  ["Tap nearby desks and the good chair", "On phones, walk up to your desk or the good chair and tap it directly. No separate action button is required when you are in reach. Distant taps still walk without automatically opening or claiming anything."],
   ["Confetti catastrophe", "Confetti Incidents now bury the desk in a bright mound, hang streamers over the edges and keep showering paper until cleared or expired. The ten-minute prank is still removable from Toolkit and has no output penalty."],
   ["Lifetime profiles and charts", "Helping, sabotage and playful actions now have lasting records, including received actions and coworker relationships. Recorded history survives Friday. Older gaps stay labelled."],
   ["Weekly Race", "Compare recorded weekly earnings and leaderboard positions over time. Your spendable-balance history is private to you. Five-minute recording starts after release activation; earlier points are not reconstructed."],
   ["Seniority that stays useful", "Your 3% output bonus uses Seniority earned this week. Spending points on perks no longer removes that earned bonus. Both weekly points and perks still reset Friday."],
   ["Fairer prices and Cover", "Cover gives a coworker +15% output for 20 minutes instead of transferring cash. Permanent cosmetic prices retain your highest tracked base production, so restructuring cannot make the whole catalogue cheap."],
-  ["Phone movement", "Tap to walk, then use a nearby action button. Passing furniture no longer opens it unexpectedly. Minimap and emotes can collapse."],
+  ["Phone movement", "Tap to walk. Tap your own desk or the good chair directly when nearby; other fixtures retain their nearby action button. Minimap and emotes can collapse."],
   ["New ways to help and prank", "IT Rescue removes an eligible negative effect. Confetti adds a temporary desk prank without an income penalty. Normal sabotage stacking stays."],
   ["Tools and reflection", "Choose two toolkit items. Earn limited refills through varied activity. Receipt Clip reduces one eligible theft; the separately purchased Return to Sender shield reflects one eligible sabotage without reflection chains."],
   ["Projects and lasting collections", "Add one project contribution per listed category per person per Pacific date. The shared goal needs 36 contributions, three people and four active dates; stretch needs 60, five people and six dates. Personal starter rewards stay quick. Earn dated plaques and multi-week terrarium, duck and lamp rewards; qualifying weeks need not be consecutive."],
