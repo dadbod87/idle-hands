@@ -1,5 +1,5 @@
 const {test,expect,devices}=require('@playwright/test');
-const {installGameFixture}=require('./game-fixture.cjs');
+const {installGameFixture,toggleEmotes}=require('./game-fixture.cjs');
 for(const mode of ['desktop','mobile']){
  test(mode+': actual game navigation, movement, work, emotes and appearance using isolated HTTP fixtures',async({browser})=>{
   const context=await browser.newContext(mode==='mobile'?{...devices['Pixel 7']}:{viewport:{width:1440,height:900}});
@@ -20,7 +20,7 @@ for(const mode of ['desktop','mobile']){
   await expect.poll(async()=>avatar.locator('..').evaluate(el=>({x:el.style.left,y:el.style.top}))).not.toEqual(initial);
   await page.screenshot({path:'test-results/'+mode+'-game-walking.png',fullPage:true});
   await expect(avatar).toHaveClass(/idling/,{timeout:15000});
-  if(mode==='mobile')await page.getByRole('button',{name:'Emotes',exact:true}).click();
+  if(mode==='mobile')await toggleEmotes(page);
   await page.getByTitle('Wave', {exact:true}).click();
   await expect(avatar).toHaveClass(/em-wave/);
   await page.screenshot({path:'test-results/'+mode+'-game-wave.png',fullPage:true});
@@ -64,7 +64,7 @@ for(const mode of ['desktop','mobile']){
   await expect(page.locator('.pg-room .pg-body.me')).toHaveClass(/garment-hoodie/);
   await expect(page.locator('.pg-room .pg-body.me .pg-avatar-head [data-head]')).toHaveAttribute('data-head','alien');
   await expect(page.locator('.pg-room .pg-body.me')).toHaveClass(/style-feminine/);
-  if(mode==='mobile')await page.getByRole('button',{name:'Emotes',exact:true}).click();
+  if(mode==='mobile')await toggleEmotes(page);
   await page.getByTitle('Dance',{exact:true}).click();
   await expect(page.locator('.pg-room .pg-body.me')).toHaveClass(/em-dance/);
   await page.screenshot({path:'test-results/'+mode+'-alien-gameplay.png',fullPage:true});

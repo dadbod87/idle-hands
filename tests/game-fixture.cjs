@@ -101,4 +101,9 @@ async function openOwnDesk(page){
  await expect(page.locator('.pg-panelhead')).toContainText('Your desk',{timeout:25000});
 }
 
-module.exports={installGameFixture,makeOfficePlayFixture,openOwnDesk};
+async function toggleEmotes(page){
+ const button=page.getByRole('button',{name:'Emotes',exact:true});
+ if(!await button.isVisible())await page.getByRole('button',{name:'More',exact:true}).click();
+ await button.click();
+}
+module.exports={installGameFixture,makeOfficePlayFixture,openOwnDesk,toggleEmotes};

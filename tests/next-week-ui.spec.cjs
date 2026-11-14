@@ -31,8 +31,11 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
 });
 for(const viewport of [{width:390,height:640},{width:390,height:844},{width:844,height:390}])test(`next week ${viewport.width}x${viewport.height}: touch moves without opening a fixture`,async({browser})=>{
  const ctx=await browser.newContext({viewport,hasTouch:true,reducedMotion:'reduce'}),page=await ctx.newPage();const f=await installGameFixture(page);
+ // A live meeting plus the contextual Open row must not push the HR tap target above the floor.
+ if(viewport.width===844)await page.clock.setFixedTime(new Date('2026-11-14T15:26:48Z'));
  await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
  await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:/HR Cabinet/}).click();await expect(page.locator('.pg-panel')).toBeVisible({timeout:30000});await page.locator('.pg-panel .pg-x').click();
+ if(viewport.width===844){await page.screenshot({path:'test-results/hub-hr-844.png',fullPage:true});console.log('SHORT_FLOOR_HR',await page.evaluate(()=>({floor:document.querySelector('.pg-stage').getBoundingClientRect().toJSON(),hr:document.querySelector('[data-fixture=hr]').getBoundingClientRect().toJSON(),actor:document.querySelector('.pg-room>.pg-me').getAttribute('style'),room:document.querySelector('.pg-room').getAttribute('style')})));}
  if(viewport.width===844)await expect.poll(()=>page.locator('[data-fixture="hr"]').evaluate(el=>{const r=el.getBoundingClientRect(),floor=document.querySelector('.pg-stage').getBoundingClientRect();return r.top+r.height/2-floor.top;})).toBeGreaterThanOrEqual(20);
  const before=f.calls.filter(c=>['do_deed','buy_item','grab_chair'].includes(c.rpc)).length;
  for(let n=0;n<20;n++){await page.locator('[data-fixture="hr"]').tap();await expect(page.locator('.pg-panel')).toHaveCount(0);}

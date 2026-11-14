@@ -1,4 +1,10 @@
-# Build 199 — facilities approved (candidate)
+# Build 200 — hub, front and center (candidate)
+
+Office hub now has a large, named button beside Work in the persistent bottom controls, with a Projects · Tools subtitle. It opens all six sections directly from anywhere, without clicking a player name or walking. The easy-to-miss top clipboard icon is replaced by this button. Phone controls retain one row and the existing viewport/floor budget: Places opens the directory and Emotes moves into More. The short-screen camera also scales further when a live meeting and contextual controls shrink the floor, keeping nearby wall targets visible. Opening the hub cancels an older walk-to-station request so arrival cannot replace its panel. No economy, backend, inventory or saved-data changes. Build-specific release notes explain the new entry point.
+
+Release gate and actual publication evidence belong to the new release PR. Required checks include direct footer navigation before opening More, desktop/phone/landscape bounds, internally scrolling panels and unchanged emote/directory access. Physical phones and hosted Auth remain unperformed.
+
+# Build 199 — facilities approved (released, PR #60)
 
 Phone follow-up: Margarita Friday and event information start collapsed in a single expandable Office bulletins row. The live game uses a dynamic-viewport flex shell with no outer page scrolling, including Android-sized portrait/landscape and browser resize. Expanded bulletins and dialogs retain internal scrolling; urgent action notices stay visible. Phone footer controls share one row; empty-effect and flavor copy no longer take up floor space. Contextual Open and Emotes remain available, with the same compact menu in landscape. Short phone floors also use a slightly wider centered view with contextual framing for the nearby target and character so wall fixtures and desk-front nameplates remain visible. The narrowest HUD reserves enough width for all four utility controls in one row without overlapping the balance. Desktop bulletins remain expanded. Physical Android testing remains unperformed.
 

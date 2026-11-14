@@ -29,7 +29,10 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
    if(name==='office_profile')return {body:{player:{id:args.p_player,name:p.name},since:'2026-11-12T00:00:00Z',by_kind:[],daily:[],coworkers:[],privacy:'Synthetic public history.'}};
   }});
   await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
-  const hub=page.getByRole('button',{name:'Office hub',exact:true});await expect(hub).toBeVisible();await hub.click();
+  const hub=page.locator('.pg-bar>.pg-hub-button');await expect(hub).toBeVisible();await expect(hub).toContainText('Office hub');await expect(hub).toContainText('Projects · Tools');
+  const {hb,wb}=await page.evaluate(()=>({hb:document.querySelector('.pg-bar>.pg-hub-button').getBoundingClientRect().toJSON(),wb:document.querySelector('.pg-bar>.pg-work').getBoundingClientRect().toJSON()}));expect(hb.height).toBeGreaterThanOrEqual(44);expect(hb.width).toBeGreaterThanOrEqual(90);expect(Math.abs((hb.y+hb.height/2)-(wb.y+wb.height/2))).toBeLessThanOrEqual(2);
+  if(viewport.width<1000)await expect(page.getByRole('button',{name:'Emotes',exact:true})).toBeHidden();
+  await page.screenshot({path:'test-results/hub-entry-'+viewport.width+'.png',fullPage:true});await hub.click();
   await expect(page.locator('.pg-panelhead')).toContainText('Office hub');
   const nav=page.getByRole('navigation',{name:'Office records',exact:true});
   for(const label of ['This week','Player profiles','Toolkit','Collection','Boutique','Record book'])await expect(nav.getByRole('button',{name:label,exact:true})).toBeVisible();
@@ -46,6 +49,9 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
   await expect(page.getByRole('button',{name:'All time',exact:true})).toHaveAttribute('aria-pressed','true');
   await page.locator('.pg-panel .pg-x').click();await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:'Walk to Vending Machine',exact:true}).click();
   await expect(page.locator('.pg-margbox')).toContainText('Bought.',{timeout:30000});await expect(page.locator('.pg-margbox')).toContainText('150%');
+  await page.locator('.pg-panel .pg-x').click();await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:'Walk to HR Cabinet',exact:true}).click();
+  await expect(page.locator('.pg-body.me')).toHaveClass(/walking/);await hub.click();await expect(page.locator('.pg-panelhead')).toContainText('Office hub');await expect(page.locator('.pg-body.me')).not.toHaveClass(/walking/);
+  const stopped=await page.locator('.pg-room .pg-body.me').evaluate(el=>el.closest('.pg-me').getAttribute('style'));await page.waitForTimeout(300);expect(await page.locator('.pg-room .pg-body.me').evaluate(el=>el.closest('.pg-me').getAttribute('style'))).toBe(stopped);await expect(page.locator('.pg-panelhead')).toContainText('Office hub');
   expect(f.player.pp).toBe(500000);expect(f.calls.some(c=>['buy_item','office_interact','office_claim_collectible','vend'].includes(c.rpc))).toBe(false);await ctx.close();
  });
 }

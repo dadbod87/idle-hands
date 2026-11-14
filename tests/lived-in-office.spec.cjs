@@ -1,5 +1,5 @@
 const {test,expect,devices}=require('@playwright/test');
-const {installGameFixture}=require('./game-fixture.cjs');
+const {installGameFixture,toggleEmotes}=require('./game-fixture.cjs');
 for(const mode of ['desktop','mobile'])test(mode+': lived-in scenery preserves real destinations and player progress',async({browser})=>{
  test.setTimeout(90000);
  const context=await browser.newContext(mode==='mobile'?{...devices['Pixel 7']}:{viewport:{width:1440,height:900}}),page=await context.newPage(),errors=[];
@@ -55,7 +55,7 @@ for(const mode of ['desktop','mobile'])test(mode+': lived-in scenery preserves r
  await page.locator('.pg-room [data-scenery="bench"]').click();await page.getByRole('button',{name:'Head to the break table',exact:true}).click();
  await expect(page.locator('.pg-panelhead')).toContainText('Break room',{timeout:20000});await page.locator('.pg-panel .pg-x').click();
 
- if(mode==='mobile')await page.getByRole('button',{name:'Emotes',exact:true}).click();
+ if(mode==='mobile')await toggleEmotes(page);
  await page.getByTitle('Wave',{exact:true}).click();await expect(page.locator('.pg-room .pg-body.me')).toHaveClass(/em-wave/);
  expect(fixture.player.pp).toBe(500000);expect(fixture.player.equity).toBe(2);expect(fixture.player.kit.desk).toBe('d3');
  expect(fixture.calls.some(x=>['buy_item','buy_fitting','do_deed','set_look'].includes(x.rpc))).toBe(false);
