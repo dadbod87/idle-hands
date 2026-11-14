@@ -1,11 +1,11 @@
 const {test,expect,devices}=require('@playwright/test');
-const {installGameFixture,openOwnDesk}=require('./game-fixture.cjs');
+const {installGameFixture,openOwnDesk,toggleEmotes}=require('./game-fixture.cjs');
 const base=process.env.NAV_BASE_URL||'http://127.0.0.1:8765/';
 for(const mode of ['desktop','mobile'])test(mode+': illustrated controls and directory keep real walking and emotes',async({browser})=>{
  test.setTimeout(90000);
  const context=await browser.newContext(mode==='mobile'?{...devices['Pixel 7']}:{viewport:{width:1440,height:900}}),page=await context.newPage();
  const fixture=await installGameFixture(page);await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
- if(mode==='mobile'){await expect(page.getByRole('button',{name:'Jump',exact:true})).toBeHidden();await page.getByRole('button',{name:'Emotes',exact:true}).click();}
+ if(mode==='mobile'){await expect(page.getByRole('button',{name:'Jump',exact:true})).toBeHidden();await toggleEmotes(page);}
  const emotes=page.locator('.pg-bar .pg-emote');await expect(emotes).toHaveCount(6);
  for(const label of ['Jump','Dance','Wave','Panic','Shrug','Type furiously']){
   const button=page.getByRole('button',{name:label,exact:true});await expect(button.locator('svg')).toBeVisible();
