@@ -30,7 +30,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
   }});
   await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
   const hub=page.locator('.pg-bar>.pg-hub-button');await expect(hub).toBeVisible();await expect(hub).toContainText('Office hub');await expect(hub).toContainText('Projects · Tools');
-  const hb=await hub.boundingBox(),wb=await page.locator('.pg-bar>.pg-work').boundingBox();expect(hb.height).toBeGreaterThanOrEqual(44);expect(hb.width).toBeGreaterThanOrEqual(90);expect(Math.abs(hb.y-wb.y)).toBeLessThanOrEqual(4);
+  const hb=await hub.boundingBox(),wb=await page.locator('.pg-bar>.pg-work').boundingBox();expect(hb.height).toBeGreaterThanOrEqual(44);expect(hb.width).toBeGreaterThanOrEqual(90);expect(Math.abs((hb.y+hb.height/2)-(wb.y+wb.height/2))).toBeLessThanOrEqual(2);
   if(viewport.width<1000)await expect(page.getByRole('button',{name:'Emotes',exact:true})).toBeHidden();
   await page.screenshot({path:'test-results/hub-entry-'+viewport.width+'.png',fullPage:true});await hub.click();
   await expect(page.locator('.pg-panelhead')).toContainText('Office hub');
