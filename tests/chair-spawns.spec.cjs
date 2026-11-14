@@ -23,7 +23,8 @@ for(const mode of ['desktop','mobile'])test(mode+': distant good chair renders a
  const far=await chair.boundingBox();if(mode==='desktop'&&far&&far.x>0&&far.x+far.width<1440){await page.mouse.click(far.x+far.width/2,far.y+far.height/2);expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);}
  await walk('left',point.x+(mode==='desktop'?100:-230));await walk('top',point.y+60);
  if(mode==='mobile'){
-  await chair.tap();expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);
+  // The chair deliberately bobs forever; tap its observed bounds instead of waiting for animation stability.
+  const farTouch=await chair.boundingBox();await page.touchscreen.tap(farTouch.x+farTouch.width/2,farTouch.y+farTouch.height/2);expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);
   await expect.poll(async()=>actor.evaluate((el,p)=>Math.hypot(parseFloat(el.style.left)-(p.x+23),parseFloat(el.style.top)-(p.y+27)),point),{timeout:15000}).toBeLessThan(100);
   expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);
  }
