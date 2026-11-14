@@ -66,13 +66,15 @@ BEGIN
  IF (SELECT heat FROM public.players WHERE id=a)<>3 OR (SELECT heat FROM public.players WHERE id=b)<>2 THEN RAISE EXCEPTION 'blame reflection erased returned heat or harmed shield owner';END IF;
 
  -- Reflected theft reserves the attack cost and transfers only the actual balance.
+ -- float8 quote arithmetic can leave sub-ulp residue after reserving price + 17;
+ -- use the same tight absolute tolerance as the balance/conservation assertions.
  UPDATE office_private.shields SET armed=true WHERE actor=b AND week=w;
  UPDATE public.players SET pp=1e6,last_deed=null WHERE id=a;
  SELECT * INTO p FROM public.players WHERE id=a;price:=public.deed_price(p,'credit');
  UPDATE public.players SET pp=price+17 WHERE id=a;
  SELECT pp INTO before_b FROM public.players WHERE id=b;total:=price+17+before_b;
  r:=public.office_deed(b,'credit',gen_random_uuid());
- IF abs((SELECT pp FROM public.players WHERE id=a))>1e-6 OR abs((SELECT pp FROM public.players WHERE id=b)-before_b-17)>1e-6 OR (r->>'amount')::float8<>17 THEN RAISE EXCEPTION 'reflected theft minted funds or spent reserved attack price';END IF;
+ IF abs((SELECT pp FROM public.players WHERE id=a))>1e-6 OR abs((SELECT pp FROM public.players WHERE id=b)-before_b-17)>1e-6 OR abs((r->>'amount')::float8-17)>1e-6 THEN RAISE EXCEPTION 'reflected theft minted funds or spent reserved attack price';END IF;
  IF abs((SELECT sum(pp) FROM public.players WHERE id IN(a,b))-(total-price))>1e-6 THEN RAISE EXCEPTION 'reflected money not conserved';END IF;
 
  -- Ordinary theft also has to transfer actual debit, including balances below 20.

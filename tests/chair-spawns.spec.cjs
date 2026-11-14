@@ -15,21 +15,28 @@ for(const mode of ['desktop','mobile'])test(mode+': distant good chair renders a
   p.grabs=(p.grabs||0)+1;p.frenzy_until=new Date(window*420000+78000).toISOString();state.chair={window,by:p.name,mine:true};
  }});
  await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});
- const chair=page.getByRole('button',{name:'Grab the good chair',exact:true}),actor=page.locator('.pg-me:not(.pg-wes)');
+ const chair=page.locator('button.pg-chair'),actor=page.locator('.pg-me:not(.pg-wes)');
  expect(await chair.evaluate(el=>({x:parseFloat(el.style.left),y:parseFloat(el.style.top)}))).toEqual({x:point.x,y:point.y});
  async function walk(axis,target){const initial=await actor.evaluate((el,k)=>parseFloat(el.style[k]),axis);if(Math.abs(initial-target)<20)return;const key=axis==='left'?(initial<target?'ArrowRight':'ArrowLeft'):(initial<target?'ArrowDown':'ArrowUp');
   try{await page.keyboard.down(key);await expect.poll(()=>actor.evaluate((el,k)=>parseFloat(el.style[k]),axis),{timeout:20000,intervals:[50]})[initial<target?'toBeGreaterThan':'toBeLessThan'](target);}finally{await page.keyboard.up(key);}}
  // A far click routes toward the chair without sending an RPC.
- const far=await chair.boundingBox();if(far&&far.x>0&&far.x+far.width<1440){await page.mouse.click(far.x+far.width/2,far.y+far.height/2);expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);}
- await walk('left',point.x+(mode==='desktop'?100:-60));await walk('top',point.y+60);
+ const far=await chair.boundingBox();if(mode==='desktop'&&far&&far.x>0&&far.x+far.width<1440){await page.mouse.click(far.x+far.width/2,far.y+far.height/2);expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);}
+ await walk('left',point.x+(mode==='desktop'?100:-230));await walk('top',point.y+60);
+ if(mode==='mobile'){
+  // The chair deliberately bobs forever; tap its observed bounds instead of waiting for animation stability.
+  const farTouch=await chair.boundingBox();await page.touchscreen.tap(farTouch.x+farTouch.width/2,farTouch.y+farTouch.height/2);expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);
+  await expect.poll(async()=>actor.evaluate((el,p)=>Math.hypot(parseFloat(el.style.left)-(p.x+23),parseFloat(el.style.top)-(p.y+27)),point),{timeout:15000}).toBeLessThan(100);
+  expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);
+ }
+
  await expect(chair).toBeInViewport();await page.screenshot({path:'test-results/'+mode+'-distant-good-chair.png',fullPage:true});
  const box=await chair.boundingBox();if(mode==='mobile')await page.touchscreen.tap(box.x+box.width/2,box.y+box.height/2);else await page.mouse.click(box.x+box.width/2,box.y+box.height/2);
- if(mode==='mobile'){expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);await page.locator('.pg-prompt').getByRole('button',{name:'Grab the good chair',exact:true}).click();}
+
  await expect.poll(()=>fixture.calls.filter(c=>c.rpc==='grab_chair').length).toBe(1);await expect(page.getByText('Error: Fixture request declined',{exact:true})).toBeVisible();
  expect(fixture.player.grabs).toBeUndefined();await expect(chair).toBeVisible();
  failRpcs.length=0;
  const retry=await chair.boundingBox();if(mode==='mobile')await page.touchscreen.tap(retry.x+retry.width/2,retry.y+retry.height/2);else await page.mouse.click(retry.x+retry.width/2,retry.y+retry.height/2);
- if(mode==='mobile')await page.locator('.pg-prompt').getByRole('button',{name:'Grab the good chair',exact:true}).click();
+
  await expect.poll(()=>fixture.player.grabs).toBe(1);await expect(chair).toHaveCount(0);await expect(page.locator('.pg-jam.done')).toContainText('You got the good chair.');
  expect(fixture.player.pp).toBe(500000);expect(fixture.player.equity).toBe(2);expect(fixture.player.owned.intern).toBe(2);expect(errors).toEqual([]);
  await context.close();
