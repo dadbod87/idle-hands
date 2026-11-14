@@ -3959,7 +3959,7 @@ function OfficeFloor() {
   const [err, setErr] = useState(null);
 
   const posRef = useRef({ x: 1500, y: 860 });
-  const goRef = useRef(null);
+  const goRef = useRef(null), routeEpoch = useRef(0);
   const keysRef = useRef({});
   const roomRef = useRef(null);
   const stageRef = useRef(null);
@@ -4446,8 +4446,8 @@ function OfficeFloor() {
             if (g.then) {
               const id = g.then;
               if(id.startsWith("scene:"))scenePerformRef.current?.(id.slice(6));
-              else if (id === "desk") setTimeout(() => setPanel("shop"), 40);
-              else setTimeout(() => openFixture(FIXTURES.find((f) => f.id === id)), 40);
+              else if (id === "desk") setTimeout(() => {if(g.epoch===routeEpoch.current)setPanel("shop");}, 40);
+              else setTimeout(() => {if(g.epoch===routeEpoch.current)openFixture(FIXTURES.find((f) => f.id === id));}, 40);
             }
           }
         } else {
@@ -4840,7 +4840,7 @@ function OfficeFloor() {
     if (to && to !== from) path.push(outside(to), inside(to));
 
     path.push({ x: tx, y: ty });
-    goRef.current = { path, then };
+    goRef.current = { path, then, epoch: ++routeEpoch.current };
   };
 
   const walkClick = (e) => {
@@ -5303,7 +5303,7 @@ function OfficeFloor() {
           {!myOffice ? <>Finding your desk <em>Reading the office floor…</em></> : dougCall ? <>Doug is on the phone <em>{Math.ceil(Math.max(0,dougCall.until-Date.now())/1000)}s</em></> : atDesk ? <>Do actual work <em>+{fmt(clickPow)} BW</em></>
                   : <>Go to your desk <em>work happens there</em></>}
         </button>
-        <button className="pg-btn pg-hub-button" aria-label="Office hub" title="Projects, player profiles, toolkit, collection, boutique and records" onClick={()=>{setMoreOpen(false);setHubPlayer(null);setHubOrigin(null);setPanel("officeweek");}}><b>Office hub</b><small>Projects · Tools</small></button>
+        <button className="pg-btn pg-hub-button" aria-label="Office hub" title="Projects, player profiles, toolkit, collection, boutique and records" onClick={()=>{routeEpoch.current++;goRef.current=null;keysRef.current={};setWorldIntent(null);worldActivation.current=null;setMoreOpen(false);setHubPlayer(null);setHubOrigin(null);setPanel("officeweek");}}><b>Office hub</b><small>Projects · Tools</small></button>
         <div className={"pg-more"+(moreOpen?" open":"")}>
           <button className="pg-btn pg-more-toggle" aria-expanded={moreOpen} aria-controls="office-more-actions" onClick={()=>setMoreOpen(v=>!v)}><span aria-hidden="true">•••</span>More</button>
           <div id="office-more-actions" className="pg-more-content">
