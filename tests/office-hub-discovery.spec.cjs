@@ -70,6 +70,7 @@ for(const viewport of [{width:393,height:851},{width:390,height:640},{width:844,
    await page.getByRole('button',{name:'Office directory',exact:true}).click();const dialog=page.getByRole('dialog');await expect(dialog).toBeVisible();
    const body=page.locator('.pg-panelbody');await body.evaluate(el=>el.scrollTop=el.scrollHeight);expect(await body.evaluate(el=>el.scrollTop)).toBeGreaterThan(0);
    await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);expect((await fits()).y).toBe(0);
+   await openOwnDesk(page);await page.locator('.pg-panel .pg-x').click();await summary.focus();await page.keyboard.press('Enter');await expect(bulletins).toHaveAttribute('open','');await expect(page.getByRole('dialog')).toHaveCount(0);await page.keyboard.press('Enter');await expect(bulletins).not.toHaveAttribute('open','');
   }else{await expect(bulletins).toHaveAttribute('open','');await expect(summary).toBeHidden();await expect(page.locator('.pg-marg')).toBeVisible();await expect(page.locator('.pg-event')).toBeVisible();}
   expect(f.player.pp).toBe(500000);await ctx.close();
  });

@@ -4493,7 +4493,7 @@ function OfficeFloor() {
     const dn = (e) => {
       if (typing(e) || e.target?.closest?.('[role="dialog"]') || e.metaKey || e.ctrlKey || e.altKey) return;
       if (map[e.key]) { keysRef.current[map[e.key]] = true; e.preventDefault(); }
-      if (e.key === "Enter" && near && !panel && !e.target?.closest?.("button,a,[role=button]")) openFixture(near);
+      if (e.key === "Enter" && near && !panel && !e.target?.closest?.("button,a,summary,[role=button]")) openFixture(near);
       if (e.key === "Escape") setPanel(null);
     };
     const up = (e) => { if (map[e.key]) keysRef.current[map[e.key]] = false; };
