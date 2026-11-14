@@ -1712,7 +1712,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  html.pg-playing,html.pg-playing body{height:100%;overflow:hidden;overscroll-behavior:none}
  .pg-root.pg-play-shell{position:fixed;inset:0;width:100%;height:100%;height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top,4px) env(safe-area-inset-right,4px) env(safe-area-inset-bottom,4px) env(safe-area-inset-left,4px);overflow:hidden}
  .pg-play-shell>*{flex-shrink:0}
- .pg-play-shell>.pg-stage{flex:1 1 0;min-height:0;height:auto!important}
+ .pg-play-shell>.pg-stage{flex:1 1 0;min-height:0;height:auto!important;overflow:clip}
  .pg-bulletins{border:2px solid var(--ink);border-top:0;background:var(--paper)}
  .pg-bulletins>summary{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 10px;cursor:pointer;font:700 11px var(--mono);list-style:none}
  .pg-bulletins>summary::-webkit-details-marker{display:none}

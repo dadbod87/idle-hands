@@ -11,7 +11,7 @@ for(const viewport of [{width:390,height:640},{width:393,height:851},{width:844,
  await page.waitForTimeout(350);
  await page.evaluate(()=>{
   window.walkSamples=[];window.walkSampling=true;
-  const sample=()=>{if(!window.walkSampling)return;const floor=document.querySelector('.pg-stage').getBoundingClientRect(),bar=document.querySelector('.pg-bar').getBoundingClientRect(),room=document.querySelector('.pg-room'),matrix=new DOMMatrix(getComputedStyle(room).transform),prompt=document.querySelector('.pg-prompt');window.walkSamples.push({height:floor.height,top:floor.top,barTop:bar.top,barHeight:bar.height,scale:matrix.a,prompt:prompt&&getComputedStyle(prompt).display!=='none'?prompt.textContent.trim():''});requestAnimationFrame(sample);};sample();
+  const sample=()=>{if(!window.walkSampling)return;const floor=document.querySelector('.pg-stage').getBoundingClientRect(),bar=document.querySelector('.pg-bar').getBoundingClientRect(),room=document.querySelector('.pg-room'),matrix=new DOMMatrix(getComputedStyle(room).transform),prompt=document.querySelector('.pg-prompt');window.walkSamples.push({height:floor.height,top:floor.top,barTop:bar.top,barHeight:bar.height,scale:matrix.a,scrollTop:document.querySelector(".pg-stage").scrollTop,scrollLeft:document.querySelector(".pg-stage").scrollLeft,prompt:prompt&&getComputedStyle(prompt).display!=='none'?prompt.textContent.trim():''});requestAnimationFrame(sample);};sample();
  });
  // Real touch taps on empty floor walk away from the cabinet across its reach boundary.
  for(let i=0;i<5;i++){
@@ -28,7 +28,7 @@ for(const viewport of [{width:390,height:640},{width:393,height:851},{width:844,
  const samples=await page.evaluate(()=>{window.walkSampling=false;return window.walkSamples;});
  expect(samples.length).toBeGreaterThan(50);
  for(const key of ['height','top','barTop','barHeight','scale']){const values=samples.map(x=>x[key]);expect(Math.max(...values)-Math.min(...values),key+' changed while walking').toBeLessThan(key==='scale'?0.00001:1);}
- expect(samples.some(x=>x.prompt==='')).toBe(true);expect(samples.some(x=>x.prompt.includes('HR Cabinet'))).toBe(true);
+ expect(samples.every(x=>x.scrollTop===0&&x.scrollLeft===0)).toBe(true);expect(samples.some(x=>x.prompt==='')).toBe(true);expect(samples.some(x=>x.prompt.includes('HR Cabinet'))).toBe(true);
  await expect(page.getByRole('button',{name:'Office hub',exact:true})).toBeVisible();
  const geometry=await page.evaluate(()=>{const p=document.querySelector('.pg-prompt').getBoundingClientRect(),floor=document.querySelector('.pg-stage').getBoundingClientRect(),rail=document.querySelector('.pg-feedback-rail').getBoundingClientRect();return {p:p.toJSON(),floor:floor.toJSON(),rail:rail.toJSON(),width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight};});
  expect(geometry.p.top).toBeGreaterThanOrEqual(geometry.floor.top);expect(geometry.p.bottom).toBeLessThanOrEqual(geometry.floor.bottom);expect(geometry.p.bottom).toBeLessThanOrEqual(geometry.rail.top);expect(geometry.p.height).toBe(48);expect(geometry.width).toBeLessThanOrEqual(viewport.width);expect(geometry.height).toBeLessThanOrEqual(viewport.height);
