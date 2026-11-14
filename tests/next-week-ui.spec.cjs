@@ -33,6 +33,7 @@ for(const viewport of [{width:390,height:640},{width:390,height:844},{width:844,
  const ctx=await browser.newContext({viewport,hasTouch:true,reducedMotion:'reduce'}),page=await ctx.newPage();const f=await installGameFixture(page);
  await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
  await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:/HR Cabinet/}).click();await expect(page.locator('.pg-panel')).toBeVisible({timeout:30000});await page.locator('.pg-panel .pg-x').click();
+ if(viewport.width===844)await expect.poll(()=>page.locator('[data-fixture="hr"]').evaluate(el=>{const r=el.getBoundingClientRect(),floor=document.querySelector('.pg-stage').getBoundingClientRect();return r.top+r.height/2-floor.top;})).toBeGreaterThanOrEqual(20);
  const before=f.calls.filter(c=>['do_deed','buy_item','grab_chair'].includes(c.rpc)).length;
  for(let n=0;n<20;n++){await page.locator('[data-fixture="hr"]').tap();await expect(page.locator('.pg-panel')).toHaveCount(0);}
  expect(f.calls.filter(c=>['do_deed','buy_item','grab_chair'].includes(c.rpc))).toHaveLength(before);

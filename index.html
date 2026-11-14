@@ -4768,6 +4768,16 @@ function OfficeFloor() {
     x: ROOM.w <= view.w ? 0 : clamp(pos.x - view.w / 2, 0, ROOM.w - view.w),
     y: ROOM.h <= view.h ? 0 : clamp(pos.y - view.h / 2, 0, ROOM.h - view.h),
   };
+  // Contextual controls also consume short-screen height. Frame the nearby target
+  // and the actor together, rather than hiding wall furniture above the floor.
+  if(compactFloor){
+    const focusY=worldIntent?.visualY??(near?near.y+near.h/2:null);
+    if(Number.isFinite(focusY)){
+      const low=Math.max(0,pos.y+40-view.h,focusY+24/zoom-view.h);
+      const high=Math.min(ROOM.h-view.h,pos.y-90,focusY-24/zoom);
+      if(low<=high)cam.y=clamp(cam.y,low,high);
+    }
+  }
   if(propScene&&!compactFloor)cam.y=propCameraY(cam.y,propScene,pos,view,propBubbleHeight,ROOM.h);
   const inspectedProp=panel?.startsWith("prop:")?propSceneTarget(panel.slice(5)):null;
   const jamClaim = office?.printer || null;
@@ -4849,7 +4859,7 @@ function OfficeFloor() {
     else if(el?.classList.contains('pg-chair')&&chair){point={x:chair.x,y:chair.y+45};label='Grab the good chair';activate=grabChair;directReach={x:chair.x+23,y:chair.y+27};}
     else if(el?.classList.contains('pg-office-tv')){const r=el.getBoundingClientRect(),stageBox=stageRef.current.getBoundingClientRect();point={x:(r.left+r.width/2-stageBox.left)/zoom+cam.x,y:(r.bottom-stageBox.top)/zoom+cam.y+40};label='Change TV channel';activate=()=>el.click();}
     if(directReach&&dist(posRef.current,directReach)<=REACH){goRef.current=null;setWorldIntent(null);worldActivation.current=null;activate();return;}
-    if(point){routeTo(point.x,point.y);setWorldIntent({...point,label});worldActivation.current=activate;}
+    if(point){routeTo(point.x,point.y);setWorldIntent({...point,label,visualY:fx?fx.y+fx.h/2:prop?prop.y+prop.h/2:point.y-40});worldActivation.current=activate;}
     else{setWorldIntent(null);worldActivation.current=null;walkClick(e);}
   };
   const releaseNearbyTap=e=>{
