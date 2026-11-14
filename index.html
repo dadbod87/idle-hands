@@ -4714,10 +4714,11 @@ function OfficeFloor() {
   };
   // On phones, a deliberate nearby desk/chair tap acts directly. Distant taps
   // still walk without queuing an action; drags never activate furniture.
-  const captureWorldTap=e=>{
+  const captureWorldTap=(e,pointerRelease=false)=>{
     const pointerType=e.nativeEvent.pointerType||touchGesture.current?.type;
-    if(e.detail===0||pointerType!=="touch")return;
+    if((!pointerRelease&&e.detail===0)||pointerType!=="touch")return;
     e.preventDefault();e.stopPropagation();
+    if(!pointerRelease&&touchGesture.current?.handled)return;
     if(touchGesture.current?.dragged){goRef.current=null;setWorldIntent(null);worldActivation.current=null;return;}
     const el=e.target.closest('[data-fixture],.pg-officedesk,[data-scenery],.pg-chair,.pg-office-tv');
     const fx=el?.dataset.fixture&&FIXTURES.find(f=>f.id===el.dataset.fixture),prop=el?.dataset.scenery&&SCENERY.find(p=>p.id===el.dataset.scenery);
@@ -4730,6 +4731,13 @@ function OfficeFloor() {
     if(directReach&&dist(posRef.current,directReach)<=REACH){goRef.current=null;setWorldIntent(null);worldActivation.current=null;activate();return;}
     if(point){routeTo(point.x,point.y);setWorldIntent({...point,label});worldActivation.current=activate;}
     else{setWorldIntent(null);worldActivation.current=null;walkClick(e);}
+  };
+  const releaseNearbyTap=e=>{
+    const gesture=touchGesture.current;
+    if(e.pointerType!=="touch"||gesture?.id!==e.pointerId||gesture.dragged)return;
+    if(!e.target.closest('.pg-officedesk.mine,.pg-chair'))return;
+    gesture.handled=true; // Ignore the compatibility click, if the browser sends one.
+    captureWorldTap(e,true);
   };
   const openFixture = (f) => {
     if (!f) return;
@@ -4958,6 +4966,7 @@ function OfficeFloor() {
              style={{ width: ROOM.w, height: ROOM.h, transformOrigin: "0 0",
                       transform: `scale(${zoom}) translate(${-cam.x}px, ${-cam.y}px)` }}
              onPointerDownCapture={e=>{if(e.isPrimary)touchGesture.current={id:e.pointerId,type:e.pointerType,x:e.clientX,y:e.clientY,dragged:false};else if(touchGesture.current)touchGesture.current.dragged=true;}}
+             onPointerUpCapture={releaseNearbyTap}
              onPointerMoveCapture={e=>{const g=touchGesture.current;if(g&&g.id===e.pointerId&&g.type==='touch'&&Math.hypot(e.clientX-g.x,e.clientY-g.y)>10){g.dragged=true;goRef.current=null;setWorldIntent(null);worldActivation.current=null;}}}
              onPointerCancelCapture={e=>{if(touchGesture.current?.id===e.pointerId){goRef.current=null;setWorldIntent(null);worldActivation.current=null;touchGesture.current.dragged=true;}}}
              onClickCapture={captureWorldTap} onClick={walkClick}>
