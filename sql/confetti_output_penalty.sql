@@ -27,7 +27,7 @@ BEGIN
  ON CONFLICT(source_deed) DO UPDATE SET hush=office_private.action_history.hush OR excluded.hush;
  IF TG_OP='INSERT' AND (c IN('help','playful') OR (NEW.kind='confetti' AND c='sabotage')) THEN PERFORM office_private.project_credit(NEW.actor,CASE WHEN c='help' THEN 'care' ELSE 'playful' END); END IF;
  RETURN NEW;
-END $function$
+END $function$;
 
 
 CREATE OR REPLACE FUNCTION public.office_week_status()
@@ -62,7 +62,7 @@ BEGIN
  'reward_weeks',coalesce((SELECT jsonb_agg(jsonb_build_object('week',r.week,'mine',r.mine,'categories',(SELECT to_jsonb(pc.categories) FROM office_private.projects pc WHERE pc.week=r.week),'completed',EXISTS(SELECT 1 FROM office_private.project_completions pc WHERE pc.week=r.week)) ORDER BY r.week DESC) FROM (SELECT s.week,jsonb_agg(s.category ORDER BY s.category) mine FROM office_private.project_stamps s WHERE s.actor=u GROUP BY s.week) r),'[]'::jsonb),
  'completed_weeks',coalesce((SELECT jsonb_agg(pc.week ORDER BY pc.week DESC) FROM office_private.project_completions pc WHERE EXISTS(SELECT 1 FROM office_private.project_stamps s WHERE s.week=pc.week AND s.actor=u)),'[]'::jsonb));
  RETURN result;
-END $function$
+END $function$;
 
 
 CREATE OR REPLACE FUNCTION public.office_interact(p_target uuid,p_action text,p_request uuid) RETURNS jsonb
