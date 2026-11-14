@@ -80,7 +80,7 @@ test('next week reliability: tool saves recover after failure and refresh shows 
  await openRecords(page);await page.getByRole('button',{name:'Toolkit',exact:true}).click();
  const slot=page.getByLabel('Change tool in slot 1',{exact:true});
  await slot.selectOption('filter');await expect(page.getByRole('alert')).toContainText('Tool save not confirmed');
- await expect(slot).toHaveValue('rescue');await slot.selectOption('filter');await expect(slot).toHaveValue('filter');
+ await expect(slot).toHaveValue('rescue');await expect(slot).toBeDisabled();await page.getByRole('button',{name:'Retry records',exact:true}).click();await expect(slot).toBeEnabled();await slot.selectOption('filter');await expect(slot).toHaveValue('filter');
  expect(state.toolkit.charges.filter).toBe(2);
  await page.getByRole('button',{name:'Remove Spam Filter',exact:true}).click();await expect(slot).toHaveValue('confetti');
  await page.getByRole('button',{name:'Remove Confetti Cartridge',exact:true}).click();await expect(slot).toHaveValue('');

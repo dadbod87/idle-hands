@@ -14,7 +14,7 @@ test('invite service failure keeps digits and retries instead of blaming the cod
 });
 for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844,height:390}])test('restructure confirmation '+viewport.width+' cancels safely and retains focus',async({browser})=>{
  const ctx=await browser.newContext({viewport,hasTouch:viewport.width<1000,reducedMotion:'reduce'}),page=await ctx.newPage();
- const f=await installGameFixture(page);f.player.cycle=1e15;
+ const f=await installGameFixture(page,{handleRpc:async name=>name==='restructure'?{status:503,body:{message:'HR connection unavailable'}}:undefined});f.player.cycle=1e15;
  await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();await openOwnDesk(page);
  await page.getByRole('button',{name:'Seniority',exact:true}).click();
  const action=page.getByRole('button',{name:'Restructure the department',exact:true});await action.click();
@@ -22,5 +22,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  await expect(dialog).toBeVisible();await expect(dialog).toContainText('Lifetime progress and existing Seniority survive');
  await page.screenshot({path:'test-results/ux-confirm-'+viewport.width+'.png'});
  await dialog.getByRole('button',{name:'Cancel · keep my department',exact:true}).click();await expect(dialog).toHaveCount(0);
- await expect(action).toBeFocused();expect(f.calls.some(c=>c.rpc==='restructure')).toBe(false);await ctx.close();
+ await expect(action).toBeFocused();expect(f.calls.some(c=>c.rpc==='restructure')).toBe(false);
+ await action.click();await dialog.getByRole('button',{name:'Confirm restructure',exact:true}).click();await expect(dialog.getByRole('alert')).toContainText('HR connection unavailable');
+ expect(f.player.pp).toBe(500000);expect(f.calls.filter(c=>c.rpc==='restructure')).toHaveLength(1);await dialog.getByRole('button',{name:'Cancel · keep my department',exact:true}).click();await expect(action).toBeFocused();await ctx.close();
 });
