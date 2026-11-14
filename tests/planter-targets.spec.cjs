@@ -5,6 +5,7 @@ for(const [mode,viewport] of [['desktop',{width:1440,height:900}],['mobile',{wid
  test(mode+': each planter keeps its own route, watering effect and joke rotation',async({browser})=>{
   test.setTimeout(150000);const context=await browser.newContext({viewport,reducedMotion:'reduce',isMobile:mode!=='desktop',hasTouch:mode!=='desktop'}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
   const f=await installGameFixture(page),before=JSON.stringify({pp:f.player.pp,equity:f.player.equity,owned:f.player.owned,kit:f.player.kit,look:f.player.look});
+  await page.clock.setFixedTime(new Date('2026-11-14T16:10:00Z'));
   await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
   const actor=page.locator('.pg-me:not(.pg-wes)'),caption=page.getByTestId('prop-performance');
   async function visitDave(){await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:"Walk to Dave's Office",exact:true}).click();await expect(page.locator('.pg-panelhead')).toContainText('Dave',{timeout:25000});await page.locator('.pg-panel .pg-x').click();}
@@ -13,6 +14,7 @@ for(const [mode,viewport] of [['desktop',{width:1440,height:900}],['mobile',{wid
   async function checkTarget(id,x,y){
    const effect=page.locator('.effect-plant');await expect(effect).toHaveAttribute('data-scenery-target',id);await expect(page.locator('.pg-body.me')).toHaveClass(/em-water/);await expect(page.getByRole('dialog')).toHaveCount(0);
    const point=await actor.evaluate(el=>({x:parseFloat(el.style.left),y:parseFloat(el.style.top)}));expect(Math.abs(point.x-x)).toBeLessThan(20);expect(Math.abs(point.y-y)).toBeLessThan(20);
+   const frame=await page.evaluate(()=>{const stage=document.querySelector('.pg-stage'),bubble=document.querySelector('[data-testid=prop-bubble]');return {scrollTop:stage.scrollTop,scrollLeft:stage.scrollLeft,stage:stage.getBoundingClientRect().toJSON(),bubble:bubble.getBoundingClientRect().toJSON(),room:document.querySelector('.pg-room').style.transform};});console.log('PLANTER_FRAME',JSON.stringify({mode,id,...frame}));expect(frame.scrollTop).toBe(0);expect(frame.scrollLeft).toBe(0);
    const bubble=page.getByTestId('prop-bubble');await expect(bubble).toHaveAttribute('data-scenery-target',id);
    if(mode==='landscape')await expect(bubble).toBeHidden();else {await expect(bubble).toBeVisible();const b=await bubble.boundingBox(),p=await page.locator('[data-scenery="'+id+'"]').boundingBox(),a=await page.locator('.pg-body.me').boundingBox(),stage=await page.locator('.pg-stage').boundingBox();expect(b.y+b.height+4).toBeLessThanOrEqual(p.y);expect(b.y+b.height+4).toBeLessThanOrEqual(a.y);expect(b.y).toBeGreaterThanOrEqual(stage.y);expect(b.x).toBeGreaterThanOrEqual(stage.x);expect(b.x+b.width).toBeLessThanOrEqual(stage.x+stage.width);}
    await expect(caption).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
