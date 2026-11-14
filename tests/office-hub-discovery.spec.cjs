@@ -6,6 +6,8 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  test('earned decor '+viewport.width+': real nameplate, wall mount, hidden items and unchanged progress',async({browser})=>{
   test.setTimeout(150000);
   const ctx=await browser.newContext({viewport,hasTouch:viewport.width<1000,reducedMotion:'reduce'}),page=await ctx.newPage(),f=await installGameFixture(page);
+  // Keep art-size assertions in a quiet HUD; crowded movement has a dedicated fixed-meeting test.
+  await page.clock.setFixedTime(new Date('2026-11-14T16:10:00Z'));
   f.player.office_collectibles=['nameplate','corkboard','lamp'];f.player.office_display=[...f.player.office_collectibles];
   await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();await openOwnDesk(page);await page.locator('.pg-panel .pg-x').click();
   const desk=page.locator('.pg-officedesk.mine'),name=desk.locator('[data-desk-nameplate]'),board=page.locator('[data-office-corkboard]');

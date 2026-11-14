@@ -5,6 +5,7 @@ for(const [mode,viewport] of [['desktop',{width:1440,height:900}],['mobile',{wid
  test(mode+': each planter keeps its own route, watering effect and joke rotation',async({browser})=>{
   test.setTimeout(150000);const context=await browser.newContext({viewport,reducedMotion:'reduce',isMobile:mode!=='desktop',hasTouch:mode!=='desktop'}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
   const f=await installGameFixture(page),before=JSON.stringify({pp:f.player.pp,equity:f.player.equity,owned:f.player.owned,kit:f.player.kit,look:f.player.look});
+  await page.clock.setFixedTime(new Date('2026-11-14T16:10:00Z'));
   await page.goto(base);await expect(page.locator('.pg-stage')).toBeVisible();
   const actor=page.locator('.pg-me:not(.pg-wes)'),caption=page.getByTestId('prop-performance');
   async function visitDave(){await page.getByRole('button',{name:'Office directory',exact:true}).click();await page.getByRole('button',{name:"Walk to Dave's Office",exact:true}).click();await expect(page.locator('.pg-panelhead')).toContainText('Dave',{timeout:25000});await page.locator('.pg-panel .pg-x').click();}
