@@ -154,4 +154,3 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
   </>}</>}
  </div>;
 }
-

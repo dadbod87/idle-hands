@@ -8498,7 +8498,6 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
  </div>;
 }
 
-
 /* Permanent cosmetic shop and true season records, generated with the office UI. */
 const OFFICE_BOUTIQUE_ITEMS=[
  {id:'coffee_tech',name:'Emergency Coffee Technician',kind:'clothing',note:'Apron, utility belt and an oversized emergency flask.'},
@@ -8565,7 +8564,6 @@ function OfficeSeasonRecords({me,board}){
  </>}</section>;
 }
 
-
 /* Recorded race views: no extrapolated earnings, wallet disclosure or mutation RPCs. */
 const RACE_COLORS=['#385D81','#8B4638','#45643D','#775288'];
 function raceStamp(value){return new Date(value).toLocaleString('en-US',{timeZone:'America/Los_Angeles',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});}
@@ -8629,7 +8627,6 @@ function OfficeWeeklyRace({me,board}){
  </section>;
 }
 
-
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
@@ -8662,7 +8659,6 @@ function ReleaseNotes({onClose}){
   <button className="pg-btn primary" style={{minHeight:44}} onClick={onClose}>Got it · back to the office</button>
  </section></Modal>;
 }
-
 
 /* END NEXT WEEK UI */
 

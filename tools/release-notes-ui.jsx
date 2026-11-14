@@ -30,4 +30,3 @@ function ReleaseNotes({onClose}){
   <button className="pg-btn primary" style={{minHeight:44}} onClick={onClose}>Got it · back to the office</button>
  </section></Modal>;
 }
-
