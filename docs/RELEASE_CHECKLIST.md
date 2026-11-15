@@ -121,3 +121,9 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Verify actual defaults 36 contributions / 3 people / 4 Pacific dates, stretch 60 / 5 / 6. Keep personal weekly stamps, starter rewards and collection/refill rules separate.
 - [ ] Pass project-pacing-contract.sql on both installer paths: seven-player one-day spam and twelve-hour midnight crossing cannot complete; two leaders cannot replace a third contributor; future/outside-window rows do not count; exactly sixty with six dates/five people earns stretch; normal week changes preserve archived rewards without carrying progress.
 - [ ] Review daily checkboxes, contribution/people/date counters, tomorrow feedback, completed/late-contributor behavior and weekly refresh at phone/landscape/desktop. Private project clock must remain SELECT now() with no client execution; fake clocks are isolated-test-only.
+
+## Minimap navigation
+- [ ] Default-visible desktop/phone/landscape map, opt-in movement, saved hide/show and movement preferences; storage failure remains usable.
+- [ ] Verify actual map bounds under phone scaling, doorway arrival, no underlying floor click, drag/cancel suppression and keyboard center travel.
+- [ ] Confirm map travel performs no economic/action RPC, never opens desks or claims chairs, and retains build 201's stable floor.
+- [ ] Review minimap screenshots and pass all three exact-head CI jobs before publication; verify the served artifact matches the merge.

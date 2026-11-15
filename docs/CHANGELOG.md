@@ -1,3 +1,11 @@
+# Build 202 — map your next move (candidate)
+
+The requested minimap update is distinct from build 201's camera fix. The minimap now starts visible on desktop and touch devices. More offers Hide/Show minimap and Map movement on/off on every input type. Both preferences are local to this browser and survive reload; storage failure still permits session controls. Movement is opt-in, and an inactive map absorbs taps without walking on the floor beneath it.
+
+When enabled, click/tap coordinates use the actual rendered map bounds (including phone scaling), clamp to the walkable room and choose nearby floor for wall taps. Travel uses the existing doorway route, clears a previous contextual action and never auto-opens furniture, buys anything or claims the chair. Drag/cancel does not travel. Keyboard activation walks to the office center. No economy, backend, inventory or migration changes.
+
+Validation: local JSX/economy gate passed; dedicated desktop/phone/landscape walkthroughs and exact-head CI are required before publication. Physical Android and hosted Auth remain untested. Rollback is the previous frontend artifact; preferences are non-economic browser settings. Baseline live build 201 is merge a59698f82431687a47833db5227b29c36751af0e, deployed READY at 11:52 AM Pacific November 14 (PR #62, successful regression run 43632061430).
+
 # Build 201 — steady on your feet (candidate)
 
 A nearby Open prompt used to add/remove a footer row, resize the floor and recalculate phone zoom while walking. The phone prompt is now a single compact overlay anchored inside the floor, outside the room transform and footer layout. Its single-line label and fixed 48px height cannot grow the page, and it stays clear of the feedback rail. The floor uses non-scrolling clipping on phones so browser focus cannot pan its transformed room. Desktop retains its footer prompt. Passive short-floor target framing eases across the reach boundary; explicit object selection, nearby desk/chair taps, hub access and all server actions remain intact. Browser breakpoint changes move the same prompt between phone and desktop placements.

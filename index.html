@@ -128,7 +128,10 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 @keyframes pgbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 
 .pg-map{position:absolute;right:8px;top:8px;background:rgba(18,32,22,.82);
-  border:2px solid rgba(246,248,238,.5);z-index:50;pointer-events:none}
+  border:2px solid rgba(246,248,238,.5);z-index:50;pointer-events:auto}
+.pg-map-target{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:crosshair;touch-action:none;z-index:2}
+.pg-map-target:disabled{cursor:default}
+.pg-map-target:focus-visible{outline:3px solid #FFD36B;outline-offset:3px}
 .pg-mapwall{position:absolute;left:0;right:0;top:0;background:rgba(217,220,204,.35)}
 .pg-mapfx{position:absolute;background:#C9CFBE;opacity:.8}
 .pg-mapfx.boss{background:#C9B063}
@@ -3733,7 +3736,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 201 · steady on your feet";
+const BUILD = "build 202 · map your next move";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3870,7 +3873,11 @@ function OfficeFloor() {
   const [chair, setChair] = useState(null);
   const [pos, setPos] = useState({ x: 1500, y: 860 });   // middle of the hall
   const [near, setNear] = useState(null);
-  const [worldIntent,setWorldIntent]=useState(null),[emotesOpen,setEmotesOpen]=useState(false),[mapOpen,setMapOpen]=useState(false);
+  const [worldIntent,setWorldIntent]=useState(null),[emotesOpen,setEmotesOpen]=useState(false);
+  const [mapOpen,setMapOpen]=useState(()=>safeOfficeLoad("ih-minimap-visible",true)!==false);
+  const [mapMovement,setMapMovement]=useState(()=>safeOfficeLoad("ih-minimap-movement",false)===true);
+  const toggleMap=()=>setMapOpen(v=>{try{localStorage.setItem("ih-minimap-visible",JSON.stringify(!v));}catch{}return !v;});
+  const toggleMapMovement=()=>setMapMovement(v=>{try{localStorage.setItem("ih-minimap-movement",JSON.stringify(!v));}catch{}return !v;});
   const worldActivation=useRef(null),touchGesture=useRef(null),touchCompatClick=useRef(null);
   useEffect(()=>{
     const freshPointer=()=>{touchCompatClick.current=null;};
@@ -5306,7 +5313,7 @@ function OfficeFloor() {
           </div>
         </div>
         {phonePlay&&<div className={"pg-floor-prompt "+(((worldIntent?.x??(near?near.x+near.w/2:pos.x))-cam.x)*zoom<stage.w/2?"prompt-right":"prompt-left")}>{interactionPrompt}</div>}
-        {(!touchMovement||mapOpen)&&<MiniMap pos={pos} board={board} meId={me?.id} cam={cam} view={view} chair={chair} />}
+        {mapOpen&&<MiniMap pos={pos} cam={cam} view={view} chair={chair} walkEnabled={mapMovement} onWalk={point=>{keysRef.current={};routeTo(point.x,point.y);}} />}
         {worldIntent&&<div className="pg-destination" aria-hidden="true" style={{left:(worldIntent.x-cam.x)*zoom,top:(worldIntent.y-cam.y)*zoom}}>◇</div>}
         {chair && (chair.x < cam.x || chair.x > cam.x + view.w ||
                    chair.y < cam.y || chair.y > cam.y + view.h) && (
@@ -5329,7 +5336,8 @@ function OfficeFloor() {
           <div id="office-more-actions" className="pg-more-content">
 
             {touchMovement&&<button className="pg-btn pg-emotes-toggle" aria-expanded={emotesOpen} aria-controls="office-emotes" onClick={()=>{setEmotesOpen(v=>!v);setMoreOpen(false);}}>Emotes</button>}
-            {touchMovement&&<button className="pg-btn" aria-pressed={mapOpen} onClick={()=>setMapOpen(v=>!v)}>{mapOpen?'Hide minimap':'Show minimap'}</button>}
+            <button className="pg-btn" aria-pressed={mapOpen} onClick={toggleMap}>{mapOpen?'Hide minimap':'Show minimap'}</button>
+            <button className="pg-btn" aria-pressed={mapMovement} onClick={toggleMapMovement}>Map movement: {mapMovement?'on':'off'}</button>
             <button className="pg-btn" title="Office votes, bingo, assignments, the cigar lounge and commendations" onClick={()=>{setMoreOpen(false);setFunOpen(true);}}><OfficeIcon kind="paper" compact/> Office Nonsense</button>
             <button className="pg-btn" aria-label="Office field guide" onClick={openGuide}><UtilityIcon kind="help"/>Office field guide{!guideSeen&&<b className="pg-guide-new">new</b>}</button>
             <button className="pg-btn pg-sound-shortcut" onClick={()=>{setMoreOpen(false);setPanel("sound");}}><UtilityIcon kind="sound"/>Sound &amp; feel</button>
@@ -6154,11 +6162,40 @@ function Hat({ kind }) {
   );
 }
 
-function MiniMap({ pos, board, meId, cam, view, chair }) {
+// Convert the displayed map bounds, including phone CSS scaling, to walking coordinates.
+function minimapDestination(clientX,clientY,bounds) {
+  if(!(bounds.width>0&&bounds.height>0))return null;
+  const x=clamp((clientX-bounds.left)/bounds.width*ROOM.w,45,ROOM.w-45);
+  const y=clamp((clientY-bounds.top)/bounds.height*ROOM.h,WALL_H+40,ROOM.h-40);
+  if(!blocked(x,y))return {x,y};
+  // A wall tap chooses the closest nearby floor; routeTo still handles doorways.
+  for(let r=16;r<=160;r+=16)for(let a=0;a<16;a++){
+    const px=clamp(x+Math.cos(a*Math.PI/8)*r,45,ROOM.w-45),py=clamp(y+Math.sin(a*Math.PI/8)*r,WALL_H+40,ROOM.h-40);
+    if(!blocked(px,py))return {x:px,y:py};
+  }
+  return null;
+}
+function MiniMap({ pos, cam, view, chair, walkEnabled=false, onWalk }) {
+  const gesture=useRef(null);
+  const move=e=>{
+    e.stopPropagation();
+    if(!walkEnabled||gesture.current?.dragged)return;
+    const bounds=e.currentTarget.getBoundingClientRect();
+    const point=minimapDestination(e.detail===0?bounds.left+bounds.width/2:(gesture.current?.endX??e.clientX),e.detail===0?bounds.top+bounds.height/2:(gesture.current?.endY??e.clientY),bounds);
+    if(point)onWalk(point);
+  };
   const W = 148, H = Math.round((ROOM.h / ROOM.w) * W);
   const sx = W / ROOM.w, sy = H / ROOM.h;
   return (
-    <div className="pg-map" style={{ width: W, height: H }}>
+    <div className="pg-map" role="group" aria-label="Office minimap" style={{ width: W, height: H }}>
+      <button className="pg-map-target" aria-label="Choose walking destination on minimap" disabled={!walkEnabled}
+        title={walkEnabled?"Click or tap to walk. Keyboard activation walks to the office center.":"Enable Map movement in More to click or tap to walk."}
+        onPointerDown={e=>{gesture.current={id:e.pointerId,x:e.clientX,y:e.clientY,dragged:!e.isPrimary||e.button!==0};}}
+        onPointerMove={e=>{const g=gesture.current;if(g&&g.id===e.pointerId&&Math.hypot(e.clientX-g.x,e.clientY-g.y)>10)g.dragged=true;}}
+        onPointerUp={e=>{if(gesture.current?.id===e.pointerId){gesture.current.endX=e.clientX;gesture.current.endY=e.clientY;}}}
+        onPointerCancel={()=>{if(gesture.current)gesture.current.dragged=true;}}
+        onKeyDown={e=>{gesture.current=null;e.stopPropagation();}}
+        onClick={move}/>
       <div className="pg-mapwall" style={{ height: WALL_H * sy }} />
       {FIXTURES.map((f) => (
         <div key={f.id} className={"pg-mapfx" + (f.id === "owner" ? " boss" : "")}
@@ -6173,7 +6210,7 @@ function MiniMap({ pos, board, meId, cam, view, chair }) {
                                            width: view.w * sx, height: view.h * sy }} />
       {chair && <div className="pg-mapchair" style={{ left: chair.x * sx, top: chair.y * sy }} />}
       <div className="pg-mapme" style={{ left: pos.x * sx, top: pos.y * sy }} />
-      <div className="pg-maplabel">You are here</div>
+      <div className="pg-maplabel">{walkEnabled?"Click / tap to walk":"Movement off · More"}</div>
     </div>
   );
 }
@@ -8824,9 +8861,10 @@ function OfficeWeeklyRace({me,board}){
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "201",
- title: "Steady on your feet",
+ id: "202",
+ title: "Map your next move",
  changes: [
+  ["Your minimap, ready to use", "The minimap starts visible on phones and computers. In More, enable Map movement to click or tap a destination and walk there. Visibility and movement preferences are saved in this browser. Map travel never opens objects or claims the chair."],
   ["Steadier phone walking", "Nearby Open controls now float inside the floor instead of resizing it. Walking past objects no longer makes the screen shrink, grow or briefly change zoom."],
   ["Office hub, beside Work", "The large Office hub button in the bottom controls opens projects, player profiles, toolkit, collection, boutique and records directly. No player-name click or walking required. On phones, Emotes are in More and Places opens the office directory."],
   ["Your rewards belong in your office", "Displayed nameplates now show your actual name in a readable desk plate. Incident Corkboards are mounted on the cubicle wall, and other collectibles sit on the desk."],

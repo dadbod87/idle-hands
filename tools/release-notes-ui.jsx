@@ -1,9 +1,10 @@
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "201",
- title: "Steady on your feet",
+ id: "202",
+ title: "Map your next move",
  changes: [
+  ["Your minimap, ready to use", "The minimap starts visible on phones and computers. In More, enable Map movement to click or tap a destination and walk there. Visibility and movement preferences are saved in this browser. Map travel never opens objects or claims the chair."],
   ["Steadier phone walking", "Nearby Open controls now float inside the floor instead of resizing it. Walking past objects no longer makes the screen shrink, grow or briefly change zoom."],
   ["Office hub, beside Work", "The large Office hub button in the bottom controls opens projects, player profiles, toolkit, collection, boutique and records directly. No player-name click or walking required. On phones, Emotes are in More and Places opens the office directory."],
   ["Your rewards belong in your office", "Displayed nameplates now show your actual name in a readable desk plate. Incident Corkboards are mounted on the cubicle wall, and other collectibles sit on the desk."],
