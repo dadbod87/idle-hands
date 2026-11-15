@@ -703,6 +703,12 @@ body{background:#C9CFBE;color:var(--ink);font-family:var(--sans)}
 .pg-directory-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:12px}.pg-directory-stop{display:flex;gap:10px;align-items:center;padding:12px 9px;border:1.5px solid #A99D84;border-radius:6px;background:#FFFBF2;text-align:left;color:var(--ink);cursor:pointer}.pg-directory-stop>span:not(.pg-iconart){min-width:0;flex:1}.pg-directory-stop>.pg-iconart{flex:0 0 36px;width:36px;height:36px}.pg-directory-stop b{font-size:13px;display:block;margin-bottom:4px}.pg-directory-stop>span>span{display:block;font-size:11px;line-height:1.4}.pg-directory-stop small{display:block;font-size:10px;color:var(--soft);line-height:1.4;margin-top:4px}.pg-directory-stop>i{font-size:18px;font-style:normal;color:#3D624B}.pg-directory-stop:hover{background:#FFF0C4;border-color:#786D60}
 @media(max-width:540px){.pg-utility-button{width:38px!important;min-width:38px!important}.pg-directory-grid{grid-template-columns:1fr}.pg-directory-note{display:none}.pg-emotes{width:100%;justify-content:space-between}.pg-emotes .pg-emote{flex:1;max-width:52px}.pg-directory-button{font-size:12px}.pg-directory-intro h3{font-size:15px}}
 /* ---------------- weekly recap ---------------- */
+.pg-card.pg-card-wide{width:min(760px,calc(100vw - 24px));max-width:760px}
+.pg-weekly-award-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px;margin:12px 0}
+.pg-weekly-award{display:flex;flex-direction:column;gap:6px;padding:12px;border:2px solid var(--ink);border-radius:6px;background:var(--paper);min-width:0;overflow-wrap:anywhere}
+.pg-weekly-award>b{font:700 13px var(--mono);color:var(--ink)}.pg-weekly-award>small{font-size:11px;color:var(--soft)}
+.pg-weekly-award>strong{font-size:19px}.pg-weekly-award>span{font:11px var(--mono)}
+
 .pg-recap{border-top:2px solid var(--ink);margin-top:10px}
 .pg-recaprow{padding:7px 0;border-bottom:1px dotted var(--rule)}
 .pg-recaprow b{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
@@ -3736,7 +3742,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 202 · map your next move";
+const BUILD = "build 203 · return to embarrassment";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3820,6 +3826,23 @@ function OfficeFloor() {
   const [hubPlayer,setHubPlayer]=useState(null),[hubOrigin,setHubOrigin]=useState(null),[standingsTab,setStandingsTab]=useState("week");
   const [confirmRestructure,setConfirmRestructure]=useState(false),[restructureBusy,setRestructureBusy]=useState(false),[restructureError,setRestructureError]=useState("");
   const [incidents, setIncidents] = useState([]);
+  const [reflectionNotice,setReflectionNotice]=useState(null),reflectionSeen=useRef(new Set());
+  useEffect(()=>{const state=reflectionAlertState(me?.id);setReflectionNotice(state.pending?{...state.pending,player:me.id}:null);},[me?.id]);
+  const announceReflection=(result,target,request,actor=me?.id)=>{
+    if(!actor||meRef.current?.id!==actor||!(result?.reflected||result?.detail==='reflected:shield')||!request)return;
+    const state=reflectionAlertState(actor),key=actor+':'+request;
+    if(state.seen.includes(request)||reflectionSeen.current.has(key))return;
+    const pending={request,target:String(target?.name||'that coworker').slice(0,100)};
+    try{localStorage.setItem('ih_reflection_alert_'+actor,JSON.stringify({...state,pending}));}catch{}
+    setReflectionNotice({...pending,player:actor});setPanel(null);
+  };
+  const dismissReflection=()=>{
+    if(!reflectionNotice)return;
+    const {player,request}=reflectionNotice,state=reflectionAlertState(player);
+    reflectionSeen.current.add(player+':'+request);
+    try{localStorage.setItem('ih_reflection_alert_'+player,JSON.stringify({pending:null,seen:[...new Set([...state.seen,request])].slice(-40)}));}catch{}
+    setReflectionNotice(null);
+  };
   const [bootNoticesReady,setBootNoticesReady]=useState(false),[incomingNoticesReady,setIncomingNoticesReady]=useState(false);
   const [releaseNotice,setReleaseNotice]=useState({player:null,seen:true,manual:false});
   useEffect(()=>{if(me?.id)setReleaseNotice({player:me.id,seen:releaseNotesSeen(me.id),manual:false});else setReleaseNotice({player:null,seen:true,manual:false});},[me?.id]);
@@ -4710,6 +4733,7 @@ function OfficeFloor() {
     if(deedRequest.current?.key!==key)deedRequest.current={key,id:crypto.randomUUID(),target,kind};
     try {
       const result=await api.officeDeed(target.id,kind,deedRequest.current.id);
+      announceReflection(result,target,deedRequest.current.id);
       applyServer(await api.sync());
       deedRequest.current=null;
       sfx(T.good ? "kind" : "sabotage");
@@ -5359,7 +5383,14 @@ function OfficeFloor() {
 
       {showHelp && <Help player={me} onClose={() => setShowHelp(false)} rate={rate} onGuide={()=>{setShowHelp(false);openGuide();}} onUpdates={()=>{setShowHelp(false);setReleaseNotice({player:me.id,seen:releaseNotice.seen,manual:true});}} />}
 
-      {phase==='play'&&bootNoticesReady&&incomingNoticesReady&&releaseNotice.player===me?.id&&(!releaseNotice.seen||releaseNotice.manual)&&!showHelp&&!panel&&!recap&&!report&&!streakCard&&!incidents.length&&!cow&&!guideOpen&&!funOpen&&<ReleaseNotes onClose={dismissReleaseNotes}/>}
+      {phase==='play'&&bootNoticesReady&&incomingNoticesReady&&releaseNotice.player===me?.id&&(!releaseNotice.seen||releaseNotice.manual)&&!showHelp&&!panel&&!recap&&!report&&!streakCard&&!incidents.length&&!cow&&!guideOpen&&!funOpen&&!reflectionNotice&&<ReleaseNotes onClose={dismissReleaseNotes}/>}
+
+      {phase==='play'&&bootNoticesReady&&incomingNoticesReady&&reflectionNotice?.player===me?.id&&!panel&&!recap&&!report&&!streakCard&&!incidents.length&&!showHelp&&!cow&&!guideOpen&&!funOpen&&<Modal label="Return to Sender" onClose={dismissReflection}>
+        <div className="pg-stamp">Return to Sender</div><h3 className="pg-helph">You played yourself.</h3>
+        <p>Your attack on <b>{reflectionNotice.target}</b> hit Return to Sender and bounced straight back at you.</p>
+        <p className="pg-big">Nice attack, genius. You were the target.</p>
+        <button className="pg-btn primary" style={{minHeight:44}} onClick={dismissReflection}>Fine. I deserved that.</button>
+      </Modal>}
 
       {panel && (
         <Panel stablePurchases={panel==="shop"||panel==="mirror"} receipt={reaction&&!["work","filed"].includes(reaction.kind)?reaction:null} onClose={() => setPanel(null)} title={panel.startsWith("prop:")?(inspectedProp?.label||PROP_LABELS[inspectedProp?.kind]):PANEL_TITLES[panel]}>
@@ -5394,7 +5425,7 @@ function OfficeFloor() {
                   onBuy={buy} onUp={buyUp} guard={guard} flash={flash}
                   onRestructure={()=>{setRestructureError("");setConfirmRestructure(true);}} />
           )}
-          {panel === "officeweek" && <>{hubPlayer&&<button className="pg-btn" onClick={()=>{setPanel(hubOrigin||"standings");setHubPlayer(null);setHubOrigin(null);}}>{hubOrigin==="spotlight"?"Back to Employee of the Week":"Back to whiteboard"}</button>}<OfficeWeekPanel key={hubPlayer||"office-hub"} me={me} board={board} initialPlayer={hubPlayer} onPlayer={applyServer}/></>}
+          {panel === "officeweek" && <>{hubPlayer&&<button className="pg-btn" onClick={()=>{setPanel(hubOrigin||"standings");setHubPlayer(null);setHubOrigin(null);}}>{hubOrigin==="spotlight"?"Back to Employee of the Week":"Back to whiteboard"}</button>}<OfficeWeekPanel key={hubPlayer||"office-hub"} me={me} board={board} initialPlayer={hubPlayer} onPlayer={applyServer} onReflection={announceReflection}/></>}
           {panel === "sound" && <SoundPanel muted={mute} volume={volume} onMute={()=>setMute(setMuted(!mute))} onVolume={v=>setVolume(setSoundLevel(v))}/>}
           {panel === "directory" && <OfficeDirectory onGo={id=>{if(id==="officehub"){setHubPlayer(null);setHubOrigin(null);setPanel("officeweek");return;}setPanel(null);if(id==="desk"&&myOffice)routeTo(myOffice.cx,myOffice.cy+40,"desk",myOffice);else{const f=FIXTURES.find(x=>x.id===id);if(f)walkTo(f);}}}/>}
           {panel === "standings" && <Standings board={board} me={me} fund={fund} feuds={feuds} schedule={weekSchedule} onPlayer={applyServer} selectedTab={standingsTab} onTabChange={setStandingsTab} onProfile={id=>{setHubPlayer(id);setHubOrigin("standings");setPanel("officeweek");}} />}
@@ -5566,7 +5597,7 @@ function OfficeFloor() {
       )}
 
       {recap && (
-        <Modal onClose={() => { api.markRecap(recap.week_key).catch(() => {}); setRecap(null); }}>
+        <Modal wide onClose={() => { api.markRecap(recap.week_key).catch(() => {}); setRecap(null); }}>
           <Recap season={recap} />
           <button className="pg-btn" onClick={() => {
             api.markRecap(recap.week_key).catch(() => {}); setRecap(null);
@@ -6484,11 +6515,11 @@ function Panel({ title, children, onClose, receipt=null, stablePurchases=false }
     </div>
   );
 }
-function Modal({ children, onClose, label="Office notice" }) {
+function Modal({ children, onClose, label="Office notice", wide=false }) {
   const dialogRef=useDialogFocus(onClose);
   return (
     <div className="pg-modal" onClick={onClose}>
-      <div className="pg-card" ref={dialogRef} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onClick={(e) => e.stopPropagation()}><div className="pg-notice-head"><span>{label}</span><button className="pg-x" onClick={onClose} aria-label={"Close "+label}>close</button></div>{children}</div>
+      <div className={"pg-card"+(wide?" pg-card-wide":"")} ref={dialogRef} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onClick={(e) => e.stopPropagation()}><div className="pg-notice-head"><span>{label}</span><button className="pg-x" onClick={onClose} aria-label={"Close "+label}>close</button></div>{children}</div>
     </div>
   );
 }
@@ -7936,6 +7967,11 @@ function CowLevel({ data, onDone }) {
 function WesBody({ facing = 1 }) {
  return <OfficeVisitorBody visitor={{id:"wes",name:"Chance",role:"Office Wanderer",hair:"#513C2A",color:"#617750",longHair:false,facing}}/>;
 }
+function reflectionAlertState(player){
+ const raw=player?safeOfficeLoad('ih_reflection_alert_'+player,{}):{};
+ const pending=raw?.pending;
+ return {seen:Array.isArray(raw?.seen)?raw.seen.filter(x=>typeof x==='string').slice(-40):[],pending:pending&&typeof pending.request==='string'&&typeof pending.target==='string'?{request:pending.request,target:pending.target.slice(0,100)}:null};
+}
 function Recap({ season }) {
   const st = season.stats || {};
   const row = (label, text) => text ? (
@@ -7944,14 +7980,8 @@ function Recap({ season }) {
   return (
     <>
       <div className="pg-stamp">Week in review</div>
-      <h3 className="pg-helph">
-        {season.winner_name
-          ? <>Employee of the Week: {season.winner_name}</>
-          : <>Nobody earned anything. Bleak.</>}
-      </h3>
-      {season.winner_name && (
-        <p className="pg-small">{fmt(season.top)} Busywork in one week. That's a trophy, permanently.</p>
-      )}
+      <h3 className="pg-helph">The office award ceremony</h3>
+      <CompletedWeekAwards season={season}/>
       <div className="pg-recap">
         {row("Incidents logged", st.total ? `${st.total} things happened to somebody` : null)}
         {row("Biggest heist", st.heist
@@ -8610,7 +8640,7 @@ function OfficeActivityChart({rows}){
  return <svg className="pg-activity-chart" viewBox={`0 0 400 ${Math.max(40,rows.length*32)}`} role="img" aria-label="Actions given in blue and received in sage; exact counts are in the table below.">
   <title>Recorded coworker actions</title>{rows.map((r,i)=><g key={r.kind+':'+r.category}><text x="0" y={i*32+19} fontSize="11" fill="currentColor">{r.label||DEED_TEXT[r.kind]?.label||r.kind}</text><rect x="165" y={i*32+5} width={205*r.given/max} height="19" fill="#7B9CC4"/><rect x={165+205*r.given/max} y={i*32+5} width={205*r.received/max} height="19" fill="#8FA67A"/></g>)}</svg>;
 }
-function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
+function OfficeWeekPanel({me,board,onPlayer,initialPlayer,onReflection}){
  const [tab,setTab]=useState(initialPlayer?'profiles':'project'),[status,setStatus]=useState(null),[profile,setProfile]=useState(null);
  const [error,setError]=useState(''),[statusError,setStatusError]=useState(''),[statusLoading,setStatusLoading]=useState(false),[profileError,setProfileError]=useState(''),[busy,setBusy]=useState(false),[feedback,setFeedback]=useState('');
  const [selected,setSelected]=useState(initialPlayer||me.id),[period,setPeriod]=useState('week'),[peer,setPeer]=useState(''),[target,setTarget]=useState(''),[slots,setSlots]=useState([]),[rewardWeek,setRewardWeek]=useState(''),[profileRetry,setProfileRetry]=useState(0),[errorSource,setErrorSource]=useState('');
@@ -8672,7 +8702,7 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
   if(request.current?.key!==key)request.current={key,id:crypto.randomUUID(),invoke};
   const sent=request.current;return mutate(()=>sent.invoke(sent.id));
  };
- const interact=action=>act(target+':'+action,id=>api.officeInteract(target,action,id));
+ const interact=action=>act(target+':'+action,async id=>{const result=await api.officeInteract(target,action,id);onReflection?.(result,board.find(p=>p.id===target)||{name:'that coworker'},id,me.id);return result;});
  const reviewShield=async()=>{
   if(locked.current)return;
   const seq=++quoteSeq.current;setQuoteLoading(true);setQuoteError('');setQuote(null);
@@ -8729,6 +8759,33 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
  </div>;
 }
 
+function weeklyAwardGroups(book,season){
+ const saved=book?.season||season||{},standings=Array.isArray(book?.standings)?book.standings:[];
+ const leaders=standings.filter(p=>Number(p.place)===1&&Number(p.earnings)>0);
+ const busy=leaders.length?leaders.map(p=>({player:p.player,name:p.name,score:Number(p.earnings)})):saved.winner_name&&Number(saved.top)>0?[{player:saved.winner||'recorded-winner',name:saved.winner_name,score:Number(saved.top)}]:[];
+ const groups=[{id:'busywork',title:'Busywork Champion',detail:'Most Busywork earned',unit:'BW',winners:busy}];
+ for(const [id,title,detail] of [['sabotage','Office Menace','Most recorded sabotages'],['help','Human Sunshine','Friendliest coworker'],['playful','Chief Prank Officer','Most playful actions']]){
+  const rows=(Array.isArray(book?.awards)?book.awards:[]).filter(a=>a.category===id&&Number.isFinite(Number(a.actions))&&Number(a.actions)>0);
+  const high=Math.max(0,...rows.map(a=>Number(a.actions))),seen=new Set();
+  groups.push({id,title,detail,unit:'actions',winners:rows.filter(a=>Number(a.actions)===high&&!seen.has(a.player)&&seen.add(a.player)).map(a=>({player:a.player,name:a.name,score:Number(a.actions)}))});
+ }
+ return groups;
+}
+function WeeklyWinners({book,season,pending=false}){
+ const groups=weeklyAwardGroups(book,season);
+ return <section aria-label="Weekly category winners" className="pg-weekly-winners"><h4>More than one way to win the week</h4>
+ <div className="pg-weekly-award-grid">{groups.map(g=><article key={g.id} className="pg-weekly-award" aria-label={g.title}>
+ <b>{g.title}</b><small>{g.detail}</small>{g.winners.length?<><strong>{g.winners.map(p=>p.name).join(' & ')}</strong><span>{fmt(g.winners[0].score)} {g.unit}{g.winners.length>1?' · Shared title':''}</span></>:<span>{pending&&g.id!=='busywork'?'Checking the records…':!book&&g.id!=='busywork'?'Category records unavailable':'No qualifying result recorded'}</span>}
+ </article>)}</div><p className="pg-small">Ties share the title. One person can win several categories. Action titles use retained public records; hushed actions and blocked/reflected attempts are excluded. Older records may be incomplete. These are weekly recognition titles; existing trophy and payout rules still apply.</p></section>;
+}
+function CompletedWeekAwards({season}){
+ const [book,setBook]=useState(null),[error,setError]=useState(''),[retry,setRetry]=useState(0);
+ useEffect(()=>{let active=true;setBook(null);setError('');officeRead(api.officeRecordbook(season.week_key)).then(value=>{
+  if(value?.version!==1||value.selected_week!==season.week_key||!Array.isArray(value.standings)||!Array.isArray(value.awards))throw Error('Weekly award records are unavailable.');
+  if(active)setBook(value);
+ }).catch(e=>{if(active)setError(e.message||'Weekly award records are unavailable.');});return()=>{active=false;};},[season.week_key,retry]);
+ return <><WeeklyWinners book={book} season={season} pending={!book&&!error}/>{error&&<p role="alert">{error}<button className="pg-btn" onClick={()=>setRetry(n=>n+1)}>Retry weekly awards</button></p>}</>;
+}
 /* Permanent cosmetic shop and true season records, generated with the office UI. */
 const OFFICE_BOUTIQUE_ITEMS=[
  {id:'coffee_tech',name:'Emergency Coffee Technician',kind:'clothing',note:'Apron, utility belt and an oversized emergency flask.'},
@@ -8789,8 +8846,8 @@ function OfficeSeasonRecords({me,board}){
  return <section aria-label="Season record book"><h3>The office record book</h3><p>Completed competitions, final standings and personal bests. Friday resets the competition; these records remain.</p>{error&&<div role="alert">{error}<button className="pg-btn" onClick={()=>setRetry(x=>x+1)}>Retry season records</button></div>}{!book&&!error&&<p role="status">Finding the old score sheets…</p>}{book&&<>
  <div className="pg-next-selects"><label>Completed week<select aria-label="Completed week" value={week||book.selected_week||''} onChange={e=>setWeek(e.target.value)}>{book.seasons.length?book.seasons.map(s=><option key={s.week} value={s.week}>{s.week}{s.coverage==='winner_only'?' · winner only':''}</option>):<option value="">No completed records yet</option>}</select></label><label>Personal best for<select aria-label="Personal best for" value={player} onChange={e=>setPlayer(e.target.value)}>{choices.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label></div>
  <aside className="pg-next-goal"><h4>Best recorded weekly earnings</h4>{book.personal_best?<p>{fmt(book.personal_best.earnings)} BW · {book.personal_best.week} · place {book.personal_best.place}</p>:<p>No complete standings recorded for this player yet. Older winner-only summaries cannot supply a personal best.</p>}</aside>
- {!book.season?<p>The first completed season will appear after normal rollover.</p>:<><h4>{book.season.week} · {book.season.winner_name||'No winner recorded'}</h4><p>Closed {new Date(book.season.closed_at).toLocaleString(undefined,{timeZone:'America/Los_Angeles'})} Pacific · Winning earnings: {fmt(book.season.top)} BW</p>{book.season.coverage==='standings'?<table><caption>Final game-recorded standings · tied earnings share a place</caption><thead><tr><th>Place</th><th>Employee</th><th>Weekly earnings</th></tr></thead><tbody>{book.standings.map(p=><tr key={p.player}><td>{p.place}</td><th>{p.name}</th><td>{fmt(p.earnings)} BW</td></tr>)}</tbody></table>:<p>Winner-only historical summary. Individual standings were not preserved for this week.</p>}
- {book.awards?.length>0&&<><h4>From the retained public action history</h4><ul>{book.awards.map(a=><li key={a.category+a.player}>{({help:'Helping hand',playful:'Office stylist and prankster',sabotage:'Office menace'})[a.category]}: {a.name} · {a.actions} actions</li>)}</ul></>}</>}
+ {!book.season?<p>The first completed season will appear after normal rollover.</p>:<><h4>{book.season.week} · Weekly winners</h4><p>Closed {new Date(book.season.closed_at).toLocaleString(undefined,{timeZone:'America/Los_Angeles'})} Pacific · Top weekly earnings: {fmt(book.season.top)} BW</p><WeeklyWinners book={book}/>{book.season.coverage==='standings'?<table><caption>Final game-recorded standings · tied earnings share a place</caption><thead><tr><th>Place</th><th>Employee</th><th>Weekly earnings</th></tr></thead><tbody>{book.standings.map(p=><tr key={p.player}><td>{p.place}</td><th>{p.name}</th><td>{fmt(p.earnings)} BW</td></tr>)}</tbody></table>:<p>Winner-only historical summary. Individual standings were not preserved for this week.</p>}
+ </>}
  <p className="pg-small">{book.note}</p>
  </>}</section>;
 }
@@ -8861,9 +8918,11 @@ function OfficeWeeklyRace({me,board}){
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "202",
- title: "Map your next move",
+ id: "203",
+ title: "Return to embarrassment",
  changes: [
+  ["Return to embarrassment", "A reflected attacker gets a clear, dismissible roast naming the intended target. The notice waits its turn behind startup reports and stays saved until acknowledged."],
+  ["More ways to win the week", "Busywork Champion, Office Menace, Human Sunshine and Chief Prank Officer now headline the weekly recap and record book. Ties share titles. Awards use existing recorded results and public action counts."],
   ["Your minimap, ready to use", "The minimap starts visible on phones and computers. In More, enable Map movement to click or tap a destination and walk there. Visibility and movement preferences are saved in this browser. Map travel never opens objects or claims the chair."],
   ["Steadier phone walking", "Nearby Open controls now float inside the floor instead of resizing it. Walking past objects no longer makes the screen shrink, grow or briefly change zoom."],
   ["Office hub, beside Work", "The large Office hub button in the bottom controls opens projects, player profiles, toolkit, collection, boutique and records directly. No player-name click or walking required. On phones, Emotes are in More and Places opens the office directory."],

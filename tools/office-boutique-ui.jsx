@@ -1,3 +1,30 @@
+function weeklyAwardGroups(book,season){
+ const saved=book?.season||season||{},standings=Array.isArray(book?.standings)?book.standings:[];
+ const leaders=standings.filter(p=>Number(p.place)===1&&Number(p.earnings)>0);
+ const busy=leaders.length?leaders.map(p=>({player:p.player,name:p.name,score:Number(p.earnings)})):saved.winner_name&&Number(saved.top)>0?[{player:saved.winner||'recorded-winner',name:saved.winner_name,score:Number(saved.top)}]:[];
+ const groups=[{id:'busywork',title:'Busywork Champion',detail:'Most Busywork earned',unit:'BW',winners:busy}];
+ for(const [id,title,detail] of [['sabotage','Office Menace','Most recorded sabotages'],['help','Human Sunshine','Friendliest coworker'],['playful','Chief Prank Officer','Most playful actions']]){
+  const rows=(Array.isArray(book?.awards)?book.awards:[]).filter(a=>a.category===id&&Number.isFinite(Number(a.actions))&&Number(a.actions)>0);
+  const high=Math.max(0,...rows.map(a=>Number(a.actions))),seen=new Set();
+  groups.push({id,title,detail,unit:'actions',winners:rows.filter(a=>Number(a.actions)===high&&!seen.has(a.player)&&seen.add(a.player)).map(a=>({player:a.player,name:a.name,score:Number(a.actions)}))});
+ }
+ return groups;
+}
+function WeeklyWinners({book,season,pending=false}){
+ const groups=weeklyAwardGroups(book,season);
+ return <section aria-label="Weekly category winners" className="pg-weekly-winners"><h4>More than one way to win the week</h4>
+ <div className="pg-weekly-award-grid">{groups.map(g=><article key={g.id} className="pg-weekly-award" aria-label={g.title}>
+ <b>{g.title}</b><small>{g.detail}</small>{g.winners.length?<><strong>{g.winners.map(p=>p.name).join(' & ')}</strong><span>{fmt(g.winners[0].score)} {g.unit}{g.winners.length>1?' · Shared title':''}</span></>:<span>{pending&&g.id!=='busywork'?'Checking the records…':!book&&g.id!=='busywork'?'Category records unavailable':'No qualifying result recorded'}</span>}
+ </article>)}</div><p className="pg-small">Ties share the title. One person can win several categories. Action titles use retained public records; hushed actions and blocked/reflected attempts are excluded. Older records may be incomplete. These are weekly recognition titles; existing trophy and payout rules still apply.</p></section>;
+}
+function CompletedWeekAwards({season}){
+ const [book,setBook]=useState(null),[error,setError]=useState(''),[retry,setRetry]=useState(0);
+ useEffect(()=>{let active=true;setBook(null);setError('');officeRead(api.officeRecordbook(season.week_key)).then(value=>{
+  if(value?.version!==1||value.selected_week!==season.week_key||!Array.isArray(value.standings)||!Array.isArray(value.awards))throw Error('Weekly award records are unavailable.');
+  if(active)setBook(value);
+ }).catch(e=>{if(active)setError(e.message||'Weekly award records are unavailable.');});return()=>{active=false;};},[season.week_key,retry]);
+ return <><WeeklyWinners book={book} season={season} pending={!book&&!error}/>{error&&<p role="alert">{error}<button className="pg-btn" onClick={()=>setRetry(n=>n+1)}>Retry weekly awards</button></p>}</>;
+}
 /* Permanent cosmetic shop and true season records, generated with the office UI. */
 const OFFICE_BOUTIQUE_ITEMS=[
  {id:'coffee_tech',name:'Emergency Coffee Technician',kind:'clothing',note:'Apron, utility belt and an oversized emergency flask.'},
@@ -58,8 +85,8 @@ function OfficeSeasonRecords({me,board}){
  return <section aria-label="Season record book"><h3>The office record book</h3><p>Completed competitions, final standings and personal bests. Friday resets the competition; these records remain.</p>{error&&<div role="alert">{error}<button className="pg-btn" onClick={()=>setRetry(x=>x+1)}>Retry season records</button></div>}{!book&&!error&&<p role="status">Finding the old score sheets…</p>}{book&&<>
  <div className="pg-next-selects"><label>Completed week<select aria-label="Completed week" value={week||book.selected_week||''} onChange={e=>setWeek(e.target.value)}>{book.seasons.length?book.seasons.map(s=><option key={s.week} value={s.week}>{s.week}{s.coverage==='winner_only'?' · winner only':''}</option>):<option value="">No completed records yet</option>}</select></label><label>Personal best for<select aria-label="Personal best for" value={player} onChange={e=>setPlayer(e.target.value)}>{choices.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label></div>
  <aside className="pg-next-goal"><h4>Best recorded weekly earnings</h4>{book.personal_best?<p>{fmt(book.personal_best.earnings)} BW · {book.personal_best.week} · place {book.personal_best.place}</p>:<p>No complete standings recorded for this player yet. Older winner-only summaries cannot supply a personal best.</p>}</aside>
- {!book.season?<p>The first completed season will appear after normal rollover.</p>:<><h4>{book.season.week} · {book.season.winner_name||'No winner recorded'}</h4><p>Closed {new Date(book.season.closed_at).toLocaleString(undefined,{timeZone:'America/Los_Angeles'})} Pacific · Winning earnings: {fmt(book.season.top)} BW</p>{book.season.coverage==='standings'?<table><caption>Final game-recorded standings · tied earnings share a place</caption><thead><tr><th>Place</th><th>Employee</th><th>Weekly earnings</th></tr></thead><tbody>{book.standings.map(p=><tr key={p.player}><td>{p.place}</td><th>{p.name}</th><td>{fmt(p.earnings)} BW</td></tr>)}</tbody></table>:<p>Winner-only historical summary. Individual standings were not preserved for this week.</p>}
- {book.awards?.length>0&&<><h4>From the retained public action history</h4><ul>{book.awards.map(a=><li key={a.category+a.player}>{({help:'Helping hand',playful:'Office stylist and prankster',sabotage:'Office menace'})[a.category]}: {a.name} · {a.actions} actions</li>)}</ul></>}</>}
+ {!book.season?<p>The first completed season will appear after normal rollover.</p>:<><h4>{book.season.week} · Weekly winners</h4><p>Closed {new Date(book.season.closed_at).toLocaleString(undefined,{timeZone:'America/Los_Angeles'})} Pacific · Top weekly earnings: {fmt(book.season.top)} BW</p><WeeklyWinners book={book}/>{book.season.coverage==='standings'?<table><caption>Final game-recorded standings · tied earnings share a place</caption><thead><tr><th>Place</th><th>Employee</th><th>Weekly earnings</th></tr></thead><tbody>{book.standings.map(p=><tr key={p.player}><td>{p.place}</td><th>{p.name}</th><td>{fmt(p.earnings)} BW</td></tr>)}</tbody></table>:<p>Winner-only historical summary. Individual standings were not preserved for this week.</p>}
+ </>}
  <p className="pg-small">{book.note}</p>
  </>}</section>;
 }

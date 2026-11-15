@@ -43,7 +43,7 @@ function OfficeActivityChart({rows}){
  return <svg className="pg-activity-chart" viewBox={`0 0 400 ${Math.max(40,rows.length*32)}`} role="img" aria-label="Actions given in blue and received in sage; exact counts are in the table below.">
   <title>Recorded coworker actions</title>{rows.map((r,i)=><g key={r.kind+':'+r.category}><text x="0" y={i*32+19} fontSize="11" fill="currentColor">{r.label||DEED_TEXT[r.kind]?.label||r.kind}</text><rect x="165" y={i*32+5} width={205*r.given/max} height="19" fill="#7B9CC4"/><rect x={165+205*r.given/max} y={i*32+5} width={205*r.received/max} height="19" fill="#8FA67A"/></g>)}</svg>;
 }
-function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
+function OfficeWeekPanel({me,board,onPlayer,initialPlayer,onReflection}){
  const [tab,setTab]=useState(initialPlayer?'profiles':'project'),[status,setStatus]=useState(null),[profile,setProfile]=useState(null);
  const [error,setError]=useState(''),[statusError,setStatusError]=useState(''),[statusLoading,setStatusLoading]=useState(false),[profileError,setProfileError]=useState(''),[busy,setBusy]=useState(false),[feedback,setFeedback]=useState('');
  const [selected,setSelected]=useState(initialPlayer||me.id),[period,setPeriod]=useState('week'),[peer,setPeer]=useState(''),[target,setTarget]=useState(''),[slots,setSlots]=useState([]),[rewardWeek,setRewardWeek]=useState(''),[profileRetry,setProfileRetry]=useState(0),[errorSource,setErrorSource]=useState('');
@@ -105,7 +105,7 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer}){
   if(request.current?.key!==key)request.current={key,id:crypto.randomUUID(),invoke};
   const sent=request.current;return mutate(()=>sent.invoke(sent.id));
  };
- const interact=action=>act(target+':'+action,id=>api.officeInteract(target,action,id));
+ const interact=action=>act(target+':'+action,async id=>{const result=await api.officeInteract(target,action,id);onReflection?.(result,board.find(p=>p.id===target)||{name:'that coworker'},id,me.id);return result;});
  const reviewShield=async()=>{
   if(locked.current)return;
   const seq=++quoteSeq.current;setQuoteLoading(true);setQuoteError('');setQuote(null);
