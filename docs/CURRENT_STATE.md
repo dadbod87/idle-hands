@@ -1,4 +1,8 @@
-# Build 203 — return to embarrassment (candidate)
+# Build 204 — right where you left it (candidate)
+
+The phone contextual action prompt is always anchored to the bottom-right of the floor, and its Open/Grab/Change button stays at the right-hand end. Target-dependent left/right switching and row reversal are removed. Floor height, zoom, walking and deliberate interaction rules remain intact. Extended portrait/landscape walkthroughs sample the button's right and bottom offsets while walking, crossing reach boundaries and moving to both sides of a target. No backend, economy or saved-data changes. Release evidence belongs to the release PR.
+
+# Build 203 — return to embarrassment (released, PR #64)
 
 Confirmed reflected-action receipts now queue a persistent attacker-only roast, naming the intended defender. The notice is captured before subsequent refreshes, follows existing startup dialogs, survives ordinary browser reload, and acknowledges locally without another attack. Ordinary and toolkit attacks share this behavior; blocked actions do not create a reflection alert. Storage denial falls back to the current session. Historical attacks without a captured receipt are not reconstructed.
 

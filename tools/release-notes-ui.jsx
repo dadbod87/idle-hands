@@ -1,9 +1,10 @@
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "203",
- title: "Return to embarrassment",
+ id: "204",
+ title: "Right where you left it",
  changes: [
+  ["Open stays on the right", "The phone action prompt now stays in the bottom-right corner. Open, Grab and Change keep the same right-hand position as you walk or select another target."],
   ["Return to embarrassment", "A reflected attacker gets a clear, dismissible roast naming the intended target. The notice waits its turn behind startup reports and stays saved until acknowledged."],
   ["More ways to win the week", "Busywork Champion, Office Menace, Human Sunshine and Chief Prank Officer now headline the weekly recap and record book. Ties share titles. Awards use existing recorded results and public action counts."],
   ["Your minimap, ready to use", "The minimap starts visible on phones and computers. In More, enable Map movement to click or tap a destination and walk there. Visibility and movement preferences are saved in this browser. Map travel never opens objects or claims the chair."],

@@ -11,7 +11,7 @@ for(const viewport of [{width:390,height:640},{width:393,height:851},{width:844,
  await page.waitForTimeout(350);
  await page.evaluate(()=>{
   window.walkSamples=[];window.walkSampling=true;
-  const sample=()=>{if(!window.walkSampling)return;const floor=document.querySelector('.pg-stage').getBoundingClientRect(),bar=document.querySelector('.pg-bar').getBoundingClientRect(),room=document.querySelector('.pg-room'),matrix=new DOMMatrix(getComputedStyle(room).transform),prompt=document.querySelector('.pg-prompt');window.walkSamples.push({height:floor.height,top:floor.top,barTop:bar.top,barHeight:bar.height,scale:matrix.a,scrollTop:document.querySelector(".pg-stage").scrollTop,scrollLeft:document.querySelector(".pg-stage").scrollLeft,prompt:prompt&&getComputedStyle(prompt).display!=='none'?prompt.textContent.trim():''});requestAnimationFrame(sample);};sample();
+  const sample=()=>{if(!window.walkSampling)return;const floor=document.querySelector('.pg-stage').getBoundingClientRect(),bar=document.querySelector('.pg-bar').getBoundingClientRect(),room=document.querySelector('.pg-room'),matrix=new DOMMatrix(getComputedStyle(room).transform),prompt=document.querySelector('.pg-prompt'),button=prompt?.querySelector('.pg-open'),buttonBox=button?.getBoundingClientRect();window.walkSamples.push({height:floor.height,top:floor.top,barTop:bar.top,barHeight:bar.height,scale:matrix.a,scrollTop:document.querySelector(".pg-stage").scrollTop,scrollLeft:document.querySelector(".pg-stage").scrollLeft,buttonRight:buttonBox?.width?floor.right-buttonBox.right:null,buttonBottom:buttonBox?.width?floor.bottom-buttonBox.bottom:null,prompt:prompt&&getComputedStyle(prompt).display!=='none'?prompt.textContent.trim():''});requestAnimationFrame(sample);};sample();
  });
  // Real touch taps on empty floor walk away from the cabinet across its reach boundary.
  for(let i=0;i<5;i++){
@@ -25,15 +25,24 @@ for(const viewport of [{width:390,height:640},{width:393,height:851},{width:844,
  // Walk back through the same boundary, then deliberately select the object by touch.
  await hr();await page.locator('[data-fixture="hr"]').tap();await expect(page.getByRole('button',{name:/Open HR Cabinet/})).toBeVisible();
  await page.waitForTimeout(300);
+ // Cross to each side of the same nearby target: the action button never follows it.
+ for(const dx of [-70,140]){
+  const point=await page.evaluate(dx=>{const floor=document.querySelector('.pg-stage').getBoundingClientRect(),room=document.querySelector('.pg-room'),actor=room.querySelector('.pg-body.me').closest('.pg-me'),matrix=new DOMMatrix(getComputedStyle(room).transform),oldX=parseFloat(actor.style.left),y=parseFloat(actor.style.top);return {oldX,tx:oldX+dx,x:floor.left+(oldX+dx)*matrix.a+matrix.e,y:floor.top+y*matrix.a+matrix.f};},dx);
+  await page.touchscreen.tap(point.x,point.y);
+  await expect.poll(()=>page.locator('.pg-body.me').evaluate((el,tx)=>Math.abs(parseFloat(el.closest('.pg-me').style.left)-tx),point.tx)).toBeLessThan(14);
+  await page.waitForTimeout(400);
+  await expect(page.locator('.pg-floor-prompt .pg-open')).toBeVisible();
+ }
  const samples=await page.evaluate(()=>{window.walkSampling=false;return window.walkSamples;});
  expect(samples.length).toBeGreaterThan(50);
  for(const key of ['height','top','barTop','barHeight','scale']){const values=samples.map(x=>x[key]);expect(Math.max(...values)-Math.min(...values),key+' changed while walking').toBeLessThan(key==='scale'?0.00001:1);}
+ const buttons=samples.filter(x=>x.buttonRight!==null);expect(buttons.length).toBeGreaterThan(20);for(const sample of buttons){expect(sample.buttonRight).toBeGreaterThanOrEqual(6);expect(sample.buttonRight).toBeLessThanOrEqual(12);expect(sample.buttonBottom).toBeGreaterThanOrEqual(6);expect(sample.buttonBottom).toBeLessThanOrEqual(12);}
  expect(samples.every(x=>x.scrollTop===0&&x.scrollLeft===0)).toBe(true);expect(samples.some(x=>x.prompt==='')).toBe(true);expect(samples.some(x=>x.prompt.includes('HR Cabinet'))).toBe(true);
  await expect(page.getByRole('button',{name:'Office hub',exact:true})).toBeVisible();
  const geometry=await page.evaluate(()=>{const p=document.querySelector('.pg-prompt').getBoundingClientRect(),floor=document.querySelector('.pg-stage').getBoundingClientRect(),rail=document.querySelector('.pg-feedback-rail').getBoundingClientRect();return {p:p.toJSON(),floor:floor.toJSON(),rail:rail.toJSON(),width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight};});
  expect(geometry.p.top).toBeGreaterThanOrEqual(geometry.floor.top);expect(geometry.p.bottom).toBeLessThanOrEqual(geometry.floor.bottom);expect(geometry.p.bottom).toBeLessThanOrEqual(geometry.rail.top);expect(geometry.p.height).toBe(48);expect(geometry.width).toBeLessThanOrEqual(viewport.width);expect(geometry.height).toBeLessThanOrEqual(viewport.height);
  await page.screenshot({path:`test-results/steady-walk-${viewport.width}.png`,fullPage:true});
- await page.getByRole('button',{name:/Open HR Cabinet/}).tap();await expect(page.locator('.pg-panelhead')).toContainText('Personnel file');
+ await page.locator('.pg-floor-prompt .pg-open').tap();await expect(page.locator('.pg-panelhead')).toContainText('Personnel file');
  expect(f.calls.filter(c=>['do_work','buy_item','do_deed','grab_chair','buy_fitting','office_interact'].includes(c.rpc))).toHaveLength(0);expect(f.player.pp).toBe(500000);expect(f.player.equity).toBe(2);
  await ctx.close();
 });
