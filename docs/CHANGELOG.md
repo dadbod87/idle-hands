@@ -1,4 +1,10 @@
-# Build 202 — map your next move (candidate)
+# Build 203 — return to embarrassment (candidate)
+
+Confirmed reflected-action receipts now queue a persistent attacker-only roast, naming the intended defender. The notice is captured before subsequent refreshes, follows existing startup dialogs, survives ordinary browser reload, and acknowledges locally without another attack. Ordinary and toolkit attacks share this behavior; blocked actions do not create a reflection alert. Storage denial falls back to the current session. Historical attacks without a captured receipt are not reconstructed.
+
+Weekly recaps and the record book celebrate Busywork Champion, Office Menace, Human Sunshine and Chief Prank Officer using the existing server's final standings and public action awards. Ties share titles, and one player can receive several. Hushed actions and blocked/reflected attempts are excluded from action awards. Empty categories, incomplete old history and unavailable reads are explicit. Recognition titles preserve existing trophy and payout rules. No backend, migration, economy or reset changes. Exact-head checks and publication evidence belong to the release PR.
+
+# Build 202 — map your next move (released, PR #63)
 
 The requested minimap update is distinct from build 201's camera fix. The minimap now starts visible on desktop and touch devices. More offers Hide/Show minimap and Map movement on/off on every input type. Both preferences are local to this browser and survive reload; storage failure still permits session controls. Movement is opt-in, and an inactive map absorbs taps without walking on the floor beneath it.
 

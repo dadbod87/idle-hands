@@ -112,3 +112,5 @@ require("./silver-tongue.test.cjs");
 
 // Load/performance contracts share the existing required Node gate.
 require('./refresh-queue.test.cjs');
+
+require("./weekly-winners.test.cjs");

@@ -127,3 +127,7 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 - [ ] Verify actual map bounds under phone scaling, doorway arrival, no underlying floor click, drag/cancel suppression and keyboard center travel.
 - [ ] Confirm map travel performs no economic/action RPC, never opens desks or claims chairs, and retains build 201's stable floor.
 - [ ] Review minimap screenshots and pass all three exact-head CI jobs before publication; verify the served artifact matches the merge.
+
+## Reflection notices and weekly winners
+- [ ] Check ordinary and toolkit reflections, accepted receipts followed by failed refresh, retries without repeated attacks, acknowledgement/reload, per-player isolation and startup ordering.
+- [ ] Review desktop/portrait/landscape winner cards, multiple categories and shared titles, zero scores, older incomplete coverage and read failure/retry. Keep real server counts, hush privacy and existing economic/trophy/reset rules.
