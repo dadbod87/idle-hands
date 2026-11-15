@@ -43,8 +43,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Start local static server
         run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/idle-hands-http.log 2>&1 &
-      - name: Stable phone floor and planter focus walkthroughs
-        run: npx playwright test tests/phone-walking.spec.cjs tests/planter-targets.spec.cjs --max-failures=1 --reporter=line
+      - name: Minimap, stable phone floor and planter focus walkthroughs
+        run: npx playwright test tests/minimap-navigation.spec.cjs tests/phone-walking.spec.cjs tests/planter-targets.spec.cjs --max-failures=1 --reporter=line
       - name: Office UX, decor, discovery and Confetti walkthroughs
         run: npx playwright test tests/office-hub-discovery.spec.cjs tests/ux-consistency.spec.cjs tests/confetti-output.spec.cjs --max-failures=1 --reporter=line
       - name: Preserve focused Office UX screenshots
@@ -53,7 +53,7 @@ jobs:
           python3 - <<'PYCODE'
           import pathlib,shutil
           target=pathlib.Path('qa-selected');target.mkdir(exist_ok=True)
-          for pattern in ('steady-walk-*.png','*-planter-watering.png','hub-*.png','employee-spotlight-*.png','ux-confirm-*.png','phone-floor-*.png'):
+          for pattern in ('minimap-*.png','steady-walk-*.png','*-planter-watering.png','hub-*.png','employee-spotlight-*.png','ux-confirm-*.png','phone-floor-*.png'):
               for p in pathlib.Path('test-results').glob(pattern):
                   shutil.copy2(p,target/p.name)
           PYCODE
