@@ -12,8 +12,10 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  await page.goto('http://127.0.0.1:8765');await expect(map).toBeVisible();await expect(target).toBeDisabled();const before=await position();await tapAt(1700,850);await page.waitForTimeout(300);expect(await position()).toEqual(before);
  await more();await page.getByRole('button',{name:'Map movement: off',exact:true}).click();await dismissMore();await expect(target).toBeEnabled();
  await tapAt(1700,850);await expect.poll(async()=>{const p=await position();return Math.hypot(p.x-1700,p.y-850);}).toBeLessThan(16);await expect(page.getByRole('dialog')).toHaveCount(0);
- // Cross an actual office wall through its doorway, without opening a desk.
- await tapAt(270,1530);await expect.poll(async()=>{const p=await position();return Math.hypot(p.x-270,p.y-1530);},{timeout:15000}).toBeLessThan(16);await expect(page.getByRole('dialog')).toHaveCount(0);
+ // Tap the drawn office itself: map borders must not offset visual destinations.
+ const office=await map.locator('.pg-mapoffice').first().boundingBox();
+ if(touch)await page.touchscreen.tap(office.x+office.width/2,office.y+office.height/2);else await page.mouse.click(office.x+office.width/2,office.y+office.height/2);
+ await expect.poll(async()=>{const p=await position();return Math.hypot(p.x-270,p.y-1490);},{timeout:15000}).toBeLessThan(16);await expect(page.getByRole('dialog')).toHaveCount(0);
  // A dragged or cancelled gesture cannot queue another walk.
  const rect=await target.boundingBox(),p0=await position();
  if(touch){const cdp=await ctx.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:rect.x+30,y:rect.y+30}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:rect.x+60,y:rect.y+30}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}
