@@ -1,4 +1,8 @@
-# Build 204 — right where you left it (candidate)
+# Build 205 — chair custody confirmed (candidate)
+
+The floor chair, minimap dot and offscreen direction marker now share confirmed claim visibility. Your successful grab hides all three immediately; other claims are read from the existing RLS-protected chair_claims table every two seconds during active spawn windows and on return to the tab. Confirmed claims survive stale office snapshots and empty reads for that window. Polling pauses in hidden tabs and stops after a known claim; no overlapping reads. Failed claims trigger a check without inventing rewards or hiding an unclaimed chair. No schema, reward, economy or saved-progress changes. Release evidence belongs to the release PR.
+
+# Build 204 — right where you left it (released, PR #65)
 
 The phone contextual action prompt is always anchored to the bottom-right of the floor, and its Open/Grab/Change button stays at the right-hand end. Target-dependent left/right switching and row reversal are removed. Floor height, zoom, walking and deliberate interaction rules remain intact. Extended portrait/landscape walkthroughs sample the button's right and bottom offsets while walking, crossing reach boundaries and moving to both sides of a target. No backend, economy or saved-data changes. Release evidence belongs to the release PR.
 

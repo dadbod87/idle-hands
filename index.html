@@ -3740,7 +3740,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 204 · right where you left it";
+const BUILD = "build 205 · chair custody confirmed";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3892,6 +3892,8 @@ function OfficeFloor() {
   useEffect(()=>()=>clearTimeout(sceneTimer.current),[]);
   useEffect(()=>{if(me?.id){const saved=safeOfficeLoad("ih-scenes-"+me.id,{});sceneSerial.current=saved&&typeof saved==="object"&&!Array.isArray(saved)?saved:{};}},[me?.id]);
   const [chair, setChair] = useState(null);
+  const [knownChairClaim,setKnownChairClaim]=useState(null);
+  const chairClaimRef=useRef(null),chairCheckRef=useRef(()=>{});
   const [pos, setPos] = useState({ x: 1500, y: 860 });   // middle of the hall
   const [near, setNear] = useState(null);
   const [worldIntent,setWorldIntent]=useState(null),[emotesOpen,setEmotesOpen]=useState(false);
@@ -4597,6 +4599,34 @@ function OfficeFloor() {
     setNear((n) => (n && best && n.id === best.id ? n : best));
   }, [pos]);
 
+  // Claims are irreversible within a spawn window. A late empty read or old
+  // office snapshot must never put a confirmed claimed chair back on the map.
+  const rememberChairClaim=useCallback(claim=>{
+    const previous=chairClaimRef.current;
+    if(!claim||!Number.isInteger(claim.window)||!claim.by||(previous&&previous.window>=claim.window))return;
+    chairClaimRef.current=claim;setKnownChairClaim(claim);
+  },[]);
+  useEffect(()=>{rememberChairClaim(office?.chair);},[office?.chair,rememberChairClaim]);
+  useEffect(()=>{
+    if(phase!=="play")return;
+    let active=true,reading=false;
+    const check=async()=>{
+      const current=chairAt(Date.now(),perkCount(meRef.current,"good_hands"));
+      if(!active||document.hidden||reading||!current||chairClaimRef.current?.window===current.window)return;
+      reading=true;
+      try{
+        const {data,error}=await supabase.from("chair_claims").select("window_id,name,taker").eq("window_id",current.window).limit(1);
+        if(active&&!error&&data?.length)rememberChairClaim({window:Number(data[0].window_id),by:data[0].name||"Somebody",mine:data[0].taker===meRef.current?.id});
+      }catch{/* Retry while this chair window is open. Rewards still require the RPC. */}
+      finally{reading=false;}
+    };
+    const visible=()=>{if(!document.hidden)check();};
+    chairCheckRef.current=check;check();
+    const timer=setInterval(check,2000);
+    document.addEventListener("visibilitychange",visible);
+    return()=>{active=false;clearInterval(timer);chairCheckRef.current=()=>{};document.removeEventListener("visibilitychange",visible);};
+  },[phase,me?.id,me?.perks?.good_hands,rememberChairClaim]);
+
   /* ------------------------ chair + ambience ---------------------- */
   useEffect(() => {
     if (phase !== "play") return;
@@ -4771,8 +4801,10 @@ function OfficeFloor() {
     const current=chairAt(Date.now(),perkCount(me,"good_hands"));if(!current){flash("The good chair has moved on. Emotionally, so have we.");return;}
     if(dist(posRef.current,{x:current.x+23,y:current.y+27})>REACH){routeTo(current.x+23,current.y+70,null);flash("Walk up to the chair, then grab it. HR insists on the walking part.");return;}
     const row = await guard(() => api.grabChair());
+    chairCheckRef.current();
     loadOffice().then(setOffice).catch(() => {});
     if (row) {
+      rememberChairClaim({window:current.window,by:row.name||"You",mine:true});
       sfx("chair");
       if (row.frenzy_until && new Date(row.frenzy_until) > new Date()) {
         say("You found the good chair. Seven times output for 77 seconds.", "good");
@@ -4840,7 +4872,7 @@ function OfficeFloor() {
   }) < REACH;
   const meetWho = office?.meeting?.who || [];
   const meetMine = !!office?.meeting?.mine;
-  const chairClaim = office?.chair || null;
+  const chairClaim = knownChairClaim?.window===chair?.window ? knownChairClaim : office?.chair || null;
   const chairTakenBy = chair && chairClaim && chairClaim.window === chair.window
     ? chairClaim.by : null;
 
@@ -5335,9 +5367,9 @@ function OfficeFloor() {
           </div>
         </div>
         {phonePlay&&<div className="pg-floor-prompt">{interactionPrompt}</div>}
-        {mapOpen&&<MiniMap pos={pos} cam={cam} view={view} chair={chair} walkEnabled={mapMovement} onWalk={point=>{keysRef.current={};routeTo(point.x,point.y);}} />}
+        {mapOpen&&<MiniMap pos={pos} cam={cam} view={view} chair={chairTakenBy?null:chair} walkEnabled={mapMovement} onWalk={point=>{keysRef.current={};routeTo(point.x,point.y);}} />}
         {worldIntent&&<div className="pg-destination" aria-hidden="true" style={{left:(worldIntent.x-cam.x)*zoom,top:(worldIntent.y-cam.y)*zoom}}>◇</div>}
-        {chair && (chair.x < cam.x || chair.x > cam.x + view.w ||
+        {chair && !chairTakenBy && (chair.x < cam.x || chair.x > cam.x + view.w ||
                    chair.y < cam.y || chair.y > cam.y + view.h) && (
           <div className="pg-chairping" style={{
             left: clamp(chair.x - cam.x, 26, view.w - 26),
@@ -8913,9 +8945,10 @@ function OfficeWeeklyRace({me,board}){
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "204",
- title: "Right where you left it",
+ id: "205",
+ title: "Chair custody confirmed",
  changes: [
+  ["No more ghost chair", "The floor, minimap and direction marker clear together after a confirmed grab. Other players’ claims are checked every two seconds while the chair window is open."],
   ["Open stays on the right", "The phone action prompt now stays in the bottom-right corner. Open, Grab and Change keep the same right-hand position as you walk or select another target."],
   ["Return to embarrassment", "A reflected attacker gets a clear, dismissible roast naming the intended target. The notice waits its turn behind startup reports and stays saved until acknowledged."],
   ["More ways to win the week", "Busywork Champion, Office Menace, Human Sunshine and Chief Prank Officer now headline the weekly recap and record book. Ties share titles. Awards use existing recorded results and public action counts."],

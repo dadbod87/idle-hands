@@ -75,6 +75,7 @@ async function installGameFixture(page,options={}) {
    if(wireRpc==='office_deed')result={player:result,outcome:null,reflected:false};
   }else if(url.pathname.endsWith('/catalog'))result=Object.entries({items:options.items||[{id:'intern',name:'Office Intern',cost:100,rate:1,desc:'An isolated test hire.'}],upgrades:options.upgrades||[],deeds:{},tuning:{growth:1.35},drinks:[],costumes:options.costumes||[],special_pins:[{id:'beta',name:'Beta Tester',hue:'#8A6A2A',glyph:'β',note:'Here before it worked.'}],weekly_pins:[{id:'p01',name:'Five Year Pin',hue:'#C9A253',glyph:'★',note:'Nobody can confirm the five years.'}],office_kit:options.fittings?.office_kit||[],vanity:options.fittings?.vanity||[]}).map(([key,data])=>({key,data}));
   else if(url.pathname.endsWith('/players'))result=url.searchParams.has('id')?player:[player,...(options.coworkers||[])];
+  else if(url.pathname.endsWith('/chair_claims')){const w=Number((url.searchParams.get('window_id')||'').replace('eq.',''));result=options.chairClaims?await options.chairClaims(w):options.officeState?.chair?.by&&options.officeState.chair.window===w?[{window_id:w,name:options.officeState.chair.by,taker:options.officeState.chair.mine?player.id:'00000000-0000-4000-8000-000000000002'}]:[];}
   else if(url.pathname.endsWith('/deeds'))result=options.deeds||[];
   else if(['seasons','suggestions'].some(x=>url.pathname.endsWith('/'+x)))result=[];
   await route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(result)});

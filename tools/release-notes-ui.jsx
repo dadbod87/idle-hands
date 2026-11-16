@@ -1,9 +1,10 @@
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "204",
- title: "Right where you left it",
+ id: "205",
+ title: "Chair custody confirmed",
  changes: [
+  ["No more ghost chair", "The floor, minimap and direction marker clear together after a confirmed grab. Other players’ claims are checked every two seconds while the chair window is open."],
   ["Open stays on the right", "The phone action prompt now stays in the bottom-right corner. Open, Grab and Change keep the same right-hand position as you walk or select another target."],
   ["Return to embarrassment", "A reflected attacker gets a clear, dismissible roast naming the intended target. The notice waits its turn behind startup reports and stays saved until acknowledged."],
   ["More ways to win the week", "Busywork Champion, Office Menace, Human Sunshine and Chief Prank Officer now headline the weekly recap and record book. Ties share titles. Awards use existing recorded results and public action counts."],
