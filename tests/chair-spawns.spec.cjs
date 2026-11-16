@@ -12,7 +12,7 @@ for(const mode of ['desktop','mobile'])test(mode+': distant good chair renders a
  await page.clock.setFixedTime(new Date(window*420000+1000));
  const state={total:0,target:10000000,tiers:0,streak:0,tz:'America/Los_Angeles'},failRpcs=['grab_chair'];
  const fixture=await installGameFixture(page,{officeState:state,failRpcs,onGrabChair:p=>{
-  p.grabs=(p.grabs||0)+1;p.frenzy_until=new Date(window*420000+78000).toISOString();state.chair={window,by:p.name,mine:true};
+  p.grabs=(p.grabs||0)+1;p.frenzy_until=new Date(window*420000+78000).toISOString(); // Keep office_state stale: the successful receipt must clear markers itself.
  }});
  await page.goto('http://127.0.0.1:8765/');await expect(page.locator('.pg-stage')).toBeVisible({timeout:15000});
  const chair=page.locator('button.pg-chair'),actor=page.locator('.pg-me:not(.pg-wes)');
@@ -38,6 +38,30 @@ for(const mode of ['desktop','mobile'])test(mode+': distant good chair renders a
  const retry=await chair.boundingBox();if(mode==='mobile')await page.touchscreen.tap(retry.x+retry.width/2,retry.y+retry.height/2);else await page.mouse.click(retry.x+retry.width/2,retry.y+retry.height/2);
 
  await expect.poll(()=>fixture.player.grabs).toBe(1);await expect(chair).toHaveCount(0);await expect(page.locator('.pg-jam.done')).toContainText('You got the good chair.');
+ await expect(page.locator('.pg-mapchair')).toHaveCount(0,{timeout:1000});await expect(page.locator('.pg-chairping')).toHaveCount(0);await page.waitForTimeout(2200);await expect(page.locator('.pg-mapchair')).toHaveCount(0);
  expect(fixture.player.pp).toBe(500000);expect(fixture.player.equity).toBe(2);expect(fixture.player.owned.intern).toBe(2);expect(errors).toEqual([]);
  await context.close();
+});
+
+for(const width of [1440,390])test(`${width}: another player's claim clears every chair marker, survives stale snapshots and resets next window`,async({browser})=>{
+ const context=await browser.newContext({viewport:{width,height:900}}),page=await context.newPage();
+ const window=4200000,start=window*420000;let claimed=false,reads=0;
+ await page.clock.setFixedTime(new Date(start+1000));
+ const fixture=await installGameFixture(page,{chairClaims:async w=>{reads++;return claimed&&w===window?[{window_id:w,name:'QA Pal',taker:'00000000-0000-4000-8000-000000000002'}]:[];}});
+ fixture.player.perks={good_hands:2};
+ await page.goto('http://127.0.0.1:8765/');
+ const floor=page.locator('button.pg-chair'),dot=page.locator('.pg-mapchair');
+ await expect(floor).toHaveCount(1);await expect(dot).toHaveCount(1);
+ await expect.poll(()=>reads).toBeGreaterThan(0);claimed=true;
+ await expect(dot).toHaveCount(0,{timeout:4000});await expect(floor).toHaveCount(0);await expect(page.locator('.pg-chairping')).toHaveCount(0);
+ await expect(page.locator('.pg-jam.done')).toContainText('QA Pal got the good chair.');
+ await page.screenshot({path:`test-results/claimed-chair-${width}.png`,fullPage:true});
+ const settled=reads;await page.waitForTimeout(2200);expect(reads).toBe(settled);
+ // The ordinary office snapshot has no claim and cannot bring the dot back.
+ await page.clock.setFixedTime(new Date(start+45000));await page.waitForTimeout(1100);await expect(dot).toHaveCount(0);
+ // A new window is independent of the previous claim.
+ await page.clock.setFixedTime(new Date(start+421000));await expect(dot).toHaveCount(1);await expect(floor).toHaveCount(1);await expect.poll(()=>reads).toBeGreaterThan(settled);
+ // Initial claim read also clears markers after a reload during a claimed window.
+ await page.clock.setFixedTime(new Date(start+1000));await page.reload();await expect(page.locator('.pg-stage')).toBeVisible();await expect(page.locator('.pg-jam.done')).toContainText('QA Pal got the good chair.');await expect(dot).toHaveCount(0);await expect(floor).toHaveCount(0);
+ expect(fixture.calls.some(c=>c.rpc==='grab_chair')).toBe(false);expect(fixture.player.pp).toBe(500000);await context.close();
 });
