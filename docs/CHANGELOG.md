@@ -1,3 +1,7 @@
+# Phone sign-in investigation — November 17, 2026 (test-only)
+
+Investigates home-screen sign-in persistence and purchases on the current build 205 source. Six isolated browser cases check ordinary phone purchases, saved-session restoration, separate browser contexts and the current signed-out UI behavior. Fixture setup can omit its default cached session so tests exercise real SDK persistence rather than silently reseeding a login. No production Auth emails, real-player actions, source gameplay changes, backend configuration or migration. Local browser launch is blocked by the host sandbox; current-head CI is required. A cross-context simulation is not physical iPhone verification or proof of any specific player's root cause. Findings and continuation evidence belong to the investigation PR.
+
 # Build 205 — chair custody confirmed (candidate)
 
 The floor chair, minimap dot and offscreen direction marker now share confirmed claim visibility. Your successful grab hides all three immediately; other claims are read from the existing RLS-protected chair_claims table every two seconds during active spawn windows and on return to the tab. Confirmed claims survive stale office snapshots and empty reads for that window. Polling pauses in hidden tabs and stops after a known claim; no overlapping reads. Failed claims trigger a check without inventing rewards or hiding an unclaimed chair. No schema, reward, economy or saved-progress changes. Release evidence belongs to the release PR.
