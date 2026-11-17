@@ -30,10 +30,10 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
  await page.getByRole('button',{name:'Collection',exact:true}).click();
  await expect(page.getByRole('heading',{name:'A desk with a history'})).toBeVisible();
  await expect(page.getByText(/2 qualifying weeks/).first()).toBeVisible();
- await expect(page.getByRole('button',{name:'Display Desk terrarium',exact:true})).toBeDisabled();
- await page.getByRole('button',{name:'Hide Incident Corkboard',exact:true}).click();
- await expect(page.getByRole('button',{name:'Display Desk terrarium',exact:true})).toBeEnabled();await page.getByRole('button',{name:'Display Desk terrarium',exact:true}).click();
- await expect.poll(()=>f.player.office_display).toEqual(['nameplate','plaque','terrarium']);
+ await expect(page.getByRole('button',{name:'Display Desk terrarium',exact:true})).toBeEnabled();
+ await page.getByRole('button',{name:'Display Desk terrarium',exact:true}).click();
+ await expect.poll(()=>f.player.office_display).toEqual(['nameplate','corkboard','terrarium']);
+ await expect(page.getByTestId('office-display-feedback')).toContainText('Project plaque stored; still owned.');
  await page.getByRole('button',{name:'Select for plaque',exact:true}).click();await expect(page.getByRole('button',{name:'Selected for plaque',exact:true})).toBeVisible();
  expect(f.player.office_memento.week).toBe('2026-45');
  await page.screenshot({path:`test-results/office-collection-${viewport.width}.jpg`,type:'jpeg',quality:65,fullPage:true});

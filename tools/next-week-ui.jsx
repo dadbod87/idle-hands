@@ -7,6 +7,20 @@ function earnedSeniority(p){return Math.max(0,Number(p?.seniority_earned??p?.equ
 const OFFICE_TOOL_HELP={rescue:'Remove one eligible penalty from a coworker.',confetti:'Reduce output by 35% for ten minutes before defenses. Adds heat.',filter:'Block one eligible output sabotage. Does not block credit theft.',clip:'Halve one positive credit theft after passive defenses.'};
 const OFFICE_TOOL_LABELS={rescue:'Emergency Stapler',confetti:'Confetti Cartridge',filter:'Spam Filter',clip:'Receipt Clip'};
 const OFFICE_COLLECTIBLE_LABELS={nameplate:'Personalized nameplate',corkboard:'Incident Corkboard',plaque:'Project plaque',terrarium:'Desk terrarium',duck:'Rubber-duck consultant',lamp:'Executive lamp'};
+const OFFICE_DESK_SET_LABELS={theme_facilities:'Facilities Desk Set',theme_accounting:'Accounting Desk Set',theme_it:'IT Desk Set',theme_chaos:'Office Chaos Desk Set'};
+function officeDecorationLabel(id){return OFFICE_COLLECTIBLE_LABELS[id]||OFFICE_DESK_SET_LABELS[id]||id;}
+function officeDisplayChange(display,id){
+ if(display.includes(id))return {items:display.filter(x=>x!==id),replaced:null};
+ if(display.length<3)return {items:[...display,id],replaced:null};
+ // Prefer another desk set, then the last tabletop decoration. Keep nameplates
+ // and wall corkboards when possible; replacing never changes ownership.
+ const reverse=[...display].reverse(),replaced=(OFFICE_DESK_SET_LABELS[id]&&reverse.find(x=>OFFICE_DESK_SET_LABELS[x]))||reverse.find(x=>x!=='nameplate'&&x!=='corkboard')||reverse[0];
+ return {items:display.map(x=>x===replaced?id:x),replaced};
+}
+function OfficeDisplayButton({item,display,disabled,onDisplay}){
+ const shown=display.includes(item),change=officeDisplayChange(display,item),label=officeDecorationLabel(item);
+ return <div className="pg-display-control"><button className="pg-btn" aria-pressed={shown} disabled={disabled} onClick={()=>onDisplay(item)}>{shown?'Hide ':'Display '}{label}</button><small>{shown?'Displayed in your office':change.replaced?'Replaces '+officeDecorationLabel(change.replaced)+' · both stay owned':'Free · '+display.length+' / 3 display slots used'}</small></div>;
+}
 const OFFICE_COLLECTION_WEEKS={terrarium:2,duck:4,lamp:6};
 const OFFICE_CATEGORY_TEXT={work:'Do actual work at your desk',facilities:'Water a plant or file a printer apology',care:'Help a coworker with coffee, Cover or Rescue',playful:'Dress a coworker, nickname them or send confetti'};
 function OfficeCollectibleArt({item,name='EMPLOYEE',memento}){
@@ -27,7 +41,7 @@ function OfficeConfettiArt(){
 }
 function officeDisplayItems(player){
  const ids=player?.office_display??player?.office_collectibles??[];
- return Array.isArray(ids)?[...new Set(ids)].filter(id=>OFFICE_COLLECTIBLE_LABELS[id]).slice(0,3):[];
+ return Array.isArray(ids)?[...new Set(ids)].filter(id=>OFFICE_COLLECTIBLE_LABELS[id]||OFFICE_DESK_SET_LABELS[id]).slice(0,3):[];
 }
 function OfficeWallCollectibles({player}){
  if(!officeDisplayItems(player).includes('corkboard'))return null;
@@ -35,7 +49,7 @@ function OfficeWallCollectibles({player}){
 }
 function OfficeCollectionDecor({player}){
  const owned=officeDisplayItems(player),deskItems=owned.filter(id=>id!=='nameplate'&&id!=='corkboard'),confetti=Date.parse(player?.office_confetti?.until||'')>Date.now();
- return <>{owned.includes('nameplate')&&<div className="pg-personal-nameplate" data-desk-nameplate={player.id} aria-label={"Personalized nameplate: "+player.name}>{player.name}</div>}{deskItems.length>0&&<div className="pg-office-collection" aria-hidden="true">{deskItems.map(item=><div className="pg-desk-collectible" key={item}><OfficeCollectibleArt item={item} name={player.name} memento={item==='plaque'?player.office_memento:null}/></div>)}</div>}{confetti&&<OfficeConfettiArt/>}</>;
+ return <>{owned.includes('nameplate')&&<div className="pg-personal-nameplate" data-desk-nameplate={player.id} aria-label={"Personalized nameplate: "+player.name}>{player.name}</div>}{deskItems.length>0&&<div className="pg-office-collection" aria-hidden="true">{deskItems.map(item=><div className="pg-desk-collectible" data-office-decoration={item} key={item}><OfficeCollectibleArt item={item} name={player.name} memento={item==='plaque'?player.office_memento:null}/></div>)}</div>}{confetti&&<OfficeConfettiArt/>}</>;
 }
 function OfficeShieldArt(){return <svg viewBox="0 0 160 100" role="img" aria-label="Return to Sender reflective shield" fill="none" stroke="#2B2B2B" strokeWidth="4" strokeLinejoin="round"><path d="m80 8 46 15v28c0 24-28 35-46 42-18-7-46-18-46-42V23Z" fill="#7B9CC4"/><path d="M49 34h62v39H49Z" fill="#F8F1E3"/><path d="m50 35 30 21 30-21"/><path d="M101 79H72c-23 0-26-32-4-32h18m-9-10 12 10-12 10" stroke="#F78B6B" strokeWidth="7"/></svg>;}
 function OfficeActivityChart({rows}){
@@ -83,12 +97,12 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer,onReflection}){
   }).catch(e=>{if(live)setProfileError(e.message||'Could not read this profile.');});
   return()=>{live=false;};
  },[tab,selected,period,peer,profileRetry]);
- const mutate=async fn=>{
+ const mutate=async (fn,successText)=>{
   if(locked.current)return;
   locked.current=true;statusSeq.current++;statusInFlight.current=false;setStatusLoading(false);setBusy(true);setError('');setFeedback('');
   try{
    const result=await fn();
-   setFeedback(result?.outcome||'Saved. The office has filed it.');
+   setFeedback(successText||result?.outcome||'Saved. The office has filed it.');
    if(result?.player){
     // A saved receipt can belong to an earlier week. Refresh current player/status
     // rather than displaying the old receipt's balance, perks or remaining charges.
@@ -122,15 +136,21 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer,onReflection}){
  const rewardRecord=rewardWeek===status?.week?status.project:rewardHistory.find(r=>r.week===rewardWeek);
  const rewardMine=rewardRecord?.mine||[];
  const depth=status?.depth_version===1,qualified=status?.collection?.qualified_weeks||0,display=status?.collection?.display||[],projectCategories=status?.project?.categories||Object.keys(OFFICE_CATEGORY_TEXT);
+ const changeDisplay=id=>{
+  if(locked.current||statusLoading||statusError||!statusRef.current)return;
+  const current=statusRef.current.collection?.display||[],shown=current.includes(id),change=officeDisplayChange(current,id),label=officeDecorationLabel(id);
+  return mutate(()=>api.officeDisplay(change.items),shown?label+' hidden. Still owned.':'Displayed '+label+'.'+(change.replaced?' '+officeDecorationLabel(change.replaced)+' stored; still owned.':''));
+ };
  const dailyProject=status?.project?.credit_unit==='daily_category',projectMine=dailyProject?(status.project.mine_today||[]):mine;
  const serverNow=serverClock.current.server+clock-serverClock.current.client,cooldown=Math.max(0,Math.ceil((Date.parse(status?.cooldown_until||'')-serverNow)/1000))||0;
  const quoteSeconds=quote?Math.max(0,Math.ceil((Date.parse(quote.expires_at)-serverNow)/1000)):0;
  const quoteValid=!!quote&&quote.week===status?.week&&quoteSeconds>0;
  const nextCollection=Object.keys(OFFICE_COLLECTION_WEEKS).find(id=>!status?.collectibles.includes(id));
- const collectionCards=(ids,permanent=false)=>ids.map(id=>{const label=OFFICE_COLLECTIBLE_LABELS[id],owned=status.collectibles.includes(id),required=OFFICE_COLLECTION_WEEKS[id],eligible=required?qualified>=required:id==='nameplate'?rewardMine.includes('work')&&rewardMine.includes('care'):id==='corkboard'?rewardMine.length>=3:rewardRecord?.completed&&(rewardRecord.categories||projectCategories).some(c=>rewardMine.includes(c));return <article key={id}><OfficeCollectibleArt item={id} name={me.name}/><h4>{label}</h4><p>{required?`${qualified} / ${required} qualifying weeks`:id==='nameplate'?'Work + care stamps':id==='corkboard'?'Three different category stamps':'Complete the project and contribute'}</p><button className="pg-btn" disabled={busy||owned||!eligible} onClick={()=>mutate(()=>api.officeCollectible(id,rewardWeek))}>{owned?'Owned':eligible?'Claim reward':'Keep playing'}</button>{permanent&&owned&&<button className="pg-btn" aria-pressed={display.includes(id)} disabled={busy||(!display.includes(id)&&display.length>=3)} onClick={()=>mutate(()=>api.officeDisplay(display.includes(id)?display.filter(x=>x!==id):[...display,id]))}>{display.includes(id)?`Hide ${label}`:`Display ${label}`}</button>}</article>;});
+ const collectionCards=(ids,permanent=false)=>ids.map(id=>{const label=OFFICE_COLLECTIBLE_LABELS[id],owned=status.collectibles.includes(id),required=OFFICE_COLLECTION_WEEKS[id],eligible=required?qualified>=required:id==='nameplate'?rewardMine.includes('work')&&rewardMine.includes('care'):id==='corkboard'?rewardMine.length>=3:rewardRecord?.completed&&(rewardRecord.categories||projectCategories).some(c=>rewardMine.includes(c));return <article key={id}><OfficeCollectibleArt item={id} name={me.name}/><h4>{label}</h4><p>{required?`${qualified} / ${required} qualifying weeks`:id==='nameplate'?'Work + care stamps':id==='corkboard'?'Three different category stamps':'Complete the project and contribute'}</p><button className="pg-btn" disabled={busy||owned||!eligible} onClick={()=>mutate(()=>api.officeCollectible(id,rewardWeek))}>{owned?'Owned':eligible?'Claim reward':'Keep playing'}</button>{permanent&&owned&&<OfficeDisplayButton item={id} display={display} disabled={busy||statusLoading||!!statusError} onDisplay={changeDisplay}/>}</article>;});
  return <div className="pg-next-week" data-depth={depth?'true':'false'} data-testid="next-week-office"><nav aria-label="Office records" className="pg-tabs">{[['project','This week'],['profiles','Player profiles'],['tools','Toolkit'],...(depth?[['collection','Collection'],['boutique','Boutique'],['records','Record book']]:[])].map(([id,label])=><button key={id} aria-pressed={tab===id} className={'pg-tab'+(tab===id?' on':'')} onClick={()=>{setTab(id);setError('');}}>{label}</button>)}</nav>
   <button className="pg-btn" disabled={busy||statusLoading} onClick={loadStatus}>{statusLoading?"Refreshing office records…":"Refresh office records"}</button>
   {shownError&&<div className="pg-next-error" role="alert">{shownError}<button className="pg-btn" disabled={busy} onClick={retry}>{error&&errorSource==='action'?'Retry action':tab==='profiles'&&profileError?'Retry profile':'Retry records'}</button></div>}
+  {(tab==='collection'||tab==='boutique')&&<p role="status" data-testid="office-display-feedback">{busy?'Waiting for the server…':feedback||`${display.length} / 3 decorations displayed. Display changes are free.`}</p>}
   {tab==='project'&&<><h3>{status?.project.title||'This week in the office'}</h3>{!status&&!statusError&&<p role="status">Reading the committee notes…</p>}{status&&<>
    <p>{status.project.description||'Contribute to the break room together.'} {dailyProject?'Each person can add one contribution per listed category per Pacific date. Repeating the same category today adds no extra project progress.':'Earn one stamp in each listed category per week.'} No Busywork donations needed.</p>
    <label className="pg-next-progress">{status.project.total} / {status.project.goal} {dailyProject?'daily contributions':'stamps'} · {status.project.contributors} / {status.project.minimum_contributors} contributors{dailyProject&&<> · {status.project.active_days} / {status.project.minimum_days} active Pacific dates</>}<progress max={status.project.goal} value={Math.min(status.project.total,status.project.goal)}/></label>
@@ -143,9 +163,9 @@ function OfficeWeekPanel({me,board,onPlayer,initialPlayer,onReflection}){
    <label>Claim from week <select value={rewardWeek} onChange={e=>setRewardWeek(e.target.value)}>{[...new Set([status.week,...rewardHistory.map(r=>r.week),...status.completed_weeks])].map(w=><option key={w}>{w}</option>)}</select></label>
    <div className="pg-collectible-grid">{collectionCards(['nameplate','corkboard','plaque'])}</div>
   </>}</>}
-  {tab==='boutique'&&depth&&<OfficeBoutique me={me} onPlayer={async p=>{onPlayer(p);await loadStatus();}} status={status} onDisplay={(id,shown)=>mutate(()=>api.officeDisplay(shown?display.filter(x=>x!==id):[...display,id]))}/>}
+  {tab==='boutique'&&depth&&<OfficeBoutique me={me} onPlayer={async p=>{onPlayer(p);await loadStatus();}} status={status} displayDisabled={busy||statusLoading||!!statusError} onDisplay={changeDisplay}/>}
   {tab==='records'&&depth&&<OfficeRecordBook me={me} board={board}/>}
-  {tab==='collection'&&depth&&<><h3>A desk with a history</h3><p>{qualified} qualifying weeks. Work + another activity across two Pacific dates earns one week; it never needs a streak.</p><p>Display up to three owned decorations. Hide one to make room; nothing is sold or lost.</p><div className="pg-collectible-grid">{collectionCards(Object.keys(OFFICE_COLLECTIBLE_LABELS),true)}</div><h3>Dated project scrapbook</h3><p>Complete the office project and contribute in one of its listed categories. Mementos are saved automatically, including for later contributors. Select one for your project plaque.</p>{!status.scrapbook?.length?<p>No dated mementos yet. This week’s project is a place to start.</p>:<div className="pg-scrapbook">{status.scrapbook.map(m=><article key={m.week}><OfficeCollectibleArt item="plaque" memento={m}/><div><h4>{m.title}</h4><p>{new Date(m.starts_at).toLocaleDateString(undefined,{timeZone:'America/Los_Angeles'})} · {m.week} · {m.stretch?'Stretch finish':'Base finish'}</p><button className="pg-btn" disabled={busy||m.selected} onClick={()=>mutate(()=>api.officeMemento(m.week))}>{m.selected?'Selected for plaque':'Select for plaque'}</button></div></article>)}</div>}</>}
+  {tab==='collection'&&depth&&<><h3>A desk with a history</h3><p>{qualified} qualifying weeks. Work + another activity across two Pacific dates earns one week; it never needs a streak.</p><p>Display up to three owned decorations. At capacity, Display automatically replaces a decoration. The button tells you which one; nothing is sold or lost.</p><div className="pg-collectible-grid">{collectionCards(Object.keys(OFFICE_COLLECTIBLE_LABELS),true)}</div><h3>Dated project scrapbook</h3><p>Complete the office project and contribute in one of its listed categories. Mementos are saved automatically, including for later contributors. Select one for your project plaque.</p>{!status.scrapbook?.length?<p>No dated mementos yet. This week’s project is a place to start.</p>:<div className="pg-scrapbook">{status.scrapbook.map(m=><article key={m.week}><OfficeCollectibleArt item="plaque" memento={m}/><div><h4>{m.title}</h4><p>{new Date(m.starts_at).toLocaleDateString(undefined,{timeZone:'America/Los_Angeles'})} · {m.week} · {m.stretch?'Stretch finish':'Base finish'}</p><button className="pg-btn" disabled={busy||m.selected} onClick={()=>mutate(()=>api.officeMemento(m.week))}>{m.selected?'Selected for plaque':'Select for plaque'}</button></div></article>)}</div>}</>}
   {tab==='profiles'&&<><div className="pg-next-selects"><label>Player<select value={selected} onChange={e=>{setSelected(e.target.value);setPeer('');}}>{choices.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label><label>Period<select value={period} onChange={e=>setPeriod(e.target.value)}><option value="week">This week</option><option value="lifetime">Tracked lifetime</option></select></label><label>Coworker<select value={peer} onChange={e=>setPeer(e.target.value)}><option value="">Everyone</option>{choices.filter(p=>p.id!==selected).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label></div>
    {!profile&&!profileError&&<p role="status">Reading the personnel file…</p>}{profile&&<><h3>{profile.player.name}'s office story</h3><p className="pg-small">Retained records from {new Date(profile.since).toLocaleDateString()}. Continuous tracking starts {new Date(profile.continuous_since||profile.since).toLocaleDateString()}. Earlier records may be incomplete. {profile.privacy}</p>
    {profile.reflections&&<p>Shield protections: {profile.reflections.protected} · Sabotages returned to this sender: {profile.reflections.returned_to_sender}. Reflected attempts are counted once under blocked.</p>}
