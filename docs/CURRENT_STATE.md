@@ -1,3 +1,11 @@
+# Build 207 — desk sets on display (candidate)
+
+An owned boutique set could be saved in office_display but the world renderer recognized only earned-collection IDs, silently dropping all four desk themes. The shared resolver now recognizes Facilities, Accounting, IT and Office Chaos sets, retaining explicit hide choices and existing three-slot limits. Already-saved displayed sets render after refresh without another purchase.
+
+Display now swaps automatically at capacity in both Boutique and Collection. It first replaces another desk set for a new set, otherwise the last tabletop decoration, keeping nameplates/corkboards where possible. The control names the replacement before the click; confirmed feedback names the stored item and makes permanent ownership explicit. One existing server RPC saves the complete selection, with no intermediate hide or economic action. Busy/unknown-state controls remain disabled; an uncertain save requires status refresh rather than automatic replay. No schema, migration, balance, prices, inventory or weekly-reset changes.
+
+Validation: exact-head CI and screenshot review are required in the release PR. Synthetic cases cover every saved set, automatic full-slot swaps, Collection symmetry, hide/reload and accepted-save/lost-response recovery. Physical phones and hosted Auth remain unperformed. Baseline released build 206: main 8cb9bd1a3139a8caac081ada2651dc58feb16210, PR #67. Release receipts belong to PR metadata.
+
 # Build 206 — your desk, on this device (candidate)
 
 Email links can finish in a different browser from a home-screen app. The existing sign-in screen now offers a same-app option: copy the unopened sign-in button link from the requested email, paste it and explicitly verify it here. Only this project's HTTPS Auth verification URLs and sign-in token types are accepted; pasted redirects are never followed. The existing SDK verifies and persists the session in the current app. Tokens are not placed in application storage, logs or navigation URLs; only the SDK's normal saved session persists. Ordinary email-link sign-in remains available. No email template, Auth configuration or account creation policy changes.

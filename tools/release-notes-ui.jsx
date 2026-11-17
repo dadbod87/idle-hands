@@ -1,9 +1,10 @@
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "206",
- title: "Your desk, on this device",
+ id: "207",
+ title: "Desk sets on display",
  changes: [
+  ["Owned desk sets actually display", "Facilities, Accounting, IT and Office Chaos sets now appear on your desk when displayed. Full decoration slots no longer block Display: one click swaps an existing decoration, explains which one and keeps both permanently owned. Hiding and switching remain free."],
   ["Sign in inside your home-screen app", "If an email opens another browser, copy its unopened sign-in link and use the new option on the sign-in screen. The session is saved in the app where you play. Lost sessions return to sign-in, and purchase errors stay visible with a balance-refresh option."],
   ["No more ghost chair", "The floor, minimap and direction marker clear together after a confirmed grab. Other players’ claims are checked every two seconds while the chair window is open."],
   ["Open stays on the right", "The phone action prompt now stays in the bottom-right corner. Open, Grab and Change keep the same right-hand position as you walk or select another target."],

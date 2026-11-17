@@ -25,3 +25,5 @@ assert(sql.includes("p.seniority_earned * 0.03"));
 assert(sql.includes('REVOKE ALL ON ALL FUNCTIONS IN SCHEMA office_private'));
 assert(sql.includes('record')||sql.includes('capture_deed'));
 console.log('PASS next-week: real client multiplier across all affordable balances/levels; old-backend fallback, generated UI and SQL safety contracts');
+
+require('./decoration-display.test.cjs');
