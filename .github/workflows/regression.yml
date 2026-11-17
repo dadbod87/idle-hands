@@ -43,6 +43,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Start local static server
         run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/idle-hands-http.log 2>&1 &
+      - name: Phone sign-in and purchase investigation
+        run: npx playwright test tests/phone-auth-investigation.spec.cjs --max-failures=1 --reporter=line
       - name: Minimap, stable phone floor and planter focus walkthroughs
         run: npx playwright test tests/reflection-and-winners.spec.cjs tests/minimap-navigation.spec.cjs tests/phone-walking.spec.cjs tests/planter-targets.spec.cjs --max-failures=1 --reporter=line
       - name: Office UX, decor, discovery and Confetti walkthroughs
