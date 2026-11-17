@@ -3450,13 +3450,35 @@ async function sendMagicLink(email) {
   if (error) throw error;
 }
 
-async function signOutAll() {
-  await supabase.auth.signOut();
+// Consume an unopened email sign-in link in this browser/app. Never navigate to
+// the pasted URL or forward its token to another host.
+function parseSignInLink(value) {
+  const message="Copy the sign-in button's link from your new Idle Hands email, then paste it here without opening it.";
+  let link;try{link=new URL(String(value||"").trim());}catch{throw Error(message);}
+  const tokens=[...link.searchParams.getAll("token"),...link.searchParams.getAll("token_hash")];
+  const types=link.searchParams.getAll("type");
+  if(link.origin!==SUPABASE_URL||link.username||link.password||link.pathname!=="/auth/v1/verify"||tokens.length!==1||! /^[A-Za-z0-9_-]{20,512}$/.test(tokens[0])||types.length!==1||!["magiclink","email"].includes(types[0]))throw Error(message);
+  return {token_hash:tokens[0],type:types[0]};
+}
+async function useSignInLink(value) {
+  const params=parseSignInLink(value);
+  const {data,error}=await supabase.auth.verifyOtp(params);
+  if(error||!data?.session||!data?.user)throw Error("Couldn't confirm that sign-in link. It may have expired or already been opened. Request a fresh email and copy its link without opening it.");
+  return data.user;
+}
+function sessionEndedNotice(){
+  try{const ended=sessionStorage.getItem("ih_session_ended");sessionStorage.removeItem("ih_session_ended");return ended?"Your sign-in ended. Choose I've been here before to return to your existing desk.":null;}catch{return null;}
+}
+
+async function signOutDevice() {
+  const {error}=await supabase.auth.signOut({scope:"local"});
+  if(error)throw error;
 }
 
 function onAuthChange(cb) {
   let active = true;
   const { data } = supabase.auth.onAuthStateChange((event, s) => {
+    if(event==="SIGNED_OUT"){setTimeout(()=>{if(active)cb(null);},0);return;}
     // Recovery can emit SIGNED_IN for a cached JWT too. Validate it outside
     // the Auth callback's lock before letting it open a character form.
     if (event !== "INITIAL_SESSION" && s?.user) setTimeout(async () => {
@@ -3740,7 +3762,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 205 · chair custody confirmed";
+const BUILD = "build 206 · your desk, on this device";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3804,7 +3826,7 @@ function OfficeFloor() {
   const [phase, setPhase] = useState("boot");
   useEffect(()=>{document.documentElement.classList.toggle("pg-playing",phase==="play");return()=>document.documentElement.classList.remove("pg-playing");},[phase]);
   const [user, setUser] = useState(null);
-  const [authNotice, setAuthNotice] = useState(null);
+  const [authNotice, setAuthNotice] = useState(sessionEndedNotice);
   const [catRaw, setCatRaw] = useState({ items: [], upgrades: [], deeds: {} });
   const cat = catRaw;
   // index the pin pool wherever the catalogue lands, so no call site can miss it
@@ -3967,6 +3989,7 @@ function OfficeFloor() {
   const [spend, setSpend] = useState(null);
   const [testers, setTesters] = useState(null);
   const [purchasePending, setPurchasePending] = useState(null);
+  const [purchaseError,setPurchaseError]=useState("");
   const purchaseLock = useRef(false);
   const deedLock = useRef(false),deedRequest=useRef(null);
   const [deedRetry,setDeedRetry]=useState(false);
@@ -4117,6 +4140,12 @@ function OfficeFloor() {
     // A magic link lands back here with a session in the URL. When that
     // resolves, pick it up without making anyone reload.
     return onAuthChange((u) => {
+      if(!u&&meRef.current){
+        // A reload discards stale pending handlers and buffered work. Restore only
+        // confirmed server state after the player explicitly signs back in.
+        try{sessionStorage.setItem("ih_session_ended","1");}catch{}
+        location.reload();return;
+      }
       if (u && !meRef.current) boot(u);
     });
   }, [boot]);
@@ -4724,7 +4753,7 @@ function OfficeFloor() {
 
   const buy = async (item) => {
     if (purchaseLock.current) return;
-    purchaseLock.current = true; setPurchasePending("item:" + item.id);
+    purchaseLock.current = true; setPurchasePending("item:" + item.id);setPurchaseError("");
     try {
       const row=await api.buyItem(item.id);applyServer(row);
       if(row){reactTo("receipt","Hired. Inbox included.");sfx("buy");}
@@ -4736,21 +4765,29 @@ function OfficeFloor() {
           const now = (fresh.items || []).find((x) => x.id === item.id);
           if (now && now.cost !== item.cost) {
             setCat(fresh);
+            setPurchaseError("Prices changed. Refreshed — have another look.");
             flash("Prices changed. Refreshed — have another look.");
             return;
           }
         }
       }
-      flash(prettyError(e));
+      setPurchaseError(prettyError(e));flash(prettyError(e));
     } finally { purchaseLock.current = false; setPurchasePending(null); }
   };
   const buyUp = async (u) => {
     if (purchaseLock.current) return;
-    purchaseLock.current = true; setPurchasePending("upgrade:" + u.id);
+    purchaseLock.current = true; setPurchasePending("upgrade:" + u.id);setPurchaseError("");
     try {
-      const r = await guard(() => api.buyUpgrade(u.id), `Approved: ${u.name}`);
+      const r = await guard(() => api.buyUpgrade(u.id), `Approved: ${u.name}`,setPurchaseError);
       if (r) {sfx("buy");reactTo("receipt","Approved. In triplicate.");}
     } finally { purchaseLock.current = false; setPurchasePending(null); }
+  };
+  const refreshShopBalance=async()=>{
+    if(purchaseLock.current)return;
+    purchaseLock.current=true;setPurchasePending("refresh");
+    try{const row=await api.sync();applyServer(row);setPurchaseError("");}
+    catch(error){setPurchaseError(prettyError(error));}
+    finally{purchaseLock.current=false;setPurchasePending(null);}
   };
   const commit = async (target, kind) => {
     if(deedLock.current)return;
@@ -5426,7 +5463,7 @@ function OfficeFloor() {
         <Panel stablePurchases={panel==="shop"||panel==="mirror"} receipt={reaction&&!["work","filed"].includes(reaction.kind)?reaction:null} onClose={() => setPanel(null)} title={panel.startsWith("prop:")?(inspectedProp?.label||PROP_LABELS[inspectedProp?.kind]):PANEL_TITLES[panel]}>
           {panel.startsWith("prop:")&&<PropInspection kind={inspectedProp?.kind} propId={inspectedProp?.id} variant={officeSceneAt(funTick)} onCoffee={joinCoffeeBreak} onPerform={startPropScene}/> }
           {panel === "shop" && (
-            <Shop cat={cat} me={me} pp={pp} rate={rate} purchasePending={purchasePending}
+            <Shop cat={cat} me={me} pp={pp} rate={rate} purchasePending={purchasePending} purchaseError={purchaseError} onRefreshBalance={refreshShopBalance}
               pins={pins}
               onPin={async (x) => {
                 try {
@@ -6837,7 +6874,7 @@ const SLOT_NAMES = { glow: "Glow", size: "Presence", held: "Something To Carry",
                      aura: "Atmosphere", desk: "The Desk", chair: "The Chair",
                      rug: "The Floor", art: "The Wall", tv: "Conflict-Resolution Training" };
 
-function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure, purchasePending,
+function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructure, purchasePending,purchaseError,onRefreshBalance,
                 onFitting, pins, onPin, onWear, onStyled, guard, flash }) {
   const owned = me?.owned || {}, ups = me?.upgrades || [];
   const cycle = me?.cycle || 0;
@@ -6848,6 +6885,7 @@ function Shop({ cat, me, pp, rate, clickPow, lifetime, onBuy, onUp, onRestructur
         Hire staff in Requisitions; improve them in Approvals. Your desk earns <b>{fmt(rate)} BW/sec</b> — that's <b>{fmt(rate * 3600)} BW</b> an hour,
         whether this tab is open or not. Buy more staff to raise it.
       </div>
+      {purchaseError&&<div className="pg-fine pg-err" role="alert"><b>Purchase not confirmed.</b> {purchaseError}<p>Refresh your balance before trying again. This does not repeat the purchase.</p><button className="pg-btn" disabled={!!purchasePending} onClick={onRefreshBalance}>{purchasePending==="refresh"?"Refreshing…":"Refresh shop balance"}</button></div>}
       <Tabsy tabs={[["hire", "Requisitions"], ["ups", "Approvals"],
                     ["today", "Today"], ["restr", "Seniority"], ["cat", "Catalogue"]]}>
         {(t) => t === "cat" ? (
@@ -8945,9 +8983,10 @@ function OfficeWeeklyRace({me,board}){
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "205",
- title: "Chair custody confirmed",
+ id: "206",
+ title: "Your desk, on this device",
  changes: [
+  ["Sign in inside your home-screen app", "If an email opens another browser, copy its unopened sign-in link and use the new option on the sign-in screen. The session is saved in the app where you play. Lost sessions return to sign-in, and purchase errors stay visible with a balance-refresh option."],
   ["No more ghost chair", "The floor, minimap and direction marker clear together after a confirmed grab. Other players’ claims are checked every two seconds while the chair window is open."],
   ["Open stays on the right", "The phone action prompt now stays in the bottom-right corner. Open, Grab and Change keep the same right-hand position as you walk or select another target."],
   ["Return to embarrassment", "A reflected attacker gets a clear, dismissible roast naming the intended target. The notice waits its turn behind startup reports and stays saved until acknowledged."],
@@ -9025,10 +9064,12 @@ function Gate({ onNew, notice }) {
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState(null);
+  const [pastedLink,setPastedLink]=useState("");
+  const [pasteOpen,setPasteOpen]=useState(false);
 
   const send = async () => {
     if (!email.includes("@") || busy) return;
-    setBusy(true); setMsg(null);
+    setBusy(true); setMsg(null);setPastedLink("");
     try { await sendMagicLink(email.trim()); setSent(true); }
     catch (e) {
       setMsg(/not found|signups/i.test(e.message || "")
@@ -9036,6 +9077,14 @@ function Gate({ onNew, notice }) {
         : (e.message || "Couldn't send the link."));
     }
     setBusy(false);
+  };
+
+  const finishHere=async()=>{
+    if(busy||!pastedLink.trim())return;
+    setBusy(true);setMsg(null);
+    try{await useSignInLink(pastedLink);setPastedLink("");}
+    catch(error){setMsg(error.message);}
+    finally{setBusy(false);}
   };
 
   return (
@@ -9083,9 +9132,14 @@ function Gate({ onNew, notice }) {
       {sent && (
         <div className="pg-pad">
           <div className="pg-stamp">Check your email</div>
-          <p>Link sent to <b>{email}</b>. Open it on this device and you'll land back at your
-            desk with every point intact.</p>
-          <p className="pg-fine">Nothing in the inbox after a minute? Check spam, then try again.</p>
+          <p>Link sent to <b>{email}</b>. Open it in the browser where you want to play.</p>
+          <p className="pg-fine">Using a home-screen app? Your email may open a different browser. Use the option below to finish signing in here.</p>
+          <button className="pg-btn pg-wide" disabled={busy} onClick={()=>setPasteOpen(v=>!v)} aria-expanded={pasteOpen}>Use the link in this app</button>
+          {pasteOpen&&<div className="pg-pad"><p>In your new email, press and hold the sign-in button and copy its link <b>without opening it</b>. Return here and paste it. This signs in this app so it can remember your desk.</p><label className="pg-field"><span>Sign-in link</span><input type="url" value={pastedLink} onChange={e=>setPastedLink(e.target.value)} onKeyDown={e=>e.stopPropagation()} autoComplete="off" autoCapitalize="none" spellCheck={false}/></label><button className="pg-work big" disabled={busy||!pastedLink.trim()} onClick={finishHere}>{busy?"Checking…":"Sign in to this app"}</button><p className="pg-fine">Treat this link like a password. Only paste your own Idle Hands sign-in link.</p></div>}
+          {msg&&<p className="pg-fine pg-err" role="alert">{msg}</p>}
+          <p className="pg-fine">Already opened the link, or nothing in the inbox? Check spam or request a fresh email.</p>
+          <button className="pg-btn" disabled={busy} onClick={send}>Request a fresh email</button>
+          <button className="pg-btn ghost" disabled={busy} onClick={()=>{setSent(false);setPasteOpen(false);setPastedLink("");setMsg(null);}}>Change email</button>
         </div>
       )}
     </div>
@@ -9134,7 +9188,8 @@ function Account({ user, onLinked }) {
           <div className="pg-stamp">Saved</div>
           <p>This desk is tied to <b>{user?.email}</b>. Sign in from any device with an emailed
             link and you'll pick up exactly where you left off, points and all.</p>
-          <button className="pg-btn danger" onClick={async () => { await signOutAll(); location.reload(); }}>
+          {msg&&<p className="pg-fine pg-err" role="alert">{msg}</p>}
+          <button className="pg-btn danger" disabled={busy} onClick={async () => {setBusy(true);setMsg(null);try{await signOutDevice();location.reload();}catch{setMsg("Couldn’t finish signing out. Check your connection and try again.");setBusy(false);}}}>
             Sign out on this device
           </button>
           <div className="pg-fine">Signing out is safe now — your progress is on the server,

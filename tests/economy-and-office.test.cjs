@@ -114,3 +114,5 @@ require("./silver-tongue.test.cjs");
 require('./refresh-queue.test.cjs');
 
 require("./weekly-winners.test.cjs");
+
+require("./phone-auth.test.cjs");
