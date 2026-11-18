@@ -8,7 +8,7 @@ assert(src, 'React/Babel application entrypoint');
 const ast = babel.parse(src, {sourceType:'script',plugins:['jsx']});
 assert(ast.program.body.length > 100, 'Substantial application parsed');
 const has = t => assert(src.includes(t), 'Required feature missing: '+t);
-['function calcRate(p, cat)','function liveMult(p, ctx = {})',
+['function calcRate(p, cat)','function liveMult(p, ctx = {}, now = Date.now())',
  'const costOf =','function officeVisitorNow','function officeFunAt',
  'funTab==="incidents"','funTab==="rumors"','funTab==="bingo"',
  'funTab==="daily"','funTab==="lounge"','funTab==="awards"',
@@ -116,3 +116,46 @@ require('./refresh-queue.test.cjs');
 require("./weekly-winners.test.cjs");
 
 require("./phone-auth.test.cjs");
+
+const wallet = vm.createContext({
+  Date, Intl, HEAT_LIMIT: 5, SYNC_MS: 10000,
+  me: {owned:{desk:1}, seniority_earned:20, equity:0},
+  cat: {items:[{id:'desk',rate:100}]},
+  office: {tiers:16,streak:4,tz:'America/New_York'},
+  phase: 'play',
+  scheduled: null,
+  useEffect: callback => callback(),
+  setInterval: callback => { wallet.scheduled = callback; },
+  setDrift: calculate => { wallet.projected = calculate(wallet.projected); },
+  projected: 0,
+  drift: 0,
+
+});
+wallet.meRef = {current:wallet.me};
+wallet.incomeOfficeRef = {current:wallet.office};
+wallet.syncedAt = {current:0};
+const clockNow = Date.parse('2026-11-18T17:32:21Z');
+wallet.clock = clockNow;
+vm.runInContext(
+  'const Date = class extends globalThis.Date { static now() { return clock; } };' +
+  fragment('function noraDrinksAt', 'function dougCallNow') +
+  fragment('function itemMult', 'function wesAt') +
+  fragment('const EVENTS =', '/** The next event') +
+  fragment('function earnedSeniority', 'const OFFICE_TOOL_HELP') +
+  fragment('  /* --------------------------- local tick', '  /* --------------------- is there a newer build?') +
+  'this.hudRate = rate;', wallet
+);
+assert(Math.abs(wallet.hudRate - 255.744) < 1e-9);
+wallet.clock += 1000;
+wallet.scheduled();
+assert(Math.abs(wallet.projected - wallet.hudRate) < 1e-9, 'wallet and HUD use the same office bonuses');
+wallet.projected = 0;
+wallet.clock += 1000;
+wallet.syncedAt.current = wallet.clock - 400;
+wallet.incomeOfficeRef.current = {tiers:0,streak:0,tz:'America/Los_Angeles'};
+wallet.scheduled();
+assert(Math.abs(wallet.projected - 64) < 1e-9, 'first animation frame uses fresh office state and excludes time before sync');
+wallet.clock += 11000;
+wallet.scheduled();
+assert(Math.abs(wallet.projected - 64) < 1e-9, 'a suspended tab leaves elapsed offline time for the server');
+console.log('PASS Busywork animation: actual rate parity, settlement boundary and suspended tab');

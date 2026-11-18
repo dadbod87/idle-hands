@@ -172,6 +172,11 @@ jobs:
         run: |
           createdb ih_margarita_test
           PGDATABASE=ih_margarita_test psql -v ON_ERROR_STOP=1 -f tests/margarita-pacing-contract.sql
+      - name: Friday Busywork cutoff in a separate disposable database
+        run: |
+          createdb ih_busywork_test
+          PGDATABASE=ih_busywork_test psql -v ON_ERROR_STOP=1 -f tests/weekly-busywork-contract.sql
+          PGDATABASE=ih_busywork_test python3 tests/weekly-busywork-concurrency.py
       - name: Confetti output contracts on both installation paths
         run: |
           psql -v ON_ERROR_STOP=1 -f tests/confetti-output-contract.sql

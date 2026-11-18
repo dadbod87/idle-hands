@@ -131,3 +131,9 @@ Passing this CI gate does NOT mean the browser or real RPC flows were tested. Ne
 ## Reflection notices and weekly winners
 - [ ] Check ordinary and toolkit reflections, accepted receipts followed by failed refresh, retries without repeated attacks, acknowledgement/reload, per-player isolation and startup ordering.
 - [ ] Review desktop/portrait/landscape winner cards, multiple categories and shared titles, zero scores, older incomplete coverage and read failure/retry. Keep real server counts, hush privacy and existing economic/trophy/reset rules.
+
+## Busywork display and Friday settlement
+
+- [ ] Verify the wallet animation and rate label share office bonuses, event timing and the current office timezone.
+- [ ] Run the cutoff contract against the guarded SQL in a disposable database. Verify cap limits, final standings before wipe, no-wipe boundary splitting, repeat calls and a delayed rollover.
+- [ ] Verify the installed function definitions and grants read-only. Installation must not call rollover or write to player rows.
