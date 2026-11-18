@@ -2955,8 +2955,7 @@ function calcRate(p, cat) {
     two disagree, the screen is lying. Order and terms mirror the SQL exactly.
     `ctx` carries the office-wide pieces the player row doesn't hold:
     { tiers, streak, tz }. */
-function liveMult(p, ctx = {}) {
-  const now = Date.now();
+function liveMult(p, ctx = {}, now = Date.now()) {
   let m = 1 + earnedSeniority(p) * 0.03 + Math.min(p.goodwill || 0, 30) * 0.01 + (p.raises || 0) * 0.02;
   m *= 1 + 0.05 * perkCount(p, "compound");
   if (p.dept === "finance") m *= 1.12;
@@ -2971,9 +2970,14 @@ function liveMult(p, ctx = {}) {
   if (p.frenzy_until && new Date(p.frenzy_until).getTime() > now) m *= 7;
   m *= 1 + 0.03 * (ctx.tiers || 0);
   m *= 1 + 0.02 * Math.min(ctx.streak || 0, 10);
-  const h = officeHour(ctx.tz);
+  const h = officeHour(ctx.tz, now);
   if (h.hour >= 18 || h.hour < 7 || h.dow > 5) m *= 1.15;
   return m * (noraDrinksAt(now)?.mult || 1);
+}
+
+/** The rate label and the wallet animation use the same passive multipliers. */
+function busyworkMultiplier(p, office, now) {
+  return liveMult(p, office || {}, now) * (eventAt(now)?.mult || 1);
 }
 
 /** How many of a perk you hold — mirrors perk_of() in Postgres. */
@@ -2985,16 +2989,16 @@ function perkCount(p, key) {
 }
 
 /** The office clock, not yours — after-hours pays the same for everybody. */
-function officeHour(tz = "America/New_York") {
+function officeHour(tz = "America/New_York", now = Date.now()) {
   try {
     const f = new Intl.DateTimeFormat("en-US", {
       timeZone: tz, hour: "numeric", hour12: false, weekday: "short",
-    }).formatToParts(new Date());
+    }).formatToParts(new Date(now));
     const hour = Number(f.find((x) => x.type === "hour").value) % 24;
     const days = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
     return { hour, dow: days[f.find((x) => x.type === "weekday").value] || 1 };
   } catch {
-    const d = new Date();
+    const d = new Date(now);
     return { hour: d.getHours(), dow: ((d.getDay() + 6) % 7) + 1 };
   }
 }
@@ -3764,7 +3768,7 @@ function officeFunAt(ts=Date.now()){
 }
 function safeOfficeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
 
-const BUILD = "build 207 · desk sets on display";
+const BUILD = "build 208 · Busywork adds up";
 const SPEED = 340;
 const REACH = 170;
 const SYNC_MS = 10000;
@@ -3985,6 +3989,8 @@ function OfficeFloor() {
   const [stale, setStale] = useState(false);      // a newer build is on the server
   const [sugg, setSugg] = useState([]);
   const [office, setOffice] = useState(null);
+  const incomeOfficeRef = useRef(null);
+  incomeOfficeRef.current = office;
   const [weekSchedule, setWeekSchedule] = useState(null);
   const [card, setCard] = useState(null);
   const [pins, setPins] = useState(null);
@@ -4261,14 +4267,9 @@ function OfficeFloor() {
   }, [applyServer, say]);
 
   /* --------------------------- local tick ------------------------- */
-  const evMult = ev ? ev.mult : 1;
-  // the office-wide terms live on the server; feed them in so the two agree
-  const rateCtx = {
-    tiers: office?.tiers || 0,
-    streak: office?.streak || 0,
-    tz: office?.tz || "America/New_York",
-  };
-  const rate = me ? calcRate(me, cat) * liveMult(me, rateCtx) * evMult : 0;
+  const baseRate = me ? calcRate(me, cat) : 0;
+  const rateMult = me ? busyworkMultiplier(me, office, Date.now()) : 1;
+  const rate = baseRate * rateMult;
   const clickCm = (cat.upgrades || [])
     .filter((u) => u.t === "click" && (me?.upgrades || []).includes(u.id))
     .reduce((m, u) => m * u.mult, 1) * (me?.dept === "development" ? 3 : 1);
@@ -4282,11 +4283,13 @@ function OfficeFloor() {
     if (phase !== "play") return;
     let last = Date.now();
     const t = setInterval(() => {
-      const now = Date.now(), dt = (now - last) / 1000; last = now;
+      const now = Date.now();
+      const dt = (now - Math.max(last, syncedAt.current)) / 1000;
+      last = now;
       const p = meRef.current;
-      if (!p) return;
-      const cur = eventAt(now);
-      const r = calcRate(p, cat) * liveMult(p) * (cur ? cur.mult : 1);
+      // Let the server settle a suspended tab's offline time and timed effects.
+      if (!p || dt <= 0 || dt > SYNC_MS / 1000) return;
+      const r = calcRate(p, cat) * busyworkMultiplier(p, incomeOfficeRef.current, now);
       if (r > 0) setDrift((v) => v + r * dt);
     }, 150);
     return () => clearInterval(t);
@@ -5091,7 +5094,7 @@ function OfficeFloor() {
           <div className="pg-pplabel">Busywork</div>
           <div className="pg-ppsub">
             <span className="pg-tag plain"
-                  data-tip={`Everything on your file combined: ×${(liveMult(me, rateCtx) * evMult).toFixed(2)} of a base ${fmt(calcRate(me, cat))}/s`}>
+                  data-tip={`Everything on your file combined: ×${rateMult.toFixed(2)} of a base ${fmt(baseRate)}/s`}>
               earning {fmt(rate)} BW every second
             </span>
             {me?.raises > 0 && (
@@ -9005,9 +9008,11 @@ function OfficeWeeklyRace({me,board}){
 // Update this manifest for every player-facing release. Acknowledgement is local
 // to this player/browser, never an economic action or a claim of cross-device sync.
 const RELEASE_NOTES = {
- id: "207",
- title: "Desk sets on display",
+ id: "208",
+ title: "Busywork adds up",
  changes: [
+  ["A steadier Busywork balance", "The running balance now includes the same office fund, streak and event bonuses as the earnings rate."],
+  ["Friday earnings count through closing", "The weekly results include eligible passive Busywork through Friday at 4 PM Pacific, even when you are away at the cutoff."],
   ["Owned desk sets actually display", "Facilities, Accounting, IT and Office Chaos sets now appear on your desk when displayed. Full decoration slots no longer block Display: one click swaps an existing decoration, explains which one and keeps both permanently owned. Hiding and switching remain free."],
   ["Sign in inside your home-screen app", "If an email opens another browser, copy its unopened sign-in link and use the new option on the sign-in screen. The session is saved in the app where you play. Lost sessions return to sign-in, and purchase errors stay visible with a balance-refresh option."],
   ["No more ghost chair", "The floor, minimap and direction marker clear together after a confirmed grab. Other players’ claims are checked every two seconds while the chair window is open."],

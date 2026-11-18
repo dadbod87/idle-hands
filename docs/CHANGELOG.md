@@ -1,3 +1,9 @@
+# Build 208 — Busywork adds up
+
+The running wallet estimate now uses the same shared office fund, streak, time-zone and event calculations as the earnings label. The next animation frame starts at the server receipt boundary. Balances continue to settle on the server.
+
+The normal Friday rollover now settles eligible passive Busywork through 4 PM Pacific before picking the winner and capturing final standings. It uses the existing offline caps and the closing week's own boundary. The normal reset then runs once, with the final scores and lifetime earnings already recorded. The migration changes function definitions only, and completed weeks keep their recorded results.
+
 # Build 207 — desk sets on display (candidate)
 
 An owned boutique set could be saved in office_display but the world renderer recognized only earned-collection IDs, silently dropping all four desk themes. The shared resolver now recognizes Facilities, Accounting, IT and Office Chaos sets, retaining explicit hide choices and existing three-slot limits. Already-saved displayed sets render after refresh without another purchase.
